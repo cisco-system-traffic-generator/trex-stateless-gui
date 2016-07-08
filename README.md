@@ -8,7 +8,7 @@ TRex Stateless GUI application is a JavaFX based application.
 
 ![alt text](screenshots/trex-main-dashboard.PNG "TRex Main Dashboard") 
 
-The application can main features can be split into two parts (TRex Management and Traffic Profile management):
+The application main features can be split into two parts (TRex Management and Traffic Profile management):
 
 ### TRex Management
 
