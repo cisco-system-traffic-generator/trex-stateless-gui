@@ -101,6 +101,20 @@ Report bug/request feature [YouTrack](http://trex-tgn.cisco.com/youtrack/issues)
 
 Follow us on [TRex traffic generator google group](https://groups.google.com/forum/#!forum/trex-tgn)
 
+##  Questions
+
+You can use our [TRex forum](https://groups.google.com/forum/#!forum/trex-tgn) if you have any question.
+
+
+##  Installer 
+
+###  Windows Installer 
+
+You can find our Windows Beta installer in the following link.
+
+
+
+
 
 
 
