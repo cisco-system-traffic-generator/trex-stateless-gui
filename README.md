@@ -105,14 +105,15 @@ Follow us on [TRex traffic generator google group](https://groups.google.com/for
 
 You can use our [TRex forum](https://groups.google.com/forum/#!forum/trex-tgn) if you have any question.
 
-
 ##  Installer 
 
 ###  Windows Installer 
 
-You can find our Windows Beta installer in the following link.
+You can find our Windows Beta installer in the following [link](https://www.dropbox.com/s/tqwpftjxwo4ymib/setupTrex2.02-Beta.exe?dl=0).
 
+###  Mac OS Installer 
 
+*Will be updated soon.*
 
 
 
