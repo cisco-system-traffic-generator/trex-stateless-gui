@@ -27,7 +27,7 @@
                         </FXCollections>
                     </items>
                 </ComboBox>
-                <Button fx:id="clearCacheBtn" layoutY="8.0" minWidth="22.0" mnemonicParsing="false" onAction="#chandleClearcacheBtnCLicked" styleClass="customBtn" text="Clear cache" AnchorPane.rightAnchor="8.0" />
+                <Button fx:id="clearCacheBtn" layoutY="8.0" minWidth="22.0" mnemonicParsing="false" onAction="#handleClearCacheButtonClicked" styleClass="customBtn" text="Clear cache" AnchorPane.rightAnchor="8.0" />
             </children>
         </AnchorPane>
         <HBox id="statTableContainer" alignment="CENTER" prefHeight="228.0" prefWidth="200.0" style="" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
