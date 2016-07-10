@@ -205,6 +205,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private PortsManager portManager;
     private final BooleanProperty disableProfileProperty = new SimpleBooleanProperty();
     StatsTableGenerator statsTableGenerator;
+    boolean doAssignProfile = true;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -626,13 +627,21 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @throws IOException
      */
     private void fillAssignedProfileData(AssignedProfile assigned) throws IOException {
-        profileListBox.getSelectionModel().select(assigned.getProfileName());
+
+        if (!Util.isNullOrEmpty(assigned.getProfileName())) {
+            doAssignProfile = false;
+            profileListBox.getSelectionModel().select(assigned.getProfileName());
+        } else {
+            profileDetailContainer.setVisible(false);
+            profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
+        }
         tableView.reset();
         if (!Util.isNullOrEmpty(assigned.getProfileName())) {
             loadStreamTable(assigned.getProfileName());
             // fill multiplier values
             multiplierView.fillAssignedProfileValues(assigned);
         }
+
     }
 
     /**
@@ -698,10 +707,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     profileDetailContainer.setVisible(true);
                     currentSelectedProfile = profileName;
                     loadStreamTable(profileName);
-                    if (loadedProfiles.length > 0) {
+                    if (loadedProfiles.length > 0 && doAssignProfile) {
                         // assign profile to selected port
                         assignProfile(profileName, 0, false);
                     }
+
+                    doAssignProfile = true;
+
                 }
             } catch (Exception ex) {
                 LOG.error("Error loading profile", ex);
@@ -719,7 +731,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         tableView = new PacketTableView(230, this, true);
         profileTableViewContainer.getChildren().add(tableView);
         serverStatusIcon.setImage(new Image("/icons/offline.png"));
-        
+
         // initialize right click menu
         rightClickPortMenu = new ContextMenu();
         addMenuItem(rightClickPortMenu, "Acquire", ContextMenuClickType.ACQUIRE, false);
@@ -800,6 +812,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle add new profile
+     *
      * @param ev
      */
     @FXML
@@ -816,6 +829,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Add menu item
+     *
      * @param menu
      * @param text
      * @param type
@@ -835,6 +849,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Clear stat cache
+     *
      * @param event
      */
     @FXML
@@ -844,6 +859,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle About tree item clicked
+     *
      * @param event
      * @throws java.lang.Exception
      */
@@ -855,6 +871,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle stats menu item clicked
+     *
      * @param event
      */
     @FXML
@@ -881,6 +898,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle key down event
+     *
      * @param event
      */
     @Override
@@ -892,6 +910,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * start transit button click handler
+     *
      * @param event
      */
     @FXML
@@ -905,6 +924,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Do start/Resume port
+     *
      * @param portID
      */
     private void doStartResume(int portID) {
@@ -919,6 +939,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * start all transit button click handler
+     *
      * @param event
      */
     @FXML
@@ -936,6 +957,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Start traffic on port
+     *
      * @param portID
      */
     private void startTraffic(int portID) {
@@ -954,6 +976,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * stop transit btn clicked
+     *
      * @param event
      */
     @FXML
@@ -968,6 +991,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * stop all transit btn clicked
+     *
      * @param event
      */
     @FXML
@@ -983,6 +1007,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * pause transit btn clicked
+     *
      * @param event
      */
     @FXML
@@ -1001,6 +1026,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Return port index related to selected treeItem
+     *
      * @return
      */
     private int getSelectedPortIndex() {
@@ -1013,6 +1039,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle context menu item clicked
+     *
      * @param type
      */
     private void handleContextMenuItemCLicked(ContextMenuClickType type) {
@@ -1097,6 +1124,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Acquire all ports
+     *
      * @param force
      * @param acquireOwnedOnly
      * @throws PortAcquireException
@@ -1116,6 +1144,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle update button click
+     *
      * @param event
      */
     @FXML
@@ -1297,6 +1326,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle Stop button clicked
+     *
      * @param event
      */
     @FXML
@@ -1345,6 +1375,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Copy to clipboard button clicked handler
+     *
      * @param event
      */
     @FXML
