@@ -150,7 +150,7 @@ public class LatencyChartController implements Initializable {
     /**
      * Stop rendering chart thread
      */
-    public void StopRenderingChart() {
+    public void stopRenderingChart() {
         for (ChartSeries series : latencySeriesList.values()) {
             series.getLatencySeries().getData().clear();
         }

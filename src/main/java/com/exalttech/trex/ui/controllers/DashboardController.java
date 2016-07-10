@@ -255,7 +255,7 @@ public class DashboardController extends DialogView implements Initializable, Di
      * @param event
      */
     @FXML
-    public void chandleClearcacheBtnCLicked(ActionEvent event) {
+    public void handleClearCacheButtonClicked(ActionEvent event) {
         cachedStatsList = StatsLoader.getInstance().getLoadedStatsList();
     }
 
@@ -281,7 +281,7 @@ public class DashboardController extends DialogView implements Initializable, Di
         if (readingStatService.isRunning()) {
             readingStatService.cancel();
         }
-        latencyChartController.StopRenderingChart();
+        latencyChartController.stopRenderingChart();
     }
 
     /**

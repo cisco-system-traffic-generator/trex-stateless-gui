@@ -1077,7 +1077,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void startTraffic(int portID) {
         try {
-            serverRPCMethods.startTraffic(portID, true, "pps", multiplierView.getPPSValue(), multiplierView.getDuration());
+            serverRPCMethods.startTraffic(portID, false, "pps", multiplierView.getPPSValue(), multiplierView.getDuration());
             AssignedProfile assignedProf = assignedPortProfileMap.get(portID);
             if (assignedProf != null) {
                 assignedProf.setStreamStarted(true);
@@ -1277,7 +1277,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 String assignedProfile = String.valueOf(profileListBox.getValue());
                 assignProfile(assignedProfile, multiplierView.getSliderValue(), true);
             } else {
-                serverRPCMethods.updateTraffic(getSelectedPortIndex(), true, MultiplierType.pps.name(), multiplierView.getPPSValue());
+                serverRPCMethods.updateTraffic(getSelectedPortIndex(), false, MultiplierType.pps.name(), multiplierView.getPPSValue());
                 // update assigned profile multiplier
                 AssignedProfile assignedProf = assignedPortProfileMap.get(getSelectedPortIndex());
                 updateMultiplierValues(assignedProf);
