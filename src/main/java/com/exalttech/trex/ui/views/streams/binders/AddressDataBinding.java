@@ -18,7 +18,7 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams;
+package com.exalttech.trex.ui.views.streams.binders;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Georgekh
  */
-public abstract class AddressBindingData extends AbstractStreamDataBinding implements Serializable {
+public abstract class AddressDataBinding extends AbstractStreamDataBinding implements Serializable {
 
     AddressInfo source;
     AddressInfo destination;
@@ -41,7 +41,7 @@ public abstract class AddressBindingData extends AbstractStreamDataBinding imple
     /**
      *
      */
-    public AddressBindingData() {
+    public AddressDataBinding() {
         setInitialValues();
     }
 

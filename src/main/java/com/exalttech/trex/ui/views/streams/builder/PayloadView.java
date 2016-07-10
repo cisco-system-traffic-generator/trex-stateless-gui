@@ -18,9 +18,9 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
+package com.exalttech.trex.ui.views.streams.builder;
 
-import com.exalttech.trex.ui.views.streams.PayloadDataBinding;
+import com.exalttech.trex.ui.views.streams.binders.PayloadDataBinding;
 import com.exalttech.trex.util.Util;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;

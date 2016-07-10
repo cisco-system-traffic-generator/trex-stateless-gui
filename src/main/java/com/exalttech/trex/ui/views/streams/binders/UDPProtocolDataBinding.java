@@ -18,9 +18,9 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams;
+package com.exalttech.trex.ui.views.streams.binders;
 
-import com.exalttech.trex.ui.views.streams.buildstream.StreamBuilderConstants;
+import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;

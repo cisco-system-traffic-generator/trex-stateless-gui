@@ -18,23 +18,23 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams;
+package com.exalttech.trex.ui.views.streams.binders;
 
-import com.exalttech.trex.ui.views.streams.buildstream.StreamBuilderConstants;
+import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
 import java.io.Serializable;
 
 /**
- * IPVE address data binding model
+ * Mac Address data binding model
  *
  * @author Georgekh
  */
-public class IPV4AddressDataBinding extends AddressBindingData implements Serializable {
+public class MacAddressDataBinding extends AddressDataBinding implements Serializable {
 
     /**
      * Constructor
      */
-    public IPV4AddressDataBinding() {
-        super();
+    public MacAddressDataBinding() {
+        setInitialValues();
     }
 
     /**
@@ -42,7 +42,8 @@ public class IPV4AddressDataBinding extends AddressBindingData implements Serial
      */
     @Override
     public void setInitialValues() {
-        getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_IP_ADDRESS, "Fixed");
-        getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_IP_ADDRESS, "Fixed");
+        getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_MAC_ADDRESS, "TRex Config");
+        getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_MAC_ADDRESS, "TRex Config");
+
     }
 }

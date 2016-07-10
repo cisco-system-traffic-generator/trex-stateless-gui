@@ -20,8 +20,8 @@ import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.PacketInfo;
-import com.exalttech.trex.ui.views.streams.BuilderBindingData;
-import com.exalttech.trex.ui.views.streams.buildstream.PacketBuilderHelper;
+import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
+import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.viewer.PacketHex;
 import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
 import com.exalttech.trex.util.PreferencesManager;
@@ -115,7 +115,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private List<Profile> profileList;
     private String yamlFileName;
 
-    BuilderBindingData builderDataBinder;
+    BuilderDataBinding builderDataBinder;
     TrafficProfile trafficProfile;
 
     /**
@@ -149,7 +149,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 hideStreamBuilderTab();
                 break;
             case BUILD_STREAM:
-                initStreamBuilder(new BuilderBindingData());
+                initStreamBuilder(new BuilderDataBinding());
                 break;
             case EDIT_STREAM:
                 initEditStream(pcapFileBinary);
@@ -166,7 +166,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     private void initEditStream(String pcapFileBinary) {
         if (!Util.isNullOrEmpty(selectedProfile.getStream().getPacket().getMeta())) {
-            BuilderBindingData dataBinding = (BuilderBindingData) Util.deserializeStringToObject(selectedProfile.getStream().getPacket().getMeta());
+            BuilderDataBinding dataBinding = (BuilderDataBinding) Util.deserializeStringToObject(selectedProfile.getStream().getPacket().getMeta());
             if (dataBinding != null) {
                 initStreamBuilder(dataBinding);
                 return;
@@ -190,7 +190,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      *
      * @param builderDataBinder
      */
-    private void initStreamBuilder(BuilderBindingData builderDataBinder) {
+    private void initStreamBuilder(BuilderDataBinding builderDataBinder) {
 
         isBuildPacket = true;
         streamTabPane.getTabs().remove(packetViewerTab);

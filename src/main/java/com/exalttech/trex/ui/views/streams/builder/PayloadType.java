@@ -18,7 +18,7 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
+package com.exalttech.trex.ui.views.streams.builder;
 
 import java.math.BigInteger;
 import java.util.Random;

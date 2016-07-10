@@ -18,7 +18,7 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams;
+package com.exalttech.trex.ui.views.streams.binders;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author GeorgeKh
  */
-public class ProtocolSelection implements Externalizable {
+public class ProtocolSelectionDataBinding implements Externalizable {
 
     BooleanProperty ipv4Property = new SimpleBooleanProperty(true);
     BooleanProperty tcpProperty = new SimpleBooleanProperty(true);

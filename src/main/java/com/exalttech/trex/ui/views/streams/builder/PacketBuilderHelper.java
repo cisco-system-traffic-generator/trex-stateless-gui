@@ -18,30 +18,42 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams;
+package com.exalttech.trex.ui.views.streams.builder;
+
+import org.apache.log4j.Logger;
 
 /**
- * Abstract class for data binding models
  *
  * @author Georgekh
  */
-public abstract class AbstractStreamDataBinding {
+public class PacketBuilderHelper {
+
+    private static final Logger LOG = Logger.getLogger(PacketBuilderHelper.class.getName());
 
     /**
-     * Constructor
+     *
+     * @param rawData
+     * @return
      */
-    public AbstractStreamDataBinding() {
+    public static String getPacketHex(byte[] rawData) {
+        String packetHex = "";
+        try {
+            StringBuilder myString = new StringBuilder();
+            for (byte b : rawData) {
+                myString.append(String.format("%02X", b));
+            }
+            packetHex = myString.toString();
+        } catch (Exception ex) {
+            LOG.error("Error generating packet hex", ex);
+        }
+        return packetHex;
     }
 
     /**
-     * Initialize properties values
+     *
      */
-    abstract protected void setInitialValues();
-
-    /**
-     * Reset model values
-     */
-    public void resetModel() {
-        setInitialValues();
+    private PacketBuilderHelper() {
+        // private constructor
     }
+
 }

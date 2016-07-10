@@ -15,8 +15,8 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.ui.views.streams.ProtocolSelection;
-import com.exalttech.trex.ui.views.streams.buildstream.PacketLengthType;
+import com.exalttech.trex.ui.views.streams.binders.ProtocolSelectionDataBinding;
+import com.exalttech.trex.ui.views.streams.builder.PacketLengthType;
 import com.exalttech.trex.util.Util;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -62,7 +62,7 @@ public class ProtocolSelectionController implements Initializable {
     @FXML
     TextField maxTF;
 
-    ProtocolSelection selection;
+    ProtocolSelectionDataBinding selection;
 
     int numOfAllowedDigit = 4;
 
@@ -83,7 +83,7 @@ public class ProtocolSelectionController implements Initializable {
      *
      * @param selection
      */
-    public void bindSelections(ProtocolSelection selection) {
+    public void bindSelections(ProtocolSelectionDataBinding selection) {
         this.selection = selection;
 
         ipv4RB.selectedProperty().bindBidirectional(this.selection.getIpv4Property());

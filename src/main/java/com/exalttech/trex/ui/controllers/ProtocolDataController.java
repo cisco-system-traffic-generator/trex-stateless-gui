@@ -16,8 +16,8 @@
 package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.packets.TrexEthernetPacket;
-import com.exalttech.trex.ui.views.streams.BuilderBindingData;
-import com.exalttech.trex.ui.views.streams.buildstream.ProtocolDataView;
+import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
+import com.exalttech.trex.ui.views.streams.builder.ProtocolDataView;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -60,7 +60,7 @@ public class ProtocolDataController implements Initializable {
      *
      * @param selection
      */
-    public void bindSelection(BuilderBindingData selection) {
+    public void bindSelection(BuilderDataBinding selection) {
         // bind views
         dataView.doInitializingTabs(selection);
     }

@@ -18,44 +18,31 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
+package com.exalttech.trex.ui.views.streams.binders;
+
+import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
+import java.io.Serializable;
 
 /**
- * Packet length type
+ * IPVE address data binding model
  *
  * @author Georgekh
  */
-public enum PacketLengthType {
+public class IPV4AddressDataBinding extends AddressDataBinding implements Serializable {
 
     /**
-     *
+     * Constructor
      */
-    FIXED("Fixed"),
-    /**
-     *
-     */
-    INCREMENT("Increment"),
-    /**
-     *
-     */
-    DECREMENT("Decrement"),
-    /**
-     *
-     */
-    RANDOM("Random");
-
-    String title;
-
-    private PacketLengthType(String title) {
-        this.title = title;
+    public IPV4AddressDataBinding() {
+        super();
     }
 
     /**
-     *
-     * @return
+     * Set initial property values
      */
-    public String getTitle() {
-        return title;
+    @Override
+    public void setInitialValues() {
+        getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_IP_ADDRESS, "Fixed");
+        getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_IP_ADDRESS, "Fixed");
     }
-
 }

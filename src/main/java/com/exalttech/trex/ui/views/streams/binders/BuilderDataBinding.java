@@ -18,7 +18,7 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams;
+package com.exalttech.trex.ui.views.streams.binders;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,9 +29,9 @@ import java.util.List;
  *
  * @author Georgekh
  */
-public class BuilderBindingData implements Serializable {
+public class BuilderDataBinding implements Serializable {
 
-    ProtocolSelection protocolSelection = new ProtocolSelection();
+    ProtocolSelectionDataBinding protocolSelection = new ProtocolSelectionDataBinding();
 
     EthernetDataBinding ethernetDB = new EthernetDataBinding();
 
@@ -50,7 +50,7 @@ public class BuilderBindingData implements Serializable {
     /**
      * Constructor
      */
-    public BuilderBindingData() {
+    public BuilderDataBinding() {
         // constructor
     }
 
@@ -59,7 +59,7 @@ public class BuilderBindingData implements Serializable {
      *
      * @return
      */
-    public ProtocolSelection getProtocolSelection() {
+    public ProtocolSelectionDataBinding getProtocolSelection() {
         return protocolSelection;
     }
 
@@ -68,7 +68,7 @@ public class BuilderBindingData implements Serializable {
      *
      * @param protocolSelection
      */
-    public void setProtocolSelection(ProtocolSelection protocolSelection) {
+    public void setProtocolSelection(ProtocolSelectionDataBinding protocolSelection) {
         this.protocolSelection = protocolSelection;
     }
 

@@ -18,10 +18,10 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
+package com.exalttech.trex.ui.views.streams.builder;
 
 import com.exalttech.trex.packets.TrexVlanPacket;
-import com.exalttech.trex.ui.views.streams.VlanDataBinding;
+import com.exalttech.trex.ui.views.streams.binders.VlanDataBinding;
 import com.exalttech.trex.util.Util;
 import java.util.ArrayList;
 import java.util.List;

@@ -15,7 +15,7 @@
  */
 package com.exalttech.trex.packets;
 
-import com.exalttech.trex.ui.views.streams.buildstream.Payload;
+import com.exalttech.trex.ui.views.streams.builder.Payload;
 import java.math.BigInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
