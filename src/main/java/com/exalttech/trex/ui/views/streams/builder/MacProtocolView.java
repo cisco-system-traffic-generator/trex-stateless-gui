@@ -18,10 +18,10 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
+package com.exalttech.trex.ui.views.streams.builder;
 
 import com.exalttech.trex.ui.views.models.AddressProtocolData;
-import com.exalttech.trex.ui.views.streams.MacAddressDataBinding;
+import com.exalttech.trex.ui.views.streams.binders.MacAddressDataBinding;
 import com.exalttech.trex.util.Util;
 import java.util.function.UnaryOperator;
 import javafx.beans.property.BooleanProperty;

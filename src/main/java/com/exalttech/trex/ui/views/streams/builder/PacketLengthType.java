@@ -18,42 +18,44 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
-
-import org.apache.log4j.Logger;
+package com.exalttech.trex.ui.views.streams.builder;
 
 /**
+ * Packet length type
  *
  * @author Georgekh
  */
-public class PacketBuilderHelper {
-
-    private static final Logger LOG = Logger.getLogger(PacketBuilderHelper.class.getName());
+public enum PacketLengthType {
 
     /**
      *
-     * @param rawData
-     * @return
      */
-    public static String getPacketHex(byte[] rawData) {
-        String packetHex = "";
-        try {
-            StringBuilder myString = new StringBuilder();
-            for (byte b : rawData) {
-                myString.append(String.format("%02X", b));
-            }
-            packetHex = myString.toString();
-        } catch (Exception ex) {
-            LOG.error("Error generating packet hex", ex);
-        }
-        return packetHex;
+    FIXED("Fixed"),
+    /**
+     *
+     */
+    INCREMENT("Increment"),
+    /**
+     *
+     */
+    DECREMENT("Decrement"),
+    /**
+     *
+     */
+    RANDOM("Random");
+
+    String title;
+
+    private PacketLengthType(String title) {
+        this.title = title;
     }
 
     /**
      *
+     * @return
      */
-    private PacketBuilderHelper() {
-        // private constructor
+    public String getTitle() {
+        return title;
     }
 
 }

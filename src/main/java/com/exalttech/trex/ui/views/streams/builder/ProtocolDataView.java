@@ -18,14 +18,14 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
+package com.exalttech.trex.ui.views.streams.builder;
 
 import com.exalttech.trex.packets.TrexEthernetPacket;
 import com.exalttech.trex.packets.TrexIpV4Packet;
 import com.exalttech.trex.packets.TrexVlanPacket;
 import com.exalttech.trex.ui.views.models.AddressProtocolData;
-import com.exalttech.trex.ui.views.streams.BuilderBindingData;
-import com.exalttech.trex.ui.views.streams.ProtocolSelection;
+import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
+import com.exalttech.trex.ui.views.streams.binders.ProtocolSelectionDataBinding;
 import com.exalttech.trex.util.Util;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +50,7 @@ import org.pcap4j.packet.namednumber.IpNumber;
  */
 public class ProtocolDataView extends Accordion {
 
-    ProtocolSelection selections;
+    ProtocolSelectionDataBinding selections;
     TitledPane current;
     MacProtocolView macView;
     IPV4ProtocolView ipv4View;
@@ -86,7 +86,7 @@ public class ProtocolDataView extends Accordion {
      *
      * @param selections
      */
-    public void doInitializingTabs(BuilderBindingData selections) {
+    public void doInitializingTabs(BuilderDataBinding selections) {
         this.selections = selections.getProtocolSelection();
         macView = new MacProtocolView(selections.getMacDB());
         ethernetView = new EthernetProtocolView(selections.getEthernetDB());

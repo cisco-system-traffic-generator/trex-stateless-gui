@@ -18,9 +18,9 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
+package com.exalttech.trex.ui.views.streams.builder;
 
-import com.exalttech.trex.ui.views.streams.AbstractStreamDataBinding;
+import com.exalttech.trex.ui.views.streams.binders.AbstractStreamDataBinding;
 import javafx.geometry.Orientation;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;

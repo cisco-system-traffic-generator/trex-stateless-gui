@@ -15,7 +15,7 @@
  */
 package com.exalttech.trex.packets;
 
-import com.exalttech.trex.ui.views.streams.buildstream.Payload;
+import com.exalttech.trex.ui.views.streams.builder.Payload;
 import java.util.ArrayList;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.TcpEndOfOptionList;

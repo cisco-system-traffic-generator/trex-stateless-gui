@@ -18,32 +18,30 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams;
-
-import com.exalttech.trex.ui.views.streams.buildstream.StreamBuilderConstants;
-import java.io.Serializable;
+package com.exalttech.trex.ui.views.streams.binders;
 
 /**
- * Mac Address data binding model
+ * Abstract class for data binding models
  *
  * @author Georgekh
  */
-public class MacAddressDataBinding extends AddressBindingData implements Serializable {
+public abstract class AbstractStreamDataBinding {
 
     /**
      * Constructor
      */
-    public MacAddressDataBinding() {
-        setInitialValues();
+    public AbstractStreamDataBinding() {
     }
 
     /**
-     * Set initial property values
+     * Initialize properties values
      */
-    @Override
-    public void setInitialValues() {
-        getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_MAC_ADDRESS, "TRex Config");
-        getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_MAC_ADDRESS, "TRex Config");
+    abstract protected void setInitialValues();
 
+    /**
+     * Reset model values
+     */
+    public void resetModel() {
+        setInitialValues();
     }
 }

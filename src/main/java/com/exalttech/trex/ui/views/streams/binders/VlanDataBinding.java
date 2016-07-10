@@ -18,7 +18,7 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams;
+package com.exalttech.trex.ui.views.streams.binders;
 
 import java.io.Externalizable;
 import java.io.IOException;

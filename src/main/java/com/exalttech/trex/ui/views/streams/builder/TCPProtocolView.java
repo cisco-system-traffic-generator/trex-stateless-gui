@@ -18,10 +18,10 @@
 
 
  */
-package com.exalttech.trex.ui.views.streams.buildstream;
+package com.exalttech.trex.ui.views.streams.builder;
 
 import com.exalttech.trex.packets.TrexTcpPacket;
-import com.exalttech.trex.ui.views.streams.TCPProtocolDataBinding;
+import com.exalttech.trex.ui.views.streams.binders.TCPProtocolDataBinding;
 import com.exalttech.trex.util.Util;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
