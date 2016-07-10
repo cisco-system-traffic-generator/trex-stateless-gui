@@ -41,11 +41,11 @@ import javax.annotation.Generated;
 public class Event {
 
     @JsonProperty("diff_bps_l1")
-    private Integer diffBpsL1;
+    private long diffBpsL1;
     @JsonProperty("diff_bps_l2")
-    private Integer diffBpsL2;
+    private long diffBpsL2;
     @JsonProperty("diff_pps")
-    private Integer diffPps;
+    private long diffPps;
     @JsonProperty("stream_id")
     private Integer streamId;
     @JsonProperty("time_usec")
@@ -58,7 +58,7 @@ public class Event {
      * @return The diffBpsL1
      */
     @JsonProperty("diff_bps_l1")
-    public Integer getDiffBpsL1() {
+    public long getDiffBpsL1() {
         return diffBpsL1;
     }
 
@@ -67,7 +67,7 @@ public class Event {
      * @param diffBpsL1 The diff_bps_l1
      */
     @JsonProperty("diff_bps_l1")
-    public void setDiffBpsL1(Integer diffBpsL1) {
+    public void setDiffBpsL1(long diffBpsL1) {
         this.diffBpsL1 = diffBpsL1;
     }
 
@@ -76,7 +76,7 @@ public class Event {
      * @return The diffBpsL2
      */
     @JsonProperty("diff_bps_l2")
-    public Integer getDiffBpsL2() {
+    public long getDiffBpsL2() {
         return diffBpsL2;
     }
 
@@ -85,7 +85,7 @@ public class Event {
      * @param diffBpsL2 The diff_bps_l2
      */
     @JsonProperty("diff_bps_l2")
-    public void setDiffBpsL2(Integer diffBpsL2) {
+    public void setDiffBpsL2(long diffBpsL2) {
         this.diffBpsL2 = diffBpsL2;
     }
 
@@ -94,7 +94,7 @@ public class Event {
      * @return The diffPps
      */
     @JsonProperty("diff_pps")
-    public Integer getDiffPps() {
+    public long getDiffPps() {
         return diffPps;
     }
 
@@ -103,7 +103,7 @@ public class Event {
      * @param diffPps The diff_pps
      */
     @JsonProperty("diff_pps")
-    public void setDiffPps(Integer diffPps) {
+    public void setDiffPps(long diffPps) {
         this.diffPps = diffPps;
     }
 
