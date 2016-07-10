@@ -40,13 +40,13 @@ import javax.annotation.Generated;
 public class Rate {
 
     @JsonProperty("max_bps_l1")
-    private Integer maxBpsL1;
+    private long maxBpsL1;
     @JsonProperty("max_bps_l2")
-    private Integer maxBpsL2;
+    private long maxBpsL2;
     @JsonProperty("max_line_util")
     private Double maxLineUtil;
     @JsonProperty("max_pps")
-    private Integer maxPps;
+    private long maxPps;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -65,7 +65,7 @@ public class Rate {
      * @return The maxBpsL1
      */
     @JsonProperty("max_bps_l1")
-    public Integer getMaxBpsL1() {
+    public long getMaxBpsL1() {
         return maxBpsL1;
     }
 
@@ -74,7 +74,7 @@ public class Rate {
      * @param maxBpsL1 The max_bps_l1
      */
     @JsonProperty("max_bps_l1")
-    public void setMaxBpsL1(Integer maxBpsL1) {
+    public void setMaxBpsL1(long maxBpsL1) {
         this.maxBpsL1 = maxBpsL1;
     }
 
@@ -83,7 +83,7 @@ public class Rate {
      * @return The maxBpsL2
      */
     @JsonProperty("max_bps_l2")
-    public Integer getMaxBpsL2() {
+    public long getMaxBpsL2() {
         return maxBpsL2;
     }
 
@@ -92,7 +92,7 @@ public class Rate {
      * @param maxBpsL2 The max_bps_l2
      */
     @JsonProperty("max_bps_l2")
-    public void setMaxBpsL2(Integer maxBpsL2) {
+    public void setMaxBpsL2(long maxBpsL2) {
         this.maxBpsL2 = maxBpsL2;
     }
 
@@ -119,7 +119,7 @@ public class Rate {
      * @return The maxPps
      */
     @JsonProperty("max_pps")
-    public Integer getMaxPps() {
+    public long getMaxPps() {
         return maxPps;
     }
 
@@ -128,7 +128,7 @@ public class Rate {
      * @param maxPps The max_pps
      */
     @JsonProperty("max_pps")
-    public void setMaxPps(Integer maxPps) {
+    public void setMaxPps(long maxPps) {
         this.maxPps = maxPps;
     }
 
