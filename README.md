@@ -113,7 +113,7 @@ You can find our Windows Beta installer in the following [link](https://www.drop
 
 ###  Mac OS Installer 
 
-*Will be updated soon.*
+You can find our Mac Beta installer in the following [link](https://www.dropbox.com/s/nkafag2qivzgbmt/trex-stateless-gui-Beta.dmg?dl=0)
 
 
 
