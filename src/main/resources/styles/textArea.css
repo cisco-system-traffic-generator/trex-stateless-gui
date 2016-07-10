@@ -1,0 +1,14 @@
+.text-area{
+    -fx-background-color: #fff, #fff;
+}
+
+.text-area .content {
+    -fx-background-color: #fff;
+}
+
+.text-area:focused .content {
+    -fx-background-color: #fff;
+}
+.text-area .scroll-bar:vertical:disabled {
+    -fx-opacity: 0;
+}

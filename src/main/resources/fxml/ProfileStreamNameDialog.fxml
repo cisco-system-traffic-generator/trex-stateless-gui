@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="profileStreamView" prefHeight="125.0" prefWidth="350.0" styleClass="profileDialogWrapper" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.ProfileStreamNameDialogController">
+    <children>
+        <AnchorPane prefWidth="359.0" styleClass="profileDialogContentContainer" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+            <children>
+                <AnchorPane fx:id="profileWrapper" prefHeight="40.0" prefWidth="320.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+                    <children>
+                        <Label fx:id="namelabel" layoutY="12.0" text="Profile Name" AnchorPane.leftAnchor="10.0" />
+                        <TextField fx:id="nameTF" layoutY="6.0" prefWidth="200.0" text="" AnchorPane.leftAnchor="106.0" />
+                    </children>
+                </AnchorPane>
+            </children>
+        </AnchorPane>
+        <Button layoutX="256.0" mnemonicParsing="false" onAction="#handleOKBtnClicked" prefWidth="80.0" styleClass="normalButton" text="OK" AnchorPane.bottomAnchor="20.0" />
+    </children>
+</AnchorPane>

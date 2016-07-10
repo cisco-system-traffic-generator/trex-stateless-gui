@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane id="AnchorPane" fx:id="mainDashboardContainer" minHeight="300.0" minWidth="300.0" prefHeight="705.0" prefWidth="1000.0" style="-fx-background-color:#f0f0f0;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.DashboardController">
+
+    <children>
+        <AnchorPane layoutY="0.0" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color:#E4E2E2;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <Label layoutY="10.0" text="Ports" AnchorPane.leftAnchor="18.0" AnchorPane.topAnchor="10.0" />
+                <ComboBox fx:id="portFilterCB" layoutX="57.0" layoutY="8.0" prefHeight="22.0" prefWidth="150.0" AnchorPane.topAnchor="5.0">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Item 1" />
+                            <String fx:value="Item 2" />
+                            <String fx:value="Item 3" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <Button fx:id="clearCacheBtn" layoutY="8.0" minWidth="22.0" mnemonicParsing="false" onAction="#chandleClearcacheBtnCLicked" styleClass="customBtn" text="Clear cache" AnchorPane.rightAnchor="8.0" />
+            </children>
+        </AnchorPane>
+        <HBox id="statTableContainer" alignment="CENTER" prefHeight="228.0" prefWidth="200.0" style="" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+            <padding>
+                <Insets />
+            </padding>
+            <children>
+                <AnchorPane maxHeight="228.0" minHeight="228.0" prefWidth="1000.0">
+                    <children>
+                        <ScrollPane prefWidth="200.0" vbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <content>
+                                <AnchorPane>
+                                    <children>
+                                        <AnchorPane prefHeight="208.0" prefWidth="340.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                            <children>
+                                                <fx:include fx:id="latencyChart" source="LatencyChart.fxml" />
+                                                <Label layoutY="173.0" onMouseClicked="#handleShowSeriesButtonClicked" prefHeight="24.0" prefWidth="24.0" styleClass="settingsIcon" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
+                                                    <tooltip>
+                                                        <Tooltip text="Update displaying series" />
+                                                    </tooltip>
+                                                </Label>
+                                            </children>
+                                        </AnchorPane>
+                                        <AnchorPane id="" layoutX="366.0" layoutY="10.0" prefHeight="100.0" prefWidth="150.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="10.0">
+                                            <children>
+                                                <AnchorPane fx:id="gaugeContainer" prefHeight="100.0" prefWidth="145.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="0.0">
+                                                    <children>
+                                                        <Label prefHeight="18.0" styleClass="gaugeTitle" text="CPU" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="80.0" />
+                                                    </children>
+                                                </AnchorPane>
+                                            </children>
+                                        </AnchorPane>
+                                        <AnchorPane id="" fx:id="totalTx" layoutX="516.0" layoutY="14.0" prefHeight="100.0" prefWidth="150.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="520.0" AnchorPane.topAnchor="10.0" />
+                                        <AnchorPane id="" fx:id="totalRx" layoutX="659.0" layoutY="14.0" prefHeight="100.0" prefWidth="150.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="680.0" AnchorPane.topAnchor="10.0" />
+                                        <AnchorPane id="" fx:id="totalPPS" layoutX="784.0" layoutY="14.0" prefHeight="100.0" prefWidth="150.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="840.0" AnchorPane.topAnchor="10.0" />
+                                        <AnchorPane id="" fx:id="totalStream" prefHeight="100.0" prefWidth="150.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="118.0" />
+                                        <AnchorPane id="" fx:id="activePort" prefHeight="100.0" prefWidth="150.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="520.0" AnchorPane.topAnchor="118.0" />
+                                        <AnchorPane fx:id="dropRate" prefHeight="100.0" prefWidth="150.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="680.0" AnchorPane.topAnchor="118.0" />
+                                        <AnchorPane id="queu" fx:id="queueFull" prefHeight="100.0" prefWidth="150.0" styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="840.0" AnchorPane.topAnchor="118.0" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </AnchorPane>
+            </children>
+        </HBox>
+        <ScrollPane fx:id="statTableContainer" content="$null" hbarPolicy="AS_NEEDED" prefHeight="386.0" prefWidth="980.0" style="" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="268.0" />
+    </children>
+</AnchorPane>

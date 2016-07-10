@@ -1,0 +1,47 @@
+.root{
+
+    /* -fx-font-size: 24pt; */
+    /*    -fx-base: rgb(255,0,0);*/
+    /*    -fx-background: rgb(50,50,50);*/
+}
+#NumberField {
+    -fx-border-width: 1;
+    -fx-border-color: #d7d7d7;
+    -fx-background-insets:1;
+    -fx-border-radius:0 0 0 0;
+    /*    -fx-border-radius:0 0 0 0;*/
+}
+#NumberSpinnerArrow {
+    -fx-fill: black;
+    -fx-stroke: gray;
+    /*        -fx-effect: innershadow( gaussian , black , 2 , 0.6 , 1 , 1 )*/
+}
+#NumberSpinnerArrow:disabled {
+    -fx-fill: #B5B5B5;
+    -fx-stroke: #B5B5B5;
+    /*        -fx-effect: innershadow( gaussian , black , 2 , 0.6 , 1 , 1 )*/
+}
+#ButtonsBox {
+    -fx-border-color: #d7d7d7;
+    -fx-background-color:#f3f3f3;
+    -fx-border-width: 1 1 1 0;
+    -fx-border-radius: 0 0 0 0;
+    /*    -fx-border-radius: 0 0 0 0;*/
+}
+#ButtonsBox:disabled{
+    -fx-border-color: #E8E8E8;
+    -fx-background-color:#f3f3f3;
+
+}
+#SpinnerButtonUp {
+    -fx-background-color:#f3f3f3;
+    -fx-background-insets: 0;
+    -fx-background-radius:0 0 0 0;
+    /*    -fx-background-radius:0;*/
+}
+#SpinnerButtonDown {
+    -fx-background-color:#f3f3f3;
+    -fx-background-insets: 0;
+    -fx-background-radius:0 0 0 0;
+    /*    -fx-background-radius:0;*/
+}

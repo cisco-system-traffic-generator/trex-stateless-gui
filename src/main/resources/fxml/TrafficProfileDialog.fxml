@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="550.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.TrafficProfileDialogController">
+    <children>
+        <AnchorPane layoutX="0.0" prefHeight="200.0" prefWidth="350.0" styleClass="trafficProfileLeftSide" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <ListView fx:id="profileListView" prefHeight="200.0" prefWidth="200.0" styleClass="profileListView" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="80.0" />
+                <GridPane hgap="0.0" prefHeight="70.0" prefWidth="208.0" style="-fx-background-color:#f0f0f0;" vgap="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <children>
+                        <Button id="exportToYaml" fx:id="exportToYamlBtn" disable="true" mnemonicParsing="false" onAction="#handleExportToYamlBtnClicked" styleClass="customBtn" text="Export to Yaml" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Button fx:id="exportProfileBtn" disable="true" mnemonicParsing="false" onAction="#hanldeExportToJSONBtnClicked" styleClass="customBtn" text="Export to JSON" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                        <Button fx:id="loadProfileBtn" mnemonicParsing="false" onMouseClicked="#handleLoadProfileBtnClick" styleClass="customBtn" text="Load Profile" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Button id="createProfile" fx:id="createProfileBtn" mnemonicParsing="false" onAction="#handleCreateProfileBtnClicked" styleClass="customBtn" text="Create Profile" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    </children>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <padding>
+                        <Insets left="5.0" />
+                    </padding>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                </GridPane>
+            </children>
+        </AnchorPane>
+        <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <AnchorPane fx:id="profileViewWrapper" prefHeight="200.0" prefWidth="200.0" styleClass="trafficProfileRightSide" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <padding>
+                        <Insets left="15.0" right="15.0" />
+                    </padding>
+                </AnchorPane>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>

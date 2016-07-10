@@ -1,0 +1,12 @@
+.button_style{
+    -fx-background-color:#888888;
+    -fx-text-color:#ffffff;
+    -fx-font-size: 12px;
+    -fx-text-padding-left:10px;
+    -fx-text-padding-right:10px;
+    -fx-height:20px;
+    -fx-border-radius:3px;
+    -fx-background-radius: 3px;
+
+}
+
