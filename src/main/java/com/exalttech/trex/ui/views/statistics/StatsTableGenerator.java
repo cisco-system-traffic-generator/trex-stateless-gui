@@ -13,11 +13,6 @@
  * limitations under the License.
  ******************************************************************************
  */
-/*
-
-
-
- */
 package com.exalttech.trex.ui.views.statistics;
 
 import com.exalttech.trex.core.ConnectionManager;
@@ -334,7 +329,47 @@ public class StatsTableGenerator {
             return "0";
         }
         return val;
+    }
 
+    /**
+     * Build global statistic table
+     *
+     * @return
+     */
+    public GridPane getGlobalStatTable() {
+        GridPane statTable = new GridPane();
+        statTable.getStyleClass().add("statsTable");
+        statTable.setGridLinesVisible(false);
+
+        Map<String, String> statsList = StatsLoader.getInstance().getLoadedStatsList();
+
+        int rowIndex = 0;
+        // add globla stats
+        statTable.add(TableCellElementGenerator.getTableHeaderElement("Counter"), 0, rowIndex);
+        statTable.add(TableCellElementGenerator.getTableHeaderElement("Value"), 1, rowIndex++);
+
+        statTable.add(TableCellElementGenerator.getTableCellElement("Cpu Util", false, false), 0, rowIndex);
+        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getEmptyValue(statsList.get("m_cpu_util")) + " %", false, false), 1, rowIndex++);
+
+        statTable.add(TableCellElementGenerator.getTableCellElement("Total Tx", true, false), 0, rowIndex);
+        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_tx_bps"), true, "b/sec"), true, false), 1, rowIndex++);
+
+        statTable.add(TableCellElementGenerator.getTableCellElement("Total Rx", false, false), 0, rowIndex);
+        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_rx_bps"), true, "b/sec"), false, false), 1, rowIndex++);
+
+        statTable.add(TableCellElementGenerator.getTableCellElement("Total Pps", true, false), 0, rowIndex);
+        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_tx_pps"), true, "pkt/sec"), true, false), 1, rowIndex++);
+
+        statTable.add(TableCellElementGenerator.getTableCellElement("Drop Rate", false, false), 0, rowIndex);
+        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_rx_drop_bps"), true, "b/sec"), false, false), 1, rowIndex++);
+
+        statTable.add(TableCellElementGenerator.getTableCellElement("Queue Full", true, false), 0, rowIndex);
+        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_total_queue_full"), true, "pkts"), true, false), 1, rowIndex++);
+
+        statTable.add(TableCellElementGenerator.getTableCellElement("Active Ports", false, false), 0, rowIndex);
+        statTable.add(TableCellElementGenerator.getTableCellElement(PortsManager.getInstance().getActivePort(), false, false), 1, rowIndex++);
+
+        return statTable;
     }
 
     /**

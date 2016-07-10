@@ -36,6 +36,7 @@ import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.SystemInfoReq;
+import com.exalttech.trex.ui.views.InfoPaneGenerator;
 import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
 import com.exalttech.trex.ui.views.MultiplierView;
 import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
@@ -90,7 +91,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.apache.log4j.Logger;
@@ -204,11 +204,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private CountdownService countdownService;
     private PortsManager portManager;
     private final BooleanProperty disableProfileProperty = new SimpleBooleanProperty();
+    StatsTableGenerator statsTableGenerator;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         portManager = PortsManager.getInstance();
         portManager.setPortManagerHandler(this);
+        statsTableGenerator = new StatsTableGenerator();
         initializeInlineComponent();
     }
 
@@ -237,7 +239,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void connectDisconnect() {
         if ("Disconnect".equals(connectMenuItem.getText())) {
-
             resetApplication(false);
         } else {
             openConnectDialog();
@@ -278,7 +279,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 cachedStatsList = new HashMap<>();
                 serverRPCMethods.serverApiSync();
                 loadSystemInfo();
-
             }
         } catch (IOException ex) {
             LOG.error("Error while Connecting", ex);
@@ -295,7 +295,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         systemInfoReq.setIp(ConnectionManager.getInstance().getIPAddress());
         systemInfoReq.setPort(ConnectionManager.getInstance().getRpcPort());
         portManager.setPortList(systemInfoReq.getResult().getPorts());
-
         portManager.startPortStatusScheduler();
     }
 
@@ -384,25 +383,23 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
             try {
                 stopRefreshingService();
-
                 // update aquire/release port icon state
                 updateAcquireReleaseBtnState(true);
+                // show table container by default
+                hideShowStatTable(true);
                 switch (selected.getTreeItemType()) {
                     case DEVICES:
-                        buildDevicesTable();
+                        buildSystemInfoTable();
                         break;
                     case GLOBAL_STAT:
                         viewGlobalStatsTable();
                         break;
                     case PORT:
                         updateAcquireReleaseBtnState(false);
-                        buildPortTable();
+                        buildPortInfoTable();
                         break;
                     case PORT_PROFILE:
                         viewProfile();
-                        break;
-                    case PORT_PROFILE_STATS:
-                        buildProfileStats();
                         break;
                     case PORT_STATS:
                         getPortStats();
@@ -426,10 +423,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         int portId = getSelectedPortIndex();
         if (portId != -1) {
             Port port = portManager.getPortList().get(portId);
-
             // enable acquire option if port not owned
             rightClickPortMenu.getItems().get(0).setDisable(!Util.isNullOrEmpty(port.getOwner()));
-
             // enable release option if port owned by loggin-user    
             rightClickPortMenu.getItems().get(2).setDisable(!port.getOwner().equals(ConnectionManager.getInstance().getClientName()));
         }
@@ -455,10 +450,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @param portIndex
      */
     private void buildPortStatTable(int portIndex) {
-        hideShowStatTable(true);
-
-        StatsTableGenerator statsTableGenerator = new StatsTableGenerator();
-
         if (portIndex == -1) {
             statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portManager.getPortList().size(), true, 150, false));
             return;
@@ -467,56 +458,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     }
 
     /**
-     * Build global stats table
-     *
-     * @param statsList
+     * Build global statistic table
      */
     private void buildGlobalStat() {
-        hideShowStatTable(true);
-        // Build rows statically
-        GridPane statTable = new GridPane();
-        statTable.getStyleClass().add("statsTable");
-        statTable.setGridLinesVisible(false);
-
-        Map<String, String> statsList = StatsLoader.getInstance().getLoadedStatsList();
-
-        int rowIndex = 0;
-        // add globla stats
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Counter"), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Value"), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Cpu Util", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getEmptyValue(statsList.get("m_cpu_util")) + " %", false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Total Tx", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_tx_bps"), true, "b/sec"), true, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Total Rx", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_rx_bps"), true, "b/sec"), false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Total Pps", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_tx_pps"), true, "pkt/sec"), true, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Drop Rate", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_rx_drop_bps"), true, "b/sec"), false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Queue Full", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_total_queue_full"), true, "pkts"), true, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Active Ports", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(portManager.getActivePort(), false, false), 1, rowIndex++);
-        statTableContainer.setContent(statTable);
-    }
-
-    /**
-     * Build profile stats
-     */
-    private void buildProfileStats() {
-        hideShowStatTable(true);
-        GridPane statTable = new GridPane();
-        statTable.getStyleClass().add("statsTable");
-        statTable.setGridLinesVisible(false);
-        statTableContainer.setContent(statTable);
+        statTableContainer.setContent(statsTableGenerator.getGlobalStatTable());
     }
 
     /**
@@ -547,7 +492,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void getAsyncStatList(final AsyncStatsType type, final int addData) {
         refreshStatsService = new RefreshingService();
         refreshStatsService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
-
         refreshStatsService.setOnSucceeded((WorkerStateEvent event) -> {
             switch (type) {
                 case GLOBAL:
@@ -582,16 +526,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             shutdownRunningServices();
             // close all open dialog
             DialogManager.getInstance().closeAll();
-
             // clear tree
             devicesTree.setRoot(null);
-
             // hide all right side views
             statTableWrapper.setVisible(false);
             profileContainer.setVisible(false);
-
             cachedStatsList = new HashMap<>();
-
             connectMenuItem.setText("Connect");
             statsMenuItem.setDisable(true);
             dashboardIcon.setDisable(true);
@@ -610,17 +550,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             copyToClipboardBtn.setDisable(true);
             acquirePort.setDisable(true);
             releasePort.setDisable(true);
-
             assignedPortProfileMap.clear();
             // stop async subscriber
             ConnectionManager.getInstance().disconnectSubscriber();
             ConnectionManager.getInstance().disconnectRequester();
-
             if (isServerCrashed) {
                 openConnectDialog();
             }
         }
-
     }
 
     /**
@@ -638,77 +575,18 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     /**
      * Build Device table info
      */
-    private void buildDevicesTable() {
-        GridPane statTable = new GridPane();
-        statTable.getStyleClass().add("statsTable");
-        statTable.setGridLinesVisible(false);
-        int rowIndex = 0;
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Counter"), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Value", 450), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("ID", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(systemInfoReq.getId(), false, 450, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("jsonrpc", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(systemInfoReq.getJsonrpc(), true, 450, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("IP", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(systemInfoReq.getIp(), false, 450, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Port", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(systemInfoReq.getPort(), true, 450, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Core Type", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(systemInfoReq.getResult().getCoreType(), false, 450, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Core Count", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(systemInfoReq.getResult().getDpCoreCount(), true, 450, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Host Name", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(systemInfoReq.getResult().getHostname(), false, 450, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Port Count", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(String.valueOf(systemInfoReq.getResult().getPortCount()), true, 450, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Up Time", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(systemInfoReq.getResult().getUptime(), false, 450, false), 1, rowIndex++);
-
-        statTableContainer.setContent(statTable);
-        hideShowStatTable(true);
+    private void buildSystemInfoTable() {
+        InfoPaneGenerator deviceInfoView = new InfoPaneGenerator();
+        statTableContainer.setContent(deviceInfoView.generateSystemInfoPane(systemInfoReq));
     }
 
     /**
      * Build port detail table
      */
-    private void buildPortTable() {
-        GridPane statTable = new GridPane();
-        statTable.getStyleClass().add("statsTable");
-        statTable.setGridLinesVisible(false);
-        int rowIndex = 0;
+    private void buildPortInfoTable() {
         Port port = portManager.getPortList().get(getSelectedPortIndex());
-
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Counter"), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Value"), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Port name", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement("Port " + port.getIndex(), false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Driver", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(port.getDriver(), true, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Index", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(String.valueOf(port.getIndex()), false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Owner", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(port.getOwner(), true, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Speed", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(port.getSpeed() + " Gbps", false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Status", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(port.getStatus(), true, false), 1, rowIndex++);
-        statTableContainer.setContent(statTable);
-        hideShowStatTable(true);
+        InfoPaneGenerator deviceInfoView = new InfoPaneGenerator();
+        statTableContainer.setContent(deviceInfoView.generatePortInfoPane(port));
     }
 
     /**
@@ -752,7 +630,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         tableView.reset();
         if (!Util.isNullOrEmpty(assigned.getProfileName())) {
             loadStreamTable(assigned.getProfileName());
-
             // fill multiplier values
             multiplierView.fillAssignedProfileValues(assigned);
         }
@@ -769,10 +646,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             // update selected profile
             AssignedProfile assignedProf = assignedPortProfileMap.get(getSelectedPortIndex());
             assignedProf.setProfileName(profileName);
-
             StreamValidation streamValidationGraph = serverRPCMethods.assignTrafficProfile(portID, loadedProfiles);
             startStream.setDisable(false);
-
             // update current multiplier data 
             assignedProf.setRate(streamValidationGraph.getResult().getRate());
             multiplierView.assignNewProfile(assignedProf);
@@ -800,7 +675,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         } catch (Exception ex) {
             LOG.error("Error loading stream table", ex);
         }
-
     }
 
     /**
@@ -814,7 +688,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         profileListBox.disableProperty().bind(disableProfileProperty);
         newProfileBtn.disableProperty().bind(disableProfileProperty);
         profileDetailLabel.disableProperty().bind(disableProfileProperty);
-
         profileListBox.getItems().clear();
         profileListBox.setItems(FXCollections.observableArrayList(getProfilesNameList()));
         profileListBox.valueProperty().addListener((ObservableValue observable, Object oldValue, Object newValue) -> {
@@ -846,7 +719,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         tableView = new PacketTableView(230, this, true);
         profileTableViewContainer.getChildren().add(tableView);
         serverStatusIcon.setImage(new Image("/icons/offline.png"));
-
+        
         // initialize right click menu
         rightClickPortMenu = new ContextMenu();
         addMenuItem(rightClickPortMenu, "Acquire", ContextMenuClickType.ACQUIRE, false);
@@ -927,7 +800,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle add new profile
-     *
      * @param ev
      */
     @FXML
@@ -944,7 +816,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Add menu item
-     *
      * @param menu
      * @param text
      * @param type
@@ -964,7 +835,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Clear stat cache
-     *
      * @param event
      */
     @FXML
@@ -974,7 +844,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle About tree item clicked
-     *
      * @param event
      * @throws java.lang.Exception
      */
@@ -986,7 +855,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle stats menu item clicked
-     *
      * @param event
      */
     @FXML
@@ -1013,7 +881,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle key down event
-     *
      * @param event
      */
     @Override
@@ -1025,7 +892,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * start transit button click handler
-     *
      * @param event
      */
     @FXML
@@ -1039,7 +905,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Do start/Resume port
-     *
      * @param portID
      */
     private void doStartResume(int portID) {
@@ -1054,7 +919,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * start all transit button click handler
-     *
      * @param event
      */
     @FXML
@@ -1072,7 +936,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Start traffic on port
-     *
      * @param portID
      */
     private void startTraffic(int portID) {
@@ -1091,7 +954,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * stop transit btn clicked
-     *
      * @param event
      */
     @FXML
@@ -1106,7 +968,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * stop all transit btn clicked
-     *
      * @param event
      */
     @FXML
@@ -1122,7 +983,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * pause transit btn clicked
-     *
      * @param event
      */
     @FXML
@@ -1141,7 +1001,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Return port index related to selected treeItem
-     *
      * @return
      */
     private int getSelectedPortIndex() {
@@ -1154,7 +1013,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle context menu item clicked
-     *
      * @param type
      */
     private void handleContextMenuItemCLicked(ContextMenuClickType type) {
@@ -1194,7 +1052,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     break;
                 default:
                     break;
-
             }
         } catch (PortAcquireException ex) {
             LOG.error("Error handling context menu item clicked", ex);
@@ -1240,7 +1097,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Acquire all ports
-     *
      * @param force
      * @param acquireOwnedOnly
      * @throws PortAcquireException
@@ -1259,7 +1115,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     }
 
     /**
-     *
+     * Handle update button click
      * @param event
      */
     @FXML
@@ -1310,7 +1166,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             // stop running thread
             shutdownRunningServices();
-
             if (!portManager.getPortList().isEmpty() && !portManager.getPortList().isEmpty()) {
                 releaseAllPort();
             }
@@ -1395,12 +1250,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void enableUpdateBtn(boolean enableCounter, boolean enableUpdate) {
         Port currentPort = portManager.getPortList().get(getSelectedPortIndex());
-
         boolean enableUpdateBtn = enableUpdate && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
         boolean startCounting = enableCounter && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
-
         stopUpdateBtn.setVisible(startCounting);
-
         updateBtn.setDisable(!enableUpdateBtn);
         if (startCounting) {
             countdownService.restart();
@@ -1445,7 +1297,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Handle Stop button clicked
-     *
      * @param event
      */
     @FXML
@@ -1466,6 +1317,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.getTreeItemType() == TreeItemType.PORT) {
                 updateAcquireReleaseBtnState(false);
+                buildPortInfoTable();
             } else if (selected != null && selected.getTreeItemType() == TreeItemType.PORT_PROFILE
                     && !portManager.isCurrentUserOwner(getSelectedPortIndex())) {
                 viewProfile();
@@ -1493,7 +1345,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Copy to clipboard button clicked handler
-     *
      * @param event
      */
     @FXML
@@ -1510,7 +1361,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void shutdownRunningServices() {
         stopRefreshingService();
-
         // stop port status sceduler
         portManager.stopPortStatusScheduler();
     }
@@ -1525,7 +1375,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     }
 
     /**
-     * re assign profile update button enabled when stream is deleted
+     * re-assign profile update button enabled when stream is deleted
      */
     @Override
     public void onStreamUpdated() {
@@ -1558,7 +1408,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void updateAcquireReleaseBtnState(boolean forceDisable) {
         int selectedPort = getSelectedPortIndex();
-
         acquirePort.setDisable(!(!forceDisable && portManager.isPortFree(selectedPort)));
         releasePort.setDisable(!(!forceDisable && portManager.isCurrentUserOwner(selectedPort)));
     }

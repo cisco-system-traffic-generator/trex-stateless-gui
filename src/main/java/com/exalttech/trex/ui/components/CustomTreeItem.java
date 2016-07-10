@@ -233,10 +233,7 @@ public class CustomTreeItem extends TreeItem<Object> {
          *
          */
         PORT_PROFILE("binary_sheet.png"),
-        /**
-         *
-         */
-        PORT_PROFILE_STATS("profileStat.png"),
+
         /**
          *
          */
