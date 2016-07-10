@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="" fx:id="mainViewContainer" maxHeight="317.0" minHeight="195.0" minWidth="-1.0" prefHeight="195.0" prefWidth="450.0" styleClass="connectDialogWrapper" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.ConnectDialogController">
+    <children>
+        <AnchorPane id="" minHeight="-1.0" prefHeight="-1.0" prefWidth="371.0" styleClass="connectContent" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+            <children>
+                <Label text="Connections" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="15.0" />
+                <ComboBox fx:id="connectionsCB" editable="true" prefHeight="2.0" prefWidth="200.0" AnchorPane.leftAnchor="140.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="12.0">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Item 1" />
+                            <String fx:value="Item 2" />
+                            <String fx:value="Item 3" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <TitledPane fx:id="advanceTitledPan" animated="false" collapsible="true" expanded="false" onMouseClicked="#handleTitledPanelClicking" prefHeight="30.0" prefWidth="342.0" style="-fx-background-color:#FFFFFF;&#10;-fx-border-width: 0 0 0 0;" text="Show advanced options..." visible="true" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0">
+                    <content>
+                        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="150.0" prefWidth="328.0" style="-fx-background-color:#FFFFFF;&#10;-fx-border-width: 0 0 0 0;">
+                            <children>
+                                <Label text="Sync Port" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="-1.0" />
+                                <Label text="Async Port" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="36.0" />
+                                <TextField id="asyncPort" fx:id="rpcPort" prefHeight="22.0" prefWidth="200.0" text="4501" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="-3.0" />
+                                <TextField id="rpcPort" fx:id="asyncPort" prefHeight="22.0" prefWidth="200.0" text="4500" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="34.0" />
+                                <Label prefHeight="32.0" text="Mode" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="104.0" />
+                                <RadioButton fx:id="readOnlyRB" disable="true" maxWidth="-1.0" mnemonicParsing="false" prefHeight="22.0" selected="false" text="Read Only" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="118.0">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="mode" />
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton fx:id="fullControlRB" disable="false" mnemonicParsing="false" prefHeight="22.000099999997474" prefWidth="-1.0" selected="true" text="Full Control" toggleGroup="$mode" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="118.0" />
+                                <Label text="Name" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="75.0" />
+                                <TextField fx:id="nameTF" prefWidth="200.0" text="Client1" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="70.0" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </TitledPane>
+                <ProgressIndicator fx:id="connectSpinner" disable="false" focusTraversable="false" layoutX="44.0" layoutY="260.0" prefHeight="22.0" prefWidth="34.0" progress="-1.0" visible="false" />
+                <Label onMouseClicked="#handleDeleteConnections" prefHeight="16.0" prefWidth="16.0" style="-fx-cursor:hand;" styleClass="deleteConnection" text="" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="18.0">
+                    <tooltip>
+                        <Tooltip text="Delete Connection" />
+                    </tooltip>
+                </Label>
+            </children>
+        </AnchorPane>
+        <Button id="" fx:id="connectButton" mnemonicParsing="false" onAction="#handleConnectButton" prefHeight="22.0" prefWidth="90.0" styleClass="normalButton" text="Connect" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="345.0" />
+        <Button id="" fx:id="dialogCancelButton" mnemonicParsing="false" onMouseClicked="#handleCloseDialog" prefHeight="22.0" prefWidth="90.0" styleClass="cancelButton" text="Cancel" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="240.0" />
+    </children>
+</AnchorPane>

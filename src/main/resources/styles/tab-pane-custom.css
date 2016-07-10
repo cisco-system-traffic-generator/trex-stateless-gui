@@ -1,0 +1,5 @@
+.tab-pane .tab-content-area{
+    -fx-background-color: white ;
+    -fx-border:transparent ;
+    -fx-focus-color: transparent ;
+}

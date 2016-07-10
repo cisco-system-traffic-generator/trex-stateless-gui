@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" fx:id="windowContainer" disable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="true" prefHeight="650.0" prefWidth="1030.0" snapToPixel="true" style="    -fx-background-color: #f0f0f0" visible="true" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.PacketBuilderHomeController">
+    <children>
+        <TabPane fx:id="streamTabPane" layoutX="14.0" layoutY="16.0" opacity="1.0" prefHeight="586.0" prefWidth="1000.0" style="" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab id="streamPropertiesTab" fx:id="streamPropertiesTab" style="&#10;" text="Stream Properties">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <fx:include fx:id="streamProperties" source="StreamPropertiesView.fxml" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="packetViewerTab" style=" " text="Packet Viewer">
+                    <content>
+                        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="1000.0" style="">
+                            <children>
+                                <AnchorPane id="pcapBuilder" fx:id="pcapBuilderPane" prefHeight="508.0" prefWidth="1000.0" style="" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <AnchorPane id="completePacketHex" fx:id="hexPane" maxWidth="667.0" minHeight="0.0" minWidth="655.0" prefHeight="530.0" prefWidth="660.0" style="-fx-background-color:white;" styleClass="tabContentWrapper" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="328.0" AnchorPane.topAnchor="10.0" />
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="550.0" prefWidth="321.0" style="-fx-background-color:#FFFFFF;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="677.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0" />
+                                    </children>
+                                </AnchorPane>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="protocolSelectionTab" text="Protocol Selection">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <fx:include fx:id="protocolSelection" source="ProtocolSelection.fxml" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="protocolDataTab" text="Protocol Data">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <fx:include fx:id="protocolData" source="ProtocolData.fxml" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="packetViewerWithTreeTab" text="Packet viewer">
+                    <content>
+                        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <fx:include fx:id="packetViewer" source="PacketViewer.fxml" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+            <styleClass>
+                <String fx:value="packetTabContainer" />
+                <String fx:value="floating" />
+            </styleClass>
+        </TabPane>
+        <Button fx:id="savePacket" cancelButton="false" defaultButton="false" disable="false" mnemonicParsing="false" onAction="#saveProfileBtnClicked" prefHeight="24.0" prefWidth="110.0" styleClass="normalButton" text="Save" visible="true" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="904.0">
+            <textFill>
+                <Color blue="0.161" green="0.161" red="0.161" fx:id="x5" />
+            </textFill>
+        </Button>
+        <Button fx:id="resetPacket" disable="false" mnemonicParsing="false" onMouseClicked="#handleCloseDialog" prefHeight="24.0" prefWidth="110.0" styleClass="cancelButton" text="Cancel" textFill="$x5" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="782.0" />
+        <AnchorPane layoutX="671.0" layoutY="0.0" prefHeight="44.0" prefWidth="343.0">
+            <children>
+                <Button fx:id="loadPcap" cancelButton="false" maxHeight="-1.0" minHeight="22.0" mnemonicParsing="false" onAction="#loadPcapFired" prefHeight="24.0" prefWidth="110.0" text="Load Pcap" textAlignment="LEFT" textFill="$x5" textOverrun="CLIP" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+                    <styleClass>
+                        <String fx:value="packetBuilderBtn" />
+                        <String fx:value="normalButton" />
+                    </styleClass>
+                </Button>
+            </children>
+        </AnchorPane>
+        <Button id="updateJSONWindow" layoutX="14.0" layoutY="614.0" mnemonicParsing="false" onAction="#updateJSONWindow" prefHeight="24.0" prefWidth="110.0" styleClass="packetBuilderBtn" text="Preview JSON" visible="false" />
+    </children>
+    <stylesheets>
+        <URL value="@../styles/packetBuilderStyle.css" />
+    </stylesheets>
+</AnchorPane>

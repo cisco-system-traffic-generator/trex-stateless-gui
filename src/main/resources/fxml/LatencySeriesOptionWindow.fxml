@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="350.0" styleClass="latencyOptionContainerWrapper" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.LatencySeriesOptionWindowController">
+    <children>
+        <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" styleClass="latencyOptionContainer" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+            <content>
+                <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="204.0" prefWidth="336.0">
+                    <padding>
+                        <Insets left="15.0" />
+                    </padding>
+                    <children>
+                        <VBox fx:id="optionContainer" prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
+                    </children>
+                </AnchorPane>
+            </content>
+        </ScrollPane>
+        <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="latencyOptionContainer" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="290.0">
+            <children>
+                <RadioButton layoutX="14.0" layoutY="22.0" mnemonicParsing="false" selected="true" text="30" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="15.0">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="latencyInterval" />
+                    </toggleGroup>
+                </RadioButton>
+                <RadioButton layoutX="86.0" layoutY="22.0" mnemonicParsing="false" text="60" toggleGroup="$latencyInterval" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="70.0" />
+                <RadioButton layoutX="154.0" layoutY="22.0" mnemonicParsing="false" text="90" toggleGroup="$latencyInterval" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="125.0" />
+                <Label layoutX="14.0" layoutY="6.0" text="Latency Interval (sec)" />
+                <RadioButton layoutX="212.0" layoutY="33.0" mnemonicParsing="false" text="120" toggleGroup="$latencyInterval" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="180.0" />
+                <RadioButton layoutX="258.0" layoutY="33.0" mnemonicParsing="false" text="300" toggleGroup="$latencyInterval" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="235.0" />
+            </children>
+        </AnchorPane>
+        <Button layoutX="522.0" layoutY="354.0" mnemonicParsing="false" onAction="#handleOKButtonClicked" prefWidth="80.0" styleClass="normalButton" text="OK" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+    </children>
+</AnchorPane>
