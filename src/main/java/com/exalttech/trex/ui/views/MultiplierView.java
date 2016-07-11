@@ -195,6 +195,12 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
      */
     public double getPPSValue() {
         MultiplierOption option = multiplierOptionMap.get(MultiplierType.pps);
+        
+        // force PPS value to 1 if it less than 1
+        if(option.getValue() < 1 && MultiplierType.pps.getValue(rate) > 0){
+            option.setValue(1);
+            updateAll(option);
+        }
         return option.getValue();
     }
 
@@ -248,12 +254,6 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
                 double val = calcTypeValue(sliderValue, type);
                 getMultiplierOption(type).setValue(val);
             }
-        }
-        // check if pps value < 1, re-calc according to pps = 1
-        MultiplierOption ppsOption = multiplierOptionMap.get(MultiplierType.pps);
-        if (ppsOption.getValue() < 1 && MultiplierType.pps.getValue(rate) > 0) {
-            ppsOption.setValue(1);
-            updateAll(ppsOption);
         }
     }
 
