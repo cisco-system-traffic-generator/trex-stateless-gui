@@ -345,9 +345,11 @@ public class RPCMethods {
      *
      * @param portIndex
      */
-    public void releasePort(int portIndex) {
-        stopTraffic(portIndex);
-        removeAllStreams(portIndex);
+    public void releasePort(int portIndex, boolean stopTraffic) {
+        if (stopTraffic) {
+            stopTraffic(portIndex);
+            removeAllStreams(portIndex);
+        }
         releaseHandler(portIndex);
     }
 
