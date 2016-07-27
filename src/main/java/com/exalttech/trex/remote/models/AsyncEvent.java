@@ -142,7 +142,10 @@ public class AsyncEvent {
             case 4:
                 return "Port {" + portId + "} job done";
             case 5:
-                return "Port {" + portId + "} was forcely taken by " + data.getWho();
+                if(data.isForce()){
+                    return "Port {" + portId + "} was forcely taken by " + data.getWho();
+                }
+                return "Port {" + portId + "} was taken by " + data.getWho();
             case 100:
                 return "Server has stopped";
             default:

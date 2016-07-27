@@ -33,6 +33,7 @@ import javax.annotation.Generated;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
+    "force",
     "port_id",
     "session_id",
     "who"
@@ -46,6 +47,8 @@ public class AsyncEventData {
     private Integer sessionId;
     @JsonProperty("who")
     private String who;
+    @JsonProperty("force")
+    boolean force;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -102,7 +105,25 @@ public class AsyncEventData {
     public void setWho(String who) {
         this.who = who;
     }
+    
+    /**
+     * Set force
+     * @param force 
+     */
+    @JsonProperty("force")
+    public void setForce(boolean force) {
+        this.force = force;
+    }
 
+    /**
+     * 
+     * @return is force
+     */
+    @JsonProperty("force")
+    public boolean isForce() {
+        return force;
+    }
+    
     /**
      *
      * @return

@@ -521,7 +521,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             if (!isServerCrashed) {
                 ConnectionManager.getInstance().setConnected(false);
                 // release all port
-                releaseAllPort();
+                releaseAllPort(false);
             }
             // shutdown running services
             shutdownRunningServices();
@@ -628,12 +628,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void fillAssignedProfileData(AssignedProfile assigned) throws IOException {
 
-        if (!Util.isNullOrEmpty(assigned.getProfileName())) {
+        if (assigned.isProfileAssigned()) {
             doAssignProfile = false;
             profileListBox.getSelectionModel().select(assigned.getProfileName());
         } else {
             profileDetailContainer.setVisible(false);
             profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
+            doAssignProfile = true;
         }
         tableView.reset();
         if (!Util.isNullOrEmpty(assigned.getProfileName())) {
@@ -948,7 +949,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portManager.getPortList().stream().forEach(new Consumer<Port>() {
             @Override
             public void accept(Port port) {
-                if (portManager.isCurrentUserOwner(port.getIndex())) {
+                PortState portState = PortState.getPortStatus(port.getStatus());
+                if (portManager.isCurrentUserOwner(port.getIndex()) && portState != PortState.TX) {
                     doStartResume(port.getIndex());
                 }
             }
@@ -1053,7 +1055,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     portManager.updatePortForce();
                     break;
                 case RELEASE_ACQUIRE:
-                    releasePort(getSelectedPortIndex(), true);
+                    releasePort(getSelectedPortIndex(), true, true);
                     break;
                 case PLAY:
                     doStartResume(getSelectedPortIndex());
@@ -1074,7 +1076,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     acquireAllPorts(true, true);
                     break;
                 case RELEASE_ALL:
-                    releaseAllPort();
+                    releaseAllPort(true);
                     portManager.updatePortForce();
                     break;
                 default:
@@ -1100,8 +1102,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     /**
      * Release selected port
      */
-    private void releasePort(int portIndex, boolean forceUpdatePort) {
-        serverRPCMethods.releasePort(portIndex);
+    private void releasePort(int portIndex, boolean forceUpdatePort, boolean stopTraffic) {
+        serverRPCMethods.releasePort(portIndex, stopTraffic);
         // remove saved assigned profile
         if (assignedPortProfileMap.get(portIndex) != null) {
             assignedPortProfileMap.remove(portIndex);
@@ -1114,10 +1116,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     /**
      * Release all ports
      */
-    private void releaseAllPort() {
+    private void releaseAllPort(boolean stopTraffic) {
         portManager.getPortList().stream().forEach(port -> {
             if (PortsManager.getInstance().isCurrentUserOwner(port.getIndex())) {
-                releasePort(port.getIndex(), false);
+                releasePort(port.getIndex(), false, stopTraffic);
             }
         });
     }
@@ -1196,7 +1198,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             // stop running thread
             shutdownRunningServices();
             if (!portManager.getPortList().isEmpty() && !portManager.getPortList().isEmpty()) {
-                releaseAllPort();
+                releaseAllPort(false);
             }
             // stop async subscriber
             if (ConnectionManager.getInstance().isConnected()) {
@@ -1225,10 +1227,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void updateHeaderBtnStat() {
         int portIndex = getSelectedPortIndex();
+        resetBtnState();
         if (portIndex != -1) {
             Port port = portManager.getPortList().get(portIndex);
             PortState state = PortState.getPortStatus(port.getStatus());
-            resetBtnState();
+
             // enable state btn btn according to owner 
             boolean isOwner = portManager.isCurrentUserOwner(portIndex);
             switch (state) {
@@ -1245,6 +1248,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     stopStream.setDisable(!isOwner);
                     pauseStream.getStyleClass().add("pauseIconPressed");
                     break;
+                case IDLE:
+                    AssignedProfile portProfile = assignedPortProfileMap.get(portIndex);
+                    if (portProfile != null) {
+                        startStream.setDisable(!(isOwner && portProfile.isProfileAssigned()));
+                    }
                 default:
                     break;
             }
@@ -1431,7 +1439,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleReleaseBtnClicked(MouseEvent event) {
-        releasePort(getSelectedPortIndex(), true);
+        releasePort(getSelectedPortIndex(), true, true);
     }
 
     /**
