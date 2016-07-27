@@ -109,11 +109,11 @@ You can use our [TRex forum](https://groups.google.com/forum/#!forum/trex-tgn) i
 
 ###  Windows Installer 
 
-You can find our Windows Beta installer in the following [link](https://www.dropbox.com/s/tqwpftjxwo4ymib/setupTrex2.02-Beta.exe?dl=0).
+You can find our Windows Beta installer in the Release Tab.
 
 ###  Mac OS Installer 
 
-You can find our Mac Beta installer in the following [link](https://www.dropbox.com/s/nkafag2qivzgbmt/trex-stateless-gui-Beta.dmg?dl=0)
+You can find our Mac Beta installer in the Release Tab.
 
 
 
