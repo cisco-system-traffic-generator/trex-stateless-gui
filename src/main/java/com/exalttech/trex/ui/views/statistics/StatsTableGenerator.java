@@ -120,8 +120,8 @@ public class StatsTableGenerator {
                 statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(String.valueOf(getDiff("ibytes-" + i)), true, "B"), true, columnWidth, true), columnIndex, rowIndex++);
                 statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(String.valueOf(getDiff("opackets-" + i)), true, "pkts"), false, columnWidth, true), columnIndex, rowIndex++);
                 statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(String.valueOf(getDiff("ipackets-" + i)), true, "pkts"), true, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableErrorElementValue(calcTotal("oerrors", currentStatsList.get("oerrors-" + i)) + "", false, columnWidth), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableErrorElementValue(calcTotal("ierrors", currentStatsList.get("ierrors-" + i)) + "", true, columnWidth), columnIndex++, rowIndex++);
+                statTable.add(TableCellElementGenerator.getTableErrorElementValue(calcTotal("oerrors", String.valueOf(getDiff("oerrors-" + i))) + "", false, columnWidth), columnIndex, rowIndex++);
+                statTable.add(TableCellElementGenerator.getTableErrorElementValue(calcTotal("ierrors", String.valueOf(getDiff("ierrors-" + i))) + "", true, columnWidth), columnIndex++, rowIndex++);
             }
         }
         if (isMultiPort) {
