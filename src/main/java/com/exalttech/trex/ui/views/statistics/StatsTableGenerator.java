@@ -32,6 +32,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import org.apache.log4j.Logger;
+import static com.exalttech.trex.ui.TableCellElementGenerator.getTableCellElement;
 
 /**
  *

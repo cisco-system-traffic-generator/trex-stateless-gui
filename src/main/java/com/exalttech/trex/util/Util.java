@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,6 +75,8 @@ public class Util {
     private static final int ALERT_X_POSITION = 300;
     private static final int ALERT_Y_POSITION = 150;
     private static final String APPLICATION_EXECUTABLE = "trex-stateless-gui.exe";
+    private static final String VERSION_PROPERTIES_FILE = "version.properties";
+    private static final String VERSION_KEY = "version";
 
     /**
      * Convert JSON string to object
@@ -776,4 +779,18 @@ public class Util {
         // private constructor
     }
 
+    /**
+     * Return TRex version from version.properties file
+     *
+     * @return
+     */
+    public static String getTRexVersion() {
+        try {
+            Properties prop = new Properties();
+            prop.load(Util.class.getClassLoader().getResourceAsStream(VERSION_PROPERTIES_FILE));
+            return prop.getProperty(VERSION_KEY);
+        } catch (IOException ex) {
+            return "";
+        }
+    }
 }

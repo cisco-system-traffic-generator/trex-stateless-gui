@@ -12,7 +12,11 @@
         <AnchorPane layoutY="-32.0" prefHeight="200.0" prefWidth="200.0" styleClass="aboutContainer" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
             <children>
                 <ImageView fx:id="aboutIcon" fitHeight="120.0" fitWidth="86.0" layoutX="117.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="117.0" AnchorPane.topAnchor="10.0" />
-                <Label layoutX="89.0" layoutY="143.0" text="TRex Version 2.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="140.0" />
+            <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="140.0">
+               <children>
+                      <Label fx:id="trexVersionLabel" />
+               </children>
+            </HBox>
             </children>
         </AnchorPane>
         <Button layoutX="224.0" layoutY="153.0" mnemonicParsing="false" onAction="#closeAboutWindow" prefWidth="80.0" styleClass="normalButton" text="OK" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="15.0" />
