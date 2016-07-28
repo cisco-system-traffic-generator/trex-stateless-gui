@@ -347,9 +347,16 @@ public class ProtocolDataView extends Accordion {
         LinkedHashMap<String, Object> firstVMInstruction = new LinkedHashMap<>();
 
         int size = getCalculatedSize(Util.convertUnitToNum(count));
+        
+        // TSG-23
+        int maxValue = (int) Util.convertUnitToNum(count);
+        
         // set offset to byte 4 for the ip address
         if (name.contains("ip")) {
             packetOffset += 4 - size;
+            
+            // TSG-22
+            maxValue = maxValue-1;
         }
         /**
          * "init_value": 1, "max_value": 1, "min_value": 1, "name": "mac_src",
@@ -357,7 +364,7 @@ public class ProtocolDataView extends Accordion {
          */
         firstVMInstruction.put("init_value", 0);
         firstVMInstruction.put("min_value", 0);
-        firstVMInstruction.put("max_value", Util.convertUnitToNum(count));
+        firstVMInstruction.put("max_value", maxValue);
         firstVMInstruction.put("name", name);
         firstVMInstruction.put("op", operation);
         firstVMInstruction.put("size", size);
