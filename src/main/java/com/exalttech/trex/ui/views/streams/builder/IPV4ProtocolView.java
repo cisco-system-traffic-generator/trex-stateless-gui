@@ -177,8 +177,11 @@ public class IPV4ProtocolView extends AbstractProtocolView {
      * @return
      */
     private String getValidCount(String count) {
-        if (Util.convertUnitToNum(count) > Util.convertUnitToNum("100M")) {
+        double value = Util.convertUnitToNum(count);
+        if (value > Util.convertUnitToNum("100M")) {
             return "100 M";
+        }else if(value < 2){
+            return "2";
         }
         return count;
     }
