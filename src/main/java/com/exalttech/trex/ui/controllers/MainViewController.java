@@ -379,8 +379,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                devicesTree.setContextMenu(null);
                 updateContextMenuState();
-                selected.showMenu();
+                if(selected.getMenu() != null){
+                    devicesTree.setContextMenu(selected.getMenu());
+                }
             }
             try {
                 stopRefreshingService();

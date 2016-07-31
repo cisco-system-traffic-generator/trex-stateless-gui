@@ -32,7 +32,7 @@ public class CustomTreeItem extends TreeItem<Object> {
 
     private String returnedValue = "";
     private TreeItemType treeItemType;
-    private ContextMenu menu;
+    private ContextMenu menu = null;
     Label itemTitle = new Label();
     Label owner;
 
@@ -201,17 +201,14 @@ public class CustomTreeItem extends TreeItem<Object> {
     }
 
     /**
-     * Show right click menu
+     * Return item context menu
+     * @return 
      */
-    public void showMenu() {
-        if (menu != null && itemTitle != null) {
-            itemTitle.setContextMenu(menu);
-            if (owner != null) {
-                owner.setContextMenu(menu);
-            }
-        }
+    public ContextMenu getMenu() {
+        return menu;
     }
 
+    
     /**
      * Tree item type
      */
