@@ -44,7 +44,8 @@ public class MultiplierOption extends AnchorPane {
     MultiplierSelectionEvent multiplierSelectionEvent;
     double defaultWidth = 120;
     boolean valueChangedBySet = false;
-
+    double multiplierValue = 0;
+    
     /**
      *
      * @param title
@@ -126,6 +127,7 @@ public class MultiplierOption extends AnchorPane {
      * @param multiplierValue
      */
     public void setValue(double multiplierValue) {
+        this.multiplierValue = multiplierValue;
         String formattedValue = getFormattedValue(multiplierValue);
         this.value.setText(formattedValue);
     }
@@ -168,7 +170,8 @@ public class MultiplierOption extends AnchorPane {
             data = valueData.substring(0, valueData.length() - 1);
             return Util.convertLargeUnitToValue(data, lastChar);
         }
-        return Double.parseDouble(data);
+        this.multiplierValue = Double.parseDouble(data);
+        return multiplierValue;
     }
 
     /**
@@ -211,5 +214,13 @@ public class MultiplierOption extends AnchorPane {
         String partialBlock = "(([0-9]{0,10}))(\\.){0,1}[0-9]{0,1}[K|k|m|M|g|G]";
         String testField = partialBlock + "{0,1}";
         return "^" + testField;
+    }
+    
+    /**
+     * Return exact multiplier value
+     * @return 
+     */
+    public double getMultiplierValue() {
+        return multiplierValue;
     }
 }
