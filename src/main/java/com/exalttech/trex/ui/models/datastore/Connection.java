@@ -40,6 +40,8 @@ public class Connection {
     String user;
 
     boolean fullControl;
+    
+    boolean lastUsed;
 
     /**
      *
@@ -157,47 +159,26 @@ public class Connection {
         this.fullControl = fullControl;
     }
 
+    /**
+     * Set last used
+     * @param lastUsed 
+     */
+    public void setLastUsed(boolean lastUsed) {
+        this.lastUsed = lastUsed;
+    }
+
+    /**
+     * Return true if it is last used, otherwise return false
+     * @return 
+     */
+    @XmlElement(name = "last_used")
+    public boolean isLastUsed() {
+        return lastUsed;
+    }
+
     @Override
     public String toString() {
         return new Gson().toJson(this);
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.ip);
-        hash = 67 * hash + Objects.hashCode(this.rpcPort);
-        hash = 67 * hash + Objects.hashCode(this.asyncPort);
-        hash = 67 * hash + Objects.hashCode(this.user);
-        hash = 67 * hash + (this.fullControl ? 1 : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Connection other = (Connection) obj;
-        if (this.fullControl != other.fullControl) {
-            return false;
-        }
-        if (!Objects.equals(this.ip, other.ip)) {
-            return false;
-        }
-        if (!Objects.equals(this.rpcPort, other.rpcPort)) {
-            return false;
-        }
-        if (!Objects.equals(this.asyncPort, other.asyncPort)) {
-            return false;
-        }
-        return Objects.equals(this.user, other.user);
     }
 
 }

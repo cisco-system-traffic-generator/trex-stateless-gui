@@ -129,6 +129,7 @@ public class ConnectDialogController extends DialogView implements Initializable
                 if (connectionMap.get(connectionsCB.getEditor().getText()) != null) {
                     connectionMap.remove(connectionsCB.getEditor().getText());
                 }
+                con.setLastUsed(true);
                 connectionMap.put(connectionsCB.getEditor().getText(), con);
                 updateConnectionsList();
                 ConnectionManager.getInstance().setConnected(true);
@@ -271,9 +272,17 @@ public class ConnectDialogController extends DialogView implements Initializable
     private void fillConnectionItem(List<Connection> connectionList) {
         connectionsCB.getItems().clear();
         connectionMap.clear();
+        Connection lastUsed = null;
         for (Connection con : connectionList) {
+            if(con.isLastUsed()){
+                lastUsed = con;
+            }
+            con.setLastUsed(false);
             connectionsCB.getItems().add(con.getIp());
             connectionMap.put(con.getIp(), con);
+        }
+        if(lastUsed != null){
+            connectionsCB.getSelectionModel().select(lastUsed.getIp());
         }
     }
 

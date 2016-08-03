@@ -24,11 +24,15 @@ import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell.CheckBoxTableChangeHandler;
+import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.controllers.PacketBuilderHomeController;
 import com.exalttech.trex.ui.controllers.ProfileStreamNameDialogController;
 import com.exalttech.trex.ui.dialog.DialogWindow;
+import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
 import com.exalttech.trex.ui.views.models.TableProfile;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
+import com.exalttech.trex.ui.views.streamtable.StreamTableAction;
+import com.exalttech.trex.ui.views.streamtable.StreamTableButton;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.FileManager;
@@ -47,6 +51,8 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -57,6 +63,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -85,12 +92,12 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
     private static final Logger LOG = Logger.getLogger(PacketTableView.class.getName());
 
-    Button addPacketBtn;
-    Button buildPacketBtn;
-    Button editPacketBtn;
-    Button deleteButtonBtn;
-    Button exportPcapButton;
-    Button exportToYaml;
+    StreamTableButton addPacketBtn;
+    StreamTableButton buildPacketBtn;
+    StreamTableButton editPacketBtn;
+    StreamTableButton deleteButtonBtn;
+    StreamTableButton exportPcapButton;
+    StreamTableButton exportToYaml;
     TableView<TableProfileStream> streamPacketTableView;
 
     double maxHight;
@@ -106,6 +113,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     int numOfStreamLoaded = 0;
     int numOfEnabledStream = 0;
     private boolean doUpdate = false;
+    ContextMenu rightClickMenu;
 
     /**
      * @param maxHight
@@ -138,35 +146,41 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         // build btn bar
         HBox buttonContainer = new HBox();
         buttonContainer.setSpacing(5);
-        addPacketBtn = new Button("Add Stream (PCAP)", new ImageView(new Image("/icons/add.png")));
+        addPacketBtn = new StreamTableButton(StreamTableAction.ADD);
         initializeStreamButtons(addPacketBtn, false);
         buttonContainer.getChildren().add(addPacketBtn);
 
         // add build stream btn
-        buildPacketBtn = new Button("Build Stream", new ImageView(new Image("/icons/add.png")));
+        buildPacketBtn = new StreamTableButton(StreamTableAction.BUILD);
         initializeStreamButtons(buildPacketBtn, false);
         buttonContainer.getChildren().add(buildPacketBtn);
 
-        editPacketBtn = new Button("Edit Stream", new ImageView(new Image("/icons/edit.png")));
+        editPacketBtn = new StreamTableButton(StreamTableAction.EDIT);
         initializeStreamButtons(editPacketBtn, true);
         buttonContainer.getChildren().add(editPacketBtn);
 
-        deleteButtonBtn = new Button("Delete Stream", new ImageView(new Image("/icons/delete.png")));
+        deleteButtonBtn = new StreamTableButton(StreamTableAction.DELETE);
         initializeStreamButtons(deleteButtonBtn, true);
         buttonContainer.getChildren().add(deleteButtonBtn);
 
-        exportPcapButton = new Button("Export Pcap", new ImageView(new Image("/icons/export_profile_icon.png")));
+        exportPcapButton = new StreamTableButton(StreamTableAction.EXPORT_TO_PCAP);
         initializeStreamButtons(exportPcapButton, true);
         buttonContainer.getChildren().add(exportPcapButton);
 
         if (addExportToYamlBtn) {
-            exportToYaml = new Button("Export To Yaml", new ImageView(new Image("/icons/export_profile_icon.png")));
+            exportToYaml = new StreamTableButton(StreamTableAction.EXPORT_TO_YAML);
             initializeStreamButtons(exportToYaml, false);
             buttonContainer.getChildren().add(exportToYaml);
         }
         getChildren().add(buttonContainer);
         setTopAnchor(buttonContainer, 5d);
 
+        rightClickMenu = new ContextMenu();
+        addMenuItem(StreamTableAction.EDIT);
+        addMenuItem(StreamTableAction.DELETE);
+        addMenuItem(StreamTableAction.EXPORT_TO_PCAP);
+        addMenuItem(StreamTableAction.EXPORT_TO_YAML);
+        
         // add table view
         streamPacketTableView = new TableView<>();
 
@@ -228,29 +242,45 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     private void initializeStreamButtons(Button button, boolean disable) {
         button.setDisable(disable);
-        button.getStyleClass().add("customBtn");
         button.setOnAction(this);
     }
 
     /**
-     * Handle anonymous action event
+     * Handle stream button click event
      *
      * @param event
      */
     @Override
     public void handle(ActionEvent event) {
-        if (event.getSource() == addPacketBtn) {
-            viewStreamNameWindow(StreamBuilderType.ADD_STREAM);
-        } else if (event.getSource() == editPacketBtn) {
-            handleEditPacket();
-        } else if (event.getSource() == deleteButtonBtn) {
-            handleDeletePacket();
-        } else if (event.getSource() == buildPacketBtn) {
-            viewStreamNameWindow(StreamBuilderType.BUILD_STREAM);
-        } else if (event.getSource() == exportPcapButton) {
-            handleExportPcapFile();
-        } else if (event.getSource() == exportToYaml) {
-            handleExportToYaml();
+        StreamTableButton source = (StreamTableButton) event.getSource();
+        handleStreamTableAction(source.getButtonActionType());
+    }
+
+    /**
+     * Handle stream table action
+     *
+     * @param action
+     */
+    private void handleStreamTableAction(StreamTableAction action) {
+        switch (action) {
+            case ADD:
+                viewStreamNameWindow(StreamBuilderType.ADD_STREAM);
+                break;
+            case BUILD:
+                viewStreamNameWindow(StreamBuilderType.BUILD_STREAM);
+                break;
+            case EDIT:
+                handleEditPacket();
+                break;
+            case DELETE:
+                handleDeletePacket();
+                break;
+            case EXPORT_TO_PCAP:
+                handleExportPcapFile();
+                break;
+            case EXPORT_TO_YAML:
+                handleExportToYaml();
+                break;
         }
     }
 
@@ -479,8 +509,11 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      * @param event
      */
     public void handleTableRowClick(MouseEvent event) {
+        streamPacketTableView.setContextMenu(null);
         if (event.getClickCount() == 2 && streamPacketTableView.getSelectionModel().getSelectedItem() != null) {
             openStreamDialog(StreamBuilderType.EDIT_STREAM);
+        }else if (event.getButton() == MouseButton.SECONDARY && streamPacketTableView.getSelectionModel().getSelectedItem() != null) {
+            streamPacketTableView.setContextMenu(rightClickMenu);
         }
     }
 
@@ -596,6 +629,22 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         } catch (IOException ex) {
             LOG.error("Error updating profile", ex);
         }
+    }
+
+    /**
+     * Add menu item to table rightclickMenu
+     *
+     * @param action
+     */
+    private void addMenuItem(StreamTableAction action) {
+        MenuItem item = new MenuItem(action.getTitle());
+        item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                handleStreamTableAction(action);
+            }
+        });
+        rightClickMenu.getItems().add(item);
     }
 
     /**

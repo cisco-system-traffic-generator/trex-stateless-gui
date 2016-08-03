@@ -87,6 +87,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -206,6 +208,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private final BooleanProperty disableProfileProperty = new SimpleBooleanProperty();
     StatsTableGenerator statsTableGenerator;
     boolean doAssignProfile = true;
+    KeyCombination openDashboardCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+    KeyCombination connectCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
+    KeyCombination openPreferencesCombination = new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN);
+    KeyCombination quiteCombination = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -222,7 +228,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleConnectMenuItemClicked(ActionEvent event) {
-        connectDisconnect();
+        doConnectDisconnect();
     }
 
     /**
@@ -232,14 +238,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleConnectDisconnectBtnClicked(MouseEvent event) {
-        connectDisconnect();
+        doConnectDisconnect();
     }
 
     /**
      * Connect/Disconnect to TRex server
      */
-    private void connectDisconnect() {
-        if ("Disconnect".equals(connectMenuItem.getText())) {
+    private void doConnectDisconnect() {
+        if (ConnectionManager.getInstance().isConnected()) {
             resetApplication(false);
         } else {
             openConnectDialog();
@@ -379,8 +385,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                devicesTree.setContextMenu(null);
                 updateContextMenuState();
-                selected.showMenu();
+                if (selected.getMenu() != null) {
+                    devicesTree.setContextMenu(selected.getMenu());
+                }
             }
             try {
                 stopRefreshingService();
@@ -781,7 +790,17 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 });
             }
         });
-
+        TrexApp.getPrimaryStage().addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+            if (openDashboardCombination.match(event) && ConnectionManager.getInstance().isConnected()) {
+                openStateDialog();
+            } else if (openPreferencesCombination.match(event)) {
+                openPreferencesWindow();
+            } else if (connectCombination.match(event) && !ConnectionManager.getInstance().isConnected()) {
+                openConnectDialog();
+            } else if (quiteCombination.match(event)) {
+                TrexApp.getPrimaryStage().fireEvent(new WindowEvent(TrexApp.getPrimaryStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
+            }
+        });
         // bind async trex event property
         AsyncResponseManager.getInstance().getTrexEventProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -972,6 +991,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 updateMultiplierValues(assignedProf);
             }
         } catch (TrafficException ex) {
+            // re-enable start button in case of errors
+            startStream.setDisable(false);
             LOG.error("Error starting traffic", ex);
         }
     }
@@ -1272,12 +1293,23 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     /**
      *
      * @param event
-     * @throws IOException
      */
     @FXML
-    public void handlePreferencesMenuItemClicked(ActionEvent event) throws IOException {
-        DialogWindow statsWindow = new DialogWindow("Preferences.fxml", "Preferences", 100, 50, false, TrexApp.getPrimaryStage());
-        statsWindow.show(true);
+    public void handlePreferencesMenuItemClicked(ActionEvent event) {
+        openPreferencesWindow();
+    }
+
+    /**
+     * Open preferences window
+     */
+    private void openPreferencesWindow() {
+        try {
+            DialogWindow statsWindow = new DialogWindow("Preferences.fxml", "Preferences", 100, 50, false, TrexApp.getPrimaryStage());
+            statsWindow.show(true);
+        } catch (IOException ex) {
+            LOG.error("Error opening preferences window", ex);
+
+        }
     }
 
     /**
