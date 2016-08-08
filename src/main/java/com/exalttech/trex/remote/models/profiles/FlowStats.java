@@ -70,6 +70,14 @@ public class FlowStats implements Cloneable {
     }
 
     /**
+     * Return wither rx stat is enable
+     * @return 
+     */
+    public boolean isEnabled(){
+        return enabled;
+    } 
+    
+    /**
      *
      * @return
      */

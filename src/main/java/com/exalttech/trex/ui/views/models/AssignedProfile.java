@@ -41,6 +41,8 @@ public class AssignedProfile {
 
     Rate rate;
 
+    boolean allStreamsWithLatency;
+
     /**
      *
      */
@@ -50,6 +52,7 @@ public class AssignedProfile {
         profileAssigned = false;
         streamStarted = false;
         hasDuration = false;
+        allStreamsWithLatency = false;
     }
 
     /**
@@ -153,4 +156,21 @@ public class AssignedProfile {
     public boolean isHasDuration() {
         return hasDuration;
     }
+
+    /**
+     * Return latency profile streams indicator
+     * @return 
+     */
+    public boolean isAllStreamsWithLatency() {
+        return allStreamsWithLatency;
+    }
+
+    /**
+     * Set latency profile streams indicator
+     * @param allStreamsWithLatency 
+     */
+    public void setAllStreamsWithLatency(boolean allStreamsWithLatency) {
+        this.allStreamsWithLatency = allStreamsWithLatency;
+    }
+    
 }

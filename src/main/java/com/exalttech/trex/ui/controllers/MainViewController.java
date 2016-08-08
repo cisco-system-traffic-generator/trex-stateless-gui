@@ -212,6 +212,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     KeyCombination connectCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
     KeyCombination openPreferencesCombination = new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN);
     KeyCombination quiteCombination = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
+    private boolean allStreamWithLatency;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -665,6 +666,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             // update selected profile
             AssignedProfile assignedProf = assignedPortProfileMap.get(getSelectedPortIndex());
             assignedProf.setProfileName(profileName);
+            assignedProf.setAllStreamsWithLatency(allStreamWithLatency);
             StreamValidation streamValidationGraph = serverRPCMethods.assignTrafficProfile(portID, loadedProfiles);
             startStream.setDisable(false);
             // update current multiplier data 
@@ -691,6 +693,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             File selectedFile = new File(ProfileManager.getInstance().getProfileFilePath(fileName));
             loadedProfiles = tableView.loadStreamTable(selectedFile);
+           
+            allStreamWithLatency = true;
+            for (Profile profile : loadedProfiles) {
+                allStreamWithLatency = allStreamWithLatency && profile.getStream().getFlowStats().isEnabled();
+            }
+            multiplierView.setDisable(allStreamWithLatency);
+            
         } catch (Exception ex) {
             LOG.error("Error loading stream table", ex);
         }
@@ -983,8 +992,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void startTraffic(int portID) {
         try {
-            serverRPCMethods.startTraffic(portID, false, "pps", multiplierView.getPPSValue(), multiplierView.getDuration());
             AssignedProfile assignedProf = assignedPortProfileMap.get(portID);
+            
+            if (assignedProf != null && assignedProf.isAllStreamsWithLatency()) {
+                serverRPCMethods.startTraffic(portID, false, "percentage", 100, multiplierView.getDuration());
+            } else {
+                serverRPCMethods.startTraffic(portID, false, "pps", multiplierView.getPPSValue(), multiplierView.getDuration());
+            }
+            
             if (assignedProf != null) {
                 assignedProf.setStreamStarted(true);
                 assignedProf.setHasDuration(multiplierView.isDurationEnable());
