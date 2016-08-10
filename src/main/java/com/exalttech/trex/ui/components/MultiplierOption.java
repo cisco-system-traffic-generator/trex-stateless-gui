@@ -44,7 +44,7 @@ public class MultiplierOption extends AnchorPane {
     MultiplierSelectionEvent multiplierSelectionEvent;
     double defaultWidth = 120;
     boolean valueChangedBySet = false;
-    double multiplierValue = 0;
+    double multiplierValue = 1.0;
     
     /**
      *
@@ -195,6 +195,7 @@ public class MultiplierOption extends AnchorPane {
      */
     public void reset() {
         value.setText("1.0");
+        multiplierValue = 1.0;
     }
 
     /**
