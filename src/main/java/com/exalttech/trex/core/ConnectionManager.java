@@ -22,17 +22,21 @@ import com.exalttech.trex.remote.models.common.RPCRequest;
 import com.exalttech.trex.remote.models.params.Params;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
+import com.exalttech.trex.util.CompressionUtils;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.zip.DataFormatException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.log4j.Logger;
 import org.zeromq.ZMQ;
 
@@ -46,6 +50,8 @@ public class ConnectionManager {
     private static ConnectionManager instance = null;
     private static StringProperty logProperty = new SimpleStringProperty();
     private final static String ASYNC_PASS_STATUS = "Pass";
+    
+    private final String MAGIC_STRING = "ABE85CEA";
 
     /**
      *
@@ -303,6 +309,7 @@ public class ConnectionManager {
     public String getAsyncResponse() {
 
         task = new Task<Void>() {
+
             @Override
             protected Void call() throws Exception {
                 try {
@@ -312,7 +319,8 @@ public class ConnectionManager {
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
                     String res;
                     while (!Thread.currentThread().isInterrupted()) {
-                        res = subscriber.recvStr();
+                        byte[] responseBytes = subscriber.recv();
+                        res = getDecompressedString(responseBytes);
                         if (res != null) {
                             handleAsyncResponse(res);
                         }
@@ -321,6 +329,34 @@ public class ConnectionManager {
                     LOG.error("Possible error while reading the Async request", ex);
                 }
                 return null;
+            }
+
+            private String getDecompressedString(byte[] data) {
+                // if the length is larger than 8 bytes
+                if (data.length > 8) {
+                    
+                    // Take the first 4 bytes
+                    byte[] magicBytes = Arrays.copyOfRange(data, 0, 4);
+
+                    String magicString = DatatypeConverter.printHexBinary(magicBytes);
+                    
+                    /* check MAGIC in the first 4 bytes in case we have it, it is compressed */
+                    if (magicString.equals(MAGIC_STRING)) {
+                        
+                        // Skip another  4 bytes containing the uncompressed size of the  message
+                        byte[] compressedData = Arrays.copyOfRange(data, 8, data.length);
+
+                        try {
+                            return new String(CompressionUtils.decompress(compressedData));
+                        } catch (IOException | DataFormatException ex) {
+                            LOG.error("Failed to decompress data ", ex);
+                        }
+
+                    }
+
+                }
+                return new String(data);
+
             }
         };
         new Thread(task).start();
