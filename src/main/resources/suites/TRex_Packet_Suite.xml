@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+  
+<suite name="TRex_Packet_Suite" verbose="1" >
+    <parameter name="macSrcAddress" value="11:00:00:00:00:11" ></parameter>
+    <parameter name="macDstAddress" value="77:00:00:00:00:77" ></parameter>
+    <parameter name="packetLength" value="60" ></parameter>
+  <test name="EthernetTest">
+    <classes>
+      <class name="com.exalttech.trex.packets.TrexEthernetPacketTest"/>
+    </classes>
+  </test>
+  
+</suite>
