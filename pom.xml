@@ -49,7 +49,7 @@
             <plugin>
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.2.0</version>
+                <version>8.5.0</version>
                 <configuration>
                     <vendor>Exalt-Tech</vendor>
                     <mainClass>com.exalttech.trex.application.TrexApp</mainClass>
@@ -171,5 +171,28 @@
             <artifactId>commons-codec</artifactId>
             <version>1.9</version>
         </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.9.10</version>
+        </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>TRex_Packet_Testing_Unit</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>${basedir}/src/main/resources/suites/TRex_Packet_Suite.xml</suiteXmlFile>
+                            </suiteXmlFiles>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
