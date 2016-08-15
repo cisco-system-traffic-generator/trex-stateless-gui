@@ -978,7 +978,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             @Override
             public void accept(Port port) {
                 PortState portState = PortState.getPortStatus(port.getStatus());
-                if (portManager.isCurrentUserOwner(port.getIndex()) && portState != PortState.TX) {
+                if (portManager.isCurrentUserOwner(port.getIndex()) 
+                        && portState != PortState.TX && portState != PortState.IDLE ) {
                     doStartResume(port.getIndex());
                 }
             }
@@ -1036,7 +1037,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     public void stopAllTransitBtnCLicked(MouseEvent event) {
         LOG.trace("Clicked on the Stop All Transit Button ");
         portManager.getPortList().stream().forEach(port -> {
-            if (portManager.isCurrentUserOwner(port.getIndex())) {
+            PortState portState = PortState.getPortStatus(port.getStatus());
+            if (portManager.isCurrentUserOwner(port.getIndex()) && portState == PortState.TX) {
                 serverRPCMethods.stopPortTraffic(port.getIndex());
             }
         });
