@@ -19,6 +19,7 @@ import com.exalttech.trex.application.TrexApp;
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -96,7 +97,7 @@ public class DialogWindow {
         createdStage.setX(TrexApp.getPrimaryStage().getX() + parentXDistance);
         createdStage.setY(TrexApp.getPrimaryStage().getY() + parentYDistance);
         createdStage.initModality(Modality.NONE);
-
+        createdStage.getIcons().add(new Image("/icons/trex.png"));
         return createdStage;
     }
 
