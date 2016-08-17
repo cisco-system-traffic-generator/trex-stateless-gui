@@ -64,6 +64,7 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
     TextField durationTF;
     boolean updateAll = true;
     MultiplierOptionChangeHandler optionValueChangeHandler;
+    private boolean fireUpdateCommand = true;
 
     /**
      *
@@ -98,14 +99,12 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 updateOptionsValues(slider.getValue(), updateAll);
+                if (fireUpdateCommand) {
+                    optionValueChangeHandler.optionValueChanged();
+                }
             }
         });
-        slider.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                optionValueChangeHandler.optionValueChanged();
-            }
-        });
+
         // add separator
         Separator separator = new Separator(Orientation.HORIZONTAL);
         separator.setPrefHeight(1);
@@ -195,9 +194,9 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
      */
     public double getPPSValue() {
         MultiplierOption option = multiplierOptionMap.get(MultiplierType.pps);
-        
+
         // force PPS value to 1 if it less than 1
-        if(option.getMultiplierValue() < 1 && MultiplierType.pps.getValue(rate) > 0){
+        if (option.getMultiplierValue() < 1 && MultiplierType.pps.getValue(rate) > 0) {
             option.setValue(1);
             updateAll(option);
         }
@@ -297,6 +296,7 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
      */
     public void fillAssignedProfileValues(AssignedProfile assigned) {
         rate = assigned.getRate();
+        fireUpdateCommand = false;
         resetAllOption();
         MultiplierType type = MultiplierType.valueOf(assigned.getMultiplier().getType());
         setSelected(type);
@@ -306,6 +306,7 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
             double value = assigned.getMultiplier().getValue();
             double sliderValue = getSliderValue(type, value);
             slider.setValue(sliderValue);
+            fireUpdateCommand = true;
             // update selection
             MultiplierType selectedType = MultiplierType.valueOf(assigned.getMultiplier().getSelectedType());
             setSelected(selectedType);
@@ -326,8 +327,9 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
      */
     public void assignNewProfile(AssignedProfile assigned) {
         rate = assigned.getRate();
-
+        fireUpdateCommand = false;
         slider.setValue(MultiplierType.percentage.getValue(rate));
+        fireUpdateCommand = true;
         slider.setDisable(false);
     }
 
