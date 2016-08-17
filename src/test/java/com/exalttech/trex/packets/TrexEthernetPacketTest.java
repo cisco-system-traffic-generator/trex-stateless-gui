@@ -18,10 +18,12 @@ package com.exalttech.trex.packets;
 import com.exalttech.trex.ui.models.PacketInfo;
 import com.exalttech.trex.util.PacketUtil;
 import java.io.IOException;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.pcap4j.packet.AbstractPacket;
 import org.pcap4j.packet.IllegalRawDataException;
+import org.pcap4j.packet.Packet;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
@@ -36,7 +38,8 @@ import org.testng.annotations.Test;
 public class TrexEthernetPacketTest {
 
     private static final Logger LOG = Logger.getLogger(TrexEthernetPacketTest.class.getName());
-
+    PacketUtil packetUtil = new PacketUtil();
+   
     public TrexEthernetPacketTest() {
     }
 
@@ -60,8 +63,8 @@ public class TrexEthernetPacketTest {
      * Test of buildPacket method, of class TrexEthernetPacket.
      */
     @Test
-    @Parameters({"macSrcAddress", "macDstAddress", "packetLength"})
-    public void testEthernetPacketWithoutVlan(String macSrcAddress, String macDstAddress, int packetLength) throws IOException, IllegalRawDataException {
+    @Parameters({"macSrcAddress", "macDstAddress", "packetLength", "expectedHex"})
+    public void testEthernetPacketWithoutVlan(String macSrcAddress, String macDstAddress, int packetLength, String expectedHex) throws IOException, IllegalRawDataException {
 
         LOG.info("------------Testing Ethernet packet");
         // build ethernet packet
@@ -75,21 +78,26 @@ public class TrexEthernetPacketTest {
         instance.buildPacket(builder);
 
         LOG.info("Encoding packet data");
-
+        
         // Encode packet data
-        String encodedBinaryPacket = PacketUtil.getEncodedPacket(instance.getPacket().getRawData());
+        String encodedBinaryPacket = packetUtil.getEncodedPacket(instance.getPacket().getRawData());
         LOG.info("Decoding packets and returning packet data information");
 
         // Decode and return packet info
-        PacketInfo packetInfo = PacketUtil.getPacketInfoData(encodedBinaryPacket);
+        PacketInfo packetInfo = packetUtil.getPacketInfoData(encodedBinaryPacket);
         LOG.info("Verifying packet data");
 
         // Assert mac src/destination address
-        Assert.assertEquals(macSrcAddress, packetInfo.getSrcMac(), "Invalid MAC source address. s");
+        Assert.assertEquals(macSrcAddress, packetInfo.getSrcMac(), "Invalid MAC source address. ");
         Assert.assertEquals(macDstAddress, packetInfo.getDestMac(), "Invalid MAC destination address. ");
 
         // Verify packet length
-        Assert.assertEquals(packetLength, PacketUtil.getPacketLength(encodedBinaryPacket), "Invalid Packet length. ");
+        Packet packet = packetUtil.getPacketFromEncodedString(encodedBinaryPacket);
+        Assert.assertEquals(packetLength, packetUtil.getPacketLength(packet), "Invalid Packet length. ");
+        
+        // Verify packet data
+        String packetHex = DatatypeConverter.printHexBinary(packet.getRawData());
+        Assert.assertEquals(expectedHex.toLowerCase(), packetHex.toLowerCase(), "Invalid Packet hex. ");
 
     }
 

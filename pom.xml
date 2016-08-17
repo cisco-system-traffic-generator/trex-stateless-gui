@@ -187,7 +187,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <suiteXmlFiles>
-                                <suiteXmlFile>${basedir}/src/main/resources/suites/TRex_Packet_Suite.xml</suiteXmlFile>
+                                <suiteXmlFile>${basedir}/src/test/resources/suites/TRex_Packet_Suite.xml</suiteXmlFile>
                             </suiteXmlFiles>
                         </configuration>
                     </plugin>
