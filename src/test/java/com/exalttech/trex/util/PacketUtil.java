@@ -28,28 +28,30 @@ import org.pcap4j.packet.Packet;
 /**
  *
  * Utility class
+ *
  * @author Georgekh
  */
 public class PacketUtil {
 
-    private static TrafficProfile trafficProfile = new TrafficProfile();
+    private TrafficProfile trafficProfile = new TrafficProfile();
 
     /**
      * @param packetRawData
      * @return encoded data
      */
-    public static String getEncodedPacket(byte[] packetRawData) {
+    public String getEncodedPacket(byte[] packetRawData) {
         String hexDataString = PacketBuilderHelper.getPacketHex(packetRawData);
         return trafficProfile.encodeBinaryFromHexString(hexDataString);
     }
 
     /**
      * Decode string and return packet info data
+     *
      * @param encodedBinaryPacket
      * @return packet info
-     * @throws IOException 
+     * @throws IOException
      */
-    public static PacketInfo getPacketInfoData(String encodedBinaryPacket) throws IOException {
+    public PacketInfo getPacketInfoData(String encodedBinaryPacket) throws IOException {
         // decode binary data
         File pcapFile = trafficProfile.decodePcapBinary(encodedBinaryPacket);
         PacketInfo packetInfo = new PacketInfo();
@@ -58,13 +60,21 @@ public class PacketUtil {
     }
 
     /**
-     * @param encodedBinaryPacket
      * @return packet length
-     * @throws IllegalRawDataException 
      */
-    public static int getPacketLength(String encodedBinaryPacket) throws IllegalRawDataException {
-        byte[] pkt = Base64.decodeBase64(encodedBinaryPacket);
-        Packet packet = EthernetPacket.newPacket(pkt, 0, pkt.length);
+    public int getPacketLength(Packet packet) throws IllegalRawDataException {
         return trafficProfile.getPacketTypeText(packet).getLength();
     }
+
+    /**
+     * Get packet from encoded string
+     * @param encodedBinaryPacket
+     * @return packet
+     * @throws IllegalRawDataException 
+     */
+    public Packet getPacketFromEncodedString(String encodedBinaryPacket) throws IllegalRawDataException{
+        byte[] pkt = Base64.decodeBase64(encodedBinaryPacket);
+        return EthernetPacket.newPacket(pkt, 0, pkt.length);
+    }
+    
 }

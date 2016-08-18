@@ -51,7 +51,7 @@
                 </Label>
             </children>
         </AnchorPane>
-        <Button id="" fx:id="connectButton" mnemonicParsing="false" onAction="#handleConnectButton" prefHeight="22.0" prefWidth="90.0" styleClass="normalButton" text="Connect" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="345.0" />
-        <Button id="" fx:id="dialogCancelButton" mnemonicParsing="false" onMouseClicked="#handleCloseDialog" prefHeight="22.0" prefWidth="90.0" styleClass="cancelButton" text="Cancel" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="240.0" />
+        <Button id="" fx:id="connectButton" mnemonicParsing="false" onAction="#handleConnectButton" prefHeight="22.0" prefWidth="90.0" styleClass="normalButton" text="Connect" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="240.0" />
+        <Button id="" fx:id="dialogCancelButton" mnemonicParsing="false" onMouseClicked="#handleCloseDialog" prefHeight="22.0" prefWidth="90.0" styleClass="cancelButton" text="Cancel" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="345.0" />
     </children>
 </AnchorPane>
