@@ -114,19 +114,21 @@
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-: ;">
                             <children>
                                 <AnchorPane id="" prefHeight="409.0" prefWidth="300.0" style="-fx-background-color:#FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                    <children>
-                                        <AnchorPane maxHeight="60.0" prefHeight="60.0" prefWidth="300.0" style="-fx-background-color:#f0f0f0;" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                            <children>
-                                                <Label alignment="CENTER" contentDisplay="LEFT" layoutX="14.0" prefHeight="25.0" prefWidth="140.0" styleClass="toggleButton" text="All" AnchorPane.topAnchor="18.0" />
-                                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="140.0" styleClass="toggleButton, togleButtonDisable" text="Groups" AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="18.0" />
-                                            </children>
-                                        </AnchorPane>
-                                    </children>
-                                </AnchorPane>
-                                <AnchorPane prefHeight="200.0" prefWidth="200.0" style="" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
-                                    <children>
-                                        <TreeView fx:id="devicesTree" onMouseClicked="#handleTreeClicked" prefHeight="267.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                    </children>
+                           <children>
+                              <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="390.0" prefWidth="300.0">
+                                       <children>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                          <TreeView fx:id="devicesTree" onMouseClicked="#handleTreeClicked" prefHeight="267.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </ScrollPane>
+                           </children>
                                 </AnchorPane>
                                 <Separator id="separator" minWidth="1.0" orientation="VERTICAL" prefHeight="409.0" prefWidth="1.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="0.0" />
                                 <AnchorPane id="" prefHeight="409.0" prefWidth="698.9999000000025" style="-fx-background-color:#FFFFFF;" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="301.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
