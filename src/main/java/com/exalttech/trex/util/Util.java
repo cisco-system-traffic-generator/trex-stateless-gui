@@ -793,4 +793,12 @@ public class Util {
             return "";
         }
     }
+
+    /**
+     */
+    public static void optimizeMemory() {
+
+        System.gc();
+
+    }
 }

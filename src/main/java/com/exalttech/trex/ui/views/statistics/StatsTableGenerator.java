@@ -15,24 +15,24 @@
  */
 package com.exalttech.trex.ui.views.statistics;
 
-import com.exalttech.trex.core.ConnectionManager;
-import com.exalttech.trex.ui.PortState;
 import com.exalttech.trex.ui.PortsManager;
-import com.exalttech.trex.ui.TableCellElementGenerator;
-import static com.exalttech.trex.ui.TableCellElementGenerator.getTableCellElement;
 import com.exalttech.trex.ui.models.Port;
-import com.exalttech.trex.util.Constants;
+import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.util.Util;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import org.apache.log4j.Logger;
-import static com.exalttech.trex.ui.TableCellElementGenerator.getTableCellElement;
+import com.exalttech.trex.ui.views.statistics.cells.CellType;
+import com.exalttech.trex.ui.views.statistics.cells.HeaderCell;
+import com.exalttech.trex.ui.views.statistics.cells.HeaderCellWithIcon;
+import com.exalttech.trex.ui.views.statistics.cells.StatisticCell;
+import com.exalttech.trex.ui.views.statistics.cells.StatisticCellWithArrows;
+import com.exalttech.trex.ui.views.statistics.cells.StatisticConstantsKeys;
+import com.exalttech.trex.ui.views.statistics.cells.StatisticLabelCell;
+import com.exalttech.trex.ui.views.statistics.cells.StatisticRow;
+import java.util.List;
+import javafx.scene.Node;
 
 /**
  *
@@ -45,8 +45,24 @@ public class StatsTableGenerator {
     Map<String, String> cachedStatsList;
     Map<String, String> prevStatsList;
     Map<String, Long> totalValues = new HashMap<>();
-    Map<String, TotalStatsArrow> totalArrow = new HashMap<>();
-    String arrowIcon = "green_arrow.png";
+    Map<String, Long> prevTotalValues = new HashMap<>();
+    GridPane statTable = new GridPane();
+//    Map<String, StatisticCell> gridCellsMap = new HashMap<>();
+    Map<String, StatisticCell> gridCellsMap = new HashMap<>();
+    StringBuilder keyBuffer = new StringBuilder(30);
+
+    private boolean odd;
+    private int rowIndex;
+
+    /**
+     * Constructor
+     */
+    public StatsTableGenerator() {
+        statTable = new GridPane();
+        statTable.setCache(false);
+        statTable.getStyleClass().add("statsTable");
+        statTable.setGridLinesVisible(false);
+    }
 
     /**
      *
@@ -71,67 +87,309 @@ public class StatsTableGenerator {
     public GridPane getPortStatTable(Map<String, String> cached, int portIndex, boolean isMultiPort, double columnWidth, boolean ownerFilter) {
         this.currentStatsList = StatsLoader.getInstance().getLoadedStatsList();
         this.prevStatsList = StatsLoader.getInstance().getPreviousStatsList();
+        this.prevTotalValues = totalValues;
         this.cachedStatsList = cached;
 
         int startPortIndex = portIndex;
         int endPortIndex = portIndex + 1;
-
         if (isMultiPort) {
             startPortIndex = 0;
             endPortIndex = portIndex;
         }
-        int rowIndex = 0;
+        rowIndex = 0;
+        totalValues = new HashMap<>();
+        statTable.getChildren().clear();
 
-        // Build rows statically
-        GridPane statTable = new GridPane();
-        statTable.getStyleClass().add("statsTable");
-        statTable.setGridLinesVisible(false);
-        double firstColWidth = 145;
+        Util.optimizeMemory();
 
-        // build 1st column
-        int index = 0;
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Counter", firstColWidth), 0, rowIndex++);
-        for (String label : Constants.PORT_STATS_ROW_NAME) {
-            statTable.add(TableCellElementGenerator.getTableCellElement(label, index % 2 != 0, firstColWidth, false), 0, rowIndex++);
-            index++;
-        }
+        addCounterColumn(StatisticConstantsKeys.PORT_STATS_ROW_NAME);
 
         int columnIndex = 1;
-        totalValues = new HashMap<>();
         for (int i = startPortIndex; i < endPortIndex; i++) {
             rowIndex = 0;
+            odd = true;
             Port port = PortsManager.getInstance().getPortList().get(i);
-            if (!ownerFilter || (ownerFilter && port.getOwner().equals(ConnectionManager.getInstance().getClientName()))) {
-                // Fill rows with Data
-                PortState state = PortState.getPortStatus(port.getStatus());
-                statTable.add(TableCellElementGenerator.getTableHeaderElementWithIcon("Port " + i, columnWidth, state.getStatHeaderIcon()), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableCellElement(getOwnerValue(port.getOwner()), false, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(getColoredStateTableValue(state, true, columnWidth), columnIndex, rowIndex++);
+            if (!ownerFilter || (ownerFilter && PortsManager.getInstance().isCurrentUserOwner(port.getIndex()))) {
+                // add owner and port status
+                addPortInfoCells(port, columnWidth, columnIndex);
+                for (StatisticRow key : StatisticConstantsKeys.PORT_STATS_KEY) {
+                    keyBuffer.setLength(0);
+                    keyBuffer.append(key.getKey()).append("-").append(i);
 
-                statTable.add(getTableValueWithArrow(Util.getFormatted(calcTotal("m_total_tx_bps", currentStatsList.get("m_total_tx_bps-" + i)), true, "bps"), false, columnWidth, "m_total_tx_bps-" + i, false), columnIndex, rowIndex++);
-                statTable.add(getTableValueWithArrow(Util.getFormatted(calcTotal("m_total_tx_pps", currentStatsList.get("m_total_tx_pps-" + i)), true, "pps"), true, columnWidth, "m_total_tx_pps-" + i, false), columnIndex, rowIndex++);
-                statTable.add(getTableValueWithArrow(Util.getFormatted(calcTotal("m_total_rx_bps", currentStatsList.get("m_total_rx_bps-" + i)), true, "bps"), false, columnWidth, "m_total_rx_bps-" + i, false), columnIndex, rowIndex++);
-                statTable.add(getTableValueWithArrow(Util.getFormatted(calcTotal("m_total_rx_pps", currentStatsList.get("m_total_rx_pps-" + i)), true, "pps"), true, columnWidth, "m_total_rx_pps-" + i, false), columnIndex, rowIndex++);
+                    StatisticCell cell = getGridCell(key, columnWidth, keyBuffer.toString());
 
-                statTable.add(TableCellElementGenerator.getTableCellElement(calcTotal("opackets", String.valueOf(getDiff("opackets-" + i))), false, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableCellElement(calcTotal("ipackets", String.valueOf(getDiff("ipackets-" + i))), true, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableCellElement(calcTotal("obytes", String.valueOf(getDiff("obytes-" + i))), false, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableCellElement(calcTotal("ibytes", String.valueOf(getDiff("ibytes-" + i))), true, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(String.valueOf(getDiff("obytes-" + i)), true, "B"), false, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(String.valueOf(getDiff("ibytes-" + i)), true, "B"), true, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(String.valueOf(getDiff("opackets-" + i)), true, "pkts"), false, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(String.valueOf(getDiff("ipackets-" + i)), true, "pkts"), true, columnWidth, true), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableErrorElementValue(calcTotal("oerrors", String.valueOf(getDiff("oerrors-" + i))) + "", false, columnWidth), columnIndex, rowIndex++);
-                statTable.add(TableCellElementGenerator.getTableErrorElementValue(calcTotal("ierrors", String.valueOf(getDiff("ierrors-" + i))) + "", true, columnWidth), columnIndex++, rowIndex++);
+                    cell.updateItem(getPrevValue(key, i, false), getStatValue(key, i));
+                    statTable.getChildren().remove(cell);
+                    statTable.add((Node) cell, columnIndex, rowIndex++);
+                }
+                columnIndex++;
             }
         }
         if (isMultiPort) {
-            addTotalColumn(statTable, columnIndex, columnWidth);
+            addTotalColumn(columnWidth, columnIndex);
         }
-
-        // clear total arrow map
-        totalArrow.clear();
         return statTable;
+
+    }
+
+    /**
+     * Add counter column
+     *
+     * @param counterList
+     */
+    private void addCounterColumn(List<String> counterList) {
+        double firstColWidth = 145;
+        rowIndex = 1;
+        addHeaderCell("Counter", 0, firstColWidth);
+        odd = true;
+        for (String label : counterList) {
+            addDefaultCell(label, label, firstColWidth, 0);
+        }
+    }
+
+    /**
+     * Add Port info(port/status/owner) cells
+     *
+     * @param port
+     * @param width
+     * @param extraKey
+     * @param columnIndex
+     */
+    private void addPortInfoCells(Port port, double width, int columnIndex) {
+        StatisticRow row;
+        keyBuffer.setLength(0);
+        keyBuffer.append("port-").append(port.getIndex());
+        row = new StatisticRow(keyBuffer.toString(), "", CellType.HEADER_WITH_ICON, false, "");
+        HeaderCellWithIcon headerCell = (HeaderCellWithIcon) getGridCell(row, width, row.getKey());
+        headerCell.setTitle("Port " + port.getIndex());
+        headerCell.updateItem("", port.getStatus());
+        statTable.getChildren().remove(headerCell);
+        statTable.add((Node) headerCell, columnIndex, rowIndex++);
+
+        keyBuffer.setLength(0);
+        keyBuffer.append("owner-").append(port.getIndex());
+        row = new StatisticRow(keyBuffer.toString(), "owner", CellType.DEFAULT_CELL, false, "");
+        StatisticCell cell = getGridCell(row, width, row.getKey());
+        cell.updateItem("", port.getOwner());
+        statTable.getChildren().remove(cell);
+        statTable.add((Node) cell, columnIndex, rowIndex++);
+
+        keyBuffer.setLength(0);
+        keyBuffer.append("status-").append(port.getIndex());
+        row = new StatisticRow(keyBuffer.toString(), "status", CellType.STATUS_CELL, false, "");
+        cell = getGridCell(row, width, row.getKey());
+        cell.updateItem("", port.getStatus());
+        statTable.getChildren().remove(cell);
+        statTable.add((Node) cell, columnIndex, rowIndex++);
+        row = null;
+    }
+
+    /**
+     * Return the cell if exists otherwise create it
+     *
+     * @param row
+     * @param width
+     * @param key
+     * @return
+     */
+    private StatisticCell getGridCell(StatisticRow row, double width, String key) {
+        if (gridCellsMap.get(key) != null) {
+            StatisticCell cell = gridCellsMap.get(key);
+            cell.setPrefWidth(width);
+            return cell;
+        } else {
+            StatisticCell cell = createGridCell(row, width);
+            gridCellsMap.put(key, cell);
+            return cell;
+
+        }
+    }
+
+    /**
+     * Create cell
+     *
+     * @param row
+     * @param width
+     * @return
+     */
+    private StatisticCell createGridCell(StatisticRow row, double width) {
+        switch (row.getCellType()) {
+            case ERROR_CELL:
+                odd = !odd;
+                return new StatisticLabelCell(width, odd, CellType.ERROR_CELL, row.isRightPosition());
+            case DEFAULT_CELL:
+                odd = !odd;
+                return new StatisticLabelCell(width, odd, CellType.DEFAULT_CELL, row.isRightPosition());
+            case STATUS_CELL:
+                odd = !odd;
+                return new StatisticLabelCell(width, odd, CellType.STATUS_CELL, row.isRightPosition());
+            case HEADER_CELL:
+                return new HeaderCell(width);
+            case HEADER_WITH_ICON:
+                return new HeaderCellWithIcon(width);
+            case ARROWS_CELL:
+                odd = !odd;
+                return new StatisticCellWithArrows(width, odd, row.getUnit());
+        }
+        return null;
+    }
+
+    /**
+     * Add header cell
+     *
+     * @param title
+     * @param columnIndex
+     * @param columnWidth
+     */
+    private void addHeaderCell(String title, int columnIndex, double columnWidth) {
+        StatisticRow row = new StatisticRow(title, title, CellType.HEADER_CELL, false, "");
+        StatisticCell cell = getGridCell(row, columnWidth, row.getKey());
+        cell.updateItem("", title);
+        statTable.getChildren().remove(cell);
+        statTable.add((Node) cell, columnIndex, 0);
+    }
+
+    /**
+     * Return the equivalent cell value
+     *
+     * @param row
+     * @param portIndex
+     * @return
+     */
+    private String getStatValue(StatisticRow row, int portIndex) {
+        keyBuffer.setLength(0);
+        keyBuffer.append(row.getAttributeName()).append("-").append(portIndex);
+        switch (row.getCellType()) {
+            case ERROR_CELL:
+                return calcTotal(row.getAttributeName(), String.valueOf(getStatsDifference(keyBuffer.toString())));
+            case DEFAULT_CELL:
+                if (row.isFormatted()) {
+                    return Util.getFormatted(String.valueOf(getStatsDifference(keyBuffer.toString())), true, row.getUnit());
+                }
+                return calcTotal(row.getAttributeName(), String.valueOf(getStatsDifference(keyBuffer.toString())));
+            case ARROWS_CELL:
+                calcTotal(row.getAttributeName(), currentStatsList.get(keyBuffer.toString()));
+                return currentStatsList.get(keyBuffer.toString());
+        }
+        return "";
+    }
+
+    /**
+     * Return previous value
+     *
+     * @param row
+     * @param portIndex
+     * @param isTotal
+     * @return
+     */
+    private String getPrevValue(StatisticRow row, int portIndex, boolean isTotal) {
+        if (row.getCellType() == CellType.ARROWS_CELL || row.getCellType() == CellType.ERROR_CELL) {
+            if (isTotal) {
+                return String.valueOf(prevTotalValues.get(row.getAttributeName()));
+            } else {
+                keyBuffer.setLength(0);
+                keyBuffer.append(row.getAttributeName()).append("-").append(portIndex);
+                return prevStatsList.get(keyBuffer.toString());
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Add total column
+     *
+     * @param statTable
+     * @param columnIndex
+     * @param columnWidth
+     */
+    private void addTotalColumn(double columnWidth, int columnIndex) {
+        rowIndex = 1;
+        odd = true;
+        addHeaderCell("Total", columnIndex, columnWidth);
+        addEmptyCell("total-owner", columnIndex, columnWidth);
+        addEmptyCell("total-status", columnIndex, columnWidth);
+        for (StatisticRow row : StatisticConstantsKeys.PORT_STATS_KEY) {
+            StatisticCell cell = getGridCell(row, columnWidth, row.getKey() + "-total");
+            cell.updateItem(getPrevValue(row, 0, true), getTotalValue(row));
+            statTable.getChildren().remove(cell);
+            statTable.add((Node) cell, columnIndex, rowIndex++);
+        }
+    }
+
+    /**
+     * return equivalent total value
+     *
+     * @param key
+     * @return
+     */
+    private String getTotalValue(StatisticRow row) {
+        String val = String.valueOf(totalValues.get(row.getAttributeName()));
+        if (Util.isNullOrEmpty(val)) {
+            return "0";
+        }
+        return val;
+    }
+
+    /**
+     * Add cell of type default
+     *
+     * @param key
+     * @param value
+     * @param columnWidth
+     * @param columnIndex
+     */
+    private void addDefaultCell(String key, String value, double columnWidth, int columnIndex) {
+        StatisticRow row = new StatisticRow(key, key, CellType.DEFAULT_CELL, false, "");
+        row.setRightPosition(false);
+        StatisticCell cell = getGridCell(row, columnWidth, key);
+        cell.updateItem("", value);
+        statTable.getChildren().remove(cell);
+        statTable.add((Node) cell, columnIndex, rowIndex++);
+    }
+
+    /**
+     * Return Difference between current and cached stats value
+     *
+     * @param key
+     * @return
+     */
+    private long getStatsDifference(String key) {
+        String cached = cachedStatsList.get(key);
+        String current = currentStatsList.get(key);
+        return calculateDiff(current, cached);
+    }
+
+    /**
+     * Calculate difference between two values
+     *
+     * @param current
+     * @param cached
+     * @return
+     */
+    private long calculateDiff(String current, String cached) {
+        try {
+            if (Util.isNullOrEmpty(current)) {
+                return 0;
+            } else if (Util.isNullOrEmpty(cached)) {
+                return Long.valueOf(current);
+            } else {
+                return Long.valueOf(current) - Long.valueOf(cached);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.warn("Error calculating difference", ex);
+            return 0;
+        }
+    }
+
+    /**
+     * Add empty cell
+     *
+     * @param key
+     * @param columnIndex
+     * @param columnWidth
+     */
+    private void addEmptyCell(String key, int columnIndex, double columnWidth) {
+        addDefaultCell(key, "", columnWidth, columnIndex++);
     }
 
     /**
@@ -158,241 +416,118 @@ public class StatsTableGenerator {
     }
 
     /**
-     * Return Dif between current and original stat
-     *
-     * @param key
-     * @return
+     * Reset to empty state
      */
-    private long getDiff(String key) {
-        try {
-            String cached = cachedStatsList.get(key);
-            String current = currentStatsList.get(key);
-            long data;
-            if (Util.isNullOrEmpty(cached)) {
-                data = (long) Double.parseDouble(current);
-            } else {
-                data = (long) Double.parseDouble(current) - (long) Double.parseDouble(cached);
-            }
-            return data;
-        } catch (NumberFormatException ex) {
-            LOG.warn("Error calculating difference", ex);
-            return 0;
-        }
+    public void reset() {
+
+        statTable.getChildren().clear();
+        Util.optimizeMemory();
+
+        statTable = null;
+
+        gridCellsMap.clear();
+        gridCellsMap = null;
+
+        currentStatsList.clear();
+        currentStatsList = null;
+
+        prevStatsList.clear();
+        prevStatsList = null;
+
+        cachedStatsList.clear();
+        cachedStatsList = null;
+
+        totalValues.clear();
+        totalValues = null;
+
+        prevTotalValues.clear();
+        prevStatsList = null;
     }
 
     /**
-     * Return owner value
+     * Build system info pane
      *
-     * @param owner
+     * @param systemInfoReq
      * @return
      */
-    private String getOwnerValue(String owner) {
-        if (Util.isNullOrEmpty(owner)) {
-            return "";
-        }
-        return owner;
-    }
+    public GridPane generateSystemInfoPane(SystemInfoReq systemInfoReq) {
+        statTable.getChildren().clear();
+        Util.optimizeMemory();
 
-    /**
-     * get table view colored value widget
-     *
-     * @param portState
-     * @param isOdd
-     * @param width
-     * @return
-     */
-    private Label getColoredStateTableValue(PortState portState, boolean isOdd, double width) {
-        Label label = getTableCellElement(portState.getDisplayedState(), isOdd, width, true);
-        label.getStyleClass().add(portState.getTextColor());
-        return label;
-    }
-
-    /**
-     * Return table view value widget with arrow
-     *
-     * @param displayedTxt
-     * @param isOdd
-     * @param width
-     * @param key
-     * @param isTotal
-     * @return
-     */
-    private HBox getTableValueWithArrow(String displayedTxt, boolean isOdd, double width, String key, boolean isTotal) {
-        HBox container = new HBox();
-        container.setPrefSize(width, 22);
-        container.setSpacing(5);
-        container.setAlignment(Pos.CENTER_RIGHT);
-        container.getStyleClass().add("statsTableColCell");
-        if (isOdd) {
-            container.getStyleClass().add("statsTableColCellOdd");
-        }
-        int numOfArrow = 0;
-        if (!isTotal) {
-            numOfArrow = calculateNumOfArrows(key);
-            if (numOfArrow > 0) {
-                totalArrow.put(key.substring(0, key.indexOf("-")), new TotalStatsArrow(numOfArrow, arrowIcon));
-            }
-        } else if (totalArrow.get(key) != null) {
-            TotalStatsArrow statArrow = totalArrow.get(key);
-            numOfArrow = statArrow.getCount();
-            arrowIcon = statArrow.getIcon();
-        }
-        HBox arrowContainer = new HBox();
-        arrowContainer.setPrefSize(36, 22);
-        arrowContainer.setAlignment(Pos.CENTER);
-        arrowContainer.setSpacing(0);
-        for (int count = 0; count < numOfArrow && count < 3; count++) {
-            ImageView imageView = new ImageView(new Image("/icons/" + arrowIcon));
-            arrowContainer.getChildren().add(imageView);
-        }
-        container.getChildren().add(arrowContainer);
-        Label label = new Label(displayedTxt);
-        container.getChildren().add(label);
-        return container;
-    }
-
-    /**
-     * Do calculation to get number of displayed arrow
-     *
-     * @param key
-     * @return
-     */
-    private int calculateNumOfArrows(String key) {
-        String current = currentStatsList.get(key);
-        String prev = prevStatsList.get(key);
-        int numOfArrow = 0;
-        arrowIcon = "green_arrow.png";
-        if (!Util.isNullOrEmpty(current) && !Util.isNullOrEmpty(prev)) {
-            double currentVal = Double.parseDouble(current);
-            double prevVal = Double.parseDouble(prev);
-            if (currentVal != 0 && prevVal != 0) {
-                double diff = currentVal - prevVal;
-                if (diff > 0) {
-                    arrowIcon = "red_arrow.png";
-                }
-                double val = Math.abs((diff / prevVal) * 100.0);
-
-                //change in 1% is not meaningful
-                if (val < 1) {
-                    numOfArrow = 0;
-                } else if (val > 5) {
-                    numOfArrow = 3;
-                } else if (val > 2) {
-                    numOfArrow = 2;
-                } else {
-                    numOfArrow = 1;
-                }
-
-            }
-        }
-        return numOfArrow;
-    }
-
-    /**
-     * Add total column
-     *
-     * @param statTable
-     * @param columnIndex
-     * @param columnWidth
-     */
-    private void addTotalColumn(GridPane statTable, int columnIndex, double columnWidth) {
-        int rowIndex = 0;
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Total", columnWidth), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(" ", false, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(" ", true, columnWidth, true), columnIndex, rowIndex++);
-
-        statTable.add(getTableValueWithArrow(Util.getFormatted(getTotalValue("m_total_tx_bps"), true, "bps"), false, columnWidth, "m_total_tx_bps", true), columnIndex, rowIndex++);
-        statTable.add(getTableValueWithArrow(Util.getFormatted(getTotalValue("m_total_tx_pps"), true, "pps"), true, columnWidth, "m_total_tx_pps", true), columnIndex, rowIndex++);
-        statTable.add(getTableValueWithArrow(Util.getFormatted(getTotalValue("m_total_rx_bps"), true, "bps"), false, columnWidth, "m_total_rx_bps", true), columnIndex, rowIndex++);
-        statTable.add(getTableValueWithArrow(Util.getFormatted(getTotalValue("m_total_rx_pps"), true, "pps"), true, columnWidth, "m_total_rx_pps", true), columnIndex, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement(getTotalValue("opackets"), false, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(getTotalValue("ipackets"), true, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(getTotalValue("obytes"), false, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(getTotalValue("ibytes"), true, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(getTotalValue("obytes"), true, "B"), false, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(getTotalValue("ibytes"), true, "B"), true, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(getTotalValue("opackets"), true, "pkts"), false, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(getTotalValue("ipackets"), true, "pkts"), true, columnWidth, true), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableErrorElementValue(getTotalValue("oerrors"), false, columnWidth), columnIndex, rowIndex++);
-        statTable.add(TableCellElementGenerator.getTableErrorElementValue(getTotalValue("ierrors"), true, columnWidth), columnIndex, rowIndex++);
-    }
-
-    /**
-     * return equivalent total value
-     *
-     * @param key
-     * @return
-     */
-    private String getTotalValue(String key) {
-        String val = String.valueOf(totalValues.get(key));
-        if (Util.isNullOrEmpty(val)) {
-            return "0";
-        }
-        return val;
-    }
-
-    /**
-     * Build global statistic table
-     *
-     * @return
-     */
-    public GridPane getGlobalStatTable() {
-        GridPane statTable = new GridPane();
-        statTable.getStyleClass().add("statsTable");
-        statTable.setGridLinesVisible(false);
-
-        Map<String, String> statsList = StatsLoader.getInstance().getLoadedStatsList();
-
-        int rowIndex = 0;
-        // add globla stats
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Counter"), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableHeaderElement("Value"), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Cpu Util", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getEmptyValue(statsList.get("m_cpu_util")) + " %", false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Total Tx", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_tx_bps"), true, "b/sec"), true, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Total Rx", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_rx_bps"), true, "b/sec"), false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Total Pps", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_tx_pps"), true, "pkt/sec"), true, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Drop Rate", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_rx_drop_bps"), true, "b/sec"), false, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Queue Full", true, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(Util.getFormatted(statsList.get("m_total_queue_full"), true, "pkts"), true, false), 1, rowIndex++);
-
-        statTable.add(TableCellElementGenerator.getTableCellElement("Active Ports", false, false), 0, rowIndex);
-        statTable.add(TableCellElementGenerator.getTableCellElement(PortsManager.getInstance().getActivePort(), false, false), 1, rowIndex++);
+        double columnWidth = 450;
+        addHeaderCell("Value", 1, columnWidth);
+        addCounterColumn(StatisticConstantsKeys.SYSTEM_INFO_ROW_NAME);
+        rowIndex = 1;
+        odd = true;
+        addDefaultCell("info-id", systemInfoReq.getId(), columnWidth, 1);
+        addDefaultCell("info-jsonrpc", systemInfoReq.getJsonrpc(), columnWidth, 1);
+        addDefaultCell("info-ip", systemInfoReq.getIp(), columnWidth, 1);
+        addDefaultCell("info-port", systemInfoReq.getPort(), columnWidth, 1);
+        addDefaultCell("info-core-type", systemInfoReq.getResult().getCoreType(), columnWidth, 1);
+        addDefaultCell("info-core-count", systemInfoReq.getResult().getDpCoreCount(), columnWidth, 1);
+        addDefaultCell("info-host-name", systemInfoReq.getResult().getHostname(), columnWidth, 1);
+        addDefaultCell("info-port-count", String.valueOf(systemInfoReq.getResult().getPortCount()), columnWidth, 1);
+        addDefaultCell("info-up-time", systemInfoReq.getResult().getUptime(), columnWidth, 1);
 
         return statTable;
     }
 
     /**
-     * Enumerator that present total stats arrow
+     * Build port info pane
+     *
+     * @param port
+     * @return
      */
-    private class TotalStatsArrow {
+    public GridPane generatePortInfoPane(Port port) {
+        statTable.getChildren().clear();
+        Util.optimizeMemory();
 
-        int count;
-        String icon;
+        double columnWidth = 150;
+        addHeaderCell("Value", 1, columnWidth);
+        addCounterColumn(StatisticConstantsKeys.PORT_ROW_NAME);
+        rowIndex = 1;
+        odd = true;
+        addDefaultCell("port-name", "Port " + port.getIndex(), columnWidth, 1);
+        addDefaultCell("port-driver", port.getDriver(), columnWidth, 1);
+        addDefaultCell("port-index", String.valueOf(port.getIndex()), columnWidth, 1);
+        addDefaultCell("port-owner", port.getOwner(), columnWidth, 1);
+        addDefaultCell("port-speed", String.valueOf(port.getSpeed()), columnWidth, 1);
+        addDefaultCell("port-status", port.getStatus(), columnWidth, 1);
 
-        public TotalStatsArrow(int count, String icon) {
-            this.count = count;
-            this.icon = icon;
-        }
-
-        public int getCount() {
-            return count;
-        }
-
-        public String getIcon() {
-            return icon;
-        }
-
+        return statTable;
     }
+
+    /**
+     * Build global statistic pane
+     *
+     * @return
+     */
+    public GridPane generateGlobalStatPane() {
+        Map<String, String> statsList = StatsLoader.getInstance().getLoadedStatsList();
+        statTable.getChildren().clear();
+        Util.optimizeMemory();
+
+        double columnWidth = 150;
+        addHeaderCell("Value", 1, columnWidth);
+        addCounterColumn(StatisticConstantsKeys.GLOBAL_STATS_ROW_NAME);
+        rowIndex = 1;
+        odd = true;
+        for (StatisticRow row : StatisticConstantsKeys.GLOBAL_STATS_KEY) {
+            StatisticCell cell = getGridCell(row, columnWidth, row.getKey());
+            ((StatisticLabelCell) cell).setLeftPosition();
+            if (row.getAttributeName().equals("active-port")) {
+                cell.updateItem("", PortsManager.getInstance().getActivePort());
+            } else {
+                String value = statsList.get(row.getAttributeName());
+                if (row.isFormatted()) {
+                    value = Util.getFormatted(value, true, row.getUnit());
+                }
+                cell.updateItem("", value);
+            }
+            statTable.getChildren().remove(cell);
+            statTable.add((Node) cell, 1, rowIndex++);
+        }
+        return statTable;
+    }
+
 }
