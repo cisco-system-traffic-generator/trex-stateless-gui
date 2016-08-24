@@ -38,13 +38,17 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
 
     List<Port> portList;
     Task portStatTask;
-
+    Map<String, String> resutlSet = new HashMap<>();
+    String portStatus="";
+    
     /**
      *
      * @param portList
      */
     public UpdatePortStatusService(List<Port> portList) {
         this.portList = portList;
+        resutlSet.put("owner", "");
+        resutlSet.put("state", "");
     }
 
     @Override
@@ -64,18 +68,17 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
      */
     private List<Port> updatePortList() {
         for (Port port : portList) {
-            String portStatus = ConnectionManager.getInstance().sendRequest("get_port_status", "\"port_id\": " + port.getIndex());
+            portStatus = ConnectionManager.getInstance().sendRequest("get_port_status", "\"port_id\": " + port.getIndex());
             if (portStatus == null) {
                 return new ArrayList<>();
             }
             portStatus = Util.removeFirstBrackets(portStatus);
             portStatus = Util.fromJSONResult(portStatus, "result");
-            Map<String, String> resutlSet = new HashMap<>();
-            resutlSet.put("owner", "");
-            resutlSet.put("state", "");
+            
             Util.fromJSONResultSet(portStatus, resutlSet);
             port.setOwner(resutlSet.get("owner"));
             port.setStatus(resutlSet.get("state"));
+            System.gc();
         }
 
         return portList;

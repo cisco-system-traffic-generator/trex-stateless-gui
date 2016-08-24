@@ -225,15 +225,17 @@ public class ConnectionManager {
             }
             String request = "{   \"id\" : \"aggogxls\",   \"jsonrpc\" : \"2.0\",   \"method\" : \"" + cmd + "\",   \"params\" :" + param + " }";
             LOG.trace("Sending request \n" + Util.toPrettyFormat(request));
-
-            logProperty.setValue("Sending request " + Util.toPrettyFormat(request));
-
+            if (!"get_port_status".equals(cmd)) {
+                logProperty.setValue("Sending request " + Util.toPrettyFormat(request));
+            }
             byte[] reply = getServerRPCResponse(request);
 
             if (reply != null) {
                 String serversResponse = new String(reply, "UTF-8");
                 LOG.trace("Received Server response \n" + Util.toPrettyFormat(serversResponse));
-                logProperty.setValue("Received Server response " + Util.toPrettyFormat(serversResponse));
+                if (!"get_port_status".equals(cmd)) {
+                    logProperty.setValue("Received Server response " + Util.toPrettyFormat(serversResponse));
+                }
                 if (serversResponse.contains("error")) {
                     try {
                         String rpcResponse = Util.removeFirstBrackets(serversResponse);
