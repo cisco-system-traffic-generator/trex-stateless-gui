@@ -21,7 +21,9 @@
 package com.exalttech.trex.ui.views.logs;
 
 import com.exalttech.trex.util.Util;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
@@ -39,11 +41,13 @@ import static javafx.scene.layout.AnchorPane.setTopAnchor;
 public class ConsoleLogView extends AnchorPane {
 
     TextArea logsContent;
+    StringBuffer messageBuffer;
 
     /**
      *
      */
     public ConsoleLogView() {
+        messageBuffer = new StringBuffer("");
         setTopAnchor(this, 0d);
         setLeftAnchor(this, 0d);
         setBottomAnchor(this, 0d);
@@ -69,13 +73,12 @@ public class ConsoleLogView extends AnchorPane {
      */
     public void append(String textToAppend) {
         if (textToAppend != null) {
-            Date date = new Date();
-
-            String msgToAdd = LogType.INFO.getDisplayedText() + " " + Util.formatDate(date) + "  " + textToAppend + "\n";
+            messageBuffer.setLength(0);
+            messageBuffer.append(LogType.INFO.getDisplayedText()).append(" ").append(Util.formatDate(new Date())).append(" ").append(textToAppend).append("\n");
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    logsContent.appendText(msgToAdd);
+                    logsContent.appendText(messageBuffer.toString());
                 }
             });
 

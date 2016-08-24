@@ -50,7 +50,7 @@ public class ConnectionManager {
     private static ConnectionManager instance = null;
     private static StringProperty logProperty = new SimpleStringProperty();
     private final static String ASYNC_PASS_STATUS = "Pass";
-    
+
     private final String MAGIC_STRING = "ABE85CEA";
 
     /**
@@ -225,15 +225,17 @@ public class ConnectionManager {
             }
             String request = "{   \"id\" : \"aggogxls\",   \"jsonrpc\" : \"2.0\",   \"method\" : \"" + cmd + "\",   \"params\" :" + param + " }";
             LOG.trace("Sending request \n" + Util.toPrettyFormat(request));
-
-            logProperty.setValue("Sending request " + Util.toPrettyFormat(request));
-
+            if (!"get_port_status".equals(cmd)) {
+                logProperty.setValue("Sending request " + Util.toPrettyFormat(request));
+            }
             byte[] reply = getServerRPCResponse(request);
 
             if (reply != null) {
                 String serversResponse = new String(reply, "UTF-8");
                 LOG.trace("Received Server response \n" + Util.toPrettyFormat(serversResponse));
-                logProperty.setValue("Received Server response " + Util.toPrettyFormat(serversResponse));
+                if (!"get_port_status".equals(cmd)) {
+                    logProperty.setValue("Received Server response " + Util.toPrettyFormat(serversResponse));
+                }
                 if (serversResponse.contains("error")) {
                     try {
                         String rpcResponse = Util.removeFirstBrackets(serversResponse);
@@ -318,11 +320,16 @@ public class ConnectionManager {
                     subscriber.connect("tcp://" + ip + ":" + asyncPort);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
                     String res;
+
                     while (!Thread.currentThread().isInterrupted()) {
-                        byte[] responseBytes = subscriber.recv();
-                        res = getDecompressedString(responseBytes);
-                        if (res != null) {
-                            handleAsyncResponse(res);
+                        try {
+                            res = getDecompressedString(subscriber.recv());
+                            if (res != null) {
+                                handleAsyncResponse(res);
+                                res = null;
+                            }
+                        } catch (Exception ex) {
+                            LOG.error("Possible error while reading the Async request", ex);
                         }
                     }
                 } catch (Exception ex) {
@@ -334,15 +341,15 @@ public class ConnectionManager {
             private String getDecompressedString(byte[] data) {
                 // if the length is larger than 8 bytes
                 if (data.length > 8) {
-                    
+
                     // Take the first 4 bytes
                     byte[] magicBytes = Arrays.copyOfRange(data, 0, 4);
 
                     String magicString = DatatypeConverter.printHexBinary(magicBytes);
-                    
+
                     /* check MAGIC in the first 4 bytes in case we have it, it is compressed */
                     if (magicString.equals(MAGIC_STRING)) {
-                        
+
                         // Skip another  4 bytes containing the uncompressed size of the  message
                         byte[] compressedData = Arrays.copyOfRange(data, 8, data.length);
 

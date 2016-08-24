@@ -97,6 +97,7 @@ public class DashboardController extends DialogView implements Initializable, Di
     private SimpleMetroArcGauge simpleMetroArcGauge;
     PortsManager portManager;
     Stage currentStage;
+    StatsTableGenerator statsTableGenerator;
 
     /**
      *
@@ -114,7 +115,7 @@ public class DashboardController extends DialogView implements Initializable, Di
 
         // add current dashboard to opening window
         DialogManager.getInstance().addHandler(this);
-
+        statsTableGenerator = new StatsTableGenerator();
     }
 
     /**
@@ -124,8 +125,10 @@ public class DashboardController extends DialogView implements Initializable, Di
         currentStage = (Stage) mainDashboardContainer.getScene().getWindow();
         currentStage.getScene().getWindow().setOnCloseRequest((WindowEvent event) -> {
             stopRunningThread();
+            statsTableGenerator.reset();
             // remove current opened dashboard from opening window
             DialogManager.getInstance().removeHandler(this);
+            Util.optimizeMemory();
         });
 
         // add size listener
@@ -212,7 +215,6 @@ public class DashboardController extends DialogView implements Initializable, Di
      * Build port stats table
      */
     private void buildPortStatTable() {
-        StatsTableGenerator statsTableGenerator = new StatsTableGenerator();
         double colWidth = (statTableContainer.getWidth() - 150) / (portManager.getPortCount(ownerFilter) + 1);
         if (colWidth < 150) {
             colWidth = 150;

@@ -29,14 +29,12 @@ import com.exalttech.trex.ui.MultiplierType;
 import com.exalttech.trex.ui.PortManagerEventHandler;
 import com.exalttech.trex.ui.PortState;
 import com.exalttech.trex.ui.PortsManager;
-import com.exalttech.trex.ui.TableCellElementGenerator;
 import com.exalttech.trex.ui.components.CustomTreeItem;
 import com.exalttech.trex.ui.components.CustomTreeItem.TreeItemType;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.SystemInfoReq;
-import com.exalttech.trex.ui.views.InfoPaneGenerator;
 import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
 import com.exalttech.trex.ui.views.MultiplierView;
 import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
@@ -51,7 +49,6 @@ import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.ProfileManager;
 import com.exalttech.trex.util.Util;
-import com.exalttech.trex.util.files.FileManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -461,6 +458,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @param portIndex
      */
     private void buildPortStatTable(int portIndex) {
+        statTableContainer.setContent(null);
+
         if (portIndex == -1) {
             statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portManager.getPortList().size(), true, 150, false));
             return;
@@ -472,7 +471,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Build global statistic table
      */
     private void buildGlobalStat() {
-        statTableContainer.setContent(statsTableGenerator.getGlobalStatTable());
+        statTableContainer.setContent(statsTableGenerator.generateGlobalStatPane());
     }
 
     /**
@@ -524,50 +523,53 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     /**
      * Reset the application to initial state
      */
-    private void resetApplication(boolean isServerCrashed) {
-        if (Util.isWindows() && FileManager.isExists(Util.getApplicationPath())) {
-            restartApplication();
-        } else {
-            if (!isServerCrashed) {
-                ConnectionManager.getInstance().setConnected(false);
-                // release all port
-                releaseAllPort(false);
-            }
-            // shutdown running services
-            shutdownRunningServices();
-            // close all open dialog
-            DialogManager.getInstance().closeAll();
-            // clear tree
-            devicesTree.setRoot(null);
-            // hide all right side views
-            statTableWrapper.setVisible(false);
-            profileContainer.setVisible(false);
-            cachedStatsList = new HashMap<>();
-            connectMenuItem.setText("Connect");
-            statsMenuItem.setDisable(true);
-            dashboardIcon.setDisable(true);
-            serverStatusIcon.setImage(new Image("/icons/offline.png"));
-            serverStatusLabel.setText("Disconnected");
-            connectIcon.getStyleClass().remove("disconnectIcon");
-            connectDixconnectTooltip.setText("Connect to TRex server");
-            // reset Header btns
-            startStream.setDisable(true);
-            startAllStream.setDisable(true);
-            stopStream.setDisable(true);
-            stopAllStream.setDisable(true);
-            pauseStream.setDisable(true);
-            clearCache.setDisable(true);
-            logsContainer.setDisable(true);
-            copyToClipboardBtn.setDisable(true);
-            acquirePort.setDisable(true);
-            releasePort.setDisable(true);
-            assignedPortProfileMap.clear();
-            // stop async subscriber
-            ConnectionManager.getInstance().disconnectSubscriber();
-            ConnectionManager.getInstance().disconnectRequester();
-            if (isServerCrashed) {
-                openConnectDialog();
-            }
+    private void resetApplication(boolean didServerCrash) {
+        if (!didServerCrash) {
+            ConnectionManager.getInstance().setConnected(false);
+            // release all port
+            releaseAllPort(false);
+        }
+
+        // shutdown running services
+        shutdownRunningServices();
+
+        // close all open dialog
+        DialogManager.getInstance().closeAll();
+
+        // clear tree
+        devicesTree.setRoot(null);
+
+        // hide all right side views
+        statTableWrapper.setVisible(false);
+        profileContainer.setVisible(false);
+        cachedStatsList = new HashMap<>();
+        connectMenuItem.setText("Connect");
+        statsMenuItem.setDisable(true);
+        dashboardIcon.setDisable(true);
+        serverStatusIcon.setImage(new Image("/icons/offline.png"));
+        serverStatusLabel.setText("Disconnected");
+        connectIcon.getStyleClass().remove("disconnectIcon");
+        connectDixconnectTooltip.setText("Connect to TRex server");
+        
+        // reset Header btns
+        startStream.setDisable(true);
+        startAllStream.setDisable(true);
+        stopStream.setDisable(true);
+        stopAllStream.setDisable(true);
+        pauseStream.setDisable(true);
+        clearCache.setDisable(true);
+        logsContainer.setDisable(true);
+        copyToClipboardBtn.setDisable(true);
+        acquirePort.setDisable(true);
+        releasePort.setDisable(true);
+        assignedPortProfileMap.clear();
+        
+        // stop async subscriber
+        ConnectionManager.getInstance().disconnectSubscriber();
+        ConnectionManager.getInstance().disconnectRequester();
+        
+        if (didServerCrash) {
+            openConnectDialog();
         }
     }
 
@@ -587,8 +589,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Build Device table info
      */
     private void buildSystemInfoTable() {
-        InfoPaneGenerator deviceInfoView = new InfoPaneGenerator();
-        statTableContainer.setContent(deviceInfoView.generateSystemInfoPane(systemInfoReq));
+        statTableContainer.setContent(statsTableGenerator.generateSystemInfoPane(systemInfoReq));
     }
 
     /**
@@ -596,8 +597,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void buildPortInfoTable() {
         Port port = portManager.getPortList().get(getSelectedPortIndex());
-        InfoPaneGenerator deviceInfoView = new InfoPaneGenerator();
-        statTableContainer.setContent(deviceInfoView.generatePortInfoPane(port));
+        statTableContainer.setContent(statsTableGenerator.generatePortInfoPane(port));
     }
 
     /**
@@ -693,13 +693,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             File selectedFile = new File(ProfileManager.getInstance().getProfileFilePath(fileName));
             loadedProfiles = tableView.loadStreamTable(selectedFile);
-           
+
             allStreamWithLatency = true;
             for (Profile profile : loadedProfiles) {
                 allStreamWithLatency = allStreamWithLatency && profile.getStream().getFlowStats().isEnabled();
             }
             multiplierView.setDisable(allStreamWithLatency);
-            
+
         } catch (Exception ex) {
             LOG.error("Error loading stream table", ex);
         }
@@ -978,8 +978,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             @Override
             public void accept(Port port) {
                 PortState portState = PortState.getPortStatus(port.getStatus());
-                if (portManager.isCurrentUserOwner(port.getIndex()) 
-                        && portState != PortState.TX && portState != PortState.IDLE ) {
+                if (portManager.isCurrentUserOwner(port.getIndex())
+                        && portState != PortState.TX && portState != PortState.IDLE) {
                     doStartResume(port.getIndex());
                 }
             }
@@ -994,13 +994,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void startTraffic(int portID) {
         try {
             AssignedProfile assignedProf = assignedPortProfileMap.get(portID);
-            
+
             if (assignedProf != null && assignedProf.isAllStreamsWithLatency()) {
                 serverRPCMethods.startTraffic(portID, false, "percentage", 100, multiplierView.getDuration());
             } else {
                 serverRPCMethods.startTraffic(portID, false, "pps", multiplierView.getPPSValue(), multiplierView.getDuration());
             }
-            
+
             if (assignedProf != null) {
                 assignedProf.setStreamStarted(true);
                 assignedProf.setHasDuration(multiplierView.isDurationEnable());
@@ -1460,6 +1460,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         if (refreshStatsService.isRunning()) {
             refreshStatsService.cancel();
         }
+        Util.optimizeMemory();
     }
 
     /**
