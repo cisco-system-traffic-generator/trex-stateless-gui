@@ -210,7 +210,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     KeyCombination openPreferencesCombination = new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN);
     KeyCombination quiteCombination = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
     private boolean allStreamWithLatency;
-
+    private boolean isFirstPortStatusRequest = true;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         portManager = PortsManager.getInstance();
@@ -1403,6 +1404,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             updateDevicesTree();
             updateHeaderBtnStat();
             enableDisableStartStopAllBtn();
+            if(isFirstPortStatusRequest){
+                isFirstPortStatusRequest = false;
+                reaquireOwnedPorts();
+            }
             CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.getTreeItemType() == TreeItemType.PORT) {
                 updateAcquireReleaseBtnState(false);
@@ -1417,6 +1422,21 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         }
     }
 
+    /**
+     * Re-acquire owned port on login 
+     */
+    private void reaquireOwnedPorts() {
+        try{
+          for (Port port : portManager.getPortList()) {
+              if(portManager.isCurrentUserOwner(port.getIndex())){
+                  serverRPCMethods.acquireServerPort(port.getIndex(), true);
+              }
+          }
+        }catch(Exception ex){
+            LOG.error("Error re-acquiring port", ex);
+        }
+    }
+    
     /**
      * Enable/Disable start/stop all button according to port state
      */
