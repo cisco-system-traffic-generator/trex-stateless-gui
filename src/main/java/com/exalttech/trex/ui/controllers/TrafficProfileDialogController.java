@@ -250,10 +250,12 @@ public class TrafficProfileDialogController extends DialogView implements Initia
      */
     private void loadStreamTable() {
         try {
-            selectedFile = new File(ProfileManager.getInstance().getProfileFilePath(currentLoadedProfile));
-            currentLoadedProfilesList = tableView.loadStreamTable(selectedFile);
-            profileViewWrapper.getChildren().clear();
-            profileViewWrapper.getChildren().add(tableView);
+            if (currentLoadedProfile != null) {
+                selectedFile = new File(ProfileManager.getInstance().getProfileFilePath(currentLoadedProfile));
+                currentLoadedProfilesList = tableView.loadStreamTable(selectedFile);
+                profileViewWrapper.getChildren().clear();
+                profileViewWrapper.getChildren().add(tableView);
+            }
         } catch (Exception ex) {
             LOG.error("Error loading stream table", ex);
         }
@@ -312,6 +314,8 @@ public class TrafficProfileDialogController extends DialogView implements Initia
             if (!Util.isNullOrEmpty(newProfileName)) {
                 profileListView.getItems().add(newProfileName);
                 profileListView.getSelectionModel().select(newProfileName);
+                // enable export buttons
+                disableProfileFunctionBtn(false);
             }
         } catch (IOException ex) {
             LOG.error("Error creating new profile", ex);
