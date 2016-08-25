@@ -550,7 +550,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         serverStatusLabel.setText("Disconnected");
         connectIcon.getStyleClass().remove("disconnectIcon");
         connectDixconnectTooltip.setText("Connect to TRex server");
-        
+
         // reset Header btns
         startStream.setDisable(true);
         startAllStream.setDisable(true);
@@ -563,11 +563,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         acquirePort.setDisable(true);
         releasePort.setDisable(true);
         assignedPortProfileMap.clear();
-        
+
         // stop async subscriber
         ConnectionManager.getInstance().disconnectSubscriber();
         ConnectionManager.getInstance().disconnectRequester();
-        
+
         if (didServerCrash) {
             openConnectDialog();
         }
@@ -807,7 +807,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             } else if (connectCombination.match(event) && !ConnectionManager.getInstance().isConnected()) {
                 openConnectDialog();
             } else if (quiteCombination.match(event)) {
-                TrexApp.getPrimaryStage().fireEvent(new WindowEvent(TrexApp.getPrimaryStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
+                if (Util.isConfirmed("Are you sure you want to close the application?")) {
+                    TrexApp.getPrimaryStage().fireEvent(new WindowEvent(TrexApp.getPrimaryStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
+                }
             }
         });
         // bind async trex event property
