@@ -1406,7 +1406,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             enableDisableStartStopAllBtn();
             if(isFirstPortStatusRequest){
                 isFirstPortStatusRequest = false;
-                reaquireOwnedPorts();
+                reAcquireOwnedPorts();
             }
             CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.getTreeItemType() == TreeItemType.PORT) {
@@ -1425,14 +1425,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     /**
      * Re-acquire owned port on login 
      */
-    private void reaquireOwnedPorts() {
+    private void reAcquireOwnedPorts() {
         try{
           for (Port port : portManager.getPortList()) {
               if(portManager.isCurrentUserOwner(port.getIndex())){
                   serverRPCMethods.acquireServerPort(port.getIndex(), true);
               }
           }
-        }catch(Exception ex){
+        }catch(PortAcquireException ex){
             LOG.error("Error re-acquiring port", ex);
         }
     }
