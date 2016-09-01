@@ -185,7 +185,7 @@ public class TrafficProfileDialogController extends DialogView implements Initia
             fileChooser.setTitle("Load Profile File");
 
             String loadFolderPath = PreferencesManager.getInstance().getLoadLocation();
-            if (!Util.isNullOrEmpty(loadFolderPath)) {
+            if (!Util.isNullOrEmpty(loadFolderPath) && new File(loadFolderPath).exists()) {
                 fileChooser.setInitialDirectory(new File(loadFolderPath));
             }
             File loadedFile = fileChooser.showOpenDialog(((Button) (event.getSource())).getScene().getWindow());
