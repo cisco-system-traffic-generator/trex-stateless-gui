@@ -210,7 +210,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     KeyCombination openPreferencesCombination = new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN);
     KeyCombination quiteCombination = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
     private boolean allStreamWithLatency;
-
+    private boolean isFirstPortStatusRequest = true;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         portManager = PortsManager.getInstance();
@@ -550,7 +551,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         serverStatusLabel.setText("Disconnected");
         connectIcon.getStyleClass().remove("disconnectIcon");
         connectDixconnectTooltip.setText("Connect to TRex server");
-        
+
         // reset Header btns
         startStream.setDisable(true);
         startAllStream.setDisable(true);
@@ -563,11 +564,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         acquirePort.setDisable(true);
         releasePort.setDisable(true);
         assignedPortProfileMap.clear();
-        
+
         // stop async subscriber
         ConnectionManager.getInstance().disconnectSubscriber();
         ConnectionManager.getInstance().disconnectRequester();
-        
+
         if (didServerCrash) {
             openConnectDialog();
         }
@@ -807,7 +808,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             } else if (connectCombination.match(event) && !ConnectionManager.getInstance().isConnected()) {
                 openConnectDialog();
             } else if (quiteCombination.match(event)) {
-                TrexApp.getPrimaryStage().fireEvent(new WindowEvent(TrexApp.getPrimaryStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
+                if (Util.isConfirmed("Are you sure you want to close the application?")) {
+                    TrexApp.getPrimaryStage().fireEvent(new WindowEvent(TrexApp.getPrimaryStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
+                }
             }
         });
         // bind async trex event property
@@ -1401,6 +1404,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             updateDevicesTree();
             updateHeaderBtnStat();
             enableDisableStartStopAllBtn();
+            if(isFirstPortStatusRequest){
+                isFirstPortStatusRequest = false;
+                reAcquireOwnedPorts();
+            }
             CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.getTreeItemType() == TreeItemType.PORT) {
                 updateAcquireReleaseBtnState(false);
@@ -1415,6 +1422,21 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         }
     }
 
+    /**
+     * Re-acquire owned port on login 
+     */
+    private void reAcquireOwnedPorts() {
+        try{
+          for (Port port : portManager.getPortList()) {
+              if(portManager.isCurrentUserOwner(port.getIndex())){
+                  serverRPCMethods.acquireServerPort(port.getIndex(), true);
+              }
+          }
+        }catch(PortAcquireException ex){
+            LOG.error("Error re-acquiring port", ex);
+        }
+    }
+    
     /**
      * Enable/Disable start/stop all button according to port state
      */

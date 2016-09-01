@@ -63,7 +63,7 @@ public class FileManager {
             createDirectoryIfNotExists(getLocalFilePath() + PROFILES_PATH);
             return getLocalFilePath() + PROFILES_PATH;
         }
-        return "";
+        return "generatedFiles/";
     }
 
     /**
@@ -189,7 +189,7 @@ public class FileManager {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(type.getFilterDescription(), type.getFilterExtension());
         fileChooser.getExtensionFilters().add(extFilter);
 
-        if (!Util.isNullOrEmpty(filePath)) {
+        if (!Util.isNullOrEmpty(filePath) && new File(filePath).exists()) {
             fileChooser.setInitialDirectory(new File(filePath));
         }
         if (isExport) {
