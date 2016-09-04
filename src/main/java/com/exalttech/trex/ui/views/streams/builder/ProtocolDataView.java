@@ -26,11 +26,9 @@ import com.exalttech.trex.packets.TrexVlanPacket;
 import com.exalttech.trex.ui.views.models.AddressProtocolData;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
 import com.exalttech.trex.ui.views.streams.binders.ProtocolSelectionDataBinding;
-import com.exalttech.trex.util.Util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -59,9 +57,6 @@ public class ProtocolDataView extends Accordion {
     UDPProtocolView udpView;
     PayloadView payloadView;
     VLanProtocolView vlanView;
-    private boolean isFixIPV4ChecksumAdded;
-    private String splitByVar;
-    private int vmCacheSize;
 
     /**
      *
@@ -181,13 +176,8 @@ public class ProtocolDataView extends Accordion {
      * @throws Exception
      */
     public TrexEthernetPacket getProtocolData() throws Exception {
-        int packetLength = 60;
-        String operation = getOperationFromType(selections.getFrameLengthType());
-        if (PacketLengthType.FIXED.getTitle().equals(operation)) {
-            packetLength = Integer.parseInt(selections.getFrameLength()) - 4;
-        } else {
-            packetLength = Integer.parseInt(selections.getMaxLength()) - 4;
-        }
+
+        int packetLength = PacketBuilderHelper.getPacketLength(selections.getFrameLengthType(), Integer.parseInt(selections.getFrameLength()), Integer.parseInt(selections.getMaxLength()));
 
         TrexEthernetPacket ethernetPacket = new TrexEthernetPacket();
         // set mac address
@@ -201,6 +191,7 @@ public class ProtocolDataView extends Accordion {
             ethernetPacket.setType(ethernetView.getType());
         }
 
+        Builder ipV4Packet = getIPV4Packet(PacketBuilderHelper.getIPV4TotalLength(selections.isTaggedVlanSelected()), packetLength);
         if (selections.isTaggedVlanSelected()) {
             if (!ethernetView.isOverrideType()) {
                 ethernetPacket.setType(EtherType.DOT1Q_VLAN_TAGGED_FRAMES.value());
@@ -213,15 +204,13 @@ public class ProtocolDataView extends Accordion {
                     vlanPacket.setType((short) 0xFFFF);
                 } else {
                     vlanPacket.setType(EtherType.IPV4.value());
-
                 }
             }
-            Builder ipV4Packet = getIPV4Packet(42, packetLength);
             vlanPacket.buildPacket(ipV4Packet);
-
             ethernetPacket.buildPacket(vlanPacket.getBuilder());
+
         } else {
-            ethernetPacket.buildPacket(getIPV4Packet(46, packetLength));
+            ethernetPacket.buildPacket(ipV4Packet);
         }
 
         return ethernetPacket;
@@ -243,181 +232,21 @@ public class ProtocolDataView extends Accordion {
             Payload payload = payloadView.getPayload();
             ipV4Packet.setPayload(payload);
 
+            int ipv4PacketLength = PacketBuilderHelper.getIPV4PacketLength(selections.isTaggedVlanSelected(), packetLength, totalLength);
+            int tcpUdpPacketLength = PacketBuilderHelper.getTcpUdpPacketLength(selections.isTaggedVlanSelected(), packetLength, totalLength);
+
             if (selections.isTCPSelected()) {
-
-                if (totalLength == 46) {
-                    ipV4Packet.setPacketLength(packetLength - totalLength + 4);
-                    ipV4Packet.buildPacket(tcpView.getTcpPacket(payload, packetLength - totalLength + 4).getBuilder(), IpNumber.TCP);
-                } else {//  VLAN
-                    ipV4Packet.setPacketLength(packetLength - totalLength - 8);
-                    ipV4Packet.buildPacket(tcpView.getTcpPacket(payload, packetLength - totalLength - 4).getBuilder(), IpNumber.TCP);
-                }
-
+                ipV4Packet.setPacketLength(ipv4PacketLength);
+                ipV4Packet.buildPacket(tcpView.getTcpPacket(payload, tcpUdpPacketLength).getBuilder(), IpNumber.TCP);
             } else if (selections.isUDPSelected()) {
-                if (totalLength == 46) {
-                    ipV4Packet.setPacketLength(packetLength - totalLength + 4);
-                    ipV4Packet.buildPacket(udpView.getUDPPacket(payload, packetLength - totalLength + 4).getBuilder(), IpNumber.UDP);
-                } else { //  VLAN
-                    ipV4Packet.setPacketLength(packetLength - totalLength - 8);
-                    ipV4Packet.buildPacket(udpView.getUDPPacket(payload, packetLength - totalLength - 4).getBuilder(), IpNumber.UDP);
-                }
-
+                ipV4Packet.setPacketLength(ipv4PacketLength);
+                ipV4Packet.buildPacket(udpView.getUDPPacket(payload, tcpUdpPacketLength).getBuilder(), IpNumber.UDP);
             } else {
                 ipV4Packet.buildPacket(null, IpNumber.getInstance((byte) 0));
             }
             return ipV4Packet.getBuilder();
         }
         return null;
-    }
-
-    private List<Object> getPacketLenVMInstruction(String name, String type, String minLength, String maxLength, boolean taggedVlanSelected) {
-        ArrayList<Object> vmInstructionList = new ArrayList<>();
-        String operation = getOperationFromType(type);
-        if (PacketLengthType.FIXED.getTitle().equals(operation)) {
-            return vmInstructionList;
-        }
-
-        LinkedHashMap<String, Object> firstVMInstruction = new LinkedHashMap<>();
-
-        firstVMInstruction.put("init_value", Util.getIntFromString(minLength) - 4);
-        firstVMInstruction.put("max_value", Util.getIntFromString(maxLength) - 4);
-        firstVMInstruction.put("min_value", Util.getIntFromString(minLength) - 4);
-
-        firstVMInstruction.put("name", name);
-        firstVMInstruction.put("op", operation);
-        firstVMInstruction.put("size", 2);
-        firstVMInstruction.put("step", 1);
-        firstVMInstruction.put("type", "flow_var");
-
-        LinkedHashMap<String, Object> secondVMInstruction = new LinkedHashMap<>();
-        secondVMInstruction.put("name", name);
-        secondVMInstruction.put("type", "trim_pkt_size");
-
-        LinkedHashMap<String, Object> thirdVMInstruction = new LinkedHashMap<>();
-        thirdVMInstruction.put("add_value", taggedVlanSelected ? -18 : -14);
-        thirdVMInstruction.put("is_big_endian", true);
-        thirdVMInstruction.put("name", name);
-        thirdVMInstruction.put("pkt_offset", taggedVlanSelected ? 20 : 16);
-        thirdVMInstruction.put("type", "write_flow_var");
-
-        LinkedHashMap<String, Object> forthVMInstruction = new LinkedHashMap<>();
-        forthVMInstruction.put("pkt_offset", taggedVlanSelected ? 18 : 14);
-        forthVMInstruction.put("type", "fix_checksum_ipv4");
-
-        LinkedHashMap<String, Object> fifthVMInstruction = new LinkedHashMap<>();
-        fifthVMInstruction.put("add_value", taggedVlanSelected ? -38 : -34);
-        fifthVMInstruction.put("is_big_endian", true);
-        fifthVMInstruction.put("name", name);
-        fifthVMInstruction.put("pkt_offset", taggedVlanSelected ? 42 : 38);
-        fifthVMInstruction.put("type", "write_flow_var");
-
-        vmInstructionList.add(firstVMInstruction);
-        vmInstructionList.add(secondVMInstruction);
-        vmInstructionList.add(thirdVMInstruction);
-
-        if (!isFixIPV4ChecksumAdded) {
-            vmInstructionList.add(forthVMInstruction);
-            isFixIPV4ChecksumAdded = true;
-        }
-
-        if (selections.isUDPSelected()) {
-            vmInstructionList.add(fifthVMInstruction);
-        }
-
-        return vmInstructionList;
-    }
-
-    /**
-     *
-     * @param name
-     * @param type
-     * @param packetOffset
-     * @param count
-     * @param step
-     * @return
-     */
-    public List<Object> getVMInstruction(String name, String type, int packetOffset, String count, String step) {
-        ArrayList<Object> vmInstructionList = new ArrayList<>();
-
-        String operation = getOperationFromType(type);
-        if ("Fixed".equals(operation)) {
-            return vmInstructionList;
-        }
-
-        LinkedHashMap<String, Object> firstVMInstruction = new LinkedHashMap<>();
-
-        int size = getCalculatedSize(Util.convertUnitToNum(count));
-        
-        // TSG-23
-        int maxValue = (int) Util.convertUnitToNum(count);
-        
-        // set offset to byte 4 for the ip address
-        if (name.contains("ip")) {
-            packetOffset += 4 - size;
-            
-            // TSG-22
-            maxValue = maxValue-1;
-        }
-        /**
-         * "init_value": 1, "max_value": 1, "min_value": 1, "name": "mac_src",
-         * "op": "inc", "size": 1, "step": 1, "type": "flow_var"
-         */
-        firstVMInstruction.put("init_value", 0);
-        firstVMInstruction.put("min_value", 0);
-        firstVMInstruction.put("max_value", maxValue);
-        firstVMInstruction.put("name", name);
-        firstVMInstruction.put("op", operation);
-        firstVMInstruction.put("size", size);
-        firstVMInstruction.put("step", Util.getIntFromString(step));
-        firstVMInstruction.put("type", "flow_var");
-
-        /**
-         * "add_value": 0, "is_big_endian": true, "name": "mac_src",
-         * "pkt_offset": 11, "type": "write_flow_var"
-         */
-        LinkedHashMap<String, Object> secondVMInstruction = new LinkedHashMap<>();
-        secondVMInstruction.put("add_value", 0);
-        secondVMInstruction.put("is_big_endian", true);
-        secondVMInstruction.put("name", name);
-        secondVMInstruction.put("pkt_offset", packetOffset);
-        secondVMInstruction.put("type", "write_flow_var");
-
-        LinkedHashMap<String, Object> thirdVMInstruction = new LinkedHashMap<>();
-        thirdVMInstruction.put("pkt_offset", selections.isTaggedVlanSelected() ? 18 : 14);
-        thirdVMInstruction.put("type", "fix_checksum_ipv4");
-
-        vmInstructionList.add(firstVMInstruction);
-        vmInstructionList.add(secondVMInstruction);
-
-        if (!isFixIPV4ChecksumAdded && name.contains("ip")) {
-            vmInstructionList.add(thirdVMInstruction);
-            isFixIPV4ChecksumAdded = true;
-        }
-        if (!"random".equals(operation)) {
-            splitByVar = name;
-        }
-        if (Util.getIntFromString(count) < 5000 && vmCacheSize == 0) {
-            vmCacheSize = 255;
-        }
-        return vmInstructionList;
-    }
-
-    /**
-     * Calculate size according to count value return 4 if count greater than
-     * 64K, 1 if count less than 256 or 2 if count greater than 256 and less
-     * than 4G
-     *
-     * @param count
-     * @return
-     */
-    private int getCalculatedSize(double count) {
-        if (count > 65536) {
-            return 4;
-        } else if (count <= 256) {
-            return 1;
-        } else {
-            return 2;
-        }
     }
 
     /**
@@ -427,10 +256,8 @@ public class ProtocolDataView extends Accordion {
      */
     public Map<String, Object> getVm() {
 
-        // Reset Flag
-        isFixIPV4ChecksumAdded = false;
-        splitByVar = "";
-        vmCacheSize = 0;
+        VMInstructionBuilder vmInstructionBuilder = new VMInstructionBuilder(selections.isTaggedVlanSelected(), selections.isUDPSelected());
+
         // ipv4/mac selsetion data
         AddressProtocolData ipv4Src = ipv4View.getSourceAddress();
         AddressProtocolData ipv4Dst = ipv4View.getDestinationAddress();
@@ -438,48 +265,31 @@ public class ProtocolDataView extends Accordion {
         AddressProtocolData macDest = macView.getDestinationAddress();
 
         ArrayList<Object> instructionsList = new ArrayList<>();
-        int offset = 0;
-        if (selections.isTaggedVlanSelected()) {
-            offset = 4;
-        }
+        int offset = vmInstructionBuilder.getOffset(selections.isTaggedVlanSelected());
+
         // ADD 4 in case of VLAN
-        instructionsList.addAll(getVMInstruction("mac_dest", macDest.getType(), 0, macDest.getCount(), macDest.getStep()));
-        instructionsList.addAll(getVMInstruction("mac_src", macSrc.getType(), 6, macSrc.getCount(), macSrc.getStep()));
+        instructionsList.addAll(vmInstructionBuilder.getVMInstruction("mac_dest", macDest.getType(), 0, macDest.getCount(), macDest.getStep()));
+        instructionsList.addAll(vmInstructionBuilder.getVMInstruction("mac_src", macSrc.getType(), 6, macSrc.getCount(), macSrc.getStep()));
 
-        instructionsList.addAll(getVMInstruction("ip_dest", ipv4Dst.getType(), 30 + offset, ipv4Dst.getCount(), "1"));
-        instructionsList.addAll(getVMInstruction("ip_src", ipv4Src.getType(), 26 + offset, ipv4Src.getCount(), "1"));
+        instructionsList.addAll(vmInstructionBuilder.getVMInstruction("ip_dest", ipv4Dst.getType(), 30 + offset, ipv4Dst.getCount(), "1"));
+        instructionsList.addAll(vmInstructionBuilder.getVMInstruction("ip_src", ipv4Src.getType(), 26 + offset, ipv4Src.getCount(), "1"));
 
-        instructionsList.addAll(getPacketLenVMInstruction("pkt_len", selections.getFrameLengthType(), selections.getMinLength(), selections.getMaxLength(), selections.isTaggedVlanSelected()));
+        instructionsList.addAll(vmInstructionBuilder.getPacketLenVMInstruction("pkt_len", selections.getFrameLengthType(), selections.getMinLength(), selections.getMaxLength(), selections.isTaggedVlanSelected()));
 
         Map<String, Object> additionalProperties = new HashMap<>();
 
         LinkedHashMap<String, Object> vmBody = new LinkedHashMap<>();
 
-        vmBody.put("split_by_var", splitByVar);
+        vmBody.put("split_by_var", vmInstructionBuilder.getSplitByVar());
         vmBody.put("instructions", instructionsList);
 
-        if (vmCacheSize > 0) {
-            vmBody.put("cache_size", vmCacheSize);
-        }
+        // add cache size
+        vmInstructionBuilder.addCacheSize(vmBody);
 
         additionalProperties.put("vm", vmBody);
 
         return additionalProperties;
 
-    }
-
-    /**
-     * Return operation value from type
-     */
-    private String getOperationFromType(String type) {
-        if (type.startsWith("Inc")) {
-            return "inc";
-        } else if (type.startsWith("Dec")) {
-            return "dec";
-        } else if (type.startsWith("Rand")) {
-            return "random";
-        }
-        return "Fixed";
     }
 
     /**

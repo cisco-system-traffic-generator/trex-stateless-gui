@@ -1,0 +1,202 @@
+[
+    {
+        "testFileName": "UDP_WITHOUT_VLAN_FIX_LENGTH",
+        "taggedVlan": false,
+        "ethernetData": {
+            "srcAddress": {
+                "address": "00:00:00:00:00:00",
+                "count": "16",
+                "type": "Fixed",
+                "step": "1"
+            },
+            "dstAddress": {
+                "address": "00:00:00:00:00:00",
+                "count": "16",
+                "type": "Fixed",
+                "step": "1"
+            }
+        },
+        "ipv4Data": {
+            "enable": true,
+            "srcAddress": {
+                "address": "16.0.0.1",
+                "count": "16",
+                "type": "Increment",
+                "step": "1"
+            },
+            "dstAddress": {
+                "address": "48.0.0.1",
+                "count": "16",
+                "type": "Increment",
+                "step": "1"
+            }
+        },
+        "udpData": {
+            "enable": true,
+            "srcPort": 1025,
+            "dstPort": 1025,
+            "checksum": "FFBA",
+            "length": 26
+        },
+        "payload": {
+            "type": "fixed_word",
+            "pattern": "00"
+        },
+        "packetLength": {
+            "frameLength": 64,
+            "lengthType": "Fixed",
+            "minLength": 64,
+            "maxLength": 1024
+        }
+    },
+    {
+        "testFileName": "UDP_WITHOUT_VLAN_DYNAMIC_LENGTH",
+        "taggedVlan": false,
+        "ethernetData": {
+            "srcAddress": {
+                "address": "00:00:00:00:00:00",
+                "count": "16",
+                "type": "Fixed",
+                "step": "1"
+            },
+            "dstAddress": {
+                "address": "00:00:00:00:00:00",
+                "count": "16",
+                "type": "Fixed",
+                "step": "1"
+            }
+        },
+        "ipv4Data": {
+            "enable": true,
+            "srcAddress": {
+                "address": "16.0.0.1",
+                "count": "16",
+                "type": "Increment",
+                "step": "1"
+            },
+            "dstAddress": {
+                "address": "48.0.0.1",
+                "count": "16",
+                "type": "Increment",
+                "step": "1"
+            }
+        },
+        "udpData": {
+            "enable": true,
+            "srcPort": 1025,
+            "dstPort": 1025,
+            "checksum": "FFBA",
+            "length": 26
+        },
+        "payload": {
+            "type": "fixed_word",
+            "pattern": "00"
+        },
+        "packetLength": {
+            "frameLength": 64,
+            "lengthType": "Increment",
+            "minLength": 64,
+            "maxLength": 1024
+        }
+    },
+    {
+        "testFileName": "UDP_WITH_VLAN_FIX_LENGTH",
+        "taggedVlan": true,
+        "ethernetData": {
+            "srcAddress": {
+                "address": "00:00:00:00:00:00",
+                "count": "16",
+                "type": "Fixed",
+                "step": "1"
+            },
+            "dstAddress": {
+                "address": "00:00:00:00:00:00",
+                "count": "16",
+                "type": "Fixed",
+                "step": "1"
+            }
+        },
+        "ipv4Data": {
+            "enable": true,
+            "srcAddress": {
+                "address": "16.0.0.1",
+                "count": "16",
+                "type": "Increment",
+                "step": "1"
+            },
+            "dstAddress": {
+                "address": "48.0.0.1",
+                "count": "16",
+                "type": "Increment",
+                "step": "1"
+            }
+        },
+        "udpData": {
+            "enable": true,
+            "srcPort": 1025,
+            "dstPort": 1025,
+            "checksum": "FFBA",
+            "length": 26
+        },
+        "payload": {
+            "type": "fixed_word",
+            "pattern": "00"
+        },
+        "packetLength": {
+            "frameLength": 64,
+            "lengthType": "Fixed",
+            "minLength": 64,
+            "maxLength": 1024
+        }
+    },
+    {
+        "testFileName": "UDP_WITH_VLAN_DYNAMIC_LENGTH",
+        "taggedVlan": true,
+        "ethernetData": {
+            "srcAddress": {
+                "address": "00:00:00:00:00:00",
+                "count": "16",
+                "type": "Fixed",
+                "step": "1"
+            },
+            "dstAddress": {
+                "address": "00:00:00:00:00:00",
+                "count": "16",
+                "type": "Fixed",
+                "step": "1"
+            }
+        },
+        "ipv4Data": {
+            "enable": true,
+            "srcAddress": {
+                "address": "16.0.0.1",
+                "count": "16",
+                "type": "Increment",
+                "step": "1"
+            },
+            "dstAddress": {
+                "address": "48.0.0.1",
+                "count": "16",
+                "type": "Increment",
+                "step": "1"
+            }
+        },
+        "udpData": {
+            "enable": true,
+            "srcPort": 1025,
+            "dstPort": 1025,
+            "checksum": "FFBA",
+            "length": 26
+        },
+        "payload": {
+            "type": "fixed_word",
+            "pattern": "00"
+        },
+        "packetLength": {
+            "frameLength": 64,
+            "lengthType": "Increment",
+            "minLength": 64,
+            "maxLength": 1024
+        }
+    }
+]
