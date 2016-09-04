@@ -63,7 +63,7 @@ public class FileManager {
             createDirectoryIfNotExists(getLocalFilePath() + PROFILES_PATH);
             return getLocalFilePath() + PROFILES_PATH;
         }
-        return "generatedFiles/";
+        return "";
     }
 
     /**
