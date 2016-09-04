@@ -283,7 +283,7 @@ public class PacketUtil {
         profileList.add(profile);
         String yamlData = trafficProfile.getProfileYamlContent(profileList.toArray(new Profile[profileList.size()]));
 
-        File newFile = FileManager.createNewFile(packetData.getTestFileName() + ".yaml");
+        File newFile = FileManager.createNewFile("generatedFiles/"+packetData.getTestFileName() + ".yaml");
         FileUtils.writeStringToFile(newFile, yamlData);
     }
 
