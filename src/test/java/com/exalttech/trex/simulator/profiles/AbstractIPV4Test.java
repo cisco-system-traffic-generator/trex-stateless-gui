@@ -17,7 +17,6 @@ package com.exalttech.trex.simulator.profiles;
 
 import com.exalttech.trex.packets.TrexEthernetPacket;
 import com.exalttech.trex.packets.TrexIpV4Packet;
-import com.exalttech.trex.packets.TrexVlanPacket;
 import com.exalttech.trex.simulator.models.PacketData;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.builder.Payload;
@@ -29,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.packet.IpV4Packet;
-import org.pcap4j.packet.namednumber.EtherType;
 
 /**
  * Abstract class for IPV4/TCP/UDP test
@@ -77,26 +75,10 @@ public abstract class AbstractIPV4Test {
             LOG.info("Add IPV4 packet");
             ethernetPacket.buildPacket(ipV4Packet);
         } else {
-            addVlanToIPV4Packet(ethernetPacket, ipV4Packet);
+            packetUtil.addVlanToPacket(ethernetPacket, ipV4Packet);
         }
 
         return ethernetPacket;
-    }
-
-    /**
-     * Add VLan to IPV4 packet
-     * @param ethernetPacket
-     * @param ipV4Packet 
-     */
-    private void addVlanToIPV4Packet(TrexEthernetPacket ethernetPacket, IpV4Packet.Builder ipV4Packet) {
-        LOG.info("Add VLAN data");
-        ethernetPacket.setType(EtherType.DOT1Q_VLAN_TAGGED_FRAMES.value());
-        TrexVlanPacket vlanPacket = new TrexVlanPacket();
-
-        vlanPacket.setType(EtherType.IPV4.value());
-
-        vlanPacket.buildPacket(ipV4Packet);
-        ethernetPacket.buildPacket(vlanPacket.getBuilder());
     }
 
     /**

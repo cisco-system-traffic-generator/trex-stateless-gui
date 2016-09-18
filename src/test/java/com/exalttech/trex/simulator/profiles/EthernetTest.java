@@ -16,7 +16,6 @@
 package com.exalttech.trex.simulator.profiles;
 
 import com.exalttech.trex.packets.TrexEthernetPacket;
-import com.exalttech.trex.packets.TrexVlanPacket;
 import com.exalttech.trex.simulator.models.PacketData;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.builder.Payload;
@@ -26,7 +25,6 @@ import java.net.URISyntaxException;
 import org.apache.log4j.Logger;
 import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapNativeException;
-import org.pcap4j.packet.namednumber.EtherType;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -57,7 +55,7 @@ public class EthernetTest {
         if (!packetData.isTaggedVlan()) {
             ethernetPacket.buildPacket(null);
         } else {
-            addVLanToEthernetPacket(ethernetPacket);
+            packetUtil.addVlanToPacket(ethernetPacket, null);
         }
 
         // prepare and save yaml data
@@ -73,22 +71,4 @@ public class EthernetTest {
         Assert.assertEquals(result, true, "Invalid generated " + packetData.getTestFileName() + " pcap. ");
     }
 
-    /**
-     *
-     * @param isTaggedVlan
-     * @param ethernetPacket
-     */
-    private void addVLanToEthernetPacket(TrexEthernetPacket ethernetPacket) {
-
-        LOG.info("Add VLAN data");
-        ethernetPacket.setType(EtherType.DOT1Q_VLAN_TAGGED_FRAMES.value());
-        TrexVlanPacket vlanPacket = new TrexVlanPacket();
-
-        ethernetPacket.setAddPad(true);
-        vlanPacket.setType((short) 0xFFFF);
-        // No IPV4 
-        vlanPacket.buildPacket(null);
-        ethernetPacket.buildPacket(vlanPacket.getBuilder());
-
-    }
 }

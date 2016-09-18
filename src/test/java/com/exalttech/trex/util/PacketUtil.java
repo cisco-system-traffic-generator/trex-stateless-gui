@@ -16,6 +16,7 @@
 package com.exalttech.trex.util;
 
 import com.exalttech.trex.packets.TrexEthernetPacket;
+import com.exalttech.trex.packets.TrexVlanPacket;
 import com.exalttech.trex.simulator.models.EthernetData;
 import com.exalttech.trex.simulator.models.IPV4Data;
 import com.exalttech.trex.simulator.models.PacketData;
@@ -54,7 +55,9 @@ import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.EthernetPacket;
 import org.pcap4j.packet.IllegalRawDataException;
+import org.pcap4j.packet.IpV4Packet;
 import org.pcap4j.packet.Packet;
+import org.pcap4j.packet.namednumber.EtherType;
 
 /**
  *
@@ -65,7 +68,7 @@ import org.pcap4j.packet.Packet;
 public class PacketUtil {
 
     private static final Logger LOG = Logger.getLogger(PacketUtil.class.getName());
-    private TrafficProfile trafficProfile = new TrafficProfile();
+    private final TrafficProfile trafficProfile = new TrafficProfile();
     private static final String STL_SIM_COMMAND = "./stl-sim -f generatedFiles/[FILE_NAME].yaml -o generatedFiles/generated_[FILE_NAME].pcap -l 10 ";
 
     /**
@@ -177,15 +180,10 @@ public class PacketUtil {
      */
     private List<String> getpcapPacketList(String pcapFile) throws PcapNativeException, NotOpenException {
         PcapHandle handler = Pcaps.openOffline(pcapFile);
-        Packet p = null;
+        Packet packet = null;
         List<String> packetList = new ArrayList<>();
-        while (true) {
-            p = handler.getNextPacket();
-            if (p == null) {
-                break;
-            } else {
-                packetList.add(Hex.encodeHexString(p.getRawData()));
-            }
+        while ((packet = handler.getNextPacket()) != null) {
+            packetList.add(Hex.encodeHexString(packet.getRawData()));
         }
         return packetList;
     }
@@ -200,15 +198,14 @@ public class PacketUtil {
         VMInstructionBuilder vmInstructionBuilder = new VMInstructionBuilder(packetData.isTaggedVlan(), packetData.getUdpData().isEnable());
         ArrayList<Object> instructionsList = new ArrayList<>();
 
-        int offset = vmInstructionBuilder.getOffset(packetData.isTaggedVlan());
-
+        // add VM instructions
         EthernetData ethernetData = packetData.getEthernetData();
-        instructionsList.addAll(vmInstructionBuilder.getVMInstruction("mac_dest", ethernetData.getDstAddress().getType(), 0, ethernetData.getDstAddress().getCount(), ethernetData.getDstAddress().getStep()));
-        instructionsList.addAll(vmInstructionBuilder.getVMInstruction("mac_src", ethernetData.getSrcAddress().getType(), 6, ethernetData.getSrcAddress().getCount(), ethernetData.getSrcAddress().getStep()));
-
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_DST, ethernetData.getDstAddress().getType(), ethernetData.getDstAddress().getCount(), ethernetData.getDstAddress().getStep()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, ethernetData.getSrcAddress().getType(), ethernetData.getSrcAddress().getCount(), ethernetData.getSrcAddress().getStep()));
+        
         IPV4Data ipv4Data = packetData.getIpv4Data();
-        instructionsList.addAll(vmInstructionBuilder.getVMInstruction("ip_dest", ipv4Data.getDstAddress().getType(), 30 + offset, ipv4Data.getDstAddress().getCount(), ipv4Data.getDstAddress().getStep()));
-        instructionsList.addAll(vmInstructionBuilder.getVMInstruction("ip_src", ipv4Data.getSrcAddress().getType(), 26 + offset, ipv4Data.getSrcAddress().getCount(), ipv4Data.getSrcAddress().getStep()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Data.getDstAddress().getType(), ipv4Data.getDstAddress().getCount(), "1"));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Data.getSrcAddress().getType(), ipv4Data.getSrcAddress().getCount(), "1"));
 
         // add packet length instruction
         PacketLength packetLength = packetData.getPacketLength();
@@ -283,7 +280,7 @@ public class PacketUtil {
         profileList.add(profile);
         String yamlData = trafficProfile.getProfileYamlContent(profileList.toArray(new Profile[profileList.size()]));
 
-        File newFile = FileManager.createNewFile("generatedFiles/"+packetData.getTestFileName() + ".yaml");
+        File newFile = FileManager.createNewFile("generatedFiles/" + packetData.getTestFileName() + ".yaml");
         FileUtils.writeStringToFile(newFile, yamlData);
     }
 
@@ -305,5 +302,25 @@ public class PacketUtil {
         ethernetPacket.setPayload(payload);
 
         return ethernetPacket;
+    }
+
+    /**
+     * Add VLan to the generated packet
+     *
+     * @param ethernetPacket
+     * @param ipV4Packet
+     */
+    public void addVlanToPacket(TrexEthernetPacket ethernetPacket, IpV4Packet.Builder ipV4Packet) {
+        LOG.info("Add VLAN data");
+        ethernetPacket.setType(EtherType.DOT1Q_VLAN_TAGGED_FRAMES.value());
+        TrexVlanPacket vlanPacket = new TrexVlanPacket();
+        if (ipV4Packet == null) {
+            ethernetPacket.setAddPad(true);
+            vlanPacket.setType((short) 0xFFFF);
+        } else {
+            vlanPacket.setType(EtherType.IPV4.value());
+        }
+        vlanPacket.buildPacket(ipV4Packet);
+        ethernetPacket.buildPacket(vlanPacket.getBuilder());
     }
 }

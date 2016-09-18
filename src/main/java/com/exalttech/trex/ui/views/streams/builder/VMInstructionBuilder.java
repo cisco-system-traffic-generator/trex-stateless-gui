@@ -22,6 +22,7 @@ import java.util.List;
 
 /**
  * VM instruction builder
+ *
  * @author Georgekh
  */
 public class VMInstructionBuilder {
@@ -31,15 +32,17 @@ public class VMInstructionBuilder {
     int vmCacheSize = 0;
     boolean isTaggedVlan = false;
     boolean isUDPSelected = false;
-    
+    int offset = 0;
+
     /**
      * 
      * @param isTaggedVlan
      * @param isUDPSelected 
      */
-    public VMInstructionBuilder(boolean isTaggedVlan, boolean isUDPSelected){
+    public VMInstructionBuilder(boolean isTaggedVlan, boolean isUDPSelected) {
         this.isTaggedVlan = isTaggedVlan;
         this.isUDPSelected = isUDPSelected;
+        this.offset = getOffset(isTaggedVlan);
     }
     
     /**
@@ -51,7 +54,7 @@ public class VMInstructionBuilder {
      * @param step
      * @return 
      */
-    public List<Object> getVMInstruction(String name, String type, int packetOffset, String count, String step) {
+    private List<Object> getVMInstruction(String name, String type, int packetOffset, String count, String step) {
         ArrayList<Object> vmInstructionList = new ArrayList<>();
 
         String operation = PacketBuilderHelper.getOperationFromType(type);
@@ -92,6 +95,7 @@ public class VMInstructionBuilder {
          * "pkt_offset": 11, "type": "write_flow_var"
          */
         LinkedHashMap<String, Object> secondVMInstruction = new LinkedHashMap<>();
+
         secondVMInstruction.put("add_value", 0);
         secondVMInstruction.put("is_big_endian", true);
         secondVMInstruction.put("name", name);
@@ -118,7 +122,7 @@ public class VMInstructionBuilder {
         return vmInstructionList;
     }
 
-  
+ 
     /**
      * Calculate size according to count value return 4 if count greater than
      * 64K, 1 if count less than 256 or 2 if count greater than 256 and less
@@ -127,7 +131,7 @@ public class VMInstructionBuilder {
      * @param count
      * @return
      */
-     private int getCalculatedSize(double count) {
+    private int getCalculatedSize(double count) {
         if (count > 65536) {
             return 4;
         } else if (count <= 256) {
@@ -140,7 +144,7 @@ public class VMInstructionBuilder {
     /**
      * 
      * @return 
-     */ 
+     */
     public String getSplitByVar() {
         return splitByVar;
     }
@@ -160,7 +164,7 @@ public class VMInstructionBuilder {
      * @param minLength
      * @param maxLength
      * @param taggedVlanSelected
-     * @return 
+     * @return
      */
     public List<Object> getPacketLenVMInstruction(String name, String type, String minLength, String maxLength, boolean taggedVlanSelected) {
         ArrayList<Object> vmInstructionList = new ArrayList<>();
@@ -220,11 +224,12 @@ public class VMInstructionBuilder {
     
     /**
      * Return offset
+     *
      * @param isTaggedVlan
      * @return 
      */
-    public int getOffset(boolean isTaggedVlan){
-        if(isTaggedVlan){
+    private int getOffset(boolean isTaggedVlan) {
+        if (isTaggedVlan) {
             return 4;
         }
         return 0;
@@ -234,10 +239,54 @@ public class VMInstructionBuilder {
      * Add cache size
      * @param vmBody 
      */
-    public void addCacheSize(LinkedHashMap<String, Object> vmBody){
+    public void addCacheSize(LinkedHashMap<String, Object> vmBody) {
         if (getVmCacheSize() > 0) {
             vmBody.put("cache_size", getVmCacheSize());
         }
     }
 
+    /**
+     * add Vm instruction
+     *
+     * @param instructionType
+     * @param type
+     * @param count
+     * @param step
+     * @return
+     */
+    public List<Object> addVmInstruction(InstructionType instructionType, String type, String count, String step) {
+        return getVMInstruction(instructionType.getType(), type, instructionType.getOffset()+this.offset, count, step);
+    }
+
+    public enum InstructionType {
+        MAC_DST("mac_dest", 0),
+        MAC_SRC("mac_src", 6),
+        IP_DST("ip_dest", 30),
+        IP_SRC("ip_src", 26);
+
+        String type;
+        int offset;
+
+        private InstructionType(String type, int offset) {
+            this.type = type;
+            this.offset = offset;
+        }
+
+        /**
+         *
+         * @return
+         */
+        public String getType() {
+            return type;
+        }
+
+        /**
+         *
+         * @return
+         */
+        public int getOffset() {
+            return offset;
+        }
+
+    }
 }
