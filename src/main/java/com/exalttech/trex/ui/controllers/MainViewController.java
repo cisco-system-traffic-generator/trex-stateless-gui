@@ -211,6 +211,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     KeyCombination quiteCombination = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
     private boolean allStreamWithLatency;
     private boolean isFirstPortStatusRequest = true;
+    private static final String DISCONNECT_MENU_ITEM_TITLE = "  Disconnect";
+    private static final String CONNECT_MENU_ITEM_TITLE = "  Connect               Ctrl+C";
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -276,7 +278,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 serverStatusIcon.setImage(new Image("/icons/connectedIcon.gif"));
                 connectIcon.getStyleClass().add("disconnectIcon");
                 connectDixconnectTooltip.setText("Disconnect from TRex server");
-                connectMenuItem.setText("Disconnect");
+                connectMenuItem.setText(DISCONNECT_MENU_ITEM_TITLE);
                 statsMenuItem.setDisable(false);
                 clearCache.setDisable(false);
                 logsContainer.setDisable(false);
@@ -544,7 +546,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         statTableWrapper.setVisible(false);
         profileContainer.setVisible(false);
         cachedStatsList = new HashMap<>();
-        connectMenuItem.setText("Connect");
+        connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
         statsMenuItem.setDisable(true);
         dashboardIcon.setDisable(true);
         serverStatusIcon.setImage(new Image("/icons/offline.png"));
@@ -1294,6 +1296,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     if (portProfile != null) {
                         startStream.setDisable(!(isOwner && portProfile.isProfileAssigned()));
                     }
+                    break;
                 default:
                     break;
             }

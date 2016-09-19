@@ -156,16 +156,17 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 #headerMenuBar{
     -fx-background-color: #e4e2e2;
 }
-/* .menu:showing{
-    -fx-background-color:#BFBFBF;
-}
 
-*/
+.menu-item{
+    -fx-pref-width:150px;
+    -fx-background-color:#f0f0f0;
+}
 .context-menu{
-    -fx-background-color:#F7F7F7;
+    -fx-background-color:#f0f0f0;
     -fx-border-width: 1px;
     -fx-border-style: solid;
-    -fx-border-color: #AFAFAF;
+    -fx-border-color: #a1a1a1;
+    -fx-effect: dropshadow(three-pass-box, #b2b2b2, 10, 0, 0, 0);
 }
 
 .menu-bar{
