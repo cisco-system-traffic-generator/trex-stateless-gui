@@ -204,8 +204,8 @@ public class PacketUtil {
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, ethernetData.getSrcAddress().getType(), ethernetData.getSrcAddress().getCount(), ethernetData.getSrcAddress().getStep()));
         
         IPV4Data ipv4Data = packetData.getIpv4Data();
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Data.getDstAddress().getType(), ipv4Data.getDstAddress().getCount(), "1"));
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Data.getSrcAddress().getType(), ipv4Data.getSrcAddress().getCount(), "1"));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Data.getDstAddress().getType(), ipv4Data.getDstAddress().getCount(), "1", ipv4Data.getDstAddress().getAddress()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Data.getSrcAddress().getType(), ipv4Data.getSrcAddress().getCount(), "1", ipv4Data.getSrcAddress().getAddress()));
 
         // add packet length instruction
         PacketLength packetLength = packetData.getPacketLength();

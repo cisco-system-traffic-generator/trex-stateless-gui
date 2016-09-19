@@ -54,7 +54,7 @@ public class VMInstructionBuilder {
      * @param step
      * @return 
      */
-    private List<Object> getVMInstruction(String name, String type, int packetOffset, String count, String step) {
+    private List<Object> getVMInstruction(String name, String type, int packetOffset, String count, String step, String address) {
         ArrayList<Object> vmInstructionList = new ArrayList<>();
 
         String operation = PacketBuilderHelper.getOperationFromType(type);
@@ -68,10 +68,11 @@ public class VMInstructionBuilder {
 
         // TSG-23
         int maxValue = (int) Util.convertUnitToNum(count);
-
+        int addValue = 0;
         // set offset to byte 4 for the ip address
         if (name.contains("ip")) {
             packetOffset += 4 - size;
+            addValue = convertIPToInt(address);
 
             // TSG-22
             maxValue = maxValue - 1;
@@ -96,7 +97,7 @@ public class VMInstructionBuilder {
          */
         LinkedHashMap<String, Object> secondVMInstruction = new LinkedHashMap<>();
 
-        secondVMInstruction.put("add_value", 0);
+        secondVMInstruction.put("add_value", addValue);
         secondVMInstruction.put("is_big_endian", true);
         secondVMInstruction.put("name", name);
         secondVMInstruction.put("pkt_offset", packetOffset);
@@ -122,7 +123,6 @@ public class VMInstructionBuilder {
         return vmInstructionList;
     }
 
- 
     /**
      * Calculate size according to count value return 4 if count greater than
      * 64K, 1 if count less than 256 or 2 if count greater than 256 and less
@@ -221,7 +221,7 @@ public class VMInstructionBuilder {
         }
         return vmInstructionList;
     }
-    
+
     /**
      * Return offset
      *
@@ -234,7 +234,7 @@ public class VMInstructionBuilder {
         }
         return 0;
     }
-    
+
     /**
      * Add cache size
      * @param vmBody 
@@ -252,12 +252,44 @@ public class VMInstructionBuilder {
      * @param type
      * @param count
      * @param step
+     * @param address
+     * @return
+     */
+    public List<Object> addVmInstruction(InstructionType instructionType, String type, String count, String step, String address) {
+        return getVMInstruction(instructionType.getType(), type, instructionType.getOffset()+this.offset, count, step, address);
+    }
+
+    /**
+     * add Vm instruction
+     *
+     * @param instructionType
+     * @param type
+     * @param count
+     * @param step
      * @return
      */
     public List<Object> addVmInstruction(InstructionType instructionType, String type, String count, String step) {
-        return getVMInstruction(instructionType.getType(), type, instructionType.getOffset()+this.offset, count, step);
+        return addVmInstruction(instructionType, type, count, step, null);
     }
 
+    /**
+     * Convert IP to the equivalent integer value
+     * @param ipAddress
+     * @return 
+     */
+    public int convertIPToInt(String ipAddress) {
+        String[] addrArray = ipAddress.split("\\.");
+        int convertedIPValue = 0;
+        for (int i = 0; i < addrArray.length; i++) {
+            int power = 3 - i;
+            convertedIPValue += ((Integer.parseInt(addrArray[i]) % 256 * Math.pow(256, power)));
+        }
+        return convertedIPValue;
+    }
+
+    /**
+     * Enumerator present 
+     */
     public enum InstructionType {
         MAC_DST("mac_dest", 0),
         MAC_SRC("mac_src", 6),
