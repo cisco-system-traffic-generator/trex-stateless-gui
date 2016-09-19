@@ -357,15 +357,25 @@ public class TrafficProfile {
      */
     public void exportProfileToYaml(Window owner, Profile[] profiles, String fileName) {
         try {
-            String data = convertTrafficProfileToYaml(profiles);
-
-            // Clean up Yaml file
-            data = data.replace("next: \"-1\"", "");
-            data = data.replace("next_stream_id: -1", "");
-
+            String data = getProfileYamlContent(profiles);
             FileManager.exportFile("Save Yaml File", fileName, data, owner, FileType.YAML);
         } catch (IOException ex) {
             LOG.error("Error during generate YAML file", ex);
         }
+    }
+
+    /**
+     * Return cleaned profile yaml content
+     * @param profiles
+     * @return
+     * @throws JsonProcessingException 
+     */
+    public String getProfileYamlContent(Profile[] profiles) throws JsonProcessingException {
+        String data = convertTrafficProfileToYaml(profiles);
+
+        // Clean up Yaml file
+        data = data.replace("next: \"-1\"", "");
+        data = data.replace("next_stream_id: -1", "");
+        return data;
     }
 }

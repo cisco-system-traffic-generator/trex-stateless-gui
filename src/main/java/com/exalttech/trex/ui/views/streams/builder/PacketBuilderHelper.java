@@ -13,23 +13,25 @@
  * limitations under the License.
  ******************************************************************************
  */
-/*
-
-
-
- */
 package com.exalttech.trex.ui.views.streams.builder;
 
 import org.apache.log4j.Logger;
 
 /**
- *
+ * Packet builder helper class
  * @author Georgekh
  */
 public class PacketBuilderHelper {
 
     private static final Logger LOG = Logger.getLogger(PacketBuilderHelper.class.getName());
 
+     /**
+     *
+     */
+    private PacketBuilderHelper() {
+        // private constructor
+    }
+    
     /**
      *
      * @param rawData
@@ -50,10 +52,70 @@ public class PacketBuilderHelper {
     }
 
     /**
-     *
+     * Return operation value from type
      */
-    private PacketBuilderHelper() {
-        // private constructor
+    public static String getOperationFromType(String type) {
+        if (type.startsWith("Inc")) {
+            return "inc";
+        } else if (type.startsWith("Dec")) {
+            return "dec";
+        } else if (type.startsWith("Rand")) {
+            return "random";
+        }
+        return "Fixed";
     }
 
+    /**
+     * Return packet length
+     * @param operation
+     * @param defaultLength
+     * @param maxLength
+     * @return 
+     */
+    public static int getPacketLength(String operation, int defaultLength, int maxLength) {
+        if (PacketLengthType.FIXED.getTitle().equals(getOperationFromType(operation))) {
+            return defaultLength - 4;
+        }
+        return maxLength - 4;
+    }
+
+    /**
+     * Return IPV4 packet length
+     * @param taggedVlan
+     * @param packetLength
+     * @param totalLength
+     * @return 
+     */
+    public static int getIPV4PacketLength(boolean taggedVlan, int packetLength, int totalLength) {
+        if (taggedVlan) {
+            return packetLength - totalLength - 8;
+        }
+        return packetLength - totalLength + 4;
+    }
+
+    /**
+     * Return TCP/UDP packet length
+     * @param taggedVlan
+     * @param packetLength
+     * @param totalLength
+     * @return 
+     */
+    public static int getTcpUdpPacketLength(boolean taggedVlan, int packetLength, int totalLength) {
+        if (taggedVlan) {
+            return packetLength - totalLength - 4;
+        }
+        return packetLength - totalLength + 4;
+    }
+
+    /**
+     * Return IPV4 total length
+     * @param taggedVlan
+     * @return 
+     */
+    public static int getIPV4TotalLength(boolean taggedVlan) {
+        if (taggedVlan) {
+            return 42;
+        }
+        return 46;
+    }
 }

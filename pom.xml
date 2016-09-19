@@ -27,8 +27,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>com.exalttech.trex.application.TrexApp</mainClass>
     </properties>
-    
-    
 
     <organization>
         <name>Exalt-Tech</name>
@@ -177,9 +175,14 @@
             <version>6.9.10</version>
         </dependency>
     </dependencies>
+
     <profiles>
+        
         <profile>
-            <id>TRex_Packet_Testing_Unit</id>
+            <id>Run-TRex-Suite</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -187,7 +190,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <suiteXmlFiles>
-                                <suiteXmlFile>${basedir}/src/test/resources/suites/TRex_Packet_Suite.xml</suiteXmlFile>
+                                <suiteXmlFile>${basedir}/src/test/resources/suites/TRex_Testing_Suite.xml</suiteXmlFile>
                             </suiteXmlFiles>
                         </configuration>
                     </plugin>
