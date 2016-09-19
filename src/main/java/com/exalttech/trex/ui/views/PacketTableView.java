@@ -608,7 +608,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      * Export current load profile to yaml
      */
     private void handleExportToYaml() {
-        Window owner = exportToYaml.getScene().getWindow();
+        Window owner = this.getScene().getWindow();
         Profile[] profilesList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
         trafficProfile.exportProfileToYaml(owner, profilesList, profileName);
     }
