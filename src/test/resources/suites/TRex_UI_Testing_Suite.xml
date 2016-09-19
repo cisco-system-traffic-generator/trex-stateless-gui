@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+  
+<suite name="TRex_UI_Testing_Suite" verbose="1" >
+   <test name="ConnectionsTest">
+        <classes>
+            <class name="com.exalttech.trex.views.connection.ConnectionsTest"/>
+        </classes>
+    </test>
+</suite>
