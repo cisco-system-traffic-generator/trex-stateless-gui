@@ -67,22 +67,22 @@ public class VMInstructionBuilder {
         int size = getCalculatedSize(Util.convertUnitToNum(count));
 
         // TSG-23
-        int maxValue = (int) Util.convertUnitToNum(count);
-        int addValue = 0;
+        long maxValue = (long) Util.convertUnitToNum(count);
+        long initValue = 0;
+        
         // set offset to byte 4 for the ip address
         if (name.contains("ip")) {
             packetOffset += 4 - size;
-            addValue = convertIPToInt(address);
-
+            initValue = convertIPToInt(address);
             // TSG-22
-            maxValue = maxValue - 1;
+            maxValue = initValue + maxValue-1;
         }
-        
+
         /**
          * "init_value": 1, "max_value": 1, "min_value": 1, "name": "mac_src",
          * "op": "inc", "size": 1, "step": 1, "type": "flow_var"
          */
-        firstVMInstruction.put("init_value", 0);
+        firstVMInstruction.put("init_value", initValue);
         firstVMInstruction.put("min_value", 0);
         firstVMInstruction.put("max_value", maxValue);
         firstVMInstruction.put("name", name);
@@ -97,7 +97,7 @@ public class VMInstructionBuilder {
          */
         LinkedHashMap<String, Object> secondVMInstruction = new LinkedHashMap<>();
 
-        secondVMInstruction.put("add_value", addValue);
+        secondVMInstruction.put("add_value", 0);
         secondVMInstruction.put("is_big_endian", true);
         secondVMInstruction.put("name", name);
         secondVMInstruction.put("pkt_offset", packetOffset);
@@ -277,12 +277,12 @@ public class VMInstructionBuilder {
      * @param ipAddress
      * @return 
      */
-    public int convertIPToInt(String ipAddress) {
+    public long convertIPToInt(String ipAddress) {
         String[] addrArray = ipAddress.split("\\.");
-        int convertedIPValue = 0;
+        long convertedIPValue = 0;
         for (int i = 0; i < addrArray.length; i++) {
             int power = 3 - i;
-            convertedIPValue += ((Integer.parseInt(addrArray[i]) % 256 * Math.pow(256, power)));
+            convertedIPValue += Integer.parseInt(addrArray[i])%256 * Math.pow(256, power);
         }
         return convertedIPValue;
     }
