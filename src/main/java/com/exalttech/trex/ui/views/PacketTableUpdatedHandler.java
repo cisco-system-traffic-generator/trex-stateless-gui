@@ -31,4 +31,9 @@ public interface PacketTableUpdatedHandler {
      * Handle stream updating event
      */
     public void onStreamUpdated();
+    
+    /**
+     * Handle stream table changed
+     */
+    public void onStreamTableChanged();
 }

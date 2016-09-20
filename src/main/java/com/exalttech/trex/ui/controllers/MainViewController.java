@@ -31,6 +31,7 @@ import com.exalttech.trex.ui.PortState;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.components.CustomTreeItem;
 import com.exalttech.trex.ui.components.CustomTreeItem.TreeItemType;
+import com.exalttech.trex.ui.components.NotificationPanel;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
@@ -90,6 +91,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.apache.log4j.Logger;
@@ -104,7 +106,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     private static final Logger LOG = Logger.getLogger(MainViewController.class.getName());
     private final RPCMethods serverRPCMethods = new RPCMethods();
-
+    private static final String DISABLED_MULTIPLIER_MSG = "Multiplier is disabled because all streams have latency enabled";
     @FXML
     TreeView devicesTree;
     @FXML
@@ -136,6 +138,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     @FXML
     AnchorPane multiplierOptionContainer;
+    @FXML
+    Pane notificationPanelHolder;
 
     @FXML
     Button updateBtn;
@@ -199,6 +203,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private Profile[] loadedProfiles;
     private String currentSelectedProfile;
     private MultiplierView multiplierView;
+    private NotificationPanel notificationPanel;
     boolean reAssign = false;
     private CountdownService countdownService;
     private PortsManager portManager;
@@ -213,7 +218,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private boolean isFirstPortStatusRequest = true;
     private static final String DISCONNECT_MENU_ITEM_TITLE = "  Disconnect";
     private static final String CONNECT_MENU_ITEM_TITLE = "  Connect               Ctrl+C";
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         portManager = PortsManager.getInstance();
@@ -702,6 +707,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 allStreamWithLatency = allStreamWithLatency && profile.getStream().getFlowStats().isEnabled();
             }
             multiplierView.setDisable(allStreamWithLatency);
+            notificationPanelHolder.setVisible(allStreamWithLatency);
 
         } catch (Exception ex) {
             LOG.error("Error loading stream table", ex);
@@ -774,7 +780,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         // initialize multiplexer
         multiplierView = new MultiplierView(this);
         multiplierOptionContainer.getChildren().add(multiplierView);
-
+        notificationPanel = new NotificationPanel();
+        notificationPanel.setNotificationMsg(DISABLED_MULTIPLIER_MSG);
+        notificationPanelHolder.getChildren().add(notificationPanel);
         // add close
         TrexApp.getPrimaryStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
@@ -788,16 +796,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             public void handle(WindowEvent event) {
                 TrexApp.getPrimaryStage().focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
                     if (newValue && tableView.isStreamEditingWindowOpen()) {
-                        try {
-                            String fileName = String.valueOf(profileListBox.getValue());
-                            loadStreamTable(fileName);
-                            tableView.setStreamEditingWindowOpen(false);
-                            // assigned profile may changed need to re-assign
-                            reAssign = true;
-                            enableUpdateBtn(true, true);
-                        } catch (Exception ex) {
-                            LOG.error("Error reloading table", ex);
-                        }
+                        tableView.setStreamEditingWindowOpen(false);
+                        streamTableUpdated();
                     }
                 });
             }
@@ -1407,7 +1407,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             updateDevicesTree();
             updateHeaderBtnStat();
             enableDisableStartStopAllBtn();
-            if(isFirstPortStatusRequest){
+            if (isFirstPortStatusRequest) {
                 isFirstPortStatusRequest = false;
                 reAcquireOwnedPorts();
             }
@@ -1426,20 +1426,20 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     }
 
     /**
-     * Re-acquire owned port on login 
+     * Re-acquire owned port on login
      */
     private void reAcquireOwnedPorts() {
-        try{
-          for (Port port : portManager.getPortList()) {
-              if(portManager.isCurrentUserOwner(port.getIndex())){
-                  serverRPCMethods.acquireServerPort(port.getIndex(), true);
-              }
-          }
-        }catch(PortAcquireException ex){
+        try {
+            for (Port port : portManager.getPortList()) {
+                if (portManager.isCurrentUserOwner(port.getIndex())) {
+                    serverRPCMethods.acquireServerPort(port.getIndex(), true);
+                }
+            }
+        } catch (PortAcquireException ex) {
             LOG.error("Error re-acquiring port", ex);
         }
     }
-    
+
     /**
      * Enable/Disable start/stop all button according to port state
      */
@@ -1495,6 +1495,29 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     public void onStreamUpdated() {
         reAssign = true;
         enableUpdateBtn(true, true);
+    }
+
+    /**
+     * Stream table changed handler
+     */
+    @Override
+    public void onStreamTableChanged() {
+        streamTableUpdated();
+    }
+
+    /**
+     * Reload stream table
+     */
+    private void streamTableUpdated() {
+        try {
+            String fileName = String.valueOf(profileListBox.getValue());
+            loadStreamTable(fileName);
+            // assigned profile may changed need to re-assign
+            reAssign = true;
+            enableUpdateBtn(true, true);
+        } catch (Exception ex) {
+            LOG.error("Error reloading table", ex);
+        }
     }
 
     /**

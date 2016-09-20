@@ -24,11 +24,9 @@ import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell.CheckBoxTableChangeHandler;
-import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.controllers.PacketBuilderHomeController;
 import com.exalttech.trex.ui.controllers.ProfileStreamNameDialogController;
 import com.exalttech.trex.ui.dialog.DialogWindow;
-import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
 import com.exalttech.trex.ui.views.models.TableProfile;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.ui.views.streamtable.StreamTableAction;
@@ -180,7 +178,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         addMenuItem(StreamTableAction.DELETE);
         addMenuItem(StreamTableAction.EXPORT_TO_PCAP);
         addMenuItem(StreamTableAction.EXPORT_TO_YAML);
-        
+
         // add table view
         streamPacketTableView = new TableView<>();
 
@@ -320,6 +318,9 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 tabledata.getStreamsList().remove(selectedIndex);
                 tabledata.getProfiles().remove(selectedIndex);
                 saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
+                if (tableUpdateHandler != null) {
+                    tableUpdateHandler.onStreamTableChanged();
+                }
             }
         } catch (IOException ex) {
             LOG.error("Error deleting stream", ex);
@@ -512,7 +513,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         streamPacketTableView.setContextMenu(null);
         if (event.getClickCount() == 2 && streamPacketTableView.getSelectionModel().getSelectedItem() != null) {
             openStreamDialog(StreamBuilderType.EDIT_STREAM);
-        }else if (event.getButton() == MouseButton.SECONDARY && streamPacketTableView.getSelectionModel().getSelectedItem() != null) {
+        } else if (event.getButton() == MouseButton.SECONDARY && streamPacketTableView.getSelectionModel().getSelectedItem() != null) {
             streamPacketTableView.setContextMenu(rightClickMenu);
         }
     }
@@ -576,6 +577,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 String streamName = controller.getName();
                 handleAddPacket(streamName, type);
             }
+
         } catch (IOException ex) {
             LOG.error("Error adding new stream", ex);
         }

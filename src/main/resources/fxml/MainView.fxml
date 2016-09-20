@@ -164,6 +164,7 @@
                                                             </children>
                                                         </HBox>
                                                         <AnchorPane fx:id="profileTableViewContainer" prefHeight="200.0" prefWidth="200.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="145.0" />
+                                          <Pane fx:id="notificationPanelHolder" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="20.0" />
                                                     </children>
                                                 </AnchorPane>
                                             </children>

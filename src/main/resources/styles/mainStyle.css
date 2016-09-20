@@ -1089,3 +1089,18 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-text-box-border: transparent; 
     -fx-background-color: transparent;
 }
+
+/***********************************
+******   Notification panel   ******
+***********************************/
+.notificationContainer{
+    -fx-background-image: url("/icons/info_box.png");
+    -fx-background-repeat: no-repeat;   
+    -fx-background-size: 184 68;
+}
+.notificationMsg{
+    -fx-padding: 5px 0 0 10px;
+}
+.notificationIcon{
+    -fx-cursor: hand;
+}
