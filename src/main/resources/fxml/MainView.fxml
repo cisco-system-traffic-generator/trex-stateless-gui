@@ -18,19 +18,19 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="connectMenuItem" mnemonicParsing="false" onAction="#handleConnectMenuItemClicked" text="Connect" />
-                        <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemClicked" text="Preferences" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleExitMenuItemClick" text="Exit" />
+                        <MenuItem fx:id="connectMenuItem" mnemonicParsing="false" onAction="#handleConnectMenuItemClicked" text="  Connect               Ctrl+C" />
+                        <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemClicked" text="  Preferences         Ctrl+P" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExitMenuItemClick" text="  Exit                      Ctrl+X" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Traffic Profiles">
+                <Menu mnemonicParsing="false" text=" Traffic Profiles">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#openTrafficProfile" text="Traffic Profiles" />
+                        <MenuItem mnemonicParsing="false" onAction="#openTrafficProfile" text="  Traffic Profiles" />
                     </items>
                 </Menu>
                 <Menu fx:id="statsMenuItem" disable="true" mnemonicParsing="false" text="Stats">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleStatMenuItemClicked" text="Dashboard" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleStatMenuItemClicked" text="  Dashboard           Ctrl+S" />
                     </items>
                 </Menu>
                 <Menu disable="true" mnemonicParsing="false" text="Snapshots" visible="false" />
@@ -41,7 +41,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleAboutTreeItemClicked" text="About" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleAboutTreeItemClicked" text="  About" />
                     </items>
                 </Menu>
             </menus>
@@ -164,6 +164,7 @@
                                                             </children>
                                                         </HBox>
                                                         <AnchorPane fx:id="profileTableViewContainer" prefHeight="200.0" prefWidth="200.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="145.0" />
+                                          <Pane fx:id="notificationPanelHolder" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="20.0" />
                                                     </children>
                                                 </AnchorPane>
                                             </children>
