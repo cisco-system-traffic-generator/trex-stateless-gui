@@ -3,7 +3,7 @@
 <suite name="TRex_UI_Testing_Suite" verbose="1" >
    <test name="ConnectionsTest">
         <classes>
-            <class name="com.exalttech.trex.views.connection.ConnectionsTest"/>
+            <class name="com.exalttech.trex.ui.connection.ConnectionsTest"/>
         </classes>
     </test>
 </suite>
