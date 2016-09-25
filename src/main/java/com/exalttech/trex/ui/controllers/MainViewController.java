@@ -219,6 +219,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private static final String DISCONNECT_MENU_ITEM_TITLE = "  Disconnect";
     private static final String CONNECT_MENU_ITEM_TITLE = "  Connect               Ctrl+C";
 
+    private int lastLoadedPortPtofileIndex = -1;
+    private boolean profileLoaded = false;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         portManager = PortsManager.getInstance();
@@ -390,13 +393,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         updateHeaderBtnStat();
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
+            // mouse left button clicked
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                devicesTree.setContextMenu(null);
-                updateContextMenuState();
-                if (selected.getMenu() != null) {
-                    devicesTree.setContextMenu(selected.getMenu());
-                }
+                viewTreeContextMenu(selected);
             }
+
+            if (profileLoaded) {
+                updateCurrentProfileMultiplier();
+            }
+
             try {
                 stopRefreshingService();
                 // update aquire/release port icon state
@@ -429,6 +434,30 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             } catch (Exception ex) {
                 LOG.error(ex);
             }
+        }
+    }
+
+    /**
+     * View treeitem context menu
+     * @param selected
+     */
+    private void viewTreeContextMenu(CustomTreeItem selected) {
+        devicesTree.setContextMenu(null);
+        updateContextMenuState();
+        if (selected.getMenu() != null) {
+            devicesTree.setContextMenu(selected.getMenu());
+        }
+    }
+
+    /**
+     * Update current loaded profile multiplier
+     */
+    private void updateCurrentProfileMultiplier() {
+        profileLoaded = false;
+        AssignedProfile assignedProf = assignedPortProfileMap.get(lastLoadedPortPtofileIndex);
+        if (assignedProf != null) {
+            assignedProf.setHasDuration(multiplierView.isDurationEnable());
+            updateMultiplierValues(assignedProf);
         }
     }
 
@@ -625,6 +654,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             hideShowStatTable(false);
             int portIndex = getSelectedPortIndex();
+            lastLoadedPortPtofileIndex = portIndex;
+            profileLoaded = true;
             disableProfileProperty.set(!portManager.isCurrentUserOwner(portIndex));
             disableProfileNote.visibleProperty().bind(disableProfileProperty);
             AssignedProfile assigned = assignedPortProfileMap.get(portIndex);
