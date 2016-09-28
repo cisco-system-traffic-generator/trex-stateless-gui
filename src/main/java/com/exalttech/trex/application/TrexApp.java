@@ -74,8 +74,8 @@ public class TrexApp extends Application {
         stage.setScene(scene);
         stage.setTitle("TRex");
         stage.setResizable(true);
-        stage.setMinWidth(1100);
-        stage.setMinHeight(670);
+        stage.setMinWidth(780);
+        stage.setMinHeight(700);
         stage.getIcons().add(new Image("/icons/trex.png"));
 
         stage.show();

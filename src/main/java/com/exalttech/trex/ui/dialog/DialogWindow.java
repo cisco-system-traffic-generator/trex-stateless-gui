@@ -65,6 +65,7 @@ public class DialogWindow {
             dialogStage.showAndWait();
         } else {
             dialogStage.initModality(Modality.NONE);
+            dialogStage.initOwner(null);
             dialogStage.show();
         }
     }
