@@ -112,6 +112,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     int numOfEnabledStream = 0;
     private boolean doUpdate = false;
     ContextMenu rightClickMenu;
+    private File loadedProfile;
 
     /**
      * @param maxHight
@@ -591,6 +592,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      * @throws Exception
      */
     public Profile[] loadStreamTable(File fileToLoad) throws Exception {
+        this.loadedProfile = fileToLoad;
         doUpdate = false;
         Profile[] profileList;
         this.profileName = fileToLoad.getName();
@@ -628,7 +630,8 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             }
             tabledata.getProfiles().get(index).getStream().setEnabled(newValue);
             saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
-        } catch (IOException ex) {
+            loadStreamTable(loadedProfile);
+        } catch (Exception ex) {
             LOG.error("Error updating profile", ex);
         }
     }
