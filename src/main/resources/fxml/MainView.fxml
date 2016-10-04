@@ -23,9 +23,9 @@
                         <MenuItem mnemonicParsing="false" onAction="#handleExitMenuItemClick" text="Exit" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Traffic Profiles">
+                <Menu fx:id="trafficProfileMenu" mnemonicParsing="false" text="Traffic Profiles">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#openTrafficProfile" text="Traffic Profiles" />
+                        <MenuItem fx:id="trafficProfileItem" mnemonicParsing="false" onAction="#openTrafficProfile" text="Traffic Profiles" />
                     </items>
                 </Menu>
                 <Menu fx:id="statsMenuItem" disable="true" mnemonicParsing="false" text="Stats">

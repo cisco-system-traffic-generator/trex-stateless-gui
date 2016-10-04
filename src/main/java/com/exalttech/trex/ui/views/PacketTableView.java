@@ -24,11 +24,9 @@ import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell.CheckBoxTableChangeHandler;
-import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.controllers.PacketBuilderHomeController;
 import com.exalttech.trex.ui.controllers.ProfileStreamNameDialogController;
 import com.exalttech.trex.ui.dialog.DialogWindow;
-import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
 import com.exalttech.trex.ui.views.models.TableProfile;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.ui.views.streamtable.StreamTableAction;
@@ -152,10 +150,12 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
         // add build stream btn
         buildPacketBtn = new StreamTableButton(StreamTableAction.BUILD);
+        buildPacketBtn.setId("buildStreamBtn");
         initializeStreamButtons(buildPacketBtn, false);
         buttonContainer.getChildren().add(buildPacketBtn);
 
         editPacketBtn = new StreamTableButton(StreamTableAction.EDIT);
+        editPacketBtn.setId("editStreanBtn");
         initializeStreamButtons(editPacketBtn, true);
         buttonContainer.getChildren().add(editPacketBtn);
 
@@ -183,7 +183,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         
         // add table view
         streamPacketTableView = new TableView<>();
-
+        streamPacketTableView.setId("streamTableView");
         streamPacketTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         streamPacketTableView.setFixedCellSize(32);
 
@@ -595,7 +595,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         try {
             profileList = trafficProfile.getTrafficProfile(fileToLoad);
         } catch (IOException ex) {
-            LOG.warn("Profile does not have any streams", ex);
+            LOG.warn("Profile does not have any streams");
             profileList = new Profile[0];
         }
         List<TableProfileStream> packetDataList = trafficProfile.convertProfilesToTableData(profileList);

@@ -16,6 +16,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.service.support.WaitUntilSupport;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -24,8 +25,10 @@ import org.testng.annotations.BeforeTest;
  * Base class for automation UI test
  * @author Georgekh
  */
-public class UIBaseTest extends ApplicationTest {
+public class UIBaseTest extends UITestsServices {
 
+    private WaitUntilSupport waitUntilSupport = new WaitUntilSupport();
+    
     @BeforeTest
     public void setUpClass() throws Exception {
         if (Util.isWindows()) {
@@ -55,8 +58,5 @@ public class UIBaseTest extends ApplicationTest {
         release(new KeyCode[]{});
         release(new MouseButton[]{});
     }
-
-    public <T extends Node> T find(final String query) {
-        return (T) lookup(query).queryAll().iterator().next();
-    }
+    
 }
