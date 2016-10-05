@@ -77,9 +77,8 @@ public abstract class UITestsServices extends ApplicationTest{
      * Verify tableview has element
      * @param selector
      * @param cell
-     * @throws Exception 
      */
-    public void verifyTableHasElement(String selector, String cell) throws Exception{
+    public void verifyTableHasElement(String selector, String cell){
         FxAssert.verifyThat(selector, TableViewMatchers.hasTableCell(cell));
     }
     

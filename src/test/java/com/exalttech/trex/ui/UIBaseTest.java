@@ -7,16 +7,16 @@ package com.exalttech.trex.ui;
 
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.util.Util;
+import java.io.File;
 import java.util.concurrent.TimeoutException;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.service.support.WaitUntilSupport;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -26,12 +26,16 @@ import org.testng.annotations.BeforeTest;
  * @author Georgekh
  */
 public class UIBaseTest extends UITestsServices {
-
-    private WaitUntilSupport waitUntilSupport = new WaitUntilSupport();
     
+    private static final String APP_DATA_PATH = File.separator + "TRex";
     @BeforeTest
     public void setUpClass() throws Exception {
         if (Util.isWindows()) {
+            // remove appData folder
+           File trexDirectory = new File(System.getenv("LOCALAPPDATA") + APP_DATA_PATH);
+            if(trexDirectory.exists()){
+                FileUtils.deleteQuietly(trexDirectory);
+            }
             ApplicationTest.launch(TrexApp.class);
         }else{
             Assert.assertTrue(false, "Not windows OS");

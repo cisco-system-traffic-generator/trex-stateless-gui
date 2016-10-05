@@ -58,6 +58,7 @@ public class PayloadView extends AbstractProtocolView {
     protected void buildCustomProtocolView() {
         addLabel("Type", 15, 15);
         type = new ComboBox<>();
+        type.setId("payloadType");
         addCombo(type, 12, 120, 170);
 
         addLabel("Pattern", 55, 15);

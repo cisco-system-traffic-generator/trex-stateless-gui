@@ -6,8 +6,6 @@
 package com.exalttech.trex.ui.trafficProfile;
 
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.input.KeyCode;
 import org.testng.annotations.Test;
 
 /**

@@ -5,47 +5,71 @@
  */
 package com.exalttech.trex.ui.trafficProfile;
 
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.testng.annotations.Test;
 
 /**
  * Ethernet stream test
+ *
  * @author GeorgeKH
  */
-public class EthernetStreamTest extends TrafficProfileTestBase{
-    
-    
+public class EthernetStreamTest extends TrafficProfileTestBase {
+
     @Test(dependsOnGroups = {"createProfileGroup"})
-    public void addEthernetStreamTest() throws Exception {
+    public void addEtherneWithoutVlanFixPayloadTest() {
+        createEthernetStream("ethernetWithoutVlanFixPayload");
+        addPayload("Fixed Word");
+        saveStream();
+        verifyStreamCreated("testProfile.yaml", "ethernetWithoutVlanFixPayload");
+        verifyEthernetSelection("ethernetWithoutVlanFixPayload");
+        verifyPayload("Fixed Word");
+        closeStreamProperties();
+    }
 
-        ListView list = find("#profileListView");
-        list.getSelectionModel().select("testProfile.yaml");
-        // wait for build stream button
-        waitForNode("#buildStreamBtn");
-        clickOn("#buildStreamBtn");
+    @Test(dependsOnGroups = {"createProfileGroup"})
+    public void addEtherneWithVlanFixPayloadTest() {
+        createEthernetStream("ethernetWithVlanFixPayload");
+        addVlan();
+        addPayload("Fixed Word");
+        saveStream();
+        verifyStreamCreated("testProfile.yaml", "ethernetWithVlanFixPayload");
+        verifyEthernetSelection("ethernetWithVlanFixPayload");
+        verifyVlanSelection();
+        verifyPayload("Fixed Word");
+        closeStreamProperties();
+    }
+    
+    /**
+     * Create Ethernet stream
+     * @param streamName 
+     */
+    private void createEthernetStream(String streamName){
+        selectProfile("testProfile.yaml");
+
         // add stream
-        addNewProfileStream("stream");
+        addNewStream(streamName);
 
-        // define protocol selection
-        waitForNode("#protocolSelectionTab");
+        // set l3 none
+        setEthernetSelection();
+
+        //Set protocol Data
+        setEthernetMacInfo();
+    }
+    
+    /**
+     * Set ethernet selection
+     */
+    private void setEthernetSelection() {
         clickOn("#protocolSelectionTab");
         waitForNode("#l3NoneRB");
         clickOn("#l3NoneRB");
+    }
 
-        interact(() -> {
-            ComboBox frameLength = find("#lengthCB");
-            frameLength.getSelectionModel().select("Increment");
-            TextField minTF = find("#minTF");
-            minTF.setText("200");
-
-            TextField maxTF = find("#maxTF");
-            maxTF.setText("1500");
-        });
-
-        //Set protocol Data
+    /**
+     * Fill Ethernet mac information
+     */
+    private void setEthernetMacInfo() {
         clickOn("#protocolDataTab");
         waitForNode("Media Access Protocol");
         clickOn("Media Access Protocol");
@@ -63,42 +87,12 @@ public class EthernetStreamTest extends TrafficProfileTestBase{
             ComboBox srcMode = find("#macsrcMode");
             srcMode.getSelectionModel().select("Increment");
         });
-
-        // save stream packet
-        clickOn("#savePacket");
-
-        moveTo("testProfile.yaml");
-        clickOn("testProfile.yaml");
-        sleep(500);
-        verifyTableHasElement("#streamTableView", "stream");
-
-        // verify created stream selections
-        verifyData();
-        
-        // close stream properties windows
-        clickOn("Cancel");
-        
     }
 
     /**
-     * Verify selections and inputs
+     * Verify mac information
      */
-    private void verifyData() {
-        moveTo("stream");
-        clickOn("stream");
-        sleep(500);
-        Button editBtn = find("#editStreanBtn");
-        clickOn(editBtn);
-        sleep(500);
-        // verify protocol selections
-        waitForNode("#protocolSelectionTab");
-        clickOn("#protocolSelectionTab");
-        waitForNode("#l3NoneRB");
-        verifRadioButtonSelected("#l3NoneRB");
-        verifyComboBoxSelection("#lengthCB", "Increment");
-        verifyTextFieldValue("#minTF", "200");
-        verifyTextFieldValue("#maxTF", "1500");
-        // verify protocol data
+    private void verifyMacInformation() {
         clickOn("#protocolDataTab");
         waitForNode("Media Access Protocol");
         clickOn("Media Access Protocol");
@@ -108,4 +102,23 @@ public class EthernetStreamTest extends TrafficProfileTestBase{
         verifyTextFieldValue("#macSrcAddress", "22:00:00:00:00:00");
         verifyComboBoxSelection("#macsrcMode", "Increment");
     }
+
+    /**
+     * Verify Ethernet selections
+     * @param streamName 
+     */
+    private void verifyEthernetSelection(String streamName) {
+        
+        // open stream properties window
+        openStreamProperties(streamName);
+        
+        clickOn("#protocolSelectionTab");
+        waitForNode("#l3NoneRB");
+        verifRadioButtonSelected("#l3NoneRB");
+        
+        // verify mac info
+        verifyMacInformation();
+        
+    }
+
 }
