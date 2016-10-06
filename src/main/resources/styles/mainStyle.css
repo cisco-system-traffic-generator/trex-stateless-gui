@@ -156,16 +156,17 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 #headerMenuBar{
     -fx-background-color: #e4e2e2;
 }
-/* .menu:showing{
-    -fx-background-color:#BFBFBF;
-}
 
-*/
+.menu-item{
+    -fx-pref-width:150px;
+    -fx-background-color:#f0f0f0;
+}
 .context-menu{
-    -fx-background-color:#F7F7F7;
+    -fx-background-color:#f0f0f0;
     -fx-border-width: 1px;
     -fx-border-style: solid;
-    -fx-border-color: #AFAFAF;
+    -fx-border-color: #a1a1a1;
+    -fx-effect: dropshadow(three-pass-box, #b2b2b2, 10, 0, 0, 0);
 }
 
 .menu-bar{
@@ -381,7 +382,9 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-background-color:#32b4ea;
     -fx-text-fill: black;
 }
-
+.tree-view .tree-cell {
+    -fx-background-color:#FCFCFC;
+}
 /***************************
     Stats table
 ***************************/
@@ -1087,4 +1090,19 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-padding: 0;
     -fx-text-box-border: transparent; 
     -fx-background-color: transparent;
+}
+
+/***********************************
+******   Notification panel   ******
+***********************************/
+.notificationContainer{
+    -fx-background-image: url("/icons/info_box.png");
+    -fx-background-repeat: no-repeat;   
+    -fx-background-size: 184 68;
+}
+.notificationMsg{
+    -fx-padding: 5px 0 0 10px;
+}
+.notificationIcon{
+    -fx-cursor: hand;
 }

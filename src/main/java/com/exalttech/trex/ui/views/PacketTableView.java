@@ -112,6 +112,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     int numOfEnabledStream = 0;
     private boolean doUpdate = false;
     ContextMenu rightClickMenu;
+    private File loadedProfile;
 
     /**
      * @param maxHight
@@ -180,7 +181,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         addMenuItem(StreamTableAction.DELETE);
         addMenuItem(StreamTableAction.EXPORT_TO_PCAP);
         addMenuItem(StreamTableAction.EXPORT_TO_YAML);
-        
+
         // add table view
         streamPacketTableView = new TableView<>();
         streamPacketTableView.setId("streamTableView");
@@ -320,6 +321,9 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 tabledata.getStreamsList().remove(selectedIndex);
                 tabledata.getProfiles().remove(selectedIndex);
                 saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
+                if (tableUpdateHandler != null) {
+                    tableUpdateHandler.onStreamTableChanged();
+                }
             }
         } catch (IOException ex) {
             LOG.error("Error deleting stream", ex);
@@ -512,7 +516,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         streamPacketTableView.setContextMenu(null);
         if (event.getClickCount() == 2 && streamPacketTableView.getSelectionModel().getSelectedItem() != null) {
             openStreamDialog(StreamBuilderType.EDIT_STREAM);
-        }else if (event.getButton() == MouseButton.SECONDARY && streamPacketTableView.getSelectionModel().getSelectedItem() != null) {
+        } else if (event.getButton() == MouseButton.SECONDARY && streamPacketTableView.getSelectionModel().getSelectedItem() != null) {
             streamPacketTableView.setContextMenu(rightClickMenu);
         }
     }
@@ -576,6 +580,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 String streamName = controller.getName();
                 handleAddPacket(streamName, type);
             }
+
         } catch (IOException ex) {
             LOG.error("Error adding new stream", ex);
         }
@@ -589,6 +594,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      * @throws Exception
      */
     public Profile[] loadStreamTable(File fileToLoad) throws Exception {
+        this.loadedProfile = fileToLoad;
         doUpdate = false;
         Profile[] profileList;
         this.profileName = fileToLoad.getName();
@@ -608,7 +614,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      * Export current load profile to yaml
      */
     private void handleExportToYaml() {
-        Window owner = exportToYaml.getScene().getWindow();
+        Window owner = this.getScene().getWindow();
         Profile[] profilesList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
         trafficProfile.exportProfileToYaml(owner, profilesList, profileName);
     }
@@ -626,7 +632,8 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             }
             tabledata.getProfiles().get(index).getStream().setEnabled(newValue);
             saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
-        } catch (IOException ex) {
+            loadStreamTable(loadedProfile);
+        } catch (Exception ex) {
             LOG.error("Error updating profile", ex);
         }
     }
