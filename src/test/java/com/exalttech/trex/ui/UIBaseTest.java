@@ -7,14 +7,15 @@ package com.exalttech.trex.ui;
 
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.util.Util;
+import java.io.File;
 import java.util.concurrent.TimeoutException;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.apache.commons.io.FileUtils;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
@@ -24,11 +25,17 @@ import org.testng.annotations.BeforeTest;
  * Base class for automation UI test
  * @author Georgekh
  */
-public class UIBaseTest extends ApplicationTest {
-
+public class UIBaseTest extends UITestsServices {
+    
+    private static final String APP_DATA_PATH = File.separator + "TRex";
     @BeforeTest
     public void setUpClass() throws Exception {
         if (Util.isWindows()) {
+            // remove appData folder
+           File trexDirectory = new File(System.getenv("LOCALAPPDATA") + APP_DATA_PATH);
+            if(trexDirectory.exists()){
+                FileUtils.deleteQuietly(trexDirectory);
+            }
             ApplicationTest.launch(TrexApp.class);
         }else{
             Assert.assertTrue(false, "Not windows OS");
@@ -55,8 +62,5 @@ public class UIBaseTest extends ApplicationTest {
         release(new KeyCode[]{});
         release(new MouseButton[]{});
     }
-
-    public <T extends Node> T find(final String query) {
-        return (T) lookup(query).queryAll().iterator().next();
-    }
+    
 }
