@@ -115,6 +115,10 @@ You can find our Windows Beta installer in the Release Tab.
 
 You can find our Mac Beta installer in the Release Tab.
 
+###  Linux RPM Installer 
+
+You can find our Linux RPM Beta installer in the Release Tab.
+
 ## Automation
 
 TRex has infrastructure for two kinds of automation, UI automation and JUnit/TestNG automation. The sections below provide more information about each type:
