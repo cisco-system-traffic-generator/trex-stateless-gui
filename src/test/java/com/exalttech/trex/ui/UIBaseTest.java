@@ -23,24 +23,23 @@ import org.testng.annotations.BeforeTest;
 
 /**
  * Base class for automation UI test
+ *
  * @author Georgekh
  */
 public class UIBaseTest extends UITestsServices {
-    
+
     private static final String APP_DATA_PATH = File.separator + "TRex";
+
     @BeforeTest
     public void setUpClass() throws Exception {
-        if (Util.isWindows()) {
-            // remove appData folder
-           File trexDirectory = new File(System.getenv("LOCALAPPDATA") + APP_DATA_PATH);
-            if(trexDirectory.exists()){
-                FileUtils.deleteQuietly(trexDirectory);
-            }
-            ApplicationTest.launch(TrexApp.class);
-        }else{
-            Assert.assertTrue(false, "Not windows OS");
+
+        // remove appData folder
+        File trexDirectory = new File(System.getenv("LOCALAPPDATA") + APP_DATA_PATH);
+        if (trexDirectory.exists()) {
+            FileUtils.deleteQuietly(trexDirectory);
         }
-        
+        ApplicationTest.launch(TrexApp.class);
+
     }
 
     @Override
@@ -62,5 +61,5 @@ public class UIBaseTest extends UITestsServices {
         release(new KeyCode[]{});
         release(new MouseButton[]{});
     }
-    
+
 }
