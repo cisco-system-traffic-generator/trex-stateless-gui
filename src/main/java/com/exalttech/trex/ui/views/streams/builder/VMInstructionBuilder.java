@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class VMInstructionBuilder {
 
-    boolean isFixIPV4ChecksumAdded = false;
+    boolean isAddFixIPV4Checksum = false;
     String splitByVar = "";
     int vmCacheSize = 0;
     boolean isTaggedVlan = false;
@@ -35,24 +35,24 @@ public class VMInstructionBuilder {
     int offset = 0;
 
     /**
-     * 
+     *
      * @param isTaggedVlan
-     * @param isUDPSelected 
+     * @param isUDPSelected
      */
     public VMInstructionBuilder(boolean isTaggedVlan, boolean isUDPSelected) {
         this.isTaggedVlan = isTaggedVlan;
         this.isUDPSelected = isUDPSelected;
         this.offset = getOffset(isTaggedVlan);
     }
-    
+
     /**
-     * 
+     *
      * @param name
      * @param type
      * @param packetOffset
      * @param count
      * @param step
-     * @return 
+     * @return
      */
     private List<Object> getVMInstruction(String name, String type, int packetOffset, String count, String step, String address) {
         ArrayList<Object> vmInstructionList = new ArrayList<>();
@@ -75,7 +75,7 @@ public class VMInstructionBuilder {
             packetOffset += 4 - size;
             initValue = convertIPToInt(address);
             // TSG-22
-            maxValue = initValue + maxValue-1;
+            maxValue = initValue + maxValue - 1;
         }
 
         /**
@@ -103,23 +103,35 @@ public class VMInstructionBuilder {
         secondVMInstruction.put("pkt_offset", packetOffset);
         secondVMInstruction.put("type", "write_flow_var");
 
-        LinkedHashMap<String, Object> thirdVMInstruction = new LinkedHashMap<>();
-        thirdVMInstruction.put("pkt_offset", isTaggedVlan ? 18 : 14);
-        thirdVMInstruction.put("type", "fix_checksum_ipv4");
-
         vmInstructionList.add(firstVMInstruction);
         vmInstructionList.add(secondVMInstruction);
 
-        if (!isFixIPV4ChecksumAdded && name.contains("ip")) {
-            vmInstructionList.add(thirdVMInstruction);
-            isFixIPV4ChecksumAdded = true;
+        if ( name.contains("ip")) {
+            isAddFixIPV4Checksum = true;
         }
+        
         if (!"random".equals(operation)) {
             splitByVar = name;
         }
         if (Util.getIntFromString(count) < 5000 && vmCacheSize == 0) {
             vmCacheSize = 255;
         }
+        return vmInstructionList;
+    }
+
+    /**
+     * Add checksum instructions
+     * @return 
+     */
+    public List<Object> addChecksumInstruction() {
+        ArrayList<Object> vmInstructionList = new ArrayList<>();
+        if (isAddFixIPV4Checksum) {
+            LinkedHashMap<String, Object> checksumInstruction = new LinkedHashMap<>();
+            checksumInstruction.put("pkt_offset", isTaggedVlan ? 18 : 14);
+            checksumInstruction.put("type", "fix_checksum_ipv4");
+            vmInstructionList.add(checksumInstruction);
+        }
+
         return vmInstructionList;
     }
 
@@ -132,9 +144,9 @@ public class VMInstructionBuilder {
      * @return
      */
     private int getCalculatedSize(double count) {
-        if (count > 65536) {
+        if (count > 65535) {
             return 4;
-        } else if (count <= 256) {
+        } else if (count < 256) {
             return 1;
         } else {
             return 2;
@@ -142,23 +154,23 @@ public class VMInstructionBuilder {
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getSplitByVar() {
         return splitByVar;
     }
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     public int getVmCacheSize() {
         return vmCacheSize;
     }
 
     /**
-     * 
+     *
      * @param name
      * @param type
      * @param minLength
@@ -211,9 +223,9 @@ public class VMInstructionBuilder {
         vmInstructionList.add(secondVMInstruction);
         vmInstructionList.add(thirdVMInstruction);
 
-        if (!isFixIPV4ChecksumAdded) {
+        if (!isAddFixIPV4Checksum) {
             vmInstructionList.add(forthVMInstruction);
-            isFixIPV4ChecksumAdded = true;
+            isAddFixIPV4Checksum = true;
         }
 
         if (isUDPSelected) {
@@ -226,7 +238,7 @@ public class VMInstructionBuilder {
      * Return offset
      *
      * @param isTaggedVlan
-     * @return 
+     * @return
      */
     private int getOffset(boolean isTaggedVlan) {
         if (isTaggedVlan) {
@@ -237,7 +249,8 @@ public class VMInstructionBuilder {
 
     /**
      * Add cache size
-     * @param vmBody 
+     *
+     * @param vmBody
      */
     public void addCacheSize(LinkedHashMap<String, Object> vmBody) {
         if (getVmCacheSize() > 0) {
@@ -256,7 +269,7 @@ public class VMInstructionBuilder {
      * @return
      */
     public List<Object> addVmInstruction(InstructionType instructionType, String type, String count, String step, String address) {
-        return getVMInstruction(instructionType.getType(), type, instructionType.getOffset()+this.offset, count, step, address);
+        return getVMInstruction(instructionType.getType(), type, instructionType.getOffset() + this.offset, count, step, address);
     }
 
     /**
@@ -274,21 +287,22 @@ public class VMInstructionBuilder {
 
     /**
      * Convert IP to the equivalent integer value
+     *
      * @param ipAddress
-     * @return 
+     * @return
      */
     public long convertIPToInt(String ipAddress) {
         String[] addrArray = ipAddress.split("\\.");
         long convertedIPValue = 0;
         for (int i = 0; i < addrArray.length; i++) {
             int power = 3 - i;
-            convertedIPValue += Integer.parseInt(addrArray[i])%256 * Math.pow(256, power);
+            convertedIPValue += Integer.parseInt(addrArray[i]) % 256 * Math.pow(256, power);
         }
         return convertedIPValue;
     }
 
     /**
-     * Enumerator present 
+     * Enumerator present
      */
     public enum InstructionType {
         MAC_DST("mac_dest", 0),
