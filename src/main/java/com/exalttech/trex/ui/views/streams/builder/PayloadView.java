@@ -22,8 +22,12 @@ package com.exalttech.trex.ui.views.streams.builder;
 
 import com.exalttech.trex.ui.views.streams.binders.PayloadDataBinding;
 import com.exalttech.trex.util.Util;
+import java.util.function.UnaryOperator;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 
 /**
  *
@@ -49,6 +53,13 @@ public class PayloadView extends AbstractProtocolView {
      */
     private void bindComponent() {
         pattern.disableProperty().bind(type.valueProperty().isEqualTo("Fixed Word").not());
+        
+        pattern.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                pattern.setText(newValue.replaceAll(" ", ""));
+            }
+        });
     }
 
     /**
@@ -97,9 +108,19 @@ public class PayloadView extends AbstractProtocolView {
      */
     @Override
     protected void addInputValidation() {
-        pattern.setTextFormatter(Util.getHexFilter(0));
+        final UnaryOperator<TextFormatter.Change> filter = Util.getTextChangeFormatter(validatePayloadPattern());
+        pattern.setTextFormatter(new TextFormatter<>(filter));
     }
 
+    /**
+     * Validate payload pattern 
+     * @return 
+     */
+    public static String validatePayloadPattern() {
+        String partialBlock = "(([0-9a-fA-F ])*)";
+        return "^" + partialBlock;
+    }
+    
     /**
      * Bind properties with related fields
      */
