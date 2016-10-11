@@ -200,8 +200,8 @@ public class PacketUtil {
 
         // add VM instructions
         EthernetData ethernetData = packetData.getEthernetData();
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_DST, ethernetData.getDstAddress().getType(), ethernetData.getDstAddress().getCount(), ethernetData.getDstAddress().getStep()));
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, ethernetData.getSrcAddress().getType(), ethernetData.getSrcAddress().getCount(), ethernetData.getSrcAddress().getStep()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_DST, ethernetData.getDstAddress().getType(), ethernetData.getDstAddress().getCount(), ethernetData.getDstAddress().getStep(), ethernetData.getDstAddress().getAddress()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, ethernetData.getSrcAddress().getType(), ethernetData.getSrcAddress().getCount(), ethernetData.getSrcAddress().getStep(), ethernetData.getSrcAddress().getAddress()));
         
         IPV4Data ipv4Data = packetData.getIpv4Data();
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Data.getDstAddress().getType(), ipv4Data.getDstAddress().getCount(), "1", ipv4Data.getDstAddress().getAddress()));

@@ -33,6 +33,7 @@ public class VMInstructionBuilder {
     boolean isTaggedVlan = false;
     boolean isUDPSelected = false;
     int offset = 0;
+    long convertedAddress = 0;
 
     /**
      *
@@ -64,18 +65,18 @@ public class VMInstructionBuilder {
 
         LinkedHashMap<String, Object> firstVMInstruction = new LinkedHashMap<>();
 
-        int size = getCalculatedSize(Util.convertUnitToNum(count));
+        int size = getCalculatedSize(Util.convertUnitToNum(count), address);
 
-        // TSG-23
-        long maxValue = (long) Util.convertUnitToNum(count);
-        long initValue = 0;
-        
+        long initValue = this.convertedAddress;
+        long convertedCount = (long) Util.convertUnitToNum(count);
+        long minValue = initValue;
+        long maxValue = initValue + convertedCount - 1;
+  
         // set offset to byte 4 for the ip address
         if (name.contains("ip")) {
             packetOffset += 4 - size;
-            initValue = convertIPToInt(address);
-            // TSG-22
-            maxValue = initValue + maxValue - 1;
+        }else{
+            packetOffset += 6 - size;
         }
 
         /**
@@ -83,7 +84,7 @@ public class VMInstructionBuilder {
          * "op": "inc", "size": 1, "step": 1, "type": "flow_var"
          */
         firstVMInstruction.put("init_value", initValue);
-        firstVMInstruction.put("min_value", 0);
+        firstVMInstruction.put("min_value", minValue);
         firstVMInstruction.put("max_value", maxValue);
         firstVMInstruction.put("name", name);
         firstVMInstruction.put("op", operation);
@@ -106,10 +107,10 @@ public class VMInstructionBuilder {
         vmInstructionList.add(firstVMInstruction);
         vmInstructionList.add(secondVMInstruction);
 
-        if ( name.contains("ip")) {
+        if (name.contains("ip")) {
             isAddFixIPV4Checksum = true;
         }
-        
+
         if (!"random".equals(operation)) {
             splitByVar = name;
         }
@@ -121,7 +122,8 @@ public class VMInstructionBuilder {
 
     /**
      * Add checksum instructions
-     * @return 
+     *
+     * @return
      */
     public List<Object> addChecksumInstruction() {
         ArrayList<Object> vmInstructionList = new ArrayList<>();
@@ -143,14 +145,58 @@ public class VMInstructionBuilder {
      * @param count
      * @return
      */
-    private int getCalculatedSize(double count) {
-        if (count > 65535) {
-            return 4;
-        } else if (count < 256) {
+    private int getCalculatedSize(double count, String address) {
+
+        // mac address 
+        if (address.contains(":")) {
+            return calculateSizeFromMacAddress(address, count);
+        }
+        return calculateSizeFromIPAddress(address, count);
+    }
+
+    /**
+     * calculate size from mac address
+     * @param address
+     * @param count
+     * @return 
+     */
+    private int calculateSizeFromMacAddress(String address, double count) {
+        convertedAddress = Long.parseLong(address.substring(address.length() - 2, address.length()), 16);
+        if (convertedAddress + count < 256) {
             return 1;
         } else {
-            return 2;
+            String last2Byte = address.substring(address.length() - 5, address.length()).replaceAll(":", "");
+            convertedAddress = Long.parseLong(last2Byte, 16);
+            if (convertedAddress + count < 65536) {
+                return 2;
+            }
         }
+        String last4Byte = address.substring(7, address.length()).replaceAll(":", "");
+        convertedAddress = Long.parseLong(last4Byte, 16);
+        return 4;
+    }
+
+    /**
+     * Calculate size from IP address
+     * @param address
+     * @param count
+     * @return 
+     */
+    private int calculateSizeFromIPAddress(String address, double count) {
+
+        String[] ipBytesStrings = address.split("\\.");
+        convertedAddress = Long.parseLong(ipBytesStrings[3]);
+        if (convertedAddress + count < 256) {
+            return 1;
+        } else {
+            String newAddress = "0.0." + ipBytesStrings[2] + "." + ipBytesStrings[3];
+            convertedAddress = convertIPToInt(newAddress);
+            if (convertedAddress + count < 65536) {
+                return 2;
+            }
+        }
+        convertedAddress = convertIPToInt(address);
+        return 4;
     }
 
     /**
@@ -273,19 +319,6 @@ public class VMInstructionBuilder {
     }
 
     /**
-     * add Vm instruction
-     *
-     * @param instructionType
-     * @param type
-     * @param count
-     * @param step
-     * @return
-     */
-    public List<Object> addVmInstruction(InstructionType instructionType, String type, String count, String step) {
-        return addVmInstruction(instructionType, type, count, step, null);
-    }
-
-    /**
      * Convert IP to the equivalent integer value
      *
      * @param ipAddress
@@ -299,6 +332,10 @@ public class VMInstructionBuilder {
             convertedIPValue += Integer.parseInt(addrArray[i]) % 256 * Math.pow(256, power);
         }
         return convertedIPValue;
+    }
+
+    public long convertMacAddressToDecimal(String macAddress) {
+        return Long.parseLong(macAddress.replaceAll(":", ""), 16);
     }
 
     /**
