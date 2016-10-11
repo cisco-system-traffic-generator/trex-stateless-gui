@@ -26,6 +26,7 @@ import com.exalttech.trex.ui.components.MultiplierOption;
 import com.exalttech.trex.ui.components.events.MultiplierSelectionEvent;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.util.Util;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.value.ChangeListener;
@@ -52,7 +53,8 @@ import static javafx.scene.layout.AnchorPane.setTopAnchor;
  * @author GeorgeKh
  */
 public class MultiplierView extends AnchorPane implements MultiplierSelectionEvent {
-
+    
+    DecimalFormat FRACTION_FORMATTER = new DecimalFormat("#0.#######");
     Map<MultiplierType, MultiplierOption> multiplierOptionMap = new HashMap<>();
     ToggleGroup group;
     MultiplierOption currentSelected;
@@ -98,6 +100,10 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
         slider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                // check min value for slider
+                if((double)newValue< MultiplierType.percentage.getMinRate(rate)){
+                    slider.setValue(MultiplierType.percentage.getMinRate(rate));
+                }
                 updateOptionsValues(slider.getValue(), updateAll);
                 if (fireUpdateCommand) {
                     optionValueChangeHandler.optionValueChanged();
@@ -194,15 +200,20 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
      */
     public double getPPSValue() {
         MultiplierOption option = multiplierOptionMap.get(MultiplierType.pps);
-
+        validateSelectedMultiplierValue();
         // force PPS value to 1 if it less than 1
-        if (option.getMultiplierValue() < 1 && MultiplierType.pps.getValue(rate) > 0) {
+        if (option.getMultiplierValue() < 1 && MultiplierType.pps.getMaxRate(rate) > 0) {
             option.setValue(1);
             updateAll(option);
         }
         return option.getMultiplierValue();
     }
 
+    private void validateSelectedMultiplierValue(){
+        if(currentSelected.getValue() < currentSelected.getType().getMinRate(rate)){
+            currentSelected.setValue(currentSelected.getType().getMinRate(rate));
+        }
+    }
     /**
      * Return multiplier type
      *
@@ -272,7 +283,7 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
      */
     private double calcTypeValue(double sliderValue, MultiplierType type) {
         if (rate != null) {
-            return (sliderValue * type.getValue(rate)) / (MultiplierType.percentage.getValue(rate));
+            return Double.parseDouble(FRACTION_FORMATTER.format((sliderValue * type.getMaxRate(rate)) / (MultiplierType.percentage.getMaxRate(rate))));
         }
         return 0;
     }
@@ -317,7 +328,8 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
     }
 
     private double getSliderValue(MultiplierType type, double value) {
-        return value * MultiplierType.percentage.getValue(rate) / type.getValue(rate);
+        
+        return value * MultiplierType.percentage.getMaxRate(rate) / type.getMaxRate(rate);
     }
 
     /**
@@ -328,7 +340,7 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
     public void assignNewProfile(AssignedProfile assigned) {
         rate = assigned.getRate();
         fireUpdateCommand = false;
-        slider.setValue(MultiplierType.percentage.getValue(rate));
+        slider.setValue(MultiplierType.percentage.getMaxRate(rate));
         fireUpdateCommand = true;
         slider.setDisable(false);
     }
@@ -369,7 +381,8 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
             if (currentValue > maxValue) {
                 sliderValue = 100;
                 option.setValue(maxValue);
-            }
+            } 
+            
             updateAll = false;
             slider.setValue(sliderValue);
             updateAll = true;
