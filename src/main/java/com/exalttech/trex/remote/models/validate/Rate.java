@@ -35,7 +35,11 @@ import javax.annotation.Generated;
     "max_bps_l1",
     "max_bps_l2",
     "max_line_util",
-    "max_pps"
+    "max_pps",
+    "min_bps_l1",
+    "min_bps_l2",
+    "min_line_util",
+    "min_pps"
 })
 public class Rate {
 
@@ -47,6 +51,15 @@ public class Rate {
     private Double maxLineUtil;
     @JsonProperty("max_pps")
     private long maxPps;
+    @JsonProperty("min_bps_l1")
+    private int minBpsL1;
+    @JsonProperty("min_bps_l2")
+    private int minBpsL2;
+    @JsonProperty("min_line_util")
+    private double minLineUtil;
+    @JsonProperty("min_pps")
+    private int minPps;
+    
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -58,6 +71,10 @@ public class Rate {
         this.maxBpsL2 = 0;
         this.maxLineUtil = 0.0;
         this.maxPps = 0;
+        this.maxBpsL1 = 0;
+        this.minBpsL2 = 0;
+        this.minLineUtil = 0;
+        this.minPps = 0;
     }
 
     /**
@@ -131,7 +148,80 @@ public class Rate {
     public void setMaxPps(long maxPps) {
         this.maxPps = maxPps;
     }
+    
+    /**
+     * 
+     * @return 
+     */
+    @JsonProperty("min_bps_l1")
+    public int getMinBpsL1() {
+        return minBpsL1;
+    }
+    
+    /**
+     * 
+     * @param minBpsL1 
+     */
+    @JsonProperty("min_bps_l1")
+    public void setMinBpsL1(int minBpsL1) {
+        this.minBpsL1 = minBpsL1;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @JsonProperty("min_bps_l2")
+    public int getMinBpsL2() {
+        return minBpsL2;
+    }
+    
+    /**
+     * 
+     * @param minBpsL2 
+     */
+    @JsonProperty("min_bps_l2")
+    public void setMinBpsL2(int minBpsL2) {
+        this.minBpsL2 = minBpsL2;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @JsonProperty("min_line_util")
+    public double getMinLineUtil() {
+        return minLineUtil;
+    }
+    
+    /**
+     * 
+     * @param minLineUtil 
+     */
+    @JsonProperty("min_line_util")
+    public void setMinLineUtil(double minLineUtil) {
+        this.minLineUtil = minLineUtil;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @JsonProperty("min_pps")
+    public int getMinPps() {
+        return minPps;
+    }
+    
+    /**
+     * 
+     * @param minPps 
+     */
+    @JsonProperty("min_pps")
+    public void setMinPps(int minPps) {
+        this.minPps = minPps;
+    }
 
+    
     /**
      *
      * @return
@@ -143,7 +233,8 @@ public class Rate {
 
     @Override
     public String toString() {
-        return "Rate{" + "maxBpsL1=" + maxBpsL1 + ", maxBpsL2=" + maxBpsL2 + ", maxLineUtil=" + maxLineUtil + ", maxPps=" + maxPps + ", additionalProperties=" + additionalProperties + '}';
+        return "Rate{" + "maxBpsL1=" + maxBpsL1 + ", maxBpsL2=" + maxBpsL2 + ", maxLineUtil=" + maxLineUtil + ", maxPps=" + maxPps + " minBpsL1 = "+minBpsL1+" minBpsL2 = "+minBpsL2+
+                " minLineUtil = "+minLineUtil+" minPps = "+minPps+", additionalProperties=" + additionalProperties + '}';
     }
 
     /**

@@ -34,7 +34,7 @@ public enum MultiplierType {
         }
 
         @Override
-        public double getValue(Rate rate) {
+        public double getMaxRate(Rate rate) {
             return rate.getMaxLineUtil();
         }
 
@@ -43,6 +43,10 @@ public enum MultiplierType {
             return "Max line util percentage";
         }
 
+        @Override
+        public double getMinRate(Rate rate) {
+            return rate.getMinLineUtil();
+        }
     },
     /**
      *
@@ -54,7 +58,7 @@ public enum MultiplierType {
         }
 
         @Override
-        public double getValue(Rate rate) {
+        public double getMaxRate(Rate rate) {
             return rate.getMaxBpsL1();
         }
 
@@ -63,6 +67,10 @@ public enum MultiplierType {
             return "Max L1 BPS";
         }
 
+        @Override
+        public double getMinRate(Rate rate) {
+            return rate.getMinBpsL1();
+        }
     },
     /**
      *
@@ -74,7 +82,7 @@ public enum MultiplierType {
         }
 
         @Override
-        public double getValue(Rate rate) {
+        public double getMaxRate(Rate rate) {
             return rate.getMaxBpsL2();
         }
 
@@ -83,6 +91,10 @@ public enum MultiplierType {
             return "Max L2 BPS";
         }
 
+        @Override
+        public double getMinRate(Rate rate) {
+            return rate.getMinBpsL2();
+        }
     },
     /**
      *
@@ -94,7 +106,7 @@ public enum MultiplierType {
         }
 
         @Override
-        public double getValue(Rate rate) {
+        public double getMaxRate(Rate rate) {
             return rate.getMaxPps();
         }
 
@@ -103,6 +115,10 @@ public enum MultiplierType {
             return "Max PPS value";
         }
 
+        @Override
+        public double getMinRate(Rate rate) {
+            return rate.getMinPps();
+        }
     };
 
     /**
@@ -117,8 +133,15 @@ public enum MultiplierType {
      * @param rate
      * @return
      */
-    public abstract double getValue(Rate rate);
+    public abstract double getMaxRate(Rate rate);
 
+    /**
+     * 
+     * @param rate
+     * @return 
+     */
+     public abstract double getMinRate(Rate rate);
+     
     /**
      *
      * @return

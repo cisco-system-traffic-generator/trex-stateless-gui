@@ -200,13 +200,14 @@ public class PacketUtil {
 
         // add VM instructions
         EthernetData ethernetData = packetData.getEthernetData();
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_DST, ethernetData.getDstAddress().getType(), ethernetData.getDstAddress().getCount(), ethernetData.getDstAddress().getStep()));
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, ethernetData.getSrcAddress().getType(), ethernetData.getSrcAddress().getCount(), ethernetData.getSrcAddress().getStep()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_DST, ethernetData.getDstAddress().getType(), ethernetData.getDstAddress().getCount(), ethernetData.getDstAddress().getStep(), ethernetData.getDstAddress().getAddress()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, ethernetData.getSrcAddress().getType(), ethernetData.getSrcAddress().getCount(), ethernetData.getSrcAddress().getStep(), ethernetData.getSrcAddress().getAddress()));
         
         IPV4Data ipv4Data = packetData.getIpv4Data();
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Data.getDstAddress().getType(), ipv4Data.getDstAddress().getCount(), "1", ipv4Data.getDstAddress().getAddress()));
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Data.getSrcAddress().getType(), ipv4Data.getSrcAddress().getCount(), "1", ipv4Data.getSrcAddress().getAddress()));
-
+        // add ipv4 checksum instructions
+        instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
         // add packet length instruction
         PacketLength packetLength = packetData.getPacketLength();
         instructionsList.addAll(vmInstructionBuilder.getPacketLenVMInstruction("pkt_len", packetLength.getLengthType(), String.valueOf(packetLength.getMinLength()), String.valueOf(packetLength.getMaxLength()), packetData.isTaggedVlan()));

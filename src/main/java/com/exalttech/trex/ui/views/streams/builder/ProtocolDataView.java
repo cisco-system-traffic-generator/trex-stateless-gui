@@ -267,12 +267,13 @@ public class ProtocolDataView extends Accordion {
         ArrayList<Object> instructionsList = new ArrayList<>();
 
         // ADD 4 in case of VLAN
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_DST, macDest.getType(), macDest.getCount(), macDest.getStep()));
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, macSrc.getType(), macSrc.getCount(), macSrc.getStep()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_DST, macDest.getType(), macDest.getCount(), macDest.getStep(), macDest.getAddress()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, macSrc.getType(), macSrc.getCount(), macSrc.getStep(), macSrc.getAddress()));
         
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Dst.getType(), ipv4Dst.getCount(), "1", ipv4Dst.getAddress()));
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Src.getType(), ipv4Src.getCount(), "1", ipv4Src.getAddress()));
-
+        // add ipv4 checksum instructions
+        instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
         instructionsList.addAll(vmInstructionBuilder.getPacketLenVMInstruction("pkt_len", selections.getFrameLengthType(), selections.getMinLength(), selections.getMaxLength(), selections.isTaggedVlanSelected()));
 
         Map<String, Object> additionalProperties = new HashMap<>();
