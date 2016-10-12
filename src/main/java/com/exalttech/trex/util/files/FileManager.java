@@ -34,6 +34,7 @@ public class FileManager {
     private static final Logger LOG = Logger.getLogger(FileManager.class.getName());
     private static final String APP_DATA_PATH = File.separator + "TRex" + File.separator + "trex" + File.separator;
     private static final String PROFILES_PATH = "traffic-profiles" + File.separator;
+    private static final String OTHER_OS_PATH = "TRexFiles/";
 
     /**
      * Return local file path
@@ -48,9 +49,9 @@ public class FileManager {
                 LOG.info("Loading System Path =" + systemPath);
                 return systemPath;
             }
-            return "";
+            return OTHER_OS_PATH;
         }
-        return "";
+        return OTHER_OS_PATH;
     }
 
     /**
@@ -59,11 +60,8 @@ public class FileManager {
      * @return
      */
     public static String getProfilesFilePath() {
-        if (Util.isWindows()) {
-            createDirectoryIfNotExists(getLocalFilePath() + PROFILES_PATH);
-            return getLocalFilePath() + PROFILES_PATH;
-        }
-        return "";
+        createDirectoryIfNotExists(getLocalFilePath() + PROFILES_PATH);
+        return getLocalFilePath() + PROFILES_PATH;
     }
 
     /**
@@ -127,7 +125,8 @@ public class FileManager {
      * @throws IOException
      */
     public static File createNewFile(String fileName) throws IOException {
-        File newFile = new File(getProfilesFilePath() + fileName);
+        String path = getProfilesFilePath() + fileName;
+        File newFile = new File(path);
         newFile.createNewFile();
         return newFile;
     }
