@@ -64,6 +64,10 @@ public class TrexApp extends Application {
         return primaryStage;
     }
 
+    public static void setPrimaryStage(Stage primaryStage) {
+        TrexApp.primaryStage = primaryStage;
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
         speedupTooltip();

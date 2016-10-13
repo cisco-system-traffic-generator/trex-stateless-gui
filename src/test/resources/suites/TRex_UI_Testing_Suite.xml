@@ -1,0 +1,18 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+  
+<suite name="TRex_UI_Testing_Suite" verbose="1" >
+<!--    <test name="ConnectionsTest">
+        <parameter name="serverIP" value="192.168.204.138" ></parameter>
+        <parameter name="syncPort" value="4501" ></parameter>
+        <parameter name="asyncPort" value="4500" ></parameter>
+        <classes>
+            <class name="com.exalttech.trex.ui.connection.ConnectionsTest"/>
+        </classes>
+    </test>-->
+    <test name="TrafficProfilesTest">
+        <classes>
+            <class name="com.exalttech.trex.ui.trafficProfile.TrafficProfileTest"/>
+            <class name="com.exalttech.trex.ui.trafficProfile.EthernetStreamTest"/>
+        </classes>
+    </test>
+</suite>

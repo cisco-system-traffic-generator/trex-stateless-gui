@@ -98,14 +98,18 @@ public class MacProtocolView extends AbstractProtocolView {
 
         addLabel("Address", 5, 100);
         dstAddress = new TextField();
+        dstAddress.setId("macDstAddress");
         addInput(dstAddress, 30, 100, 220);
         srcAddress = new TextField();
+        srcAddress.setId("macSrcAddress");
         addInput(srcAddress, 72, 100, 220);
 
         addLabel("Mode", 5, 330);
         dstMode = new ComboBox<>();
+        dstMode.setId("macDstMode");
         addCombo(dstMode, 30, 330, 150);
         srcMode = new ComboBox<>();
+        srcMode.setId("macsrcMode");
         addCombo(srcMode, 70, 330, 150);
 
         addLabel("Count", 5, 490);

@@ -151,10 +151,12 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
         // add build stream btn
         buildPacketBtn = new StreamTableButton(StreamTableAction.BUILD);
+        buildPacketBtn.setId("buildStreamBtn");
         initializeStreamButtons(buildPacketBtn, false);
         buttonContainer.getChildren().add(buildPacketBtn);
 
         editPacketBtn = new StreamTableButton(StreamTableAction.EDIT);
+        editPacketBtn.setId("editStreanBtn");
         initializeStreamButtons(editPacketBtn, true);
         buttonContainer.getChildren().add(editPacketBtn);
 
@@ -182,7 +184,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
         // add table view
         streamPacketTableView = new TableView<>();
-
+        streamPacketTableView.setId("streamTableView");
         streamPacketTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         streamPacketTableView.setFixedCellSize(32);
 
@@ -599,7 +601,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         try {
             profileList = trafficProfile.getTrafficProfile(fileToLoad);
         } catch (IOException ex) {
-            LOG.warn("Profile does not have any streams", ex);
+            LOG.warn("Profile does not have any streams");
             profileList = new Profile[0];
         }
         List<TableProfileStream> packetDataList = trafficProfile.convertProfilesToTableData(profileList);
