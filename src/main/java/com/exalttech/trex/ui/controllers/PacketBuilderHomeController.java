@@ -101,6 +101,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @FXML
     Tab protocolDataTab;
     @FXML
+    Tab advanceSettingsTab;
+    @FXML
+    AdvancedSettingsController advancedSettingsController;
+    @FXML
     Tab streamPropertiesTab;
     @FXML
     TabPane streamTabPane;
@@ -198,7 +202,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         // initialize builder tabs
         protocolSelectionController.bindSelections(builderDataBinder.getProtocolSelection());
         protocolDataController.bindSelection(builderDataBinder);
-
+        advancedSettingsController.bindSelections(builderDataBinder.getAdvancedPropertiesDB());
+        
         packetViewerWithTreeTab.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (newValue) {
                 try {
@@ -217,6 +222,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void hideStreamBuilderTab() {
         streamTabPane.getTabs().remove(protocolDataTab);
         streamTabPane.getTabs().remove(protocolSelectionTab);
+        streamTabPane.getTabs().remove(advanceSettingsTab);
         streamTabPane.getTabs().remove(packetViewerWithTreeTab);
     }
 
@@ -335,7 +341,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             hexPacket = packetHex.getPacketHexFromList();
         } else if (isBuildPacket) {
             hexPacket = PacketBuilderHelper.getPacketHex(protocolDataController.getProtocolData().getPacket().getRawData());
-            selectedProfile.getStream().setAdditionalProperties(protocolDataController.getVm());
+            selectedProfile.getStream().setAdditionalProperties(protocolDataController.getVm(advancedSettingsController.getCacheSize()));
             selectedProfile.getStream().setFlags(protocolDataController.getFlagsValue());
             // save stream selected in stream property
             selectedProfile.getStream().getPacket().setMeta(Util.serializeObjectToString(builderDataBinder));

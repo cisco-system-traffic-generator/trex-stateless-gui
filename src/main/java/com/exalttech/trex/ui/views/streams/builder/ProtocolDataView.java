@@ -25,6 +25,7 @@ import com.exalttech.trex.packets.TrexIpV4Packet;
 import com.exalttech.trex.packets.TrexVlanPacket;
 import com.exalttech.trex.ui.views.models.AddressProtocolData;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
+import com.exalttech.trex.ui.views.streams.binders.AdvancedPropertiesDataBinding;
 import com.exalttech.trex.ui.views.streams.binders.ProtocolSelectionDataBinding;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +58,8 @@ public class ProtocolDataView extends Accordion {
     UDPProtocolView udpView;
     PayloadView payloadView;
     VLanProtocolView vlanView;
-
+    AdvancedPropertiesDataBinding cahceSizeDataBinding;
+    
     /**
      *
      */
@@ -252,12 +254,13 @@ public class ProtocolDataView extends Accordion {
     /**
      * Return VM
      *
+     * @param cacheSize
      * @return
      */
-    public Map<String, Object> getVm() {
+    public Map<String, Object> getVm(CacheSize cacheSize) {
 
         VMInstructionBuilder vmInstructionBuilder = new VMInstructionBuilder(selections.isTaggedVlanSelected(), selections.isUDPSelected());
-
+        vmInstructionBuilder.setCacheSize(cacheSize);
         // ipv4/mac selsetion data
         AddressProtocolData ipv4Src = ipv4View.getSourceAddress();
         AddressProtocolData ipv4Dst = ipv4View.getDestinationAddress();

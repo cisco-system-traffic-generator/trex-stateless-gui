@@ -17,6 +17,7 @@ package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.packets.TrexEthernetPacket;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
+import com.exalttech.trex.ui.views.streams.builder.CacheSize;
 import com.exalttech.trex.ui.views.streams.builder.ProtocolDataView;
 import java.net.URL;
 import java.util.Map;
@@ -86,9 +87,10 @@ public class ProtocolDataController implements Initializable {
     /**
      * Return VM
      *
+     * @param cacheSize
      * @return
      */
-    public Map<String, Object> getVm() {
-        return dataView.getVm();
+    public Map<String, Object> getVm(CacheSize cacheSize) {
+        return dataView.getVm(cacheSize);
     }
 }

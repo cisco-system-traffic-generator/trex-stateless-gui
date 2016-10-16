@@ -47,6 +47,8 @@ public class BuilderDataBinding implements Serializable {
 
     List<VlanDataBinding> vlanDB = new ArrayList<>();
 
+    AdvancedPropertiesDataBinding advancedPropertiesDB = new AdvancedPropertiesDataBinding();
+    
     /**
      * Constructor
      */
@@ -202,4 +204,19 @@ public class BuilderDataBinding implements Serializable {
         this.vlanDB = vlanDB;
     }
 
+    /**
+     * Return cahce size
+     * @return 
+     */
+    public AdvancedPropertiesDataBinding getAdvancedPropertiesDB() {
+        return advancedPropertiesDB;
+    }
+
+    /**
+     * Set cache size
+     * @param advancedPropertiesDB 
+     */
+    public void setAdvancedPropertiesDB(AdvancedPropertiesDataBinding advancedPropertiesDB) {
+        this.advancedPropertiesDB = advancedPropertiesDB;
+    }
 }
