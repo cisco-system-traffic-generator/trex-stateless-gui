@@ -22,6 +22,7 @@ package com.exalttech.trex.ui.views.streams.builder;
 
 import com.exalttech.trex.ui.views.streams.binders.AbstractStreamDataBinding;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -77,6 +78,17 @@ public abstract class AbstractProtocolView extends TitledPane {
     }
 
     /**
+     * 
+     * @param label
+     * @param top
+     * @param left 
+     */
+    protected void addLabel(Label label, double top, double left) {
+        container.getChildren().add(label);
+        container.setTopAnchor(label, top);
+        container.setLeftAnchor(label, left);
+    }
+    /**
      *
      * @param input
      * @param top
@@ -114,6 +126,19 @@ public abstract class AbstractProtocolView extends TitledPane {
         addCombo(input, top, left, 80);
     }
 
+    /**
+     *
+     * @param input
+     * @param top
+     * @param left
+     * @param width
+     */
+    protected void addButton(Button input, double top, double left, double width) {
+        input.setPrefSize(width, 22);
+        container.getChildren().add(input);
+        container.setTopAnchor(input, top);
+        container.setLeftAnchor(input, left);
+    }
     /**
      *
      * @param input

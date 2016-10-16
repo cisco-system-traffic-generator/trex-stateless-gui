@@ -17,8 +17,13 @@ package com.exalttech.trex.util.files;
 
 import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
@@ -187,7 +192,9 @@ public class FileManager {
         fileChooser.setInitialFileName(fileName);
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(type.getFilterDescription(), type.getFilterExtension());
         fileChooser.getExtensionFilters().add(extFilter);
-
+        FileChooser.ExtensionFilter allFilesFilter = new FileChooser.ExtensionFilter("All files ", "*.*");
+        fileChooser.getExtensionFilters().add(allFilesFilter);
+        
         if (!Util.isNullOrEmpty(filePath) && new File(filePath).exists()) {
             fileChooser.setInitialDirectory(new File(filePath));
         }
@@ -196,6 +203,11 @@ public class FileManager {
         } else {
             return fileChooser.showOpenDialog(window);
         }
+    }
+
+    public static String getFileContent(File fileToRead) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(fileToRead.getPath()));
+        return new String(encoded);
     }
 
     /**
