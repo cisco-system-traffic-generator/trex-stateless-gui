@@ -60,7 +60,7 @@
                 </Tab>
 				<Tab fx:id="advanceSettingsTab" text="Advanced Settings">
 					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" >
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
 							<children>
 								<fx:include fx:id="advancedSettings" source="AdvancedSettings.fxml" />
 							</children>
@@ -82,6 +82,16 @@
                 <String fx:value="floating" />
             </styleClass>
         </TabPane>
+      <Button fx:id="nextStreamBtn" mnemonicParsing="false" onAction="#nextStreamBtnClicked" prefHeight="24.0" prefWidth="60.0" styleClass="normalButton" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="85.0">
+         <tooltip>
+            <Tooltip text="Next Stream" />
+         </tooltip>
+      </Button>
+      <Button fx:id="prevStreamBtn" mnemonicParsing="false" onAction="#prevStreamBtnClick" prefHeight="24.0" prefWidth="60.0" styleClass="normalButton" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="14.0">
+         <tooltip>
+            <Tooltip text="Previous Stream" />
+         </tooltip>
+      </Button>
         <Button fx:id="savePacket" cancelButton="false" defaultButton="false" disable="false" mnemonicParsing="false" onAction="#saveProfileBtnClicked" prefHeight="24.0" prefWidth="110.0" styleClass="normalButton" text="Save" visible="true" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="782.0">
             <textFill>
                 <Color blue="0.161" green="0.161" red="0.161" fx:id="x5" />

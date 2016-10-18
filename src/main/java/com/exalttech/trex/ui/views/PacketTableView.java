@@ -627,12 +627,14 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     @Override
     public void stateChanged(int index, boolean newValue) {
         try {
-            if (++numOfStreamLoaded > numOfEnabledStream) {
-                doUpdate = true;
+            if (!streamEditingWindowOpen) {
+                if (++numOfStreamLoaded > numOfEnabledStream) {
+                    doUpdate = true;
+                }
+                tabledata.getProfiles().get(index).getStream().setEnabled(newValue);
+                saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
+                loadStreamTable(loadedProfile);
             }
-            tabledata.getProfiles().get(index).getStream().setEnabled(newValue);
-            saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
-            loadStreamTable(loadedProfile);
         } catch (Exception ex) {
             LOG.error("Error updating profile", ex);
         }

@@ -44,6 +44,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
@@ -70,6 +72,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     Button pcapProperties;
     @FXML
     Button savePacket;
+    @FXML
+    Button nextStreamBtn;
+    @FXML
+    Button prevStreamBtn;
     @FXML
     Button resetPacket;
     @FXML
@@ -118,7 +124,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private boolean isBuildPacket = false;
     private List<Profile> profileList;
     private String yamlFileName;
-
+    private int currentSelectedProfileIndex;
     BuilderDataBinding builderDataBinder;
     TrafficProfile trafficProfile;
 
@@ -132,6 +138,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     public void initialize(URL url, ResourceBundle rb) {
         trafficProfile = new TrafficProfile();
         loadPcap.visibleProperty().bind(packetViewerTab.selectedProperty());
+        nextStreamBtn.setGraphic(new ImageView(new Image("/icons/next_stream.png")));
+        prevStreamBtn.setGraphic(new ImageView(new Image("/icons/prev_stream.png")));
     }
 
     /**
@@ -147,7 +155,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         this.selectedProfile = profileList.get(selectedProfileIndex);
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
+        this.currentSelectedProfileIndex = selectedProfileIndex;
+
         streamPropertiesController.init(profileList, selectedProfileIndex);
+        updateNextPrevButtonState();
         switch (type) {
             case ADD_STREAM:
                 hideStreamBuilderTab();
@@ -179,6 +190,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         hideStreamBuilderTab();
         if (pcapFileBinary != null) {
             try {
+                isBuildPacket = false;
                 packetInfo = new PacketInfo();
                 File pcapFile = trafficProfile.decodePcapBinary(pcapFileBinary);
                 parser = new PacketParser(pcapFile.getAbsolutePath(), packetInfo);
@@ -203,7 +215,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         protocolSelectionController.bindSelections(builderDataBinder.getProtocolSelection());
         protocolDataController.bindSelection(builderDataBinder);
         advancedSettingsController.bindSelections(builderDataBinder.getAdvancedPropertiesDB());
-        
+
         packetViewerWithTreeTab.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (newValue) {
                 try {
@@ -313,20 +325,96 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     @FXML
     public void saveProfileBtnClicked(ActionEvent event) {
+        if (saveStream()) {
+            // close the dialog
+            Node node = (Node) event.getSource();
+            Stage stage = (Stage) node.getScene().getWindow();
+            stage.hide();
+        }
+    }
+
+    /**
+     * save stream Return true if stream saved successfully otherwise return
+     * false
+     *
+     * @return
+     */
+    private boolean saveStream() {
         try {
             updateCurrentProfile();
             if (streamPropertiesController.isValidStreamPropertiesFields()) {
                 String yamlData = trafficProfile.convertTrafficProfileToYaml(profileList.toArray(new Profile[profileList.size()]));
                 FileUtils.writeStringToFile(new File(yamlFileName), yamlData);
-
-                // close the dialog
-                Node node = (Node) event.getSource();
-                Stage stage = (Stage) node.getScene().getWindow();
-                stage.hide();
+                return true;
             }
         } catch (Exception ex) {
             LOG.error("Error Saving yaml file", ex);
         }
+        return false;
+    }
+
+    /**
+     * Next stream button click handler
+     *
+     * @param event
+     */
+    @FXML
+    public void nextStreamBtnClicked(ActionEvent event) {
+        if (saveStream()) {
+            // load next stream
+            this.currentSelectedProfileIndex+=1;
+            updateNextPrevButtonState();
+            loadStream();
+        }
+    }
+
+    /**
+     * Previous stream button click handler
+     *
+     * @param event
+     */
+    @FXML
+    public void prevStreamBtnClick(ActionEvent event) {
+        if (saveStream()) {
+            // load previous stream
+            currentSelectedProfileIndex-=1;
+            updateNextPrevButtonState();
+            loadStream();
+        }
+    }
+
+    private void resetTabs(){
+        streamTabPane.getTabs().clear();
+        streamTabPane.getTabs().add(streamPropertiesTab);
+        streamTabPane.getTabs().add(packetViewerTab);
+        streamTabPane.getTabs().add(protocolSelectionTab);
+        streamTabPane.getTabs().add(protocolDataTab);
+        streamTabPane.getTabs().add(advanceSettingsTab);
+        streamTabPane.getTabs().add(packetViewerWithTreeTab);
+         
+    }
+    /**
+     * Update next/previous stream button disable state
+     */
+    private void updateNextPrevButtonState() {
+        nextStreamBtn.setDisable((currentSelectedProfileIndex >= profileList.size() - 1));
+        prevStreamBtn.setDisable((currentSelectedProfileIndex == 0));
+    }
+
+    /**
+     * Load current stream
+     */
+    private void loadStream() {
+        resetTabs();
+        streamTabPane.getSelectionModel().select(streamPropertiesTab);
+        this.selectedProfile = profileList.get(currentSelectedProfileIndex);
+        String windowTitle = "Edit Stream (" + selectedProfile.getName() + ")";
+        // update window title
+        Stage stage = (Stage) streamTabPane.getScene().getWindow();
+        stage.setTitle(windowTitle);
+
+        streamPropertiesController.init(profileList, currentSelectedProfileIndex);
+        initEditStream(selectedProfile.getStream().getPacket().getBinary());
     }
 
     /**
