@@ -93,9 +93,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.apache.log4j.Logger;
+
+import com.xored.javafx.packeteditor.TRexPacketCraftingTool;
 
 /**
  * Main view FXML controller
@@ -1626,7 +1629,18 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         }
         treeviewOpened = !treeviewOpened;
     }
-    
+
+    @FXML
+    public void openPacketBuilder(ActionEvent event) {
+        TRexPacketCraftingTool packetCraftingTool = new TRexPacketCraftingTool();
+        
+        try {
+            packetCraftingTool.startAsEmbedded(new Stage());
+        } catch (Exception e) {
+            LOG.error("Unable to load Packet Builder.");
+        }
+    }
+
     /**
      * Enumerator that present async stats data type
      */
