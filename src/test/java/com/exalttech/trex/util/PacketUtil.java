@@ -69,8 +69,14 @@ public class PacketUtil {
 
     private static final Logger LOG = Logger.getLogger(PacketUtil.class.getName());
     private final TrafficProfile trafficProfile = new TrafficProfile();
-    private static final String STL_SIM_COMMAND = "./stl-sim -f TRexFiles/traffic-profiles/[FILE_NAME].yaml -o TRexFiles/traffic-profiles/generated_[FILE_NAME].pcap -l 10 ";
-
+    private final String filePath;
+    private final String STL_SIM_COMMAND ;
+    
+    public PacketUtil(){
+        filePath = FileManager.getProfilesFilePath();
+        STL_SIM_COMMAND = "./stl-sim -f "+filePath+"[FILE_NAME].yaml -o "+filePath+"generated_[FILE_NAME].pcap -l 10 ";
+    }
+    
     /**
      * @param packetRawData
      * @return encoded data
@@ -159,7 +165,7 @@ public class PacketUtil {
     public boolean comparePcaps(String firstPCAP, String secondPCAP) throws PcapNativeException, NotOpenException, URISyntaxException {
         LOG.info("Comparing pcap files");
         List<String> firstPcapPacketList = getpcapPacketList(getClass().getResource("/pcaps/" + firstPCAP + ".pcap").toURI().getPath());
-        List<String> secondPcapPacketList = getpcapPacketList("TRexFiles/traffic-profiles/" + secondPCAP + ".pcap");
+        List<String> secondPcapPacketList = getpcapPacketList(filePath + secondPCAP + ".pcap");
         if (firstPcapPacketList.size() != secondPcapPacketList.size()) {
             return false;
         }

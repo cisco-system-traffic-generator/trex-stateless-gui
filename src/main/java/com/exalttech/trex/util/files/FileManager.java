@@ -17,17 +17,13 @@ package com.exalttech.trex.util.files;
 
 import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 
 /**
  * File manager utility class
@@ -35,11 +31,9 @@ import org.apache.log4j.Logger;
  * @author GeorgeKh
  */
 public class FileManager {
-
-    private static final Logger LOG = Logger.getLogger(FileManager.class.getName());
+    
     private static final String APP_DATA_PATH = File.separator + "TRex" + File.separator + "trex" + File.separator;
     private static final String PROFILES_PATH = "traffic-profiles" + File.separator;
-    private static final String OTHER_OS_PATH = "TRexFiles/";
 
     /**
      * Return local file path
@@ -47,16 +41,13 @@ public class FileManager {
      * @return
      */
     public static String getLocalFilePath() {
-
+        String path = System.getProperty( "user.home" );
         if (Util.isWindows()) {
             if (!Util.isNullOrEmpty(System.getenv("LOCALAPPDATA"))) {
-                String systemPath = System.getenv("LOCALAPPDATA") + APP_DATA_PATH;
-                LOG.info("Loading System Path =" + systemPath);
-                return systemPath;
+                path = System.getenv("LOCALAPPDATA") ;
             }
-            return OTHER_OS_PATH;
         }
-        return OTHER_OS_PATH;
+        return path + APP_DATA_PATH;
     }
 
     /**
