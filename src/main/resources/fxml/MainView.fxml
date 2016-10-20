@@ -135,7 +135,7 @@
                                       </AnchorPane>
                                       <AnchorPane id="" minWidth="500.0" prefHeight="409.0" prefWidth="698.9999000000025" style="-fx-background-color:#FFFFFF;" visible="true">
                                           <children>
-                                    <ScrollPane fitToWidth="true" minWidth="500.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                    <ScrollPane fitToHeight="true" fitToWidth="true" minWidth="500.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
 										<content>
 											
    												<AnchorPane id="" prefHeight="360.0" style="-fx-background-color:#FFFFFF;" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
