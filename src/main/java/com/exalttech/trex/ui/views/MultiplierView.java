@@ -210,7 +210,7 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
     }
 
     private void validateSelectedMultiplierValue(){
-        if(currentSelected.getValue() < currentSelected.getType().getMinRate(rate)){
+        if(rate != null && currentSelected.getValue() < currentSelected.getType().getMinRate(rate)){
             currentSelected.setValue(currentSelected.getType().getMinRate(rate));
         }
     }
