@@ -21,29 +21,20 @@ import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
 import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.XMLFileManager;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
+
+import java.net.URL;
+import java.util.*;
 
 /**
  * FXML Controller class for connect dialog
@@ -64,6 +55,8 @@ public class ConnectDialogController extends DialogView implements Initializable
     TextField rpcPort;
     @FXML
     TextField asyncPort;
+    @FXML
+    TextField scapyPort;
     @FXML
     TextField nameTF;
     @FXML
@@ -124,7 +117,7 @@ public class ConnectDialogController extends DialogView implements Initializable
     private void doConnect(Stage stage) {
         try {
             if (validateInput() && isConnectionValid()) {
-                Connection con = new Connection(connectionsCB.getEditor().getText(), rpcPort.getText(), asyncPort.getText(), nameTF.getText(), fullControlRB.isSelected());
+                Connection con = new Connection(connectionsCB.getEditor().getText(), rpcPort.getText(), asyncPort.getText(), scapyPort.getText(), nameTF.getText(), fullControlRB.isSelected());
                 // remove it if connection already exists
                 if (connectionMap.get(connectionsCB.getEditor().getText()) != null) {
                     connectionMap.remove(connectionsCB.getEditor().getText());
@@ -239,8 +232,8 @@ public class ConnectDialogController extends DialogView implements Initializable
     public void handleTitledPanelClicking(MouseEvent event) {
         if (advanceTitledPan.isExpanded()) {
             advanceTitledPan.setText("Hide advanced options");
-            advanceTitledPan.setPrefHeight(185);
-            mainViewContainer.setPrefHeight(317);
+            advanceTitledPan.setPrefHeight(190);
+            mainViewContainer.setPrefHeight(327);
             mainViewContainer.getScene().getWindow().sizeToScene();
         } else {
             advanceTitledPan.setText("Show advanced options...");
