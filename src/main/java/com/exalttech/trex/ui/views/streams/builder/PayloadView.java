@@ -21,13 +21,22 @@
 package com.exalttech.trex.ui.views.streams.builder;
 
 import com.exalttech.trex.ui.views.streams.binders.PayloadDataBinding;
+import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
+import com.exalttech.trex.util.files.FileManager;
+import com.exalttech.trex.util.files.FileType;
+import java.io.File;
 import java.util.function.UnaryOperator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.stage.Window;
 
 /**
  *
@@ -37,6 +46,8 @@ public class PayloadView extends AbstractProtocolView {
 
     ComboBox<String> type;
     TextField pattern;
+    Button importPatternButton;
+    Label orLabel;
 
     /**
      * Constructor
@@ -53,12 +64,22 @@ public class PayloadView extends AbstractProtocolView {
      */
     private void bindComponent() {
         pattern.disableProperty().bind(type.valueProperty().isEqualTo("Fixed Word").not());
-        
+        importPatternButton.disableProperty().bind(pattern.disableProperty());
+        orLabel.disableProperty().bind(pattern.disableProperty());
+
         pattern.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 pattern.setText(newValue.replaceAll(" ", ""));
             }
+        });
+
+        importPatternButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                selectPatternFile();
+            }
+
         });
     }
 
@@ -74,7 +95,13 @@ public class PayloadView extends AbstractProtocolView {
 
         addLabel("Pattern", 55, 15);
         pattern = new TextField();
-        addInput(pattern, 52, 120, 170);
+        addInput(pattern, 52, 120, 300);
+
+        orLabel = new Label("OR");
+        addLabel(orLabel, 55, 430);
+        importPatternButton = new Button("Select from file");
+        importPatternButton.getStyleClass().add("normalButton");
+        addButton(importPatternButton, 52, 460, 130);
 
         type.getItems().clear();
         type.getItems().addAll("Fixed Word", "Increment Byte", "Decrement Byte", "Random");
@@ -114,14 +141,15 @@ public class PayloadView extends AbstractProtocolView {
     }
 
     /**
-     * Validate payload pattern 
-     * @return 
+     * Validate payload pattern
+     *
+     * @return
      */
     public static String validatePayloadPattern() {
         String partialBlock = "(([0-9a-fA-F ])*)";
         return "^" + partialBlock;
     }
-    
+
     /**
      * Bind properties with related fields
      */
@@ -132,4 +160,18 @@ public class PayloadView extends AbstractProtocolView {
         pattern.textProperty().bindBidirectional(payloadDB.getPattern());
     }
 
+    private void selectPatternFile() {
+        try {
+            String loadFolderPath = PreferencesManager.getInstance().getLoadLocation();
+            Window owner = importPatternButton.getScene().getWindow();
+            File loadedFile = FileManager.getSelectedFile("Open Pcap File", "", owner, FileType.TXT, loadFolderPath, false);
+            if (loadedFile != null) {
+                // read the file and save the string in the pattern
+                String data = FileManager.getFileContent(loadedFile).replaceAll(" ", "");
+                pattern.setText(data);
+            }
+        } catch (Exception ex ){
+
+        }
+    }
 }

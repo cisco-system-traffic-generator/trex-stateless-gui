@@ -33,8 +33,10 @@ public enum FileType {
     /**
      *
      */
-    PCAP("PCAP File", "*.pcap", ".pcap");
-
+    PCAP("PCAP File", "*.pcap", ".pcap"),
+    
+    TXT("Text File", "*.txt", ".txt");
+    
     String filterDescription;
     String filterExtension;
     String extension;

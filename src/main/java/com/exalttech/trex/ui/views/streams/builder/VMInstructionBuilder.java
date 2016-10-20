@@ -34,6 +34,7 @@ public class VMInstructionBuilder {
     boolean isUDPSelected = false;
     int offset = 0;
     long convertedAddress = 0;
+    CacheSize cacheSize;
 
     /**
      *
@@ -71,11 +72,11 @@ public class VMInstructionBuilder {
         long convertedCount = (long) Util.convertUnitToNum(count);
         long minValue = initValue;
         long maxValue = initValue + convertedCount - 1;
-  
+
         // set offset to byte 4 for the ip address
         if (name.contains("ip")) {
             packetOffset += 4 - size;
-        }else{
+        } else {
             packetOffset += 6 - size;
         }
 
@@ -114,10 +115,23 @@ public class VMInstructionBuilder {
         if (!"random".equals(operation)) {
             splitByVar = name;
         }
-        if (Util.getIntFromString(count) < 5000 && vmCacheSize == 0) {
+
+        updateVMCacheSize(count);
+
+        return vmInstructionList;
+    }
+
+    /**
+     * Update vm cache size calculated value
+     *
+     * @param count
+     */
+    private void updateVMCacheSize(String count) {
+        int size = Util.getIntFromString(count);
+        CacheSize.CacheSizeType type = getCacheSize().getType();
+        if (type != CacheSize.CacheSizeType.DISABLE && size < getCacheSize().getCacheValue() && vmCacheSize == 0) {
             vmCacheSize = 255;
         }
-        return vmInstructionList;
     }
 
     /**
@@ -156,9 +170,10 @@ public class VMInstructionBuilder {
 
     /**
      * calculate size from mac address
+     *
      * @param address
      * @param count
-     * @return 
+     * @return
      */
     private int calculateSizeFromMacAddress(String address, double count) {
         convertedAddress = Long.parseLong(address.substring(address.length() - 2, address.length()), 16);
@@ -178,9 +193,10 @@ public class VMInstructionBuilder {
 
     /**
      * Calculate size from IP address
+     *
      * @param address
      * @param count
-     * @return 
+     * @return
      */
     private int calculateSizeFromIPAddress(String address, double count) {
 
@@ -336,6 +352,26 @@ public class VMInstructionBuilder {
 
     public long convertMacAddressToDecimal(String macAddress) {
         return Long.parseLong(macAddress.replaceAll(":", ""), 16);
+    }
+
+    /**
+     * Set cache size
+     * @param cacheSize 
+     */
+    public void setCacheSize(CacheSize cacheSize) {
+        this.cacheSize = cacheSize;
+    }
+
+    /**
+     * Get cache size
+     * @return 
+     */
+    public CacheSize getCacheSize() {
+        if(cacheSize == null){
+            // initialize it to auto
+            this.cacheSize = new CacheSize();
+        }
+        return cacheSize;
     }
 
     /**
