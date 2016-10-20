@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="" fx:id="mainViewContainer" maxHeight="317.0" minHeight="195.0" minWidth="-1.0" prefHeight="195.0" prefWidth="450.0" styleClass="connectDialogWrapper" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.ConnectDialogController">
+<AnchorPane id="" fx:id="mainViewContainer" maxHeight="600.0" minHeight="195.0" minWidth="-1.0" prefHeight="195.0" prefWidth="450.0" styleClass="connectDialogWrapper" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.ConnectDialogController">
     <children>
         <AnchorPane id="" minHeight="-1.0" prefHeight="-1.0" prefWidth="371.0" styleClass="connectContent" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
             <children>
@@ -24,23 +24,36 @@
                 </ComboBox>
                 <TitledPane fx:id="advanceTitledPan" animated="false" collapsible="true" expanded="false" onMouseClicked="#handleTitledPanelClicking" prefHeight="30.0" prefWidth="342.0" style="-fx-background-color:#FFFFFF;&#10;-fx-border-width: 0 0 0 0;" text="Show advanced options..." visible="true" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0">
                     <content>
-                        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="150.0" prefWidth="328.0" style="-fx-background-color:#FFFFFF;&#10;-fx-border-width: 0 0 0 0;">
+                        <GridPane>
                             <children>
-                                <Label text="Sync Port" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="-1.0" />
-                                <Label text="Async Port" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="36.0" />
-                                <TextField id="asyncPort" fx:id="rpcPort" prefHeight="22.0" prefWidth="200.0" text="4501" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="-3.0" />
-                                <TextField id="rpcPort" fx:id="asyncPort" prefHeight="22.0" prefWidth="200.0" text="4500" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="34.0" />
-                                <Label prefHeight="32.0" text="Mode" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="104.0" />
-                                <RadioButton fx:id="readOnlyRB" disable="true" maxWidth="-1.0" mnemonicParsing="false" prefHeight="22.0" selected="false" text="Read Only" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="118.0">
-                                    <toggleGroup>
-                                        <ToggleGroup fx:id="mode" />
-                                    </toggleGroup>
-                                </RadioButton>
-                                <RadioButton fx:id="fullControlRB" disable="false" mnemonicParsing="false" prefHeight="22.000099999997474" prefWidth="-1.0" selected="true" text="Full Control" toggleGroup="$mode" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="118.0" />
-                                <Label text="Name" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="75.0" />
-                                <TextField fx:id="nameTF" prefWidth="200.0" text="Client1" AnchorPane.leftAnchor="117.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="70.0" />
+                                <Label GridPane.rowIndex="0" GridPane.columnIndex="0" text="Sync Port" />  <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" id="asyncPort" fx:id="rpcPort"   text="4501"  />
+                                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" text="Async Port" /> <TextField GridPane.rowIndex="1" GridPane.columnIndex="1" id="rpcPort"   fx:id="asyncPort" text="4500"  />
+                                <Label GridPane.rowIndex="2" GridPane.columnIndex="0" text="Scapy Port" /> <TextField GridPane.rowIndex="2" GridPane.columnIndex="1" id="scapyPort" fx:id="scapyPort" text="4507" />
+                                <Label GridPane.rowIndex="3" GridPane.columnIndex="0" text="Name" />       <TextField GridPane.rowIndex="3" GridPane.columnIndex="1" id="nameTF"    fx:id="nameTF"    text="Client1" />
+                                <Label GridPane.rowIndex="4" GridPane.columnIndex="0" text="Mode"/>
+                                <StackPane GridPane.rowIndex="4" GridPane.columnIndex="1">
+                                    <children>
+                                        <RadioButton StackPane.alignment="CENTER_LEFT" fx:id="readOnlyRB" disable="true" maxWidth="-1.0" mnemonicParsing="false" selected="false" text="Read Only">
+                                            <toggleGroup>
+                                                <ToggleGroup fx:id="mode" />
+                                            </toggleGroup>
+                                        </RadioButton>
+                                        <RadioButton StackPane.alignment="CENTER_RIGHT" fx:id="fullControlRB" disable="false" mnemonicParsing="false" selected="true" text="Full Control" toggleGroup="$mode" />
+                                    </children>
+                                </StackPane>
                             </children>
-                        </AnchorPane>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="148.0" minWidth="10.0" prefWidth="90.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="228.0" minWidth="10.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="30.0" />
+                                <RowConstraints minHeight="30.0" />
+                                <RowConstraints minHeight="30.0" />
+                                <RowConstraints minHeight="30.0" />
+                                <RowConstraints minHeight="30.0" />
+                            </rowConstraints>
+                        </GridPane>
                     </content>
                 </TitledPane>
                 <ProgressIndicator fx:id="connectSpinner" disable="false" focusTraversable="false" layoutX="44.0" layoutY="260.0" prefHeight="22.0" prefWidth="34.0" progress="-1.0" visible="false" />

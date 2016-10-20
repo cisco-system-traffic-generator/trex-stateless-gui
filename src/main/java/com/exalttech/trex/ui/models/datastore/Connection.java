@@ -21,7 +21,7 @@
 package com.exalttech.trex.ui.models.datastore;
 
 import com.google.gson.Gson;
-import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -36,6 +36,8 @@ public class Connection {
     String rpcPort;
 
     String asyncPort;
+
+    String scapyPort;
 
     String user;
 
@@ -58,10 +60,11 @@ public class Connection {
      * @param user
      * @param fullControl
      */
-    public Connection(String ip, String rpcPort, String asyncPort, String user, boolean fullControl) {
+    public Connection(String ip, String rpcPort, String asyncPort, String scapyPort, String user, boolean fullControl) {
         this.ip = ip;
         this.rpcPort = rpcPort;
         this.asyncPort = asyncPort;
+        this.scapyPort = scapyPort;
         this.user = user;
         this.fullControl = fullControl;
     }
