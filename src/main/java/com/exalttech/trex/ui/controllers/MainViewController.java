@@ -71,18 +71,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -140,6 +129,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     @FXML
     MenuItem statsMenuItem;
 
+    @FXML
+    private Menu packetBuilder;
+    
     @FXML
     AnchorPane multiplierOptionContainer;
     @FXML
@@ -301,6 +293,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 connectDixconnectTooltip.setText("Disconnect from TRex server");
                 connectMenuItem.setText(DISCONNECT_MENU_ITEM_TITLE);
                 statsMenuItem.setDisable(false);
+                packetBuilder.setDisable(false);
                 clearCache.setDisable(false);
                 logsContainer.setDisable(false);
                 copyToClipboardBtn.setDisable(false);
@@ -607,6 +600,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         cachedStatsList = new HashMap<>();
         connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
         statsMenuItem.setDisable(true);
+        packetBuilder.setDisable(true);
         dashboardIcon.setDisable(true);
         serverStatusIcon.setImage(new Image("/icons/offline.png"));
         serverStatusLabel.setText("Disconnected");
@@ -1635,7 +1629,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         TRexPacketCraftingTool packetCraftingTool = new TRexPacketCraftingTool();
         
         try {
-            packetCraftingTool.startAsEmbedded(new Stage());
+            ConnectionManager connectionManager = ConnectionManager.getInstance(); 
+            packetCraftingTool.startAsEmbedded(new Stage(), connectionManager.getIp(), connectionManager.getScapyPort());
         } catch (Exception e) {
             LOG.error("Unable to load Packet Builder.");
         }

@@ -142,7 +142,7 @@ public class ConnectDialogController extends DialogView implements Initializable
     private boolean isConnectionValid() {
         Alert errMsg = Util.getAlert(Alert.AlertType.ERROR);
         boolean isValid = true;
-        if (!ConnectionManager.getInstance().initializeConnection(connectionsCB.getEditor().getText(), rpcPort.getText(), asyncPort.getText(), nameTF.getText(), !fullControlRB.isSelected())) {
+        if (!ConnectionManager.getInstance().initializeConnection(connectionsCB.getEditor().getText(), rpcPort.getText(), asyncPort.getText(), scapyPort.getText(), nameTF.getText(), !fullControlRB.isSelected())) {
             errMsg.setContentText("TRex Hostname or IP address are not valid");
             isValid = false;
         } else if (!ConnectionManager.getInstance().testConnection(false) || !ConnectionManager.getInstance().testConnection(true)) {

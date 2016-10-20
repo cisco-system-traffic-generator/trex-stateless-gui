@@ -28,9 +28,9 @@
                         <MenuItem fx:id="trafficProfileItem" mnemonicParsing="false" onAction="#openTrafficProfile" text="Traffic Profiles" />
                     </items>
                 </Menu>
-                <Menu fx:id="craftingPacketMenu" mnemonicParsing="false" text="Packet builder">
+                <Menu fx:id="packetBuilder" disable="true" mnemonicParsing="false" text="Packet builder">
                     <items>
-                        <MenuItem fx:id="trafficProfileItem" mnemonicParsing="false" onAction="#openPacketBuilder" text="Open" />
+                        <MenuItem fx:id="openPacketBuilderItem" mnemonicParsing="false" onAction="#openPacketBuilder" text="Open" />
                     </items>
                 </Menu>
                 <Menu fx:id="statsMenuItem" disable="true" mnemonicParsing="false" text="Stats">

@@ -27,18 +27,19 @@ import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.zip.DataFormatException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.log4j.Logger;
 import org.zeromq.ZMQ;
+
+import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.zip.DataFormatException;
 
 /**
  *
@@ -70,6 +71,7 @@ public class ConnectionManager {
     private String ip;
     private String rpcPort;
     private String asyncPort;
+    private String scapyPort;
     private boolean connected = false;
 
     private ZMQ.Socket requester = null;
@@ -142,10 +144,11 @@ public class ConnectionManager {
      * @param isReadOnly
      * @return
      */
-    public boolean initializeConnection(String ip, String rpcPort, String asyncPort, String clientName, boolean isReadOnly) {
+    public boolean initializeConnection(String ip, String rpcPort, String asyncPort, String scapyPort, String clientName, boolean isReadOnly) {
         this.ip = ip;
         this.rpcPort = rpcPort;
         this.asyncPort = asyncPort;
+        this.scapyPort = scapyPort;
         this.clientName = clientName;
         this.isReadOnly = isReadOnly;
 
@@ -423,6 +426,10 @@ public class ConnectionManager {
      */
     public String getAsyncPort() {
         return asyncPort;
+    }
+
+    public String getScapyPort() {
+        return scapyPort;
     }
 
     /**
