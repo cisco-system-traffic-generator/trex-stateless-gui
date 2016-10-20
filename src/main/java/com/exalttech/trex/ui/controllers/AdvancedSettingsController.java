@@ -59,6 +59,7 @@ public class AdvancedSettingsController implements Initializable {
             cacheSizeType.getItems().addAll(type.getTitle());
         }
         cacheSizeTF.disableProperty().bind(cacheSizeType.valueProperty().isNotEqualTo(CacheSizeType.ENABLE.getTitle()));
+        cacheSizeTF.setTextFormatter(Util.getNumberFilter(6));
     }
 
     /**
