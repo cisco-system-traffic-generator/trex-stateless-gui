@@ -31,6 +31,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -168,9 +169,15 @@ public class PayloadView extends AbstractProtocolView {
             if (loadedFile != null) {
                 // read the file and save the string in the pattern
                 String data = FileManager.getFileContent(loadedFile).replaceAll(" ", "");
-                pattern.setText(data);
+                if (Util.isHex(data)) {
+                    pattern.setText(data);
+                }else{
+                    Alert errorMsg = Util.getAlert(Alert.AlertType.ERROR);
+                    errorMsg.setContentText("Invalid payload pattern");
+                    errorMsg.showAndWait();
+                }
             }
-        } catch (Exception ex ){
+        } catch (Exception ex) {
 
         }
     }

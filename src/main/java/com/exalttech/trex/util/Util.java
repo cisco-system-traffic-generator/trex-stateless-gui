@@ -65,6 +65,8 @@ public class Util {
     private static final String HOST_NAME_EXP = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$";
     private static final String DIGITS_REG_EXP = "[0-9]+";
     private static final String DECIMAL_REG_EXP = "[0-9]*+(\\.[0-9][0-9]?)?";
+    private static final String HEX_REG_EXP = "[0-9a-fA-F]+";
+    
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private static final Logger LOG = Logger.getLogger(Util.class.getName());
     private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat("0.0");
@@ -349,7 +351,19 @@ public class Util {
     public static boolean isDecimal(String value) {
         return value.matches(DECIMAL_REG_EXP);
     }
-
+/**
+     * Return if the value is hex 
+     * <p>
+     * true if it is float
+     * <p>
+     * otherwise return false
+     *
+     * @param value
+     * @return
+     */
+    public static boolean isHex(String value) {
+        return value.matches(HEX_REG_EXP);
+    }
     /**
      * Format fraction number to equivalent format
      *
