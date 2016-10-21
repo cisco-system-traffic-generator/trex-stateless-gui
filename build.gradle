@@ -1,0 +1,59 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'application'
+
+group = 'com.exalttech'
+version = '2.09-SNAPSHOT'
+
+description = """TRex Stateless GUI Application"""
+
+mainClassName='com.exalttech.trex.application.TrexApp'
+if (!hasProperty('mainClass')) {
+    ext.mainClass = mainClassName
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+     maven { url "http://oss.sonatype.org/content/groups/public/" }
+     if (!project.hasProperty('local')) {
+         maven { url "https://jitpack.io" }
+     }
+     maven { url "http://repo.maven.apache.org/maven2" }
+     mavenLocal()
+}
+
+dependencies {
+     if (!project.hasProperty('local')) {
+         compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'eb45c05831'
+     } else {
+         compile group: 'com.xored', name: 'TRexPacketCraftingTool', version:'1.00-SNAPSHOT'
+     }
+
+    compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'311b9e0ccc'
+    compile group: 'org.pcap4j', name: 'pcap4j-core', version:'1.6.1'
+    compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version:'1.6.1'
+    compile group: 'com.aquafx-project', name: 'aquafx', version:'0.1'
+    compile group: 'com.guigarage', name: 'flatter', version:'0.7'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.6.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.6.0'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version:'2.5.4'
+    compile group: 'org.json', name: 'json', version:'20150729'
+    compile group: 'org.zeromq', name: 'jeromq', version:'0.3.5'
+    compile group: 'commons-io', name: 'commons-io', version:'2.4'
+    compile group: 'commons-lang', name: 'commons-lang', version:'2.4'
+    compile group: 'com.google.code.gson', name: 'gson', version:'1.7.1'
+    compile(group: 'log4j', name: 'log4j', version:'1.2.15') {
+        exclude(module: 'mail')
+        exclude(module: 'jms')
+        exclude(module: 'jmxtools')
+        exclude(module: 'jmxri')
+    }
+    compile group: 'org.jfxtras', name: 'jfxtras-labs', version:'8.0-r4'
+    compile group: 'commons-codec', name: 'commons-codec', version:'1.9'
+    compile group: 'org.testng', name: 'testng', version:'6.9.10'
+    testCompile group: 'org.testfx', name: 'testfx-core', version:'4.0.4-alpha'
+    testCompile group: 'org.testfx', name: 'testfx-junit', version:'4.0.4-alpha'
+}
+
