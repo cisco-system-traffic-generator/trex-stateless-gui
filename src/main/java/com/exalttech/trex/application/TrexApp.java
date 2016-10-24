@@ -31,11 +31,17 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.apache.log4j.Logger;
 
+import com.google.inject.Injector;
+import com.xored.javafx.packeteditor.TRexPacketCraftingTool;
+import com.xored.javafx.packeteditor.guice.TrexGuiceModule;
+
 /**
  *
  * @author GeorgeKh
  */
 public class TrexApp extends Application {
+
+    public static Injector injector = TrexGuiceModule.injector();
 
     private static final Logger LOG = Logger.getLogger(TrexApp.class.getName());
 
@@ -70,6 +76,8 @@ public class TrexApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        TRexPacketCraftingTool packetBuilder = new TRexPacketCraftingTool(injector);
+        packetBuilder.initServices();
         speedupTooltip();
         primaryStage = stage;
         AnchorPane page = (AnchorPane) FXMLLoader.load(getClass().getResource("/fxml/MainView.fxml"));

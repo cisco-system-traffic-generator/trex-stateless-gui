@@ -28,16 +28,7 @@
                 </Tab>
                 <Tab fx:id="packetViewerTab" style=" " text="Packet Viewer">
                     <content>
-                        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="1000.0" style="">
-                            <children>
-                                <AnchorPane id="pcapBuilder" fx:id="pcapBuilderPane" prefHeight="508.0" prefWidth="1000.0" style="" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                    <children>
-                                        <AnchorPane id="completePacketHex" fx:id="hexPane" maxWidth="667.0" minHeight="0.0" minWidth="655.0" prefHeight="530.0" prefWidth="660.0" style="-fx-background-color:white;" styleClass="tabContentWrapper" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="328.0" AnchorPane.topAnchor="10.0" />
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="550.0" prefWidth="321.0" style="-fx-background-color:#FFFFFF;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="677.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0" />
-                                    </children>
-                                </AnchorPane>
-                            </children>
-                        </AnchorPane>
+                        <fx:include source="/com/xored/javafx/packeteditor/controllers/PacketEditor.fxml"/>
                     </content>
                 </Tab>
                 <Tab fx:id="protocolSelectionTab" text="Protocol Selection">
