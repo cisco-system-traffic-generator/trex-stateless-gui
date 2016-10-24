@@ -17,17 +17,13 @@ targetCompatibility = 1.8
 
 repositories {
      maven { url "http://oss.sonatype.org/content/groups/public/" }
-     if (!project.hasProperty('local')) {
-         maven { url "https://jitpack.io" }
-     }
+     maven { url "https://jitpack.io" }
      maven { url "http://repo.maven.apache.org/maven2" }
      mavenLocal()
 }
 
 dependencies {
-    compile project(':trex-packet-editor')
-
-    compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'831b7769ce'
+    compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'e121fad'
     compile group: 'org.pcap4j', name: 'pcap4j-core', version:'1.6.1'
     compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version:'1.6.1'
     compile group: 'com.aquafx-project', name: 'aquafx', version:'0.1'
