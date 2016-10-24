@@ -16,7 +16,6 @@
 package com.exalttech.trex.ui.dialog;
 
 import com.exalttech.trex.application.TrexApp;
-import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -24,6 +23,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.io.IOException;
 
 /**
  * Class for control and generate dialog window
@@ -48,7 +49,8 @@ public class DialogWindow {
      */
     public DialogWindow(String layoutFile, String title, double parentXDistance, double parentYDistance, boolean resizable, Stage owner) throws IOException {
         this.layoutFile = layoutFile;
-        loader = new FXMLLoader(TrexApp.class.getResource("/fxml/" + layoutFile));
+        loader = TrexApp.injector.getInstance(FXMLLoader.class);
+        loader.setLocation(TrexApp.class.getResource("/fxml/" + layoutFile));
         dialogStage = buildDialogWindow(title, parentXDistance, parentYDistance, resizable, owner);
     }
 
@@ -81,12 +83,13 @@ public class DialogWindow {
      */
     private Stage buildDialogWindow(String title, double parentXDistance, double parentYDistance, boolean resizable, Stage owner) throws IOException {
 
-        AnchorPane page = (AnchorPane) loader.load();
+        AnchorPane page = loader.load();
         Stage createdStage = new Stage();
         createdStage.setTitle(title);
         createdStage.initOwner(owner);
         Scene scene = new Scene(page);
         scene.getStylesheets().add(TrexApp.class.getResource("/styles/mainStyle.css").toExternalForm());
+        scene.getStylesheets().add(TrexApp.class.getResource("/styles/main-narrow.css").toExternalForm());
         createdStage.setScene(scene);
 
         createdStage.setResizable(resizable);

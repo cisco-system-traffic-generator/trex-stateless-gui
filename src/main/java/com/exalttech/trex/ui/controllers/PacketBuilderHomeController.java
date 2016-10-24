@@ -31,11 +31,8 @@ import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import com.google.inject.Inject;
+import com.xored.javafx.packeteditor.controllers.FieldEditorController;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -48,10 +45,19 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Base64;
+import java.util.List;
+import java.util.ResourceBundle;
+
 
 /**
  * Packet builder FXML controller
@@ -115,6 +121,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @FXML
     TabPane streamTabPane;
 
+    @FXML
+    StackPane fieldEditorTopPane;
+    
+    @Inject
+    FieldEditorController packetBuilderController;
+    
     PacketInfo packetInfo = null;
     private PacketParser parser;
     private PacketHex packetHex;
@@ -183,6 +195,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @param pcapFileBinary
      */
     private void initEditStream(String pcapFileBinary) {
+        packetBuilderController.newPacket();
         if (!Util.isNullOrEmpty(selectedProfile.getStream().getPacket().getMeta())) {
             BuilderDataBinding dataBinding = (BuilderDataBinding) Util.deserializeStringToObject(selectedProfile.getStream().getPacket().getMeta());
             if (dataBinding != null) {
@@ -197,6 +210,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 File pcapFile = trafficProfile.decodePcapBinary(pcapFileBinary);
                 parser.parseFile(pcapFile.getAbsolutePath(), packetInfo);
                 packetHex.setData(packetInfo);
+                packetBuilderController.loadPcapBinary(Base64.getDecoder().decode(pcapFileBinary.getBytes()));
             } catch (IOException ex) {
                 LOG.error("Failed to load PCAP value", ex);
             }
@@ -458,6 +472,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }
         String encodedBinaryPacket = trafficProfile.encodeBinaryFromHexString(hexPacket);
         selectedProfile.getStream().getPacket().setBinary(encodedBinaryPacket);
+//        selectedProfile.getStream().getPacket().setBinary(packetBuilderController.getModel().getPkt().binary);
     }
 
     /**
