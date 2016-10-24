@@ -25,13 +25,9 @@ repositories {
 }
 
 dependencies {
-     if (!project.hasProperty('local')) {
-         compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'eb45c05831'
-     } else {
-         compile group: 'com.xored', name: 'TRexPacketCraftingTool', version:'1.00-SNAPSHOT'
-     }
+    compile project(':trex-packet-editor')
 
-    compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'311b9e0ccc'
+    compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'831b7769ce'
     compile group: 'org.pcap4j', name: 'pcap4j-core', version:'1.6.1'
     compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version:'1.6.1'
     compile group: 'com.aquafx-project', name: 'aquafx', version:'0.1'
