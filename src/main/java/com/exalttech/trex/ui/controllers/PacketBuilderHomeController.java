@@ -474,13 +474,13 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         selectedProfile.getStream().getPacket().setBinary(packetBuilderController.getModel().getPkt().binary);
     }
 
-    /**
-     * Handle Enter key pressed
-     *
-     * @param stage
-     */
     @Override
     public void onEnterKeyPressed(Stage stage) {
-        stage.hide();
+        // ignore event
+    }
+
+    @Override
+    public void onEscapKeyPressed() {
+        // ignoring global escape
     }
 }
