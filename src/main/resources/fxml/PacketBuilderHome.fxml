@@ -28,7 +28,7 @@
                 </Tab>
                 <Tab fx:id="packetViewerTab" style=" " text="Packet Viewer">
                     <content>
-                        <fx:include source="/com/xored/javafx/packeteditor/controllers/PacketEditor.fxml"/>
+                        <fx:include source="/com/xored/javafx/packeteditor/controllers/app.fxml"/>
                     </content>
                 </Tab>
                 <Tab fx:id="protocolSelectionTab" text="Protocol Selection">
