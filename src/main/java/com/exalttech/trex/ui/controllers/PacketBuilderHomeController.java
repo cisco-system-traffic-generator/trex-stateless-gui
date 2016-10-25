@@ -76,8 +76,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     AnchorPane details;
     @FXML
     AnchorPane hexPane;
-    @FXML
-    Button loadPcap;
+    
     @FXML
     Button pcapProperties;
     @FXML
@@ -154,7 +153,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     public void initialize(URL url, ResourceBundle rb) {
         trafficProfile = new TrafficProfile();
         packetHex = new PacketHex(hexPane);
-        loadPcap.visibleProperty().bind(packetViewerTab.selectedProperty());
         nextStreamBtn.setGraphic(new ImageView(new Image("/icons/next_stream.png")));
         prevStreamBtn.setGraphic(new ImageView(new Image("/icons/prev_stream.png")));
         packetInfo = new PacketInfo();
