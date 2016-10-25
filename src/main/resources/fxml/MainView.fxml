@@ -23,7 +23,7 @@
                         <MenuItem mnemonicParsing="false" onAction="#handleExitMenuItemClick" text="  Exit                      Ctrl+X" />
                     </items>
                 </Menu>
-                <Menu fx:id="trafficProfileMenu" mnemonicParsing="false" text="Traffic Profiles">
+                <Menu fx:id="trafficProfileMenu" disable="true" mnemonicParsing="false" text="Traffic Profiles">
                     <items>
                         <MenuItem fx:id="trafficProfileItem" mnemonicParsing="false" onAction="#openTrafficProfile" text="Traffic Profiles" />
                     </items>

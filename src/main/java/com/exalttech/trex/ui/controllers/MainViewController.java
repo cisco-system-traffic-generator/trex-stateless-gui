@@ -128,6 +128,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     ImageView serverStatusIcon;
     @FXML
     MenuItem statsMenuItem;
+    @FXML
+    MenuItem trafficProfileMenu;
 
     @FXML
     AnchorPane multiplierOptionContainer;
@@ -290,6 +292,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 connectDixconnectTooltip.setText("Disconnect from TRex server");
                 connectMenuItem.setText(DISCONNECT_MENU_ITEM_TITLE);
                 statsMenuItem.setDisable(false);
+                trafficProfileMenu.setDisable(false);
                 clearCache.setDisable(false);
                 logsContainer.setDisable(false);
                 copyToClipboardBtn.setDisable(false);
@@ -596,6 +599,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         cachedStatsList = new HashMap<>();
         connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
         statsMenuItem.setDisable(true);
+        trafficProfileMenu.setDisable(true);
         dashboardIcon.setDisable(true);
         serverStatusIcon.setImage(new Image("/icons/offline.png"));
         serverStatusLabel.setText("Disconnected");
