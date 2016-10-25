@@ -39,32 +39,16 @@ import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sun.javafx.scene.control.skin.TableHeaderRow;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -73,15 +57,18 @@ import javafx.util.Callback;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.pcap4j.core.NotOpenException;
-import org.pcap4j.core.PcapDumper;
-import org.pcap4j.core.PcapHandle;
-import org.pcap4j.core.PcapNativeException;
-import org.pcap4j.core.Pcaps;
+import org.pcap4j.core.*;
 import org.pcap4j.packet.EthernetPacket;
 import org.pcap4j.packet.IllegalRawDataException;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.namednumber.DataLinkType;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Stream table view implementation
@@ -568,7 +555,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             PacketBuilderHomeController controller = (PacketBuilderHomeController) srteamWindow.getController();
             switch (type) {
                 case EDIT_STREAM:
-                    controller.initStreamBuilder(data.getPcapBinary(), tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.EDIT_STREAM);
+                    controller.initStreamBuilder(data, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.EDIT_STREAM);
                     break;
                 case ADD_STREAM:
                     controller.initStreamBuilder(null, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.ADD_STREAM);
