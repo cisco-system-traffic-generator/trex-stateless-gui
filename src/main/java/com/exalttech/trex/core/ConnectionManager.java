@@ -175,7 +175,7 @@ public class ConnectionManager {
             getRequester().connect(connectionString);
             LogsController.getInstance().appendText(LogType.INFO, "Connecting to TRex:" + connectionString);
 
-            scapyServerClient.connect("tcp://" + ip, scapyPort, 3000);
+            scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
             
         } catch (Exception ex) {
             LOG.error("Invalid hostname", ex);
