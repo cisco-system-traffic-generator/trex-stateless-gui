@@ -26,11 +26,6 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab fx:id="packetViewerTab" style=" " text="Packet Editor">
-                    <content>
-                        <fx:include source="/com/xored/javafx/packeteditor/controllers/app.fxml"/>
-                    </content>
-                </Tab>
                 <Tab fx:id="protocolSelectionTab" text="Protocol Selection">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -49,22 +44,18 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-				<Tab fx:id="advanceSettingsTab" text="Advanced Settings">
-					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-							<children>
-								<fx:include fx:id="advancedSettings" source="AdvancedSettings.fxml" />
-							</children>
-						</AnchorPane>
-					</content>
-				</Tab>
-                <Tab fx:id="packetViewerWithTreeTab" text="Packet viewer">
+                <Tab fx:id="advanceSettingsTab" text="Advanced Settings">
                     <content>
-                        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <fx:include fx:id="packetViewer" source="PacketViewer.fxml" />
+                                <fx:include fx:id="advancedSettings" source="AdvancedSettings.fxml" />
                             </children>
                         </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="packetViewerTab" style=" " text="Packet Editor">
+                    <content>
+                        <fx:include source="/com/xored/javafx/packeteditor/controllers/app.fxml"/>
                     </content>
                 </Tab>
             </tabs>
