@@ -15,11 +15,14 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.remote.models.profiles.Packet;
 import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.remote.models.profiles.Stream;
 import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.PacketInfo;
+import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.viewer.PacketHex;
@@ -31,11 +34,8 @@ import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import com.google.inject.Inject;
+import com.xored.javafx.packeteditor.controllers.FieldEditorController;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,11 +52,15 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.google.inject.Inject;
-import com.xored.javafx.packeteditor.controllers.FieldEditorController;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Base64;
+import java.util.List;
+import java.util.ResourceBundle;
 
 
 /**
@@ -166,7 +170,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @param yamlFileName
      * @param type
      */
-    public void initStreamBuilder(String pcapFileBinary, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
+    public void initStreamBuilder(TableProfileStream selectedStream, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
         this.selectedProfile = profileList.get(selectedProfileIndex);
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
@@ -182,7 +186,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 initStreamBuilder(new BuilderDataBinding());
                 break;
             case EDIT_STREAM:
-                initEditStream(pcapFileBinary);
+                initEditStream(selectedStream);
                 break;
             default:
                 break;
@@ -192,10 +196,21 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     /**
      * Initialize Edit stream builder in case of edit
      *
-     * @param pcapFileBinary
+     * @param tableProfileStream
      */
-    private void initEditStream(String pcapFileBinary) {
+    private void initEditStream(TableProfileStream tableProfileStream) {
+        String pcapFileBinary = tableProfileStream.getPcapBinary();
+        String pktModel = tableProfileStream.getPktModel();
         packetBuilderController.newPacket();
+        try {
+            if(!StringUtils.isEmpty(pktModel)) {
+                packetBuilderController.loadUserModel(pktModel);
+            } else {
+                packetBuilderController.loadPcapBinary(Base64.getDecoder().decode(pcapFileBinary.getBytes()));
+            }
+        } catch (IOException e) {
+            LOG.error("Failed to load Packet Builder", e);
+        }
         if (!Util.isNullOrEmpty(selectedProfile.getStream().getPacket().getMeta())) {
             BuilderDataBinding dataBinding = (BuilderDataBinding) Util.deserializeStringToObject(selectedProfile.getStream().getPacket().getMeta());
             if (dataBinding != null) {
@@ -204,17 +219,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             }
         }
         hideStreamBuilderTab();
-        if (pcapFileBinary != null) {
-            try {
-                isBuildPacket = false;
-                File pcapFile = trafficProfile.decodePcapBinary(pcapFileBinary);
-                parser.parseFile(pcapFile.getAbsolutePath(), packetInfo);
-                packetHex.setData(packetInfo);
-                packetBuilderController.loadPcapBinary(Base64.getDecoder().decode(pcapFileBinary.getBytes()));
-            } catch (IOException ex) {
-                LOG.error("Failed to load PCAP value", ex);
-            }
-        }
     }
 
     /**
@@ -225,23 +229,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void initStreamBuilder(BuilderDataBinding builderDataBinder) {
 
         isBuildPacket = true;
-        streamTabPane.getTabs().remove(packetViewerTab);
         this.builderDataBinder = builderDataBinder;
         // initialize builder tabs
         protocolSelectionController.bindSelections(builderDataBinder.getProtocolSelection());
         protocolDataController.bindSelection(builderDataBinder);
-        advancedSettingsController.bindSelections(builderDataBinder.getAdvancedPropertiesDB());
-
-        packetViewerWithTreeTab.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            if (newValue) {
-                try {
-                    // handle it and send the result to packet viewer controller
-                    packetViewerController.setPacketView(protocolDataController.getProtocolData());
-                } catch (Exception ex) {
-                    LOG.error("Error creating packet", ex);
-                }
-            }
-        });
     }
 
     /**
@@ -250,8 +241,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void hideStreamBuilderTab() {
         streamTabPane.getTabs().remove(protocolDataTab);
         streamTabPane.getTabs().remove(protocolSelectionTab);
-        streamTabPane.getTabs().remove(advanceSettingsTab);
-        streamTabPane.getTabs().remove(packetViewerWithTreeTab);
     }
 
     /**
@@ -460,18 +449,23 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @throws Exception
      */
     private void updateCurrentProfile() throws Exception {
+        
+        Stream stream = selectedProfile.getStream();
+        Packet packet = stream.getPacket();
+        
         selectedProfile = streamPropertiesController.getUpdatedSelectedProfile();
         String hexPacket = null;
         if (packetHex != null && !isBuildPacket) {
             hexPacket = packetHex.getPacketHexFromList();
         } else if (isBuildPacket) {
             hexPacket = PacketBuilderHelper.getPacketHex(protocolDataController.getProtocolData().getPacket().getRawData());
-            selectedProfile.getStream().setAdditionalProperties(protocolDataController.getVm(advancedSettingsController.getCacheSize()));
-            selectedProfile.getStream().setFlags(protocolDataController.getFlagsValue());
+            stream.setAdditionalProperties(protocolDataController.getVm());
+            stream.setFlags(protocolDataController.getFlagsValue());
             // save stream selected in stream property
-            selectedProfile.getStream().getPacket().setMeta(Util.serializeObjectToString(builderDataBinder));
+            packet.setMeta(Util.serializeObjectToString(builderDataBinder));
         }
-        selectedProfile.getStream().getPacket().setBinary(packetBuilderController.getModel().getPkt().binary);
+        packet.setBinary(packetBuilderController.getModel().getPkt().binary);
+        packet.setModel(packetBuilderController.getModel().asJSON());
     }
 
     @Override
