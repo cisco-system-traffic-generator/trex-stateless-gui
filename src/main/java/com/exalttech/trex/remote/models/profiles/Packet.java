@@ -32,9 +32,12 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-@JsonPropertyOrder({"pcap", "binary", "meta"})
+@JsonPropertyOrder({"pcap", "binary", "meta", "model"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Packet implements Cloneable {
+
+    @JsonProperty("model")
+    private String model;
 
     @JsonProperty("pcap")
     private String pcap;
@@ -104,11 +107,29 @@ public class Packet implements Cloneable {
 
     /**
      *
+     * @return
+     */
+    @JsonProperty("model")
+    public String getModel() {
+        return model;
+    }
+
+    /**
+     *
      * @param binary
      */
     @JsonProperty("binary")
     public void setBinary(String binary) {
         this.binary = binary;
+    }
+
+    /**
+     *
+     * @param model
+     */
+    @JsonProperty("model")
+    public void setModel(String model) {
+        this.model = model;
     }
 
     @Override
