@@ -44,6 +44,7 @@ public class TableProfileStream {
     private BooleanProperty enabledProperty = new SimpleBooleanProperty();
 
     private String pcapBinary;
+    private String pktModel;
 
     /**
      * Set name
@@ -222,6 +223,24 @@ public class TableProfileStream {
      */
     public void setPcapBinary(String pcapBinary) {
         this.pcapBinary = pcapBinary;
+    }
+
+    /**
+     * Return pkt model serialized to JSON
+     *
+     * @return
+     */
+    public String getPktModel() {
+        return pktModel;
+    }
+
+    /**
+     * Set pcap binary
+     *
+     * @param pktModel
+     */
+    public void setPktModel(String pktModel) {
+        this.pktModel = pktModel;
     }
 
     /**
