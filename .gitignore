@@ -6,6 +6,9 @@ nbactions.xml
 trex-logs.log
 profiles.xml
 connections.xml
-
-
+*.iml
+TRexFiles
+build
+.idea
+.gradle
 
