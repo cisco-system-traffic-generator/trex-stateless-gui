@@ -16,9 +16,9 @@
 package com.exalttech.trex.application;
 
 import com.exalttech.trex.util.Util;
-import java.lang.reflect.Field;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import com.google.inject.Injector;
+import com.xored.javafx.packeteditor.TRexPacketCraftingTool;
+import com.xored.javafx.packeteditor.guice.TrexGuiceModule;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -31,9 +31,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.apache.log4j.Logger;
 
-import com.google.inject.Injector;
-import com.xored.javafx.packeteditor.TRexPacketCraftingTool;
-import com.xored.javafx.packeteditor.guice.TrexGuiceModule;
+import java.lang.reflect.Field;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  *
@@ -77,7 +77,7 @@ public class TrexApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         TRexPacketCraftingTool packetBuilder = new TRexPacketCraftingTool(injector);
-        packetBuilder.initServices();
+        packetBuilder.initAppController();
         speedupTooltip();
         primaryStage = stage;
         AnchorPane page = (AnchorPane) FXMLLoader.load(getClass().getResource("/fxml/MainView.fxml"));
