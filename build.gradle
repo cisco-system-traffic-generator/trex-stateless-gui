@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    compile project(':trex-packet-editor')
     compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'e121fad'
     compile group: 'org.pcap4j', name: 'pcap4j-core', version:'1.6.1'
     compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version:'1.6.1'
