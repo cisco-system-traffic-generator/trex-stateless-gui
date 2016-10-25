@@ -24,15 +24,7 @@ import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import javafx.stage.Window;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -40,12 +32,16 @@ import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
-import org.pcap4j.packet.EthernetPacket;
-import org.pcap4j.packet.IllegalRawDataException;
-import org.pcap4j.packet.IpV4Packet;
-import org.pcap4j.packet.Packet;
-import org.pcap4j.packet.TcpPacket;
-import org.pcap4j.packet.UdpPacket;
+import org.pcap4j.packet.*;
+
+import javax.xml.bind.DatatypeConverter;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  *
@@ -224,7 +220,9 @@ public class TrafficProfile {
             stream.setRate(String.valueOf(modeYaml.getPps()));
             stream.setNextStream(getNextStreamValue(p.getNext()));
             String packetBinary = p.getStream().getPacket().getBinary();
+            String packetModel = p.getStream().getPacket().getModel();
             stream.setPcapBinary(packetBinary);
+            stream.setPktModel(packetModel);
             PacketInfo packetInfo = getPacketInfo(packetBinary);
             stream.setLength(String.valueOf(packetInfo.getLength() + Constants.EXTRA_BYTE));
             stream.setPacketType(packetInfo.getType());
