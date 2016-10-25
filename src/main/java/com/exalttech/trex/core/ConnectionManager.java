@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.core;
 
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.models.common.RPCError;
@@ -27,6 +28,7 @@ import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xored.javafx.packeteditor.scapy.ScapyServerClient;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -47,6 +49,7 @@ import java.util.zip.DataFormatException;
  */
 public class ConnectionManager {
 
+    private ScapyServerClient scapyServerClient;
     private static final Logger LOG = Logger.getLogger(ConnectionManager.class.getName());
     private static ConnectionManager instance = null;
     private static StringProperty logProperty = new SimpleStringProperty();
@@ -61,6 +64,7 @@ public class ConnectionManager {
     public static ConnectionManager getInstance() {
         if (instance == null) {
             instance = new ConnectionManager();
+            instance.scapyServerClient = TrexApp.injector.getInstance(ScapyServerClient.class);
         }
         return instance;
     }
@@ -80,6 +84,8 @@ public class ConnectionManager {
     ZMQ.Context context;
     private String connectionString;
 
+    private String scapyConnectionString;
+    
     /**
      *
      */
@@ -169,6 +175,8 @@ public class ConnectionManager {
             getRequester().connect(connectionString);
             LogsController.getInstance().appendText(LogType.INFO, "Connecting to TRex:" + connectionString);
 
+            scapyServerClient.connect("tcp://" + ip, scapyPort, 3000);
+            
         } catch (Exception ex) {
             LOG.error("Invalid hostname", ex);
             return false;
@@ -184,13 +192,16 @@ public class ConnectionManager {
     public boolean testConnection(boolean isAsync) {
         if (isAsync) {
             return !Util.isNullOrEmpty(getAsyncResponse());
-        } else if (sendRequest("ping") == null) {
+        } else if (isTrexAndScapyServersReachable()) {
             LOG.error("Server is unreachable");
             return false;
         }
         return true;
     }
 
+    private boolean isTrexAndScapyServersReachable() {
+        return sendRequest("ping") == null && scapyServerClient.isConnected();
+    }
     /**
      *
      * Send request without Parameters
