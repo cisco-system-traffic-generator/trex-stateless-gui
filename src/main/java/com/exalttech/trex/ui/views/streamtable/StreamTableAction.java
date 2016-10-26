@@ -14,7 +14,7 @@ import javafx.scene.image.ImageView;
  * @author Georgekh
  */
 public enum StreamTableAction {
-    ADD("Add Stream (PCAP)", "add.png"),
+    ADD("Add Stream", "add.png"),
     BUILD("Build Stream", "add.png"),
     EDIT("Edit Stream", "edit.png"),
     DELETE("Delete Stream", "delete.png"),
