@@ -516,4 +516,8 @@ public class ConnectionManager {
     public String getApiH() {
         return apiH;
     }
+
+    public void disconnectScapyClient() {
+        scapyServerClient.closeConnection();
+    }
 }
