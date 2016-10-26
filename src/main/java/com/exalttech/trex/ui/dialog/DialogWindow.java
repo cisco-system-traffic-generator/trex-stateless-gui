@@ -89,6 +89,7 @@ public class DialogWindow {
         createdStage.initOwner(owner);
         Scene scene = new Scene(page);
         scene.getStylesheets().add(TrexApp.class.getResource("/styles/mainStyle.css").toExternalForm());
+        scene.getStylesheets().add(TrexApp.class.getResource("/styles/modena-packet-editor.css").toExternalForm());
         scene.getStylesheets().add(TrexApp.class.getResource("/styles/main-narrow.css").toExternalForm());
         createdStage.setScene(scene);
 
