@@ -176,6 +176,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
         streamPropertiesController.init(profileList, selectedProfileIndex);
         updateNextPrevButtonState();
+        packetBuilderController.reset();
         switch (type) {
             case ADD_STREAM:
                 hideStreamBuilderTab();
@@ -199,11 +200,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void initEditStream(TableProfileStream tableProfileStream) {
         String pcapFileBinary = tableProfileStream.getPcapBinary();
         String pktModel = tableProfileStream.getPktModel();
-        packetBuilderController.newPacket();
         try {
             if(!StringUtils.isEmpty(pktModel)) {
                 packetBuilderController.loadUserModel(pktModel);
-            } else {
+            } else if (!StringUtils.isEmpty(pcapFileBinary)) {
                 packetBuilderController.loadPcapBinary(Base64.getDecoder().decode(pcapFileBinary.getBytes()));
             }
         } catch (IOException e) {
