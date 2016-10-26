@@ -634,6 +634,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         // stop async subscriber
         ConnectionManager.getInstance().disconnectSubscriber();
         ConnectionManager.getInstance().disconnectRequester();
+        ConnectionManager.getInstance().disconnectScapyClient();
+
         if (didServerCrash) {
             openConnectDialog();
         }

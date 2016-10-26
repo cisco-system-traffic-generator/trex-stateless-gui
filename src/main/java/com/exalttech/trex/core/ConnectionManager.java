@@ -628,4 +628,7 @@ public class ConnectionManager {
         return apiH;
     }
 
+    public void disconnectScapyClient() {
+        scapyServerClient.closeConnection();
+    }
 }
