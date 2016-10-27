@@ -16,6 +16,7 @@
 package com.exalttech.trex.ui.dialog;
 
 import com.exalttech.trex.application.TrexApp;
+import com.xored.javafx.packeteditor.view.FieldEditorView;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -89,8 +90,10 @@ public class DialogWindow {
         createdStage.initOwner(owner);
         Scene scene = new Scene(page);
         scene.getStylesheets().add(TrexApp.class.getResource("/styles/mainStyle.css").toExternalForm());
-        scene.getStylesheets().add(TrexApp.class.getResource("/styles/modena-packet-editor.css").toExternalForm());
-        scene.getStylesheets().add(TrexApp.class.getResource("/styles/main-narrow.css").toExternalForm());
+
+        // Packet editor
+        FieldEditorView.initCss(scene);
+
         createdStage.setScene(scene);
 
         createdStage.setResizable(resizable);
