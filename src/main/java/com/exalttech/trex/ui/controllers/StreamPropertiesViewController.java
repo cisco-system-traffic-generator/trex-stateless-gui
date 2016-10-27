@@ -18,28 +18,22 @@ package com.exalttech.trex.ui.controllers;
 import com.exalttech.trex.remote.models.profiles.Mode;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.util.Util;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import org.apache.commons.lang.StringUtils;
+
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
 /**
  * FXML Controller class
@@ -502,8 +496,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     public boolean isValidStreamPropertiesFields() {
         String errMsg = "";
         boolean valid = true;
-        if (selectedProfile.getStream().getPacket().getBinary() == null) {
-            errMsg = "Please load a Pcap file";
+        if (StringUtils.isEmpty(selectedProfile.getStream().getPacket().getBinary())) {
+            errMsg = "Stream can not have an empty packet.";
             valid = false;
         } else {
             double timeInloop = Double.parseDouble(timeInLoopTF.getText());
