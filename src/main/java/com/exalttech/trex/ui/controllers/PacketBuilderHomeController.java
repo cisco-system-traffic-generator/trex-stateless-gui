@@ -27,16 +27,12 @@ import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.viewer.PacketHex;
 import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
-import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
-import com.exalttech.trex.util.files.FileManager;
-import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -50,7 +46,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -439,7 +434,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             packet.setMeta(Util.serializeObjectToString(builderDataBinder));
         }
         packet.setBinary(packetBuilderController.getModel().getPkt().binary);
-        packet.setModel(packetBuilderController.getModel().asJSON());
+        packet.setModel(packetBuilderController.getModel().serialize());
     }
 
     @Override

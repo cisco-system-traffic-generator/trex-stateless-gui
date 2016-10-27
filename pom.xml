@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.github.kisel</groupId>
             <artifactId>trex-packet-editor-gui</artifactId>
-            <version>702c85e555</version>
+            <version>5f2e4f3d66</version>
         </dependency>
         <dependency>
             <groupId>org.pcap4j</groupId>
