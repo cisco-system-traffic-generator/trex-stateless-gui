@@ -242,30 +242,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     /**
-     * Load Pcap button click handler
-     *
-     * @param event
-     * @throws Exception
-     */
-    public void loadPcapFired(ActionEvent event) throws Exception {
-        String loadLocation = PreferencesManager.getInstance().getLoadLocation();
-        Window owner = ((Button) (event.getSource())).getScene().getWindow();
-        File selectedFile = FileManager.getSelectedFile("Open Pcap File", "", owner, FileType.PCAP, loadLocation, false);
-
-        if (selectedFile != null) {
-            packetInfo = new PacketInfo();
-            parser = new PacketParser(selectedFile.getAbsolutePath(), packetInfo);
-            packetHex = new PacketHex(hexPane, packetInfo);
-
-            String encodedPcapFile = trafficProfile.encodePcapFile(selectedFile.getAbsolutePath());
-            selectedProfile.getStream().getPacket().setBinary(encodedPcapFile);
-
-        } else {
-            LOG.info("file = null");
-        }
-    }
-
-    /**
      * Close button click handler
      *
      * @param event
