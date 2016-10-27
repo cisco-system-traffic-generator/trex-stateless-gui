@@ -500,6 +500,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-font-weight: bold; 
     -fx-padding: 0 0 0 5;
     -fx-border-color:  #cfcfcf transparent #cfcfcf #cfcfcf;
+     -fx-pref-height: 32px;
 }
 
 .table-view .column-header .label{
@@ -1105,4 +1106,33 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 }
 .notificationIcon{
     -fx-cursor: hand;
+}
+
+/***********************************
+******   Import Pcap panel   ******
+***********************************/
+.tableWrapper {
+    -fx-border-color:#BFBFBF;
+    -fx-background-color: #FFFFFF;
+}
+
+.selectAll:selected .mark {
+    -fx-mark-highlight-color:#32b4ea; 
+    -fx-mark-color:#32b4ea;
+    -fx-background-color: #32b4ea;
+}
+.selectAll .box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cfcfcf;
+    -fx-background-radius: 2, 2, 1, 1;
+    -fx-padding: 0.25em;
+   
+}
+.selectAll:selected .box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cfcfcf;
+}
+
+.highlightedRow{
+     -fx-background-color: #fbd1d2 !important;
 }

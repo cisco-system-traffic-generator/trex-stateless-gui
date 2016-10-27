@@ -49,7 +49,12 @@ public class PacketParser {
 
     private static final Logger LOG = Logger.getLogger(PacketParser.class.getName());
     private static int total_octetes = 0;
-
+    PacketInfo packetInfo = null;
+    
+    public PacketParser() {
+        
+    }
+    
     /**
      * Format payload
      *
@@ -88,14 +93,14 @@ public class PacketParser {
         }
         return finalHex.toString();
     }
-    PacketInfo packetInfo = null;
+   
 
     /**
      *
      * @param fileName
      * @param packetInfo
      */
-    public PacketParser(String fileName, PacketInfo packetInfo) {
+    public void parseFile(String fileName, PacketInfo packetInfo){
         Packet packet;
         try {
             this.packetInfo = packetInfo;
@@ -121,15 +126,14 @@ public class PacketParser {
             }
 
         }
-
     }
-
+    
     /**
      *
      * @param packet
      * @param packetInfo
      */
-    public PacketParser(Packet packet, PacketInfo packetInfo) {
+    public void parsePacket(Packet packet, PacketInfo packetInfo) {
         total_octetes = 0;
         this.packetInfo = packetInfo;
         extractPacketInfo(packet);

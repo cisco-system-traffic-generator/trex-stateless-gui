@@ -112,6 +112,7 @@ public class TrafficProfileDialogController extends DialogView implements Initia
             public void handle(WindowEvent event) {
                 currentStage.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
                     if (newValue && tableView.isStreamEditingWindowOpen()) {
+                        Util.optimizeMemory();
                         loadStreamTable();
                         tableView.setStreamEditingWindowOpen(false);
                     }

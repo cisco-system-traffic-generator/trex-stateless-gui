@@ -18,6 +18,7 @@ public enum StreamTableAction {
     BUILD("Build Stream", "add.png"),
     EDIT("Edit Stream", "edit.png"),
     DELETE("Delete Stream", "delete.png"),
+    IMPORT_PCAP("Import Pcap", "import_icon.png"),
     EXPORT_TO_PCAP("Export Pcap", "export_profile_icon.png"),
     EXPORT_TO_YAML("Export To Yaml", "export_profile_icon.png");
     

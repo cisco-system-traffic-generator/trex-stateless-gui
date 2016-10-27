@@ -97,7 +97,8 @@ public class PacketUtil {
         // decode binary data
         File pcapFile = trafficProfile.decodePcapBinary(encodedBinaryPacket);
         PacketInfo packetInfo = new PacketInfo();
-        PacketParser parser = new PacketParser(pcapFile.getAbsolutePath(), packetInfo);
+        PacketParser parser = new PacketParser();
+        parser.parseFile(pcapFile.getAbsolutePath(), packetInfo);
         return packetInfo;
     }
 
