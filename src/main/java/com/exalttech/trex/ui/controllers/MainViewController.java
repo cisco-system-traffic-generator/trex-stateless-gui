@@ -1624,18 +1624,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         treeviewOpened = !treeviewOpened;
     }
 
-    @FXML
-    public void openPacketBuilder(ActionEvent event) {
-        TRexPacketCraftingTool packetCraftingTool = new TRexPacketCraftingTool();
-        
-        try {
-            ConnectionManager connectionManager = ConnectionManager.getInstance(); 
-            packetCraftingTool.startAsEmbedded(new Stage(), connectionManager.getIp(), connectionManager.getScapyPort());
-        } catch (Exception e) {
-            LOG.error("Unable to load Packet Builder.");
-        }
-    }
-
     /**
      * Enumerator that present async stats data type
      */
