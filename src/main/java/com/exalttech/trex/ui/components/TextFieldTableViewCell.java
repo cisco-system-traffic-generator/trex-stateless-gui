@@ -44,8 +44,8 @@ public class TextFieldTableViewCell<S, T> implements Callback<TableColumn, Table
                 mTextField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
                     if (!newValue) {
                         commitEdit((T) mTextField.getText());
+                        enteredValueHandler.validateEneteredValue(getTableRow().getItem());
                     }
-                     enteredValueHandler.validateEneteredValue(getTableRow().getItem());
                 });
                 
                 mTextField.textProperty().bindBidirectional(textProperty());

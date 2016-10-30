@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -85,6 +86,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
 
     /**
      * Initializes the controller class.
+     *
      * @param url
      * @param rb
      */
@@ -98,9 +100,10 @@ public class ImportPcapController extends DialogView implements Initializable, E
 
     /**
      * Load pcap file
+     *
      * @param pcapFile
      * @param profilesList
-     * @param yamlFileName 
+     * @param yamlFileName
      */
     public void loadPcap(File pcapFile, List<Profile> profilesList, String yamlFileName) {
         this.profilesList = profilesList;
@@ -136,6 +139,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
         packetTypeColumn.setCellValueFactory(new PropertyValueFactory<>("packetType"));
 
         importedStreamTable.setRowFactory(highlightedRowFactory);
+
     }
 
     /**
@@ -148,7 +152,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
     }
 
     /**
-     * Extract stream names from existing profile 
+     * Extract stream names from existing profile
      */
     private void extractExistingsNames() {
         for (Profile profile : profilesList) {
@@ -158,7 +162,8 @@ public class ImportPcapController extends DialogView implements Initializable, E
 
     /**
      * Parse pcap file to get all streams
-     * @param pcapFile 
+     *
+     * @param pcapFile
      */
     private void parsePcapFile(File pcapFile) {
         try {
@@ -180,10 +185,11 @@ public class ImportPcapController extends DialogView implements Initializable, E
 
     /**
      * Set table data
-     * @param packetInfoList 
+     *
+     * @param packetInfoList
      */
     private void setTableData(List<PacketInfo> packetInfoList) {
-        
+
         int index = 1;
         for (PacketInfo packetInfo : packetInfoList) {
             ImportPcapTableData tableData = new ImportPcapTableData();
@@ -209,6 +215,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
 
     /**
      * Handle cancel button clicked
+     *
      * @param event
      */
     @FXML
@@ -218,6 +225,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
 
     /**
      * Handle save button clicked
+     *
      * @param event
      */
     @FXML
@@ -259,7 +267,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
         for (ImportPcapTableData tableData : tableDataList) {
             if (tableData.isSelected() && existingNamesList.contains(tableData.getName())) {
                 validNames = false;
-                errorRows.add(tableData.getIndex() - 1);
+                errorRows.add(tableData.getIndex());
             }
         }
 
@@ -287,30 +295,32 @@ public class ImportPcapController extends DialogView implements Initializable, E
 
     /**
      * Validate entered text
-     * @param item 
+     *
+     * @param item
      */
     @Override
     public void validateEneteredValue(Object item) {
+        if (item != null) {
+            ImportPcapTableData updatedRow = (ImportPcapTableData) item;
+            if (duplicateRowNames.contains(updatedRow.getIndex())) {
+                int index = duplicateRowNames.indexOf(updatedRow.getIndex());
+                duplicateRowNames.remove(index);
+            }
+            for (ImportPcapTableData tableDataRow : tableDataList) {
+                if (updatedRow.getName().equals(tableDataRow.getName()) && updatedRow.getIndex() != tableDataRow.getIndex()) {
+                    if (!duplicateRowNames.contains(updatedRow.getIndex())) {
+                        duplicateRowNames.add(updatedRow.getIndex());
+                    }
 
-        ImportPcapTableData updatedRow = (ImportPcapTableData) item;
-        if (duplicateRowNames.contains(updatedRow.getIndex() - 1)) {
-
-            int index = duplicateRowNames.indexOf(updatedRow.getIndex() - 1);
-            duplicateRowNames.remove(index);
-        }
-        for (ImportPcapTableData tableDataRow : tableDataList) {
-            if (updatedRow.getName().equals(tableDataRow.getName()) && updatedRow.getIndex() != tableDataRow.getIndex()) {
-                if (!duplicateRowNames.contains(updatedRow.getIndex() - 1)) {
-                    duplicateRowNames.add(updatedRow.getIndex() - 1);
                 }
-
             }
         }
     }
 
     /**
      * HighLightedRowFactory factory implementation
-     * @param <T> 
+     *
+     * @param <T>
      */
     public class HighLightedRowFactory<T> implements Callback<TableView<T>, TableRow<T>> {
 
@@ -327,17 +337,38 @@ public class ImportPcapController extends DialogView implements Initializable, E
         @Override
         public TableRow call(TableView param) {
             TableRow row = new TableRow();
+
+            row.itemProperty().addListener(new ChangeListener() {
+                @Override
+                public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                     updateRowStyle(row);
+                }
+            });
+
             rowsToHighlight.addListener(new ListChangeListener<Integer>() {
                 @Override
                 public void onChanged(ListChangeListener.Change<? extends Integer> c) {
-                    row.getStyleClass().remove("highlightedRow");
-                    if (rowsToHighlight.contains(row.getIndex())) {
-                        row.getStyleClass().add("highlightedRow");
-                    }
+                    updateRowStyle(row);
                 }
             });
+
             return row;
         }
-    ;
-}
+
+        ;
+            /**
+             * Update row higlighted style
+             * @param row 
+             */
+            private void updateRowStyle(TableRow row) {
+            if (row != null && row.getItem() != null) {
+                row.getStyleClass().remove("highlightedRow");
+                int index = ((ImportPcapTableData) row.getItem()).getIndex();
+                
+                if (rowsToHighlight.contains(index)) {
+                    row.getStyleClass().add("highlightedRow");
+                }
+            }
+        }
+    }
 }
