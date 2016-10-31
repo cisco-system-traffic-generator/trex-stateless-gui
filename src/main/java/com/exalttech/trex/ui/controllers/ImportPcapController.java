@@ -81,7 +81,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
     ObservableList<ImportPcapTableData> tableDataList = FXCollections.observableArrayList();
     ObservableList<Integer> highlightRows = FXCollections.observableArrayList();
     CheckBox selectAll;
-    HighLightedRowFactory<ImportPcapTableData> highlightedRowFactory;
+    HighlightedRowFactory<ImportPcapTableData> highlightedRowFactory;
     ObservableList<Integer> duplicateRowNames = FXCollections.observableArrayList();
 
     /**
@@ -93,7 +93,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         trafficProfile = new TrafficProfile();
-        highlightedRowFactory = new HighLightedRowFactory<>(highlightRows);
+        highlightedRowFactory = new HighlightedRowFactory<>(highlightRows);
         initTableRowsColumns();
 
     }
@@ -108,7 +108,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
     public void loadPcap(File pcapFile, List<Profile> profilesList, String yamlFileName) {
         this.profilesList = profilesList;
         this.yamlFileName = yamlFileName;
-        extractExistingsNames();
+        extractExistingNames();
         parsePcapFile(pcapFile);
     }
 
@@ -154,7 +154,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
     /**
      * Extract stream names from existing profile
      */
-    private void extractExistingsNames() {
+    private void extractExistingNames() {
         for (Profile profile : profilesList) {
             existingNamesList.add(profile.getName());
         }
@@ -231,7 +231,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
     @FXML
     public void handleSaveButtonClicked(ActionEvent event) {
         try {
-            if (validStreamNames()) {
+            if (validateStreamNames()) {
                 for (ImportPcapTableData tableData : tableDataList) {
                     if (tableData.isSelected()) {
                         Profile profile = new Profile();
@@ -260,7 +260,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
      *
      * @return
      */
-    private boolean validStreamNames() {
+    private boolean validateStreamNames() {
         boolean validNames = true;
         ObservableList<Integer> errorRows = FXCollections.observableArrayList();
         // validate saved stream names
@@ -299,7 +299,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
      * @param item
      */
     @Override
-    public void validateEneteredValue(Object item) {
+    public void validateEnteredValue(Object item) {
         if (item != null) {
             ImportPcapTableData updatedRow = (ImportPcapTableData) item;
             if (duplicateRowNames.contains(updatedRow.getIndex())) {
@@ -318,15 +318,15 @@ public class ImportPcapController extends DialogView implements Initializable, E
     }
 
     /**
-     * HighLightedRowFactory factory implementation
+     * HighlightedRowFactory factory implementation
      *
      * @param <T>
      */
-    public class HighLightedRowFactory<T> implements Callback<TableView<T>, TableRow<T>> {
+    public class HighlightedRowFactory<T> implements Callback<TableView<T>, TableRow<T>> {
 
         ObservableList<Integer> rowsToHighlight;
 
-        public HighLightedRowFactory(ObservableList<Integer> rowsToHighlight) {
+        public HighlightedRowFactory(ObservableList<Integer> rowsToHighlight) {
             this.rowsToHighlight = rowsToHighlight;
         }
 

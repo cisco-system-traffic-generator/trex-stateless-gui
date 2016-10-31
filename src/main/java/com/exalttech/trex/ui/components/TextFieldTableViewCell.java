@@ -32,23 +32,23 @@ public class TextFieldTableViewCell<S, T> implements Callback<TableColumn, Table
     @Override
     public TableCell call(TableColumn param) {
         return new TableCell<S, T>() {
-            private TextField mTextField;
+            private TextField textField;
             {
-                mTextField = new TextField();
-                mTextField.setPrefSize(158, 22);
-                mTextField.setOnKeyPressed((KeyEvent event) -> {
+                textField = new TextField();
+                textField.setPrefSize(158, 22);
+                textField.setOnKeyPressed((KeyEvent event) -> {
                     if (event.getCode().equals(KeyCode.ENTER)) {
-                        commitEdit((T) mTextField.getText());
+                        commitEdit((T) textField.getText());
                     }
                 });
-                mTextField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                textField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
                     if (!newValue) {
-                        commitEdit((T) mTextField.getText());
-                        enteredValueHandler.validateEneteredValue(getTableRow().getItem());
+                        commitEdit((T) textField.getText());
+                        enteredValueHandler.validateEnteredValue(getTableRow().getItem());
                     }
                 });
                 
-                mTextField.textProperty().bindBidirectional(textProperty());
+                textField.textProperty().bindBidirectional(textProperty());
             }
             
             @Override
@@ -58,7 +58,7 @@ public class TextFieldTableViewCell<S, T> implements Callback<TableColumn, Table
                     setText(null);
                     setGraphic(null);
                 } else {
-                    setGraphic(mTextField);
+                    setGraphic(textField);
                     setText((String) getItem());
                 }
             }
@@ -88,6 +88,6 @@ public class TextFieldTableViewCell<S, T> implements Callback<TableColumn, Table
          * Validate entered text
          * @param item 
          */
-        public void validateEneteredValue(Object item);
+        public void validateEnteredValue(Object item);
     }
 }
