@@ -164,6 +164,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @param type
      */
     public void initStreamBuilder(TableProfileStream selectedStream, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
+        packetBuilderController.initAcceleratorsHandler(windowContainer.getScene());
         this.selectedProfile = profileList.get(selectedProfileIndex);
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;

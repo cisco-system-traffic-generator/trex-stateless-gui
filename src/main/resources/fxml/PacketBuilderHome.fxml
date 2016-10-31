@@ -55,7 +55,7 @@
                 </Tab>
                 <Tab fx:id="packetViewerTab" style=" " text="Packet Editor">
                     <content>
-                        <fx:include source="/com/xored/javafx/packeteditor/controllers/app.fxml"/>
+                        <fx:include source="/com/xored/javafx/packeteditor/controllers/app_emedded.fxml"/>
                     </content>
                 </Tab>
             </tabs>
