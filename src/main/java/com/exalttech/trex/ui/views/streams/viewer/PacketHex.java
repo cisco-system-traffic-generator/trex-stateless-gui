@@ -57,25 +57,26 @@ import org.pcap4j.packet.IllegalRawDataException;
  * @author GeorgeKh
  */
 public class PacketHex {
-
+    
     private static final Logger LOG = Logger.getLogger(PacketHex.class.getName());
-
+    
     private PacketInfo packetInfo = null;
     private AnchorPane hex;
     private VBox packetView = null;
-
+    PacketParser packetParser;
     final TreeItem<HexData> treeRoot = new TreeItem<>(new HexData("Packet", "", ""));
+    TreeTableView<HexData> hexTable;
 
     /**
      *
      * @param hexPane
-     * @param packetInfo
      */
-    public PacketHex(AnchorPane hexPane, PacketInfo packetInfo) {
-
+    public PacketHex(AnchorPane hexPane) {
+        
         this.hex = hexPane;
-        this.packetInfo = packetInfo;
-        this.packetView = buildPacketView(packetInfo);
+        
+        packetParser = new PacketParser();
+        this.packetView = buildPacketView();
         packetView.setStyle("-fx-background-color: white;");
         hex.setStyle("-fx-background-color: white;");
         AnchorPane.setLeftAnchor(packetView, 0.0);
@@ -84,41 +85,21 @@ public class PacketHex {
         AnchorPane.setTopAnchor(packetView, 0.0);
         hex.getChildren().add(packetView);
     }
-
+    
     /**
-     * Build packet view
-     *
-     * @param packet
-     * @return
+     * Set data
+     * @param packet 
      */
-    private VBox buildPacketView(PacketInfo packet) {
-        VBox insidePane = new VBox();
-
-        TreeTableColumn<HexData, String> c0 = new TreeTableColumn<>("offst");
-        c0.setCellValueFactory((TreeTableColumn.CellDataFeatures<HexData, String> param)
-                -> new ReadOnlyStringWrapper(param.getValue().getValue().getOffset()));
-        c0.setSortable(false);
-        c0.setPrefWidth(120);
-
-        TreeTableColumn<HexData, String> c1 = new TreeTableColumn<>("Hex");
-        c1.setCellValueFactory((TreeTableColumn.CellDataFeatures<HexData, String> param)
-                -> new ReadOnlyStringWrapper(param.getValue().getValue().getHex()));
-        c1.setSortable(false);
-        c1.setPrefWidth(375);
-        c1.setCellFactory(new TextFieldCellFactory());
-
-        TreeTableColumn<HexData, String> c2 = new TreeTableColumn<>("Payload");
-        c2.setCellValueFactory((TreeTableColumn.CellDataFeatures<HexData, String> param)
-                -> new ReadOnlyStringWrapper(param.getValue().getValue().getPayLoad()));
-        c2.setSortable(false);
-        c2.setPrefWidth(130);
-
+    public void setData(PacketInfo packet) {
+        this.packetInfo = packet;
+        treeRoot.getChildren().clear();
+        
         treeRoot.setExpanded(true);
-
+        
         if (packet.getPacketHex() != null) {
             treeRoot.getChildren().add(buildPacketHexView(packet.getPacketHex(), packet.getPacketRawData(), "Packet Hex"));
             treeRoot.setExpanded(true);
-
+            
         }
         if (packet.getEthernetHex() != null) {
             treeRoot.getChildren().add(buildPacketHexView(packet.getEthernetHex(), packet.getEthernetRawData(), "L2 Ethernet"));
@@ -129,20 +110,49 @@ public class PacketHex {
         if (packet.getL4Hex() != null) {
             treeRoot.getChildren().add(buildPacketHexView(packet.getL4Hex(), packet.getL4RawData(), "L4 " + packet.getL4Name()));
         }
-
+        
         if (packet.getPacketPayLoad() != null) {
             treeRoot.getChildren().add(buildPacketHexView(packet.getPacketPayLoad(), new String(), "L7"));
         }
-
         if (!treeRoot.getChildren().isEmpty()) {
-            final TreeTableView<HexData> hexTable;
-
-            hexTable = new TreeTableView<>(treeRoot);
-            hexTable.getStyleClass().add("treeTable");
-            hexTable.getColumns().addAll(c0, c1, c2);
-            hexTable.setPrefSize(630, 510);
-            insidePane.getChildren().add(hexTable);
+            hexTable.setRoot(treeRoot);
         }
+    }
+
+    /**
+     * Build packet view
+     *
+     * @param packet
+     * @return
+     */
+    private VBox buildPacketView() {
+        VBox insidePane = new VBox();
+        
+        TreeTableColumn<HexData, String> c0 = new TreeTableColumn<>("offst");
+        c0.setCellValueFactory((TreeTableColumn.CellDataFeatures<HexData, String> param)
+                -> new ReadOnlyStringWrapper(param.getValue().getValue().getOffset()));
+        c0.setSortable(false);
+        c0.setPrefWidth(120);
+        
+        TreeTableColumn<HexData, String> c1 = new TreeTableColumn<>("Hex");
+        c1.setCellValueFactory((TreeTableColumn.CellDataFeatures<HexData, String> param)
+                -> new ReadOnlyStringWrapper(param.getValue().getValue().getHex()));
+        c1.setSortable(false);
+        c1.setPrefWidth(375);
+        c1.setCellFactory(new TextFieldCellFactory());
+        
+        TreeTableColumn<HexData, String> c2 = new TreeTableColumn<>("Payload");
+        c2.setCellValueFactory((TreeTableColumn.CellDataFeatures<HexData, String> param)
+                -> new ReadOnlyStringWrapper(param.getValue().getValue().getPayLoad()));
+        c2.setSortable(false);
+        c2.setPrefWidth(130);
+        
+        hexTable = new TreeTableView<>();
+        hexTable.getStyleClass().add("treeTable");
+        hexTable.getColumns().addAll(c0, c1, c2);
+        hexTable.setPrefSize(630, 510);
+        insidePane.getChildren().add(hexTable);
+        
         return insidePane;
     }
 
@@ -161,7 +171,7 @@ public class PacketHex {
         hexList.stream().forEach(line -> {
             root.getChildren().add(new TreeItem<>(new HexData(line.getOffset(), line.getHex(), line.getPayLoad())));
         });
-
+        
         return root;
     }
 
@@ -194,7 +204,11 @@ public class PacketHex {
         for (int i = 0; i < hexArr.length; i++) {
             try {
                 String offset = hexArr[i].substring(0, hexArr[i].indexOf(" "));
-                lis.add(new HexData(offset, hexArr[i].replace(offset + " ", ""), payLoadArr[i]));
+                String payloadString="";
+                if(payLoadArr.length > i){
+                    payloadString = payLoadArr[i];
+                }
+                lis.add(new HexData(offset, hexArr[i].replace(offset + " ", ""), payloadString));
             } catch (Exception e) {
                 LOG.error("Failed to find index", e);
             }
@@ -206,7 +220,7 @@ public class PacketHex {
      * Model present hex data
      */
     public class HexData {
-
+        
         private SimpleStringProperty hex;
         private SimpleStringProperty offset;
         private SimpleStringProperty payLoad;
@@ -319,14 +333,14 @@ public class PacketHex {
         public SimpleStringProperty hexProperty() {
             return hex;
         }
-
+        
     }
 
     /**
      * Class present text field cell factory
      */
     public class TextFieldCellFactory implements Callback<TreeTableColumn<HexData, String>, TreeTableCell<HexData, String>> {
-
+        
         @Override
         public TreeTableCell<HexData, String> call(TreeTableColumn<HexData, String> param) {
             return new TextFieldCell();
@@ -336,7 +350,7 @@ public class PacketHex {
          * Class present text fiels cell implementation
          */
         public class TextFieldCell extends TreeTableCell<HexData, String> {
-
+            
             private TextField textField;
             private StringProperty boundToCurrently = null;
 
@@ -371,16 +385,16 @@ public class PacketHex {
                             String payLoad = hexToASCII(textField.getText());
                             TreeTableRow<HexData> hexTable = (TreeTableRow<HexData>) textField.getParent().getParent();
                             TreeItem<HexData> selectedItem = hexTable.getTreeItem();
-                            selectedItem.setValue(new HexData(selectedItem.getValue().getOffset(), textField.getText(), PacketParser.formatPayLoad(payLoad)));
+                            selectedItem.setValue(new HexData(selectedItem.getValue().getOffset(), textField.getText(), packetParser.formatPayLoad(payLoad)));
                             String originalHex = getPacketHexFromList();
                             if (selectedItem.getValue().getOffset().contains("-")) {
                                 originalHex = originalHex.replaceAll(originalLine.replaceAll(" ", "").replaceAll("\n", ""), textField.getText().replaceAll(" ", "").replaceAll("\n", ""));
                             }
                             byte[] rawdata = DatatypeConverter.parseHexBinary(originalHex);
                             EthernetPacket p = EthernetPacket.newPacket(rawdata, 0, rawdata.length);
-                            new PacketParser(p, packetInfo);
+                            packetParser.parsePacket(p, packetInfo);
                             treeRoot.getChildren().clear();
-                            buildPacketView(packetInfo);
+                            setData(packetInfo);
                         } catch (IllegalRawDataException ex) {
                             java.util.logging.Logger.getLogger(PacketHex.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -410,7 +424,7 @@ public class PacketHex {
                 dialog.setResultConverter(new Callback<ButtonType, String>() {
                     @Override
                     public String call(ButtonType b) {
-
+                        
                         if (b == buttonTypeOk) {
                             switch (text1.getText().length()) {
                                 case 0:
@@ -424,7 +438,7 @@ public class PacketHex {
                         return null;
                     }
                 });
-
+                
                 Optional<String> result = dialog.showAndWait();
                 if (result.isPresent()) {
                     return result.get();
@@ -445,7 +459,7 @@ public class PacketHex {
                     this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                     ObservableValue<String> ov = getTableColumn().getCellObservableValue(getIndex());
                     SimpleStringProperty sp = (SimpleStringProperty) ov;
-
+                    
                     if (this.boundToCurrently == null) {
                         this.boundToCurrently = sp;
                         this.textField.textProperty().bindBidirectional(sp);
@@ -497,7 +511,7 @@ public class PacketHex {
                     }
                 };
             }
-
+            
         }
     }
 }

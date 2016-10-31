@@ -26,11 +26,13 @@ import com.exalttech.trex.ui.components.CheckBoxTableViewCell;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell.CheckBoxTableChangeHandler;
 import com.exalttech.trex.ui.controllers.PacketBuilderHomeController;
 import com.exalttech.trex.ui.controllers.ProfileStreamNameDialogController;
+import com.exalttech.trex.ui.controllers.ImportPcapController;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.views.models.TableProfile;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.ui.views.streamtable.StreamTableAction;
 import com.exalttech.trex.ui.views.streamtable.StreamTableButton;
+import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.FileManager;
@@ -95,6 +97,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     StreamTableButton editPacketBtn;
     StreamTableButton deleteButtonBtn;
     StreamTableButton exportPcapButton;
+    StreamTableButton importPcapButton;
     StreamTableButton exportToYaml;
     TableView<TableProfileStream> streamPacketTableView;
 
@@ -163,6 +166,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         deleteButtonBtn = new StreamTableButton(StreamTableAction.DELETE);
         initializeStreamButtons(deleteButtonBtn, true);
         buttonContainer.getChildren().add(deleteButtonBtn);
+
+        importPcapButton = new StreamTableButton(StreamTableAction.IMPORT_PCAP);
+        initializeStreamButtons(importPcapButton, false);
+        buttonContainer.getChildren().add(importPcapButton);
 
         exportPcapButton = new StreamTableButton(StreamTableAction.EXPORT_TO_PCAP);
         initializeStreamButtons(exportPcapButton, true);
@@ -276,6 +283,9 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             case DELETE:
                 handleDeletePacket();
                 break;
+            case IMPORT_PCAP:
+                hanldeImportPcap();
+                break;
             case EXPORT_TO_PCAP:
                 handleExportPcapFile();
                 break;
@@ -354,6 +364,27 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             FileManager.exportFile("Save Pcap File", fileName, pcapFile, owner, FileType.PCAP);
         } catch (IllegalRawDataException | IOException | PcapNativeException | NotOpenException ex) {
             LOG.error("Error during generate JSON file", ex);
+        }
+    }
+
+    /**
+     * Handle import pcap
+     */
+    private void hanldeImportPcap() {
+        try {
+            String loadFolderPath = PreferencesManager.getInstance().getLoadLocation();
+            Stage owner = (Stage) streamPacketTableView.getScene().getWindow();
+            File pcapFile = FileManager.getSelectedFile("Open Pcap File", "", owner, FileType.PCAP, loadFolderPath, false);
+            if (pcapFile != null) {
+                // open import dialog
+                setStreamEditingWindowOpen(true);
+                DialogWindow importPcapWindow = new DialogWindow("ImportPcap.fxml", "Import Pcap", 100, 100, false, owner);
+                ImportPcapController importController = (ImportPcapController) importPcapWindow.getController();
+                importController.loadPcap(pcapFile, tabledata.getProfiles(), tabledata.getYamlFileName());
+                importPcapWindow.show(true);
+            }
+        } catch (Exception ex) {
+            LOG.error("Error loading pcap file", ex);
         }
     }
 

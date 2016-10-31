@@ -1,6 +1,6 @@
 #define TrexAppName "trex-stateless-gui"
 #define TrexDisplayAppName "TRex"
-#define TrexAppVersion "2.10-SNAPSHOT"
+#define TrexAppVersion "2.11-SNAPSHOT"
 #define TrexAppPublisher "TRex"
 #define TrexAppURL "http://www.exalt-tech.com/"
 #define TrexAppExeName "trex-stateless-gui.exe"

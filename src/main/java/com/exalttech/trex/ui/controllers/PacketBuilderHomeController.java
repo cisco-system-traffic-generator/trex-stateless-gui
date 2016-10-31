@@ -137,9 +137,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         trafficProfile = new TrafficProfile();
+        packetHex = new PacketHex(hexPane);
         loadPcap.visibleProperty().bind(packetViewerTab.selectedProperty());
         nextStreamBtn.setGraphic(new ImageView(new Image("/icons/next_stream.png")));
         prevStreamBtn.setGraphic(new ImageView(new Image("/icons/prev_stream.png")));
+        packetInfo = new PacketInfo();
+        parser = new PacketParser();
     }
 
     /**
@@ -191,10 +194,9 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         if (pcapFileBinary != null) {
             try {
                 isBuildPacket = false;
-                packetInfo = new PacketInfo();
                 File pcapFile = trafficProfile.decodePcapBinary(pcapFileBinary);
-                parser = new PacketParser(pcapFile.getAbsolutePath(), packetInfo);
-                packetHex = new PacketHex(hexPane, packetInfo);
+                parser.parseFile(pcapFile.getAbsolutePath(), packetInfo);
+                packetHex.setData(packetInfo);
             } catch (IOException ex) {
                 LOG.error("Failed to load PCAP value", ex);
             }
@@ -251,9 +253,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
         if (selectedFile != null) {
             packetInfo = new PacketInfo();
-            parser = new PacketParser(selectedFile.getAbsolutePath(), packetInfo);
-            packetHex = new PacketHex(hexPane, packetInfo);
-
+            parser.parseFile(selectedFile.getAbsolutePath(), packetInfo);
+            packetHex.setData(packetInfo);
             String encodedPcapFile = trafficProfile.encodePcapFile(selectedFile.getAbsolutePath());
             selectedProfile.getStream().getPacket().setBinary(encodedPcapFile);
 
@@ -345,6 +346,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             if (streamPropertiesController.isValidStreamPropertiesFields()) {
                 String yamlData = trafficProfile.convertTrafficProfileToYaml(profileList.toArray(new Profile[profileList.size()]));
                 FileUtils.writeStringToFile(new File(yamlFileName), yamlData);
+                Util.optimizeMemory();
                 return true;
             }
         } catch (Exception ex) {
@@ -360,12 +362,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     @FXML
     public void nextStreamBtnClicked(ActionEvent event) {
-        if (saveStream()) {
-            // load next stream
-            this.currentSelectedProfileIndex+=1;
-            updateNextPrevButtonState();
-            loadStream();
-        }
+        nextStreamBtn.setDisable(true);
+        loadProfile(true);
     }
 
     /**
@@ -375,15 +373,37 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     @FXML
     public void prevStreamBtnClick(ActionEvent event) {
-        if (saveStream()) {
-            // load previous stream
-            currentSelectedProfileIndex-=1;
-            updateNextPrevButtonState();
-            loadStream();
-        }
+        prevStreamBtn.setDisable(true);
+        loadProfile(false);
     }
 
-    private void resetTabs(){
+    /**
+     * Load profile
+     *
+     * @param isNext
+     */
+    private void loadProfile(boolean isNext) {
+        try {
+            Util.optimizeMemory();
+            updateCurrentProfile();
+            if (streamPropertiesController.isValidStreamPropertiesFields()) {
+                if (isNext) {
+                    this.currentSelectedProfileIndex += 1;
+                } else {
+                    this.currentSelectedProfileIndex -= 1;
+                }
+                loadStream();
+            }
+        } catch (Exception ex) {
+            LOG.error("Invalid data", ex);
+        }
+        updateNextPrevButtonState();
+    }
+
+    /**
+     * Reset tabs
+     */
+    private void resetTabs() {
         streamTabPane.getTabs().clear();
         streamTabPane.getTabs().add(streamPropertiesTab);
         streamTabPane.getTabs().add(packetViewerTab);
@@ -391,14 +411,16 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.getTabs().add(protocolDataTab);
         streamTabPane.getTabs().add(advanceSettingsTab);
         streamTabPane.getTabs().add(packetViewerWithTreeTab);
-         
     }
+
     /**
      * Update next/previous stream button disable state
      */
     private void updateNextPrevButtonState() {
         nextStreamBtn.setDisable((currentSelectedProfileIndex >= profileList.size() - 1));
         prevStreamBtn.setDisable((currentSelectedProfileIndex == 0));
+//        nextBtnCLicked = false;
+//        prevBtnCLicked = false;
     }
 
     /**
