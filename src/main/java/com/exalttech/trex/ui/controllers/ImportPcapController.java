@@ -180,7 +180,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
             }
 
         } catch (EOFException e) {
-            LOG.error("End of pcap file");
+            LOG.info("End of pcap file");
         } catch (Exception ex) {
             LOG.error("Error parsing selectd pcap file", ex);
         }
