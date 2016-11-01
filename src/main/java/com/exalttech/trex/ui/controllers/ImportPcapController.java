@@ -85,6 +85,8 @@ public class ImportPcapController extends DialogView implements Initializable, E
     HighlightedRowFactory<ImportPcapTableData> highlightedRowFactory;
     ObservableList<Integer> duplicateRowNames = FXCollections.observableArrayList();
 
+    int index = 0;
+
     /**
      * Initializes the controller class.
      *
@@ -236,13 +238,22 @@ public class ImportPcapController extends DialogView implements Initializable, E
     public void handleSaveButtonClicked(ActionEvent event) {
         try {
             if (validateStreamNames()) {
-                for (ImportPcapTableData tableData : tableDataList) {
-                    if (tableData.isSelected()) {
+                index = 0;
+                ImportPcapTableData current = getNextSelectedPacket();
+                ImportPcapTableData next = null;
+                while (index <= tableDataList.size()) {
+                    if (current != null) {
                         Profile profile = new Profile();
-                        profile.setName(tableData.getName());
-                        profile.getStream().getMode().setType("continuous");
-                        String hexDataString = PacketBuilderHelper.getPacketHex(tableData.getPacket().getRawData());
+                        profile.setName(current.getName());
+                        profile.getStream().getMode().setType("single_burst");
+                        String hexDataString = PacketBuilderHelper.getPacketHex(current.getPacket().getRawData());
                         profile.getStream().getPacket().setBinary(trafficProfile.encodeBinaryFromHexString(hexDataString));
+                        // get next stream 
+                        next = getNextSelectedPacket();
+                        if (next != null && next != current) {
+                            profile.setNext(next.getName());
+                        }
+                        current = next;
                         profilesList.add(profile);
                     }
                 }
@@ -257,6 +268,23 @@ public class ImportPcapController extends DialogView implements Initializable, E
         } catch (Exception ex) {
             LOG.error("Error saving Yaml file", ex);
         }
+    }
+
+    /**
+     * Get next selected stream
+     * @return 
+     */
+    private ImportPcapTableData getNextSelectedPacket() { 
+        if(index == tableDataList.size()){
+            index++;
+            return null;
+        }
+        ImportPcapTableData tableData = tableDataList.get(index);
+        index++;
+        if (tableData.isSelected()) {
+            return tableData;
+        }
+        return getNextSelectedPacket();
     }
 
     /**
