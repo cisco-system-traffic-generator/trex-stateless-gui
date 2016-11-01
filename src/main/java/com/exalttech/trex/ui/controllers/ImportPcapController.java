@@ -297,7 +297,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
         ObservableList<Integer> errorRows = FXCollections.observableArrayList();
         // validate saved stream names
         for (ImportPcapTableData tableData : tableDataList) {
-            if (tableData.isSelected() && existingNamesList.contains(tableData.getName())) {
+            if (tableData.isSelected() && (existingNamesList.contains(tableData.getName()) || Util.isNullOrEmpty(tableData.getName()))) {
                 validNames = false;
                 errorRows.add(tableData.getIndex());
             }
