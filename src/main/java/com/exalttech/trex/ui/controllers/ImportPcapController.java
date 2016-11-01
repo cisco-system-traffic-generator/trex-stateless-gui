@@ -297,7 +297,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
         ObservableList<Integer> errorRows = FXCollections.observableArrayList();
         // validate saved stream names
         for (ImportPcapTableData tableData : tableDataList) {
-            if (tableData.isSelected() && (existingNamesList.contains(tableData.getName()) || Util.isNullOrEmpty(tableData.getName()))) {
+            if (tableData.isSelected() && (existingNamesList.contains(tableData.getName()) || Util.isNullOrEmpty(tableData.getName().trim()))) {
                 validNames = false;
                 errorRows.add(tableData.getIndex());
             }
@@ -339,7 +339,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
                 duplicateRowNames.remove(index);
             }
             for (ImportPcapTableData tableDataRow : tableDataList) {
-                if (updatedRow.getName().equals(tableDataRow.getName()) && updatedRow.getIndex() != tableDataRow.getIndex()) {
+                if (updatedRow.getName().trim().equals(tableDataRow.getName().trim()) && updatedRow.getIndex() != tableDataRow.getIndex()) {
                     if (!duplicateRowNames.contains(updatedRow.getIndex())) {
                         duplicateRowNames.add(updatedRow.getIndex());
                     }
