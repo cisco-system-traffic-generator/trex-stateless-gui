@@ -15,6 +15,7 @@ import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
+import java.io.EOFException;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -166,21 +167,24 @@ public class ImportPcapController extends DialogView implements Initializable, E
      * @param pcapFile
      */
     private void parsePcapFile(File pcapFile) {
+        List<PacketInfo> packetInfoList = new ArrayList<>();
         try {
             PcapHandle handler = Pcaps.openOffline(pcapFile.getAbsolutePath());
             PacketParser parser = new PacketParser();
-            List<PacketInfo> packetInfoList = new ArrayList<>();
             Packet packet;
-            while ((packet = handler.getNextPacket()) != null) {
+            while ((packet = handler.getNextPacketEx()) != null) {
                 PacketInfo packetInfo = new PacketInfo();
                 packetInfo.setPacket(packet);
                 parser.parsePacket(packet, packetInfo);
                 packetInfoList.add(packetInfo);
             }
-            setTableData(packetInfoList);
+
+        } catch (EOFException e) {
+            LOG.error("End of pcap file");
         } catch (Exception ex) {
             LOG.error("Error parsing selectd pcap file", ex);
         }
+        setTableData(packetInfoList);
     }
 
     /**
@@ -341,7 +345,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
             row.itemProperty().addListener(new ChangeListener() {
                 @Override
                 public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                     updateRowStyle(row);
+                    updateRowStyle(row);
                 }
             });
 
@@ -364,7 +368,7 @@ public class ImportPcapController extends DialogView implements Initializable, E
             if (row != null && row.getItem() != null) {
                 row.getStyleClass().remove("highlightedRow");
                 int index = ((ImportPcapTableData) row.getItem()).getIndex();
-                
+
                 if (rowsToHighlight.contains(index)) {
                     row.getStyleClass().add("highlightedRow");
                 }
