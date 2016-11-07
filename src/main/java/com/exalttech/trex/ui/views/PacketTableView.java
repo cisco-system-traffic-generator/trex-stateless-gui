@@ -53,6 +53,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -194,7 +195,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         streamPacketTableView.setId("streamTableView");
         streamPacketTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         streamPacketTableView.setFixedCellSize(32);
-
+        streamPacketTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         streamPacketTableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -326,14 +327,18 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     public void handleDeletePacket() {
         try {
-            int selectedIndex = streamPacketTableView.getSelectionModel().getSelectedIndex();
-            if (selectedIndex > -1 && Util.isConfirmed("Are you sure you want to delete this stream?")) {
-                tabledata.getStreamsList().remove(selectedIndex);
-                tabledata.getProfiles().remove(selectedIndex);
+            List<Profile> removedProfileList = new ArrayList<>();
+            if (Util.isConfirmed("Are you sure you want to delete this stream?")) {
+                for (int index : streamPacketTableView.getSelectionModel().getSelectedIndices()) {
+                    removedProfileList.add(tabledata.getProfiles().get(index));
+                }
+                tabledata.getStreamsList().removeAll(streamPacketTableView.getSelectionModel().getSelectedItems());
+                tabledata.getProfiles().removeAll(removedProfileList);
                 saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
                 if (tableUpdateHandler != null) {
                     tableUpdateHandler.onStreamTableChanged();
                 }
+
             }
         } catch (IOException ex) {
             LOG.error("Error deleting stream", ex);
@@ -350,8 +355,9 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
             byte[] pkt = Base64.decodeBase64(packetBinary);
             Packet packet = EthernetPacket.newPacket(pkt, 0, pkt.length);
-            File pcapFile = File.createTempFile("temp-file-name", ".pcap");
-
+//            File pcapFile = File.createTempFile("temp-file-name", ".pcap");
+            File pcapFile = new File("temp_pcap.pcap");
+//               Pcap pcap = Pcap.openOffline(pcapFile.getAbsolutePath(), 65536); 
             PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
             PcapDumper dumper = handle.dumpOpen(pcapFile.getAbsolutePath());
             Timestamp ts = new Timestamp(0);
