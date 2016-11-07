@@ -355,9 +355,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
             byte[] pkt = Base64.decodeBase64(packetBinary);
             Packet packet = EthernetPacket.newPacket(pkt, 0, pkt.length);
-//            File pcapFile = File.createTempFile("temp-file-name", ".pcap");
-            File pcapFile = new File("temp_pcap.pcap");
-//               Pcap pcap = Pcap.openOffline(pcapFile.getAbsolutePath(), 65536); 
+            File pcapFile = File.createTempFile("temp-file-name", ".pcap");
             PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
             PcapDumper dumper = handle.dumpOpen(pcapFile.getAbsolutePath());
             Timestamp ts = new Timestamp(0);
