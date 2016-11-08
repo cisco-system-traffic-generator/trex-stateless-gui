@@ -16,14 +16,9 @@
 package com.exalttech.trex.remote.models.profiles;
 
 import com.exalttech.trex.util.Util;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,8 +60,10 @@ public class Stream implements Cloneable {
     @JsonIgnore
     private FlowStats flowStats;
 
-    @JsonIgnore
     private String vmRaw = "";
+    
+    @JsonProperty("vm")
+    private Map<String, Object> vm;
 
     @JsonIgnore
     private String rxStatsRaw = "";
@@ -80,6 +77,14 @@ public class Stream implements Cloneable {
         mode = new Mode();
         packet = new Packet();
         flowStats = new FlowStats();
+    }
+
+    public Map<String, Object> getVm() {
+        return vm;
+    }
+
+    public void setVm(Map<String, Object> vm) {
+        this.vm = vm;
     }
 
     /**
@@ -206,7 +211,6 @@ public class Stream implements Cloneable {
      *
      * @return
      */
-    @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }

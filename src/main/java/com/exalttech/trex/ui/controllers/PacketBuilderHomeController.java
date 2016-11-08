@@ -31,6 +31,7 @@ import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.inject.Inject;
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
 import javafx.event.ActionEvent;
@@ -49,13 +50,14 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Base64;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 /**
@@ -434,8 +436,9 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             // save stream selected in stream property
             packet.setMeta(Util.serializeObjectToString(builderDataBinder));
         }
-        packet.setBinary(packetBuilderController.getModel().getPkt().binary);
+        packet.setBinary(packetBuilderController.getBinaryPkt());
         packet.setModel(packetBuilderController.getModel().serialize());
+        stream.setVm(packetBuilderController.getPktVmInstructions());
     }
 
     @Override
