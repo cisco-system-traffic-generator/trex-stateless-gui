@@ -60,6 +60,7 @@ public class Stream implements Cloneable {
     @JsonIgnore
     private FlowStats flowStats;
 
+    @JsonIgnore
     private String vmRaw = "";
     
     @JsonProperty("vm")
@@ -80,6 +81,9 @@ public class Stream implements Cloneable {
     }
 
     public Map<String, Object> getVm() {
+        if (vm != null && vm.isEmpty()) {
+            return null;
+        }
         return vm;
     }
 
@@ -91,6 +95,7 @@ public class Stream implements Cloneable {
      *
      * @return
      */
+    @JsonIgnore
     public String getVmRaw() {
         return vmRaw;
     }
