@@ -1111,7 +1111,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 /***********************************
 ******   Import Pcap panel   ******
 ***********************************/
-.tableWrapper {
+.wizardViewWrapper {
     -fx-border-color:#BFBFBF;
     -fx-background-color: #FFFFFF;
 }
@@ -1135,4 +1135,8 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 
 .highlightedRow{
      -fx-background-color: #fbd1d2 !important;
+}
+
+.importedPcapPropertiesNote{
+    -fx-background-color: #fff5cb !important;
 }

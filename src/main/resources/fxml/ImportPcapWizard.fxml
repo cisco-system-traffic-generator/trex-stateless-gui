@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="550.0" prefWidth="1100.0" style="-fx-background-color: #f0f0f0;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.ImportPcapWizardController">
+    <children>
+      <Pane fx:id="wizardViewContainer" prefHeight="200.0" prefWidth="200.0" styleClass="wizardViewWrapper" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <Button fx:id="selectPcapBtn" mnemonicParsing="false" onAction="#handleSelectPcapBtnClicked" prefHeight="24.0" prefWidth="120.0" styleClass="normalButton" text="Select Pcap" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="130.0" />
+      <Button mnemonicParsing="false" onAction="#handleCancelButtonClicked" prefHeight="24.0" prefWidth="110.0" styleClass="cancelButton" text="Cancel" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="importBtn" mnemonicParsing="false" onAction="#handleImportBtnClicked" prefHeight="24.0" prefWidth="110.0" styleClass="normalButton" text="Import" visible="false" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="130.0" />
+      <Button fx:id="backBtn" mnemonicParsing="false" onAction="#handleBackBtnClicked" prefHeight="24.0" prefWidth="110.0" styleClass="normalButton" text="Back" visible="false" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="250.0" />
+   </children>
+</AnchorPane>

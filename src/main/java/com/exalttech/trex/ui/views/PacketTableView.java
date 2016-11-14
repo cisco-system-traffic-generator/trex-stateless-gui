@@ -26,13 +26,12 @@ import com.exalttech.trex.ui.components.CheckBoxTableViewCell;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell.CheckBoxTableChangeHandler;
 import com.exalttech.trex.ui.controllers.PacketBuilderHomeController;
 import com.exalttech.trex.ui.controllers.ProfileStreamNameDialogController;
-import com.exalttech.trex.ui.controllers.ImportPcapController;
+import com.exalttech.trex.ui.controllers.ImportPcapWizardController;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.views.models.TableProfile;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.ui.views.streamtable.StreamTableAction;
 import com.exalttech.trex.ui.views.streamtable.StreamTableButton;
-import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.FileManager;
@@ -50,6 +49,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -328,7 +328,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     public void handleDeletePacket() {
         try {
             List<Profile> removedProfileList = new ArrayList<>();
-            if (Util.isConfirmed("Are you sure you want to delete this stream?")) {
+            if (Util.isConfirmed("Are you sure you want to delete this stream?") && canDeleteStreams()) {
                 for (int index : streamPacketTableView.getSelectionModel().getSelectedIndices()) {
                     removedProfileList.add(tabledata.getProfiles().get(index));
                 }
@@ -338,13 +338,31 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 if (tableUpdateHandler != null) {
                     tableUpdateHandler.onStreamTableChanged();
                 }
-
             }
         } catch (IOException ex) {
             LOG.error("Error deleting stream", ex);
         }
     }
 
+    /**
+     * Check whether selected stream is linked to another streams
+     * @return 
+     */
+    private boolean canDeleteStreams(){
+        boolean safeDelete = true;
+        for(TableProfileStream selectedStream:streamPacketTableView.getSelectionModel().getSelectedItems()){
+            for(Profile profile:tabledata.getProfiles()){
+                if(profile.getNext().equals(selectedStream.getName())){
+                    Alert errorMsg = Util.getAlert(Alert.AlertType.ERROR);
+                    errorMsg.setContentText("Can't delete linked packets");
+                    errorMsg.showAndWait();
+                    return false;
+                }
+            }
+        }
+        return safeDelete;
+    }
+    
     /**
      * Export stream to pcap file
      */
@@ -376,17 +394,14 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     private void hanldeImportPcap() {
         try {
-            String loadFolderPath = PreferencesManager.getInstance().getLoadLocation();
+            // open import dialog
+            setStreamEditingWindowOpen(true);
             Stage owner = (Stage) streamPacketTableView.getScene().getWindow();
-            File pcapFile = FileManager.getSelectedFile("Open Pcap File", "", owner, FileType.PCAP, loadFolderPath, false);
-            if (pcapFile != null) {
-                // open import dialog
-                setStreamEditingWindowOpen(true);
-                DialogWindow importPcapWindow = new DialogWindow("ImportPcap.fxml", "Import Pcap", 100, 100, false, owner);
-                ImportPcapController importController = (ImportPcapController) importPcapWindow.getController();
-                importController.loadPcap(pcapFile, tabledata.getProfiles(), tabledata.getYamlFileName());
-                importPcapWindow.show(true);
-            }
+            DialogWindow importPcapWindow = new DialogWindow("ImportPcapWizard.fxml", "   Import Pcap", 60, 80, false, owner);
+            ImportPcapWizardController importController = (ImportPcapWizardController) importPcapWindow.getController();
+            importController.initWizard(tabledata.getProfiles(), tabledata.getYamlFileName());
+            importPcapWindow.show(true);
+
         } catch (Exception ex) {
             LOG.error("Error loading pcap file", ex);
         }

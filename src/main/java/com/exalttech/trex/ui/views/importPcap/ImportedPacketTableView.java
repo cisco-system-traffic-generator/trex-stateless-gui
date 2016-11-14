@@ -3,32 +3,33 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.exalttech.trex.ui.controllers;
+package com.exalttech.trex.ui.views.importPcap;
 
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.components.TextFieldTableViewCell;
-import com.exalttech.trex.ui.components.TextFieldTableViewCell.EnteredValueHandler;
-import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.PacketInfo;
 import com.exalttech.trex.ui.views.models.ImportPcapTableData;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
+import com.exalttech.trex.ui.views.streams.builder.VMInstructionBuilder;
+import com.exalttech.trex.ui.views.streams.builder.VMInstructionBuilder.InstructionType;
 import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
 import java.io.EOFException;
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
@@ -36,23 +37,24 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapHandle;
+import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.Packet;
 
 /**
- * FXML Controller class
+ * Imported packet table view implementation
  *
  * @author GeorgeKH
  */
-public class ImportPcapController extends DialogView implements Initializable, EnteredValueHandler {
+public class ImportedPacketTableView extends AnchorPane implements TextFieldTableViewCell.EnteredValueHandler {
 
-    private static final Logger LOG = Logger.getLogger(ImportPcapController.class.getName());
+    private static final Logger LOG = Logger.getLogger(ImportedPacketTableView.class.getName());
 
     @FXML
     TableColumn selectedColumn;
@@ -86,33 +88,48 @@ public class ImportPcapController extends DialogView implements Initializable, E
     ObservableList<Integer> duplicateRowNames = FXCollections.observableArrayList();
 
     int index = 0;
+    ImportedPacketProperties propertiesBinder;
+    ImportPcapTableData firstPacket = null;
 
     /**
-     * Initializes the controller class.
+     * Constructor
      *
-     * @param url
-     * @param rb
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        trafficProfile = new TrafficProfile();
-        highlightedRowFactory = new HighlightedRowFactory<>(highlightRows);
-        initTableRowsColumns();
-
-    }
-
-    /**
-     * Load pcap file
-     *
-     * @param pcapFile
      * @param profilesList
      * @param yamlFileName
      */
-    public void loadPcap(File pcapFile, List<Profile> profilesList, String yamlFileName) {
+    public ImportedPacketTableView(List<Profile> profilesList, String yamlFileName) {
         this.profilesList = profilesList;
         this.yamlFileName = yamlFileName;
-        extractExistingNames();
-        parsePcapFile(pcapFile);
+        trafficProfile = new TrafficProfile();
+        highlightedRowFactory = new HighlightedRowFactory<>(highlightRows);
+        initView();
+    }
+
+    /**
+     * Initialize view
+     */
+    private void initView() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ImportedPacketTableView.fxml"));
+            fxmlLoader.setRoot(this);
+            fxmlLoader.setController(this);
+            fxmlLoader.load();
+
+            initTableRowsColumns();
+            extractExistingNames();
+        } catch (Exception ex) {
+            LOG.error("Error setting UI", ex);
+        }
+    }
+
+    /**
+     * Set properties binder model
+     *
+     * @param propertiesBinder
+     */
+    public void setPropertiesBinder(ImportedPacketProperties propertiesBinder) {
+        this.propertiesBinder = propertiesBinder;
+        PacketUpdater.getInstance().setImportedProperties(propertiesBinder);
     }
 
     /**
@@ -167,26 +184,34 @@ public class ImportPcapController extends DialogView implements Initializable, E
      * Parse pcap file to get all streams
      *
      * @param pcapFile
+     * @return
      */
-    private void parsePcapFile(File pcapFile) {
+    public boolean setPcapFile(File pcapFile) {
         List<PacketInfo> packetInfoList = new ArrayList<>();
         try {
+            PacketUpdater.getInstance().reset();
             PcapHandle handler = Pcaps.openOffline(pcapFile.getAbsolutePath());
             PacketParser parser = new PacketParser();
             Packet packet;
             while ((packet = handler.getNextPacketEx()) != null) {
+                if (!PacketUpdater.getInstance().validatePacket(packet)) {
+                    break;
+                }
                 PacketInfo packetInfo = new PacketInfo();
+                packet = PacketUpdater.getInstance().updatePacketSrcDst(packet);
                 packetInfo.setPacket(packet);
+                packetInfo.setTimeStamp(handler.getTimestamp().getTime());
                 parser.parsePacket(packet, packetInfo);
                 packetInfoList.add(packetInfo);
             }
-
         } catch (EOFException e) {
             LOG.info("End of pcap file");
-        } catch (Exception ex) {
+
+        } catch (PcapNativeException | TimeoutException | NotOpenException ex) {
             LOG.error("Error parsing selectd pcap file", ex);
         }
         setTableData(packetInfoList);
+        return PacketUpdater.getInstance().isValidPacket();
     }
 
     /**
@@ -196,7 +221,8 @@ public class ImportPcapController extends DialogView implements Initializable, E
      */
     private void setTableData(List<PacketInfo> packetInfoList) {
 
-        int index = 1;
+        index = 1;
+        tableDataList.clear();
         for (PacketInfo packetInfo : packetInfoList) {
             ImportPcapTableData tableData = new ImportPcapTableData();
             tableData.setName("packet_" + index);
@@ -208,39 +234,28 @@ public class ImportPcapController extends DialogView implements Initializable, E
             tableData.setIpDst(packetInfo.getDestIpv4());
             tableData.setPacketType(trafficProfile.getPacketTypeText(packetInfo.getPacket()).getType());
             tableData.setPacket(packetInfo.getPacket());
+            tableData.setHasVlan(packetInfo.hasVlan());
+            tableData.setTimeStamp(packetInfo.getTimeStamp());
             tableDataList.add(tableData);
             index++;
         }
         importedStreamTable.setItems(tableDataList);
     }
 
-    @Override
-    public void onEnterKeyPressed(Stage stage) {
-        // nothing to do
-    }
-
     /**
-     * Handle cancel button clicked
+     * Import pcap to current yaml file
      *
-     * @param event
+     * @return
      */
-    @FXML
-    public void handleCancelButtonClicked(ActionEvent event) {
-        closeDialog();
-    }
-
-    /**
-     * Handle save button clicked
-     *
-     * @param event
-     */
-    @FXML
-    public void handleSaveButtonClicked(ActionEvent event) {
+    public boolean doImport() {
         try {
             if (validateStreamNames()) {
                 index = 0;
                 ImportPcapTableData current = getNextSelectedPacket();
+                firstPacket = current;
                 ImportPcapTableData next = null;
+                boolean firstStream = true;
+                long diffTimeStamp = 1;
                 while (index <= tableDataList.size()) {
                     if (current != null) {
                         Profile profile = new Profile();
@@ -248,11 +263,24 @@ public class ImportPcapController extends DialogView implements Initializable, E
                         profile.getStream().getMode().setType("single_burst");
                         String hexDataString = PacketBuilderHelper.getPacketHex(current.getPacket().getRawData());
                         profile.getStream().getPacket().setBinary(trafficProfile.encodeBinaryFromHexString(hexDataString));
+
+                        // add vm
+                        profile.getStream().setAdditionalProperties(getVm(current));
+                        // update pps/ISG
+                        defineISG_PPSValues(profile, getIpg(diffTimeStamp, firstStream));
+                        if (firstStream) {
+                            firstStream = false;
+                        }
                         // get next stream 
                         next = getNextSelectedPacket();
                         if (next != null && next != current) {
                             profile.setNext(next.getName());
+                            diffTimeStamp = next.getTimeStamp() - current.getTimeStamp();
+                        } else if (propertiesBinder.getCount() > 0) {
+                            profile.setNext(firstPacket.getName());
+                            profile.getStream().setActionCount(propertiesBinder.getCount());
                         }
+
                         current = next;
                         profilesList.add(profile);
                     }
@@ -261,21 +289,21 @@ public class ImportPcapController extends DialogView implements Initializable, E
                 // save yaml data
                 String yamlData = trafficProfile.convertTrafficProfileToYaml(profilesList.toArray(new Profile[profilesList.size()]));
                 FileUtils.writeStringToFile(new File(yamlFileName), yamlData);
-
-                // close dialog
-                closeDialog();
+                return true;
             }
         } catch (Exception ex) {
             LOG.error("Error saving Yaml file", ex);
         }
+        return false;
     }
 
     /**
      * Get next selected stream
-     * @return 
+     *
+     * @return
      */
-    private ImportPcapTableData getNextSelectedPacket() { 
-        if(index == tableDataList.size()){
+    private ImportPcapTableData getNextSelectedPacket() {
+        if (index == tableDataList.size()) {
             index++;
             return null;
         }
@@ -318,14 +346,6 @@ public class ImportPcapController extends DialogView implements Initializable, E
     }
 
     /**
-     * Close import dialog
-     */
-    private void closeDialog() {
-        Stage currentStage = (Stage) importedStreamTable.getScene().getWindow();
-        currentStage.fireEvent(new WindowEvent(currentStage, WindowEvent.WINDOW_CLOSE_REQUEST));
-    }
-
-    /**
      * Validate entered text
      *
      * @param item
@@ -346,6 +366,86 @@ public class ImportPcapController extends DialogView implements Initializable, E
 
                 }
             }
+        }
+    }
+
+    /**
+     * Build vm instructions for source/destination ipv4 
+     * @param packetData
+     * @return 
+     */
+    public Map<String, Object> getVm(ImportPcapTableData packetData) {
+        VMInstructionBuilder vmInstructionBuilder = new VMInstructionBuilder(packetData.hasVlan(), packetData.getPacketType().indexOf("UDP") != -1);
+        ArrayList<Object> instructionsList = new ArrayList<>();
+
+        if (propertiesBinder.isDestinationEnabled()) {
+            instructionsList.addAll(vmInstructionBuilder.addVmInstruction(getInstructionType(packetData, propertiesBinder.getDstAddress()),
+                    propertiesBinder.getDstMode(), propertiesBinder.getDstCount(), "1", propertiesBinder.getDstAddress()));
+        }
+        if (propertiesBinder.isSourceEnabled()) {
+            instructionsList.addAll(vmInstructionBuilder.addVmInstruction(getInstructionType(packetData, propertiesBinder.getSrcAddress()),
+                    propertiesBinder.getSrcMode(), propertiesBinder.getSrcCount(), "1", propertiesBinder.getSrcAddress()));
+        }
+
+        // add ipv4 checksum instructions
+        instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
+
+        Map<String, Object> additionalProperties = new HashMap<>();
+
+        LinkedHashMap<String, Object> vmBody = new LinkedHashMap<>();
+        vmBody.put("split_by_var", vmInstructionBuilder.getSplitByVar());
+        vmBody.put("instructions", instructionsList);
+
+        // add cache size
+        vmInstructionBuilder.addCacheSize(vmBody);
+
+        additionalProperties.put("vm", vmBody);
+
+        return additionalProperties;
+    }
+
+    /**
+     * Return instruction type according to place of selected address
+     * @param packetData
+     * @param ipAddress
+     * @return 
+     */
+    private InstructionType getInstructionType(ImportPcapTableData packetData, String ipAddress) {
+        if (ipAddress.equals(packetData.getIpSrc())) {
+            return InstructionType.IP_SRC;
+        }
+        return InstructionType.IP_DST;
+    }
+
+    /**
+     * Define ISG/PPS values
+     * @param profile
+     * @param ipg 
+     */
+    private void defineISG_PPSValues(Profile profile, double ipg) {
+        profile.getStream().setIsg(ipg * 1000);
+        if (ipg == 0) {
+            ipg = 1;
+        }
+        profile.getStream().getMode().setPps(Double.parseDouble(Util.formatDecimal(1 / ipg)));
+    }
+
+    /**
+     * Calculate and return IPG value
+     * @param diffTimestamp
+     * @param firstStream
+     * @return 
+     */
+    private double getIpg(long diffTimestamp, boolean firstStream) {
+        if (propertiesBinder.isIPGSelected()) {
+            return propertiesBinder.getIpg();
+
+        } else if (firstStream) {
+            return 1;
+        } else {
+            double ipg_usage = (double) diffTimestamp / 1000;
+            double ipg = ipg_usage / propertiesBinder.getSpeedup();
+            return ipg;
         }
     }
 
@@ -387,12 +487,12 @@ public class ImportPcapController extends DialogView implements Initializable, E
             return row;
         }
 
-        ;
-            /**
-             * Update row higlighted style
-             * @param row 
-             */
-            private void updateRowStyle(TableRow row) {
+        /**
+         * Update row higlighted style
+         *
+         * @param row
+         */
+        private void updateRowStyle(TableRow row) {
             if (row != null && row.getItem() != null) {
                 row.getStyleClass().remove("highlightedRow");
                 int index = ((ImportPcapTableData) row.getItem()).getIndex();

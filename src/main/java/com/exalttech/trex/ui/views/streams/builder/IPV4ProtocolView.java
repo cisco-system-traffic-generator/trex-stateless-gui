@@ -215,33 +215,4 @@ public class IPV4ProtocolView extends AbstractProtocolView {
         dstCount.textProperty().bindBidirectional(ipv4DB.getDestination().getCountProperty());
     }
 
-    /**
-     * Enumerator presents IPV4 type
-     */
-    private enum IPV4Type {
-        FIXED("Fixed"),
-        INCREMENT_HOST("Increment Host"),
-        DECREMENT_HOST("Decrement Host"),
-        RANDOM_HOST("Random Host");
-
-        String title;
-
-        /**
-         * Constructor
-         *
-         * @param title
-         */
-        private IPV4Type(String title) {
-            this.title = title;
-        }
-
-        /**
-         * Return displayed type title
-         *
-         * @return
-         */
-        public String getTitle() {
-            return title;
-        }
-    }
 }
