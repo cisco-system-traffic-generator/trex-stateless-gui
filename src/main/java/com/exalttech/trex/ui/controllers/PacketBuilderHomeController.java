@@ -24,6 +24,7 @@ import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.PacketInfo;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
+import com.exalttech.trex.ui.views.streams.builder.CacheSize;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.viewer.PacketHex;
 import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
@@ -31,7 +32,6 @@ import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.inject.Inject;
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
 import javafx.event.ActionEvent;
@@ -50,14 +50,13 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.ResourceBundle;
 
 
 /**
@@ -112,8 +111,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     Tab protocolSelectionTab;
     @FXML
     Tab protocolDataTab;
-    @FXML
-    Tab advanceSettingsTab;
+    
     @FXML
     AdvancedSettingsController advancedSettingsController;
     @FXML
@@ -149,7 +147,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         trafficProfile = new TrafficProfile();
-        packetHex = new PacketHex(hexPane);
         nextStreamBtn.setGraphic(new ImageView(new Image("/icons/next_stream.png")));
         prevStreamBtn.setGraphic(new ImageView(new Image("/icons/prev_stream.png")));
         packetInfo = new PacketInfo();
@@ -159,11 +156,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     /**
      * Initialize stream builder view
      *
-     * @param pcapFileBinary
+     * @param selectedStream
      * @param profileList
      * @param selectedProfileIndex
      * @param yamlFileName
-     * @param type
      */
     public void initStreamBuilder(TableProfileStream selectedStream, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
         packetBuilderController.initAcceleratorsHandler(windowContainer.getScene());
@@ -176,9 +172,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         updateNextPrevButtonState();
         packetBuilderController.reset();
         switch (type) {
-            case ADD_STREAM:
-                hideStreamBuilderTab();
-                break;
             case BUILD_STREAM:
                 initStreamBuilder(new BuilderDataBinding());
                 break;
@@ -189,7 +182,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 break;
         }
     }
-
+    
     /**
      * Initialize Edit stream builder in case of edit
      *
@@ -338,6 +331,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     @FXML
     public void nextStreamBtnClicked(ActionEvent event) {
+        saveStream();
         nextStreamBtn.setDisable(true);
         loadProfile(true);
     }
@@ -349,6 +343,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     @FXML
     public void prevStreamBtnClick(ActionEvent event) {
+        saveStream();
         prevStreamBtn.setDisable(true);
         loadProfile(false);
     }
@@ -381,12 +376,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     private void resetTabs() {
         streamTabPane.getTabs().clear();
-        streamTabPane.getTabs().add(streamPropertiesTab);
-        streamTabPane.getTabs().add(packetViewerTab);
-        streamTabPane.getTabs().add(protocolSelectionTab);
-        streamTabPane.getTabs().add(protocolDataTab);
-        streamTabPane.getTabs().add(advanceSettingsTab);
-        streamTabPane.getTabs().add(packetViewerWithTreeTab);
+        streamTabPane.getTabs().addAll(streamPropertiesTab, packetViewerTab);
     }
 
     /**
@@ -395,8 +385,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void updateNextPrevButtonState() {
         nextStreamBtn.setDisable((currentSelectedProfileIndex >= profileList.size() - 1));
         prevStreamBtn.setDisable((currentSelectedProfileIndex == 0));
-//        nextBtnCLicked = false;
-//        prevBtnCLicked = false;
     }
 
     /**
@@ -412,7 +400,13 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         stage.setTitle(windowTitle);
 
         streamPropertiesController.init(profileList, currentSelectedProfileIndex);
-        initEditStream(selectedProfile.getStream().getPacket().getBinary());
+        Stream stream = selectedProfile.getStream();
+        Packet packet = stream.getPacket();
+        String pktModel = packet.getModel();
+        if(!StringUtils.isEmpty(pktModel)) {
+            packetBuilderController.loadUserModel(pktModel);
+        }
+        
     }
 
     /**
@@ -431,7 +425,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             hexPacket = packetHex.getPacketHexFromList();
         } else if (isBuildPacket) {
             hexPacket = PacketBuilderHelper.getPacketHex(protocolDataController.getProtocolData().getPacket().getRawData());
-            stream.setAdditionalProperties(protocolDataController.getVm());
+            stream.setAdditionalProperties(protocolDataController.getVm(new CacheSize()));
             stream.setFlags(protocolDataController.getFlagsValue());
             // save stream selected in stream property
             packet.setMeta(Util.serializeObjectToString(builderDataBinder));

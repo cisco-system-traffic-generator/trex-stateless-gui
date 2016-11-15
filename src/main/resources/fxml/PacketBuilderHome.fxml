@@ -44,6 +44,11 @@
                         </AnchorPane>
                     </content>
                 </Tab>
+                <Tab fx:id="packetViewerTab" style=" " text="Packet Editor">
+                    <content>
+                        <fx:include source="/com/xored/javafx/packeteditor/controllers/app_emedded.fxml"/>
+                    </content>
+                </Tab>
                 <Tab fx:id="advanceSettingsTab" text="Advanced Settings">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -51,11 +56,6 @@
                                 <fx:include fx:id="advancedSettings" source="AdvancedSettings.fxml" />
                             </children>
                         </AnchorPane>
-                    </content>
-                </Tab>
-                <Tab fx:id="packetViewerTab" style=" " text="Packet Editor">
-                    <content>
-                        <fx:include source="/com/xored/javafx/packeteditor/controllers/app_emedded.fxml"/>
                     </content>
                 </Tab>
             </tabs>

@@ -544,29 +544,18 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     private void openStreamDialog(StreamBuilderType type) {
         try {
-            TableProfileStream data = streamPacketTableView.getSelectionModel().getSelectedItem();
-            if ("0".equals(data.getLength()) && !Util.isConfirmed("Problem reading file, Do you want to continue anyway ?")) {
+            TableProfileStream selectedStream = streamPacketTableView.getSelectionModel().getSelectedItem();
+            if ("0".equals(selectedStream.getLength()) && !Util.isConfirmed("Problem reading file, Do you want to continue anyway ?")) {
                 return;
             }
             setStreamEditingWindowOpen(true);
             Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
-            String windowTitle = "Edit Stream (" + data.getName() + ")";
+            String windowTitle = "Edit Stream (" + selectedStream.getName() + ")";
             DialogWindow srteamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
             PacketBuilderHomeController controller = (PacketBuilderHomeController) srteamWindow.getController();
-            switch (type) {
-                case EDIT_STREAM:
-                    controller.initStreamBuilder(data, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.EDIT_STREAM);
-                    break;
-                case ADD_STREAM:
-                    controller.initStreamBuilder(null, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.ADD_STREAM);
-                    break;
-                case BUILD_STREAM:
-                    controller.initStreamBuilder(null, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.BUILD_STREAM);
-                    break;
-                default:
-                    break;
-            }
 
+            controller.initStreamBuilder(selectedStream, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), type);
+            
             srteamWindow.show(true);
         } catch (IOException ex) {
             LOG.error("Error opening file", ex);
