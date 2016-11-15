@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'application'
 
 group = 'com.exalttech'
-version = '2.09-SNAPSHOT'
+version = '2.10-SNAPSHOT'
 
 description = """TRex Stateless GUI Application"""
 
@@ -50,3 +50,24 @@ dependencies {
     testCompile group: 'org.testfx', name: 'testfx-junit', version:'4.0.4-alpha'
 }
 
+
+apply plugin: 'javafx-gradle-plugin'
+
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.7.0'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+
+    }
+}
+
+jfx {
+    mainClass = mainClassName
+    jfxMainAppJarName = "TRexStatelessGUI.jar"
+    appName = "TRex Stateless GUI"
+    nativeReleaseVersion = version
+    vendor = 'Xored Software Inc.'
+}
