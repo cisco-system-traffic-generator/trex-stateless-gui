@@ -52,7 +52,7 @@ import org.pcap4j.packet.Packet;
  *
  * @author GeorgeKH
  */
-public class ImportedPacketTableView extends AnchorPane implements TextFieldTableViewCell.EnteredValueHandler {
+public class ImportedPacketTableView extends AnchorPane {
 
     private static final Logger LOG = Logger.getLogger(ImportedPacketTableView.class.getName());
 
@@ -85,8 +85,7 @@ public class ImportedPacketTableView extends AnchorPane implements TextFieldTabl
     ObservableList<Integer> highlightRows = FXCollections.observableArrayList();
     CheckBox selectAll;
     HighlightedRowFactory<ImportPcapTableData> highlightedRowFactory;
-    ObservableList<Integer> duplicateRowNames = FXCollections.observableArrayList();
-
+    Map<String, ImportPcapTableData> duplicateRowNamesMap = new HashMap<>();
     int index = 0;
     ImportedPacketProperties propertiesBinder;
     ImportPcapTableData firstPacket = null;
@@ -148,7 +147,7 @@ public class ImportedPacketTableView extends AnchorPane implements TextFieldTabl
         selectedColumn.setGraphic(selectAll);
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        nameColumn.setCellFactory(new TextFieldTableViewCell(this));
+        nameColumn.setCellFactory(new TextFieldTableViewCell());
 
         packetNumColumn.setCellValueFactory(new PropertyValueFactory<>("index"));
         lengthColumn.setCellValueFactory(new PropertyValueFactory<>("length"));
@@ -321,23 +320,32 @@ public class ImportedPacketTableView extends AnchorPane implements TextFieldTabl
      * @return
      */
     private boolean validateStreamNames() {
-        boolean validNames = true;
-        ObservableList<Integer> errorRows = FXCollections.observableArrayList();
+
+        ObservableList<Integer> duplicateIndexesList = FXCollections.observableArrayList();
+        duplicateRowNamesMap.clear();
         // validate saved stream names
         for (ImportPcapTableData tableData : tableDataList) {
-            if (tableData.isSelected() && (existingNamesList.contains(tableData.getName()) || Util.isNullOrEmpty(tableData.getName().trim()))) {
-                validNames = false;
-                errorRows.add(tableData.getIndex());
+            if (tableData.isSelected()) {
+                // comparing with existing streams
+                if ((existingNamesList.contains(tableData.getName()) || Util.isNullOrEmpty(tableData.getName().trim()))) {
+                    addDuplicateIndex(duplicateIndexesList, tableData);
+                }
+                // compairing with other streams in list
+                if (duplicateRowNamesMap.get(tableData.getName()) != null) {
+                    // name is duplicate
+                    addDuplicateIndex(duplicateIndexesList, tableData);
+                    addDuplicateIndex(duplicateIndexesList, duplicateRowNamesMap.get(tableData.getName()));
+                } else {
+                    // add existing names in imported table
+                    duplicateRowNamesMap.put(tableData.getName(), tableData);
+                }
             }
         }
 
-        // validate current list names
-        if (!duplicateRowNames.isEmpty()) {
-            errorRows.addAll(duplicateRowNames);
+        highlightedRowFactory.getRowsToHighlight().setAll(duplicateIndexesList);
+        boolean validNames = true;
+        if (!duplicateIndexesList.isEmpty()) {
             validNames = false;
-        }
-        highlightedRowFactory.getRowsToHighlight().setAll(errorRows);
-        if (!validNames) {
             Alert alert = Util.getAlert(Alert.AlertType.ERROR);
             alert.setContentText("Some packet names (highlighted in red) have the same names of exisiting packets !");
             alert.showAndWait();
@@ -346,33 +354,21 @@ public class ImportedPacketTableView extends AnchorPane implements TextFieldTabl
     }
 
     /**
-     * Validate entered text
-     *
-     * @param item
+     * Add index to duplicate list
+     * @param duplicateIndexesList
+     * @param tableData 
      */
-    @Override
-    public void validateEnteredValue(Object item) {
-        if (item != null) {
-            ImportPcapTableData updatedRow = (ImportPcapTableData) item;
-            if (duplicateRowNames.contains(updatedRow.getIndex())) {
-                int index = duplicateRowNames.indexOf(updatedRow.getIndex());
-                duplicateRowNames.remove(index);
-            }
-            for (ImportPcapTableData tableDataRow : tableDataList) {
-                if (updatedRow.getName().trim().equals(tableDataRow.getName().trim()) && updatedRow.getIndex() != tableDataRow.getIndex()) {
-                    if (!duplicateRowNames.contains(updatedRow.getIndex())) {
-                        duplicateRowNames.add(updatedRow.getIndex());
-                    }
-
-                }
-            }
+    private void addDuplicateIndex(ObservableList<Integer> duplicateIndexesList,ImportPcapTableData tableData ){
+        if(!duplicateIndexesList.contains(tableData.getIndex())){
+            duplicateIndexesList.add(tableData.getIndex());
         }
     }
-
+    
     /**
-     * Build vm instructions for source/destination ipv4 
+     * Build vm instructions for source/destination ipv4
+     *
      * @param packetData
-     * @return 
+     * @return
      */
     public Map<String, Object> getVm(ImportPcapTableData packetData) {
         VMInstructionBuilder vmInstructionBuilder = new VMInstructionBuilder(packetData.hasVlan(), packetData.getPacketType().indexOf("UDP") != -1);
@@ -406,9 +402,10 @@ public class ImportedPacketTableView extends AnchorPane implements TextFieldTabl
 
     /**
      * Return instruction type according to place of selected address
+     *
      * @param packetData
      * @param ipAddress
-     * @return 
+     * @return
      */
     private InstructionType getInstructionType(ImportPcapTableData packetData, String ipAddress) {
         if (ipAddress.equals(packetData.getIpSrc())) {
@@ -419,8 +416,9 @@ public class ImportedPacketTableView extends AnchorPane implements TextFieldTabl
 
     /**
      * Define ISG/PPS values
+     *
      * @param profile
-     * @param ipg 
+     * @param ipg
      */
     private void defineISG_PPSValues(Profile profile, double ipg) {
         profile.getStream().setIsg(ipg * 1000);
@@ -432,9 +430,10 @@ public class ImportedPacketTableView extends AnchorPane implements TextFieldTabl
 
     /**
      * Calculate and return IPG value
+     *
      * @param diffTimestamp
      * @param firstStream
-     * @return 
+     * @return
      */
     private double getIpg(long diffTimestamp, boolean firstStream) {
         if (propertiesBinder.isIPGSelected()) {
