@@ -192,7 +192,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     ImageView devicesTreeArrowContainer;
     @FXML
     SplitPane mainViewSplitPanel;
-    
+
     private ContextMenu rightClickPortMenu;
     private ContextMenu rightClickProfileMenu;
     private ContextMenu rightClickGlobalMenu;
@@ -226,10 +226,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     private int lastLoadedPortPtofileIndex = -1;
     private boolean profileLoaded = false;
-    
+
     private Image leftArrow;
     private Image rightArrow;
     private boolean treeviewOpened = true;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         portManager = PortsManager.getInstance();
@@ -401,25 +402,25 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleTreeClicked(MouseEvent mouseEvent) {
-        
+
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
             // mouse left button clicked
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 viewTreeContextMenu(selected);
             }
-            
+
         }
     }
 
     /**
      * Handle treeitem selection changed
      */
-    private void handleTreeItemSelectionChanged(){
+    private void handleTreeItemSelectionChanged() {
         updateHeaderBtnStat();
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            
+
             if (profileLoaded) {
                 updateCurrentProfileMultiplier();
             }
@@ -458,9 +459,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
         }
     }
-    
+
     /**
      * View treeitem context menu
+     *
      * @param selected
      */
     private void viewTreeContextMenu(CustomTreeItem selected) {
@@ -755,13 +757,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             File selectedFile = new File(ProfileManager.getInstance().getProfileFilePath(fileName));
             loadedProfiles = tableView.loadStreamTable(selectedFile);
 
-            allStreamWithLatency = true;
-            for (Profile profile : loadedProfiles) {
-                allStreamWithLatency = allStreamWithLatency && profile.getStream().getFlowStats().isEnabled();
+            allStreamWithLatency = false;
+            if (loadedProfiles.length > 0) {
+                allStreamWithLatency = true;
+                for (Profile profile : loadedProfiles) {
+                    allStreamWithLatency = allStreamWithLatency && profile.getStream().getFlowStats().isEnabled();
+                }
             }
             multiplierView.setDisable(allStreamWithLatency);
             notificationPanelHolder.setVisible(allStreamWithLatency);
-
         } catch (Exception ex) {
             LOG.error("Error loading stream table", ex);
         }
@@ -842,7 +846,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             @Override
             public void handle(WindowEvent event) {
                 // handle aplpication close
-                 DialogManager.getInstance().closeAll();
+                DialogManager.getInstance().closeAll();
                 handleAppClose();
             }
         });
@@ -897,13 +901,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 doUpdateAssignedProfile();
             }
         });
-        
-        devicesTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
+
+        devicesTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 handleTreeItemSelectionChanged();
             }
-            
+
         });
     }
 
@@ -1611,22 +1615,24 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         acquirePort.setDisable(!(!forceDisable && portManager.isPortFree(selectedPort)));
         releasePort.setDisable(!(!forceDisable && portManager.isCurrentUserOwner(selectedPort)));
     }
+
     /**
      * Handle devicestree arrow clicking
-     * @param event 
+     *
+     * @param event
      */
     @FXML
-    public void handleDevicesTreeArrowClicked(MouseEvent event){
-        if(treeviewOpened){
+    public void handleDevicesTreeArrowClicked(MouseEvent event) {
+        if (treeviewOpened) {
             mainViewSplitPanel.setDividerPosition(0, 0);
             devicesTreeArrowContainer.setImage(rightArrow);
-        }else{
+        } else {
             mainViewSplitPanel.setDividerPosition(0, 1);
             devicesTreeArrowContainer.setImage(leftArrow);
         }
         treeviewOpened = !treeviewOpened;
     }
-    
+
     /**
      * Enumerator that present async stats data type
      */
