@@ -98,11 +98,11 @@ public class ImportedPacketPropertiesView extends AnchorPane {
      */
     private void bindProperties() {
         dstAddressTF.disableProperty().bind(dstEnabledCB.selectedProperty().not());
-        dstCountTF.disableProperty().bind(dstEnabledCB.selectedProperty().not());
+        dstCountTF.disableProperty().bind(dstEnabledCB.selectedProperty().not().or(dstModeCB.valueProperty().isEqualTo("Fixed")));
         dstModeCB.disableProperty().bind(dstEnabledCB.selectedProperty().not());
 
         srcAddressTF.disableProperty().bind(srcEnabledCB.selectedProperty().not());
-        srcCountTF.disableProperty().bind(srcEnabledCB.selectedProperty().not());
+        srcCountTF.disableProperty().bind(srcEnabledCB.selectedProperty().not().or(srcModeCB.valueProperty().isEqualTo("Fixed")));
         srcModeCB.disableProperty().bind(srcEnabledCB.selectedProperty().not());
 
         speedupTF.disableProperty().bind(speedupRB.selectedProperty().not());
@@ -148,7 +148,7 @@ public class ImportedPacketPropertiesView extends AnchorPane {
         srcCountTF.setTextFormatter(new TextFormatter<>(unitFormatter));
         dstCountTF.setTextFormatter(new TextFormatter<>(unitFormatter));
 
-        countTF.setTextFormatter(Util.getNumberFilter(4));
+        countTF.setTextFormatter(Util.getNumberFilter(5));
 
         UnaryOperator<TextFormatter.Change> digitsFormatter = Util.getTextChangeFormatter(digitsRegex());
         speedupTF.setTextFormatter(new TextFormatter<>(digitsFormatter));

@@ -127,7 +127,7 @@ public class VMInstructionBuilder {
      * @param count
      */
     private void updateVMCacheSize(String count) {
-        int size = Util.getIntFromString(count);
+        long size = (long)Util.convertUnitToNum(count);
         CacheSize.CacheSizeType type = getCacheSize().getType();
         if (type != CacheSize.CacheSizeType.DISABLE && size < getCacheSize().getCacheValue() && vmCacheSize == 0) {
             vmCacheSize = 255;
