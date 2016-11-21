@@ -328,7 +328,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     public void handleDeletePacket() {
         try {
             List<Profile> removedProfileList = new ArrayList<>();
-            if (Util.isConfirmed("Are you sure you want to delete this stream?") && canDeleteStreams()) {
+            if (Util.isConfirmed("Are you sure you want to delete this streams?") && canDeleteStreams()) {
                 for (int index : streamPacketTableView.getSelectionModel().getSelectedIndices()) {
                     removedProfileList.add(tabledata.getProfiles().get(index));
                 }
@@ -353,10 +353,8 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         for(TableProfileStream selectedStream:streamPacketTableView.getSelectionModel().getSelectedItems()){
             for(Profile profile:tabledata.getProfiles()){
                 if(profile.getNext().equals(selectedStream.getName())){
-                    Alert errorMsg = Util.getAlert(Alert.AlertType.ERROR);
-                    errorMsg.setContentText("Can't delete linked packets");
-                    errorMsg.showAndWait();
-                    return false;
+                    return Util.isConfirmed("Some streams is linked to others, Do you want to continue?");
+                    
                 }
             }
         }
