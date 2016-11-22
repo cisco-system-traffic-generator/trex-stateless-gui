@@ -483,6 +483,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             assignedProf.setHasDuration(multiplierView.isDurationEnable());
             updateMultiplierValues(assignedProf);
         }
+        if (!updateBtn.isDisabled()) {
+            doUpdateAssignedProfile(lastLoadedPortPtofileIndex);
+        }
     }
 
     /**
@@ -723,11 +726,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      *
      * @param profileName
      */
-    private void assignProfile(String profileName, double currentBandwidth, boolean assignPrevBandwidth) {
+    private void assignProfile(String profileName, double currentBandwidth, boolean assignPrevBandwidth, int portID) {
         try {
-            int portID = getSelectedPortIndex();
             // update selected profile
-            AssignedProfile assignedProf = assignedPortProfileMap.get(getSelectedPortIndex());
+            AssignedProfile assignedProf = assignedPortProfileMap.get(portID);
             assignedProf.setProfileName(profileName);
             assignedProf.setAllStreamsWithLatency(allStreamWithLatency);
             StreamValidation streamValidationGraph = serverRPCMethods.assignTrafficProfile(portID, loadedProfiles);
@@ -795,7 +797,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     loadStreamTable(profileName);
                     if (loadedProfiles.length > 0 && doAssignProfile) {
                         // assign profile to selected port
-                        assignProfile(profileName, 0, false);
+                        assignProfile(profileName, 0, false, getSelectedPortIndex());
                     }
 
                     doAssignProfile = true;
@@ -898,7 +900,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             int count = (int) event.getSource().getValue();
             countdownValue.setText(String.valueOf(count) + " Sec");
             if (count == 0) {
-                doUpdateAssignedProfile();
+                doUpdateAssignedProfile(getSelectedPortIndex());
             }
         });
 
@@ -1096,7 +1098,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         LOG.trace("Clicked on the Stop Transit Button with selectedPort [" + portID + "]");
         if (portID > -1) {
             serverRPCMethods.stopPortTraffic(portID);
-            enableUpdateBtn(false, false);
+            if (!updateBtn.isDisabled() && !reAssign) {
+                enableUpdateBtn(false, false);
+            }
         }
     }
 
@@ -1261,22 +1265,22 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleUpdateBtnClicked(ActionEvent event) {
-        doUpdateAssignedProfile();
+        doUpdateAssignedProfile(getSelectedPortIndex());
     }
 
     /**
      * Update current port
      */
-    private void doUpdateAssignedProfile() {
+    private void doUpdateAssignedProfile(int portIndex) {
         try {
             if (reAssign) {
                 reAssign = false;
                 String assignedProfile = String.valueOf(profileListBox.getValue());
-                assignProfile(assignedProfile, multiplierView.getSliderValue(), true);
+                assignProfile(assignedProfile, multiplierView.getSliderValue(), true, portIndex);
             } else {
-                serverRPCMethods.updateTraffic(getSelectedPortIndex(), false, MultiplierType.pps.name(), multiplierView.getPPSValue());
+                serverRPCMethods.updateTraffic(portIndex, false, MultiplierType.pps.name(), multiplierView.getPPSValue());
                 // update assigned profile multiplier
-                AssignedProfile assignedProf = assignedPortProfileMap.get(getSelectedPortIndex());
+                AssignedProfile assignedProf = assignedPortProfileMap.get(portIndex);
                 updateMultiplierValues(assignedProf);
             }
         } catch (TrafficException ex) {
@@ -1408,10 +1412,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @param enable
      */
     private void enableUpdateBtn(boolean enableCounter, boolean enableUpdate) {
-        Port currentPort = portManager.getPortList().get(getSelectedPortIndex());
+        Port currentPort = portManager.getPortList().get(lastLoadedPortPtofileIndex);
         boolean enableUpdateBtn = enableUpdate && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
         boolean startCounting = enableCounter && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
         stopUpdateBtn.setVisible(startCounting);
+        countdownValue.setVisible(startCounting);
         updateBtn.setDisable(!enableUpdateBtn);
         if (startCounting) {
             countdownService.restart();
