@@ -49,7 +49,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -353,7 +352,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         for(TableProfileStream selectedStream:streamPacketTableView.getSelectionModel().getSelectedItems()){
             for(Profile profile:tabledata.getProfiles()){
                 if(profile.getNext().equals(selectedStream.getName())){
-                    return Util.isConfirmed("Some streams is linked to others, Do you want to continue?");
+                    return Util.isConfirmed("Some streams are linked to others. Do you want to continue?");
                     
                 }
             }
