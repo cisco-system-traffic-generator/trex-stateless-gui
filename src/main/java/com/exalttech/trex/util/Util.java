@@ -63,10 +63,11 @@ public class Util {
 
     private static final String IP_REG_EXP = "^((?:(?:^|\\.)(?:\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){4})$";
     private static final String HOST_NAME_EXP = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$";
+    private final static String IP_ADDRESS_REG = "^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$";
     private static final String DIGITS_REG_EXP = "[0-9]+";
     private static final String DECIMAL_REG_EXP = "[0-9]*+(\\.[0-9][0-9]?)?";
     private static final String HEX_REG_EXP = "[0-9a-fA-F]+";
-    
+
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private static final Logger LOG = Logger.getLogger(Util.class.getName());
     private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat("0.0");
@@ -154,13 +155,17 @@ public class Util {
     }
 
     /**
-     * Validate IP address
+     * Validate IP address and host-name
      *
      * @param ip
      * @return
      */
+    public static boolean isValidAddress(String ip) {
+        return !(isNullOrEmpty(ip) || (!isValidIPAddress(ip) && !ip.matches(HOST_NAME_EXP)));
+    }
+
     public static boolean isValidIPAddress(String ip) {
-        return !(isNullOrEmpty(ip) || (!ip.matches(IP_REG_EXP) && !ip.matches(HOST_NAME_EXP)));
+        return !isNullOrEmpty(ip) && ip.matches(IP_REG_EXP);
     }
 
     /**
@@ -351,8 +356,9 @@ public class Util {
     public static boolean isDecimal(String value) {
         return value.matches(DECIMAL_REG_EXP);
     }
-/**
-     * Return if the value is hex 
+
+    /**
+     * Return if the value is hex
      * <p>
      * true if it is float
      * <p>
@@ -364,6 +370,7 @@ public class Util {
     public static boolean isHex(String value) {
         return value.matches(HEX_REG_EXP);
     }
+
     /**
      * Format fraction number to equivalent format
      *
@@ -811,8 +818,7 @@ public class Util {
     /**
      */
     public static void optimizeMemory() {
-
         System.gc();
-
     }
+
 }

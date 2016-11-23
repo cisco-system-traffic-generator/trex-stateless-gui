@@ -192,7 +192,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     ImageView devicesTreeArrowContainer;
     @FXML
     SplitPane mainViewSplitPanel;
-    
+
     private ContextMenu rightClickPortMenu;
     private ContextMenu rightClickProfileMenu;
     private ContextMenu rightClickGlobalMenu;
@@ -226,10 +226,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     private int lastLoadedPortPtofileIndex = -1;
     private boolean profileLoaded = false;
-    
+
     private Image leftArrow;
     private Image rightArrow;
     private boolean treeviewOpened = true;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         portManager = PortsManager.getInstance();
@@ -401,25 +402,25 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleTreeClicked(MouseEvent mouseEvent) {
-        
+
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
             // mouse left button clicked
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 viewTreeContextMenu(selected);
             }
-            
+
         }
     }
 
     /**
      * Handle treeitem selection changed
      */
-    private void handleTreeItemSelectionChanged(){
+    private void handleTreeItemSelectionChanged() {
         updateHeaderBtnStat();
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            
+
             if (profileLoaded) {
                 updateCurrentProfileMultiplier();
             }
@@ -458,9 +459,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
         }
     }
-    
+
     /**
      * View treeitem context menu
+     *
      * @param selected
      */
     private void viewTreeContextMenu(CustomTreeItem selected) {
@@ -480,6 +482,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         if (assignedProf != null) {
             assignedProf.setHasDuration(multiplierView.isDurationEnable());
             updateMultiplierValues(assignedProf);
+        }
+        if (!updateBtn.isDisabled()) {
+            doUpdateAssignedProfile(lastLoadedPortPtofileIndex);
         }
     }
 
@@ -721,11 +726,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      *
      * @param profileName
      */
-    private void assignProfile(String profileName, double currentBandwidth, boolean assignPrevBandwidth) {
+    private void assignProfile(String profileName, double currentBandwidth, boolean assignPrevBandwidth, int portID) {
         try {
-            int portID = getSelectedPortIndex();
             // update selected profile
-            AssignedProfile assignedProf = assignedPortProfileMap.get(getSelectedPortIndex());
+            AssignedProfile assignedProf = assignedPortProfileMap.get(portID);
             assignedProf.setProfileName(profileName);
             assignedProf.setAllStreamsWithLatency(allStreamWithLatency);
             StreamValidation streamValidationGraph = serverRPCMethods.assignTrafficProfile(portID, loadedProfiles);
@@ -755,13 +759,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             File selectedFile = new File(ProfileManager.getInstance().getProfileFilePath(fileName));
             loadedProfiles = tableView.loadStreamTable(selectedFile);
 
-            allStreamWithLatency = true;
-            for (Profile profile : loadedProfiles) {
-                allStreamWithLatency = allStreamWithLatency && profile.getStream().getFlowStats().isEnabled();
+            allStreamWithLatency = false;
+            if (loadedProfiles.length > 0) {
+                allStreamWithLatency = true;
+                for (Profile profile : loadedProfiles) {
+                    allStreamWithLatency = allStreamWithLatency && profile.getStream().getFlowStats().isEnabled();
+                }
             }
             multiplierView.setDisable(allStreamWithLatency);
             notificationPanelHolder.setVisible(allStreamWithLatency);
-
         } catch (Exception ex) {
             LOG.error("Error loading stream table", ex);
         }
@@ -791,7 +797,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     loadStreamTable(profileName);
                     if (loadedProfiles.length > 0 && doAssignProfile) {
                         // assign profile to selected port
-                        assignProfile(profileName, 0, false);
+                        assignProfile(profileName, 0, false, getSelectedPortIndex());
                     }
 
                     doAssignProfile = true;
@@ -842,7 +848,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             @Override
             public void handle(WindowEvent event) {
                 // handle aplpication close
-                 DialogManager.getInstance().closeAll();
+                DialogManager.getInstance().closeAll();
                 handleAppClose();
             }
         });
@@ -894,16 +900,16 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             int count = (int) event.getSource().getValue();
             countdownValue.setText(String.valueOf(count) + " Sec");
             if (count == 0) {
-                doUpdateAssignedProfile();
+                doUpdateAssignedProfile(getSelectedPortIndex());
             }
         });
-        
-        devicesTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
+
+        devicesTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 handleTreeItemSelectionChanged();
             }
-            
+
         });
     }
 
@@ -1092,7 +1098,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         LOG.trace("Clicked on the Stop Transit Button with selectedPort [" + portID + "]");
         if (portID > -1) {
             serverRPCMethods.stopPortTraffic(portID);
-            enableUpdateBtn(false, false);
+            if (!updateBtn.isDisabled() && !reAssign) {
+                enableUpdateBtn(false, false);
+            }
         }
     }
 
@@ -1257,22 +1265,22 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleUpdateBtnClicked(ActionEvent event) {
-        doUpdateAssignedProfile();
+        doUpdateAssignedProfile(getSelectedPortIndex());
     }
 
     /**
      * Update current port
      */
-    private void doUpdateAssignedProfile() {
+    private void doUpdateAssignedProfile(int portIndex) {
         try {
             if (reAssign) {
                 reAssign = false;
                 String assignedProfile = String.valueOf(profileListBox.getValue());
-                assignProfile(assignedProfile, multiplierView.getSliderValue(), true);
+                assignProfile(assignedProfile, multiplierView.getSliderValue(), true, portIndex);
             } else {
-                serverRPCMethods.updateTraffic(getSelectedPortIndex(), false, MultiplierType.pps.name(), multiplierView.getPPSValue());
+                serverRPCMethods.updateTraffic(portIndex, false, MultiplierType.pps.name(), multiplierView.getPPSValue());
                 // update assigned profile multiplier
-                AssignedProfile assignedProf = assignedPortProfileMap.get(getSelectedPortIndex());
+                AssignedProfile assignedProf = assignedPortProfileMap.get(portIndex);
                 updateMultiplierValues(assignedProf);
             }
         } catch (TrafficException ex) {
@@ -1404,10 +1412,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @param enable
      */
     private void enableUpdateBtn(boolean enableCounter, boolean enableUpdate) {
-        Port currentPort = portManager.getPortList().get(getSelectedPortIndex());
+        Port currentPort = portManager.getPortList().get(lastLoadedPortPtofileIndex);
         boolean enableUpdateBtn = enableUpdate && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
         boolean startCounting = enableCounter && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
         stopUpdateBtn.setVisible(startCounting);
+        countdownValue.setVisible(startCounting);
         updateBtn.setDisable(!enableUpdateBtn);
         if (startCounting) {
             countdownService.restart();
@@ -1611,22 +1620,24 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         acquirePort.setDisable(!(!forceDisable && portManager.isPortFree(selectedPort)));
         releasePort.setDisable(!(!forceDisable && portManager.isCurrentUserOwner(selectedPort)));
     }
+
     /**
      * Handle devicestree arrow clicking
-     * @param event 
+     *
+     * @param event
      */
     @FXML
-    public void handleDevicesTreeArrowClicked(MouseEvent event){
-        if(treeviewOpened){
+    public void handleDevicesTreeArrowClicked(MouseEvent event) {
+        if (treeviewOpened) {
             mainViewSplitPanel.setDividerPosition(0, 0);
             devicesTreeArrowContainer.setImage(rightArrow);
-        }else{
+        } else {
             mainViewSplitPanel.setDividerPosition(0, 1);
             devicesTreeArrowContainer.setImage(leftArrow);
         }
         treeviewOpened = !treeviewOpened;
     }
-    
+
     /**
      * Enumerator that present async stats data type
      */

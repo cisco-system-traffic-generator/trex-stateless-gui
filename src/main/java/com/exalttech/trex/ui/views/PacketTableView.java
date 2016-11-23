@@ -26,13 +26,12 @@ import com.exalttech.trex.ui.components.CheckBoxTableViewCell;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell.CheckBoxTableChangeHandler;
 import com.exalttech.trex.ui.controllers.PacketBuilderHomeController;
 import com.exalttech.trex.ui.controllers.ProfileStreamNameDialogController;
-import com.exalttech.trex.ui.controllers.ImportPcapController;
+import com.exalttech.trex.ui.controllers.ImportPcapWizardController;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.views.models.TableProfile;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.ui.views.streamtable.StreamTableAction;
 import com.exalttech.trex.ui.views.streamtable.StreamTableButton;
-import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.FileManager;
@@ -53,6 +52,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -194,7 +194,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         streamPacketTableView.setId("streamTableView");
         streamPacketTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         streamPacketTableView.setFixedCellSize(32);
-
+        streamPacketTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         streamPacketTableView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -326,10 +326,13 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     public void handleDeletePacket() {
         try {
-            int selectedIndex = streamPacketTableView.getSelectionModel().getSelectedIndex();
-            if (selectedIndex > -1 && Util.isConfirmed("Are you sure you want to delete this stream?")) {
-                tabledata.getStreamsList().remove(selectedIndex);
-                tabledata.getProfiles().remove(selectedIndex);
+            List<Profile> removedProfileList = new ArrayList<>();
+            if (Util.isConfirmed("Are you sure you want to delete this streams?") && canDeleteStreams()) {
+                for (int index : streamPacketTableView.getSelectionModel().getSelectedIndices()) {
+                    removedProfileList.add(tabledata.getProfiles().get(index));
+                }
+                tabledata.getStreamsList().removeAll(streamPacketTableView.getSelectionModel().getSelectedItems());
+                tabledata.getProfiles().removeAll(removedProfileList);
                 saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
                 if (tableUpdateHandler != null) {
                     tableUpdateHandler.onStreamTableChanged();
@@ -341,6 +344,23 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     }
 
     /**
+     * Check whether selected stream is linked to another streams
+     * @return 
+     */
+    private boolean canDeleteStreams(){
+        boolean safeDelete = true;
+        for(TableProfileStream selectedStream:streamPacketTableView.getSelectionModel().getSelectedItems()){
+            for(Profile profile:tabledata.getProfiles()){
+                if(profile.getNext().equals(selectedStream.getName())){
+                    return Util.isConfirmed("Some streams are linked to others. Do you want to continue?");
+                    
+                }
+            }
+        }
+        return safeDelete;
+    }
+    
+    /**
      * Export stream to pcap file
      */
     public void handleExportPcapFile() {
@@ -351,7 +371,6 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             byte[] pkt = Base64.decodeBase64(packetBinary);
             Packet packet = EthernetPacket.newPacket(pkt, 0, pkt.length);
             File pcapFile = File.createTempFile("temp-file-name", ".pcap");
-
             PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
             PcapDumper dumper = handle.dumpOpen(pcapFile.getAbsolutePath());
             Timestamp ts = new Timestamp(0);
@@ -372,17 +391,14 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     private void hanldeImportPcap() {
         try {
-            String loadFolderPath = PreferencesManager.getInstance().getLoadLocation();
+            // open import dialog
+            setStreamEditingWindowOpen(true);
             Stage owner = (Stage) streamPacketTableView.getScene().getWindow();
-            File pcapFile = FileManager.getSelectedFile("Open Pcap File", "", owner, FileType.PCAP, loadFolderPath, false);
-            if (pcapFile != null) {
-                // open import dialog
-                setStreamEditingWindowOpen(true);
-                DialogWindow importPcapWindow = new DialogWindow("ImportPcap.fxml", "Import Pcap", 100, 100, false, owner);
-                ImportPcapController importController = (ImportPcapController) importPcapWindow.getController();
-                importController.loadPcap(pcapFile, tabledata.getProfiles(), tabledata.getYamlFileName());
-                importPcapWindow.show(true);
-            }
+            DialogWindow importPcapWindow = new DialogWindow("ImportPcapWizard.fxml", "   Import Pcap", 60, 80, false, owner);
+            ImportPcapWizardController importController = (ImportPcapWizardController) importPcapWindow.getController();
+            importController.initWizard(tabledata.getProfiles(), tabledata.getYamlFileName());
+            importPcapWindow.show(true);
+
         } catch (Exception ex) {
             LOG.error("Error loading pcap file", ex);
         }

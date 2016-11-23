@@ -211,6 +211,9 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         final UnaryOperator<TextFormatter.Change> formatter = Util.getTextChangeFormatter(Util.getUnitRegex(true));
         ibgTF.setTextFormatter(new TextFormatter<>(formatter));
         isgTF.setTextFormatter(new TextFormatter<>(formatter));
+        
+        // allow only 5 digits
+        timeInLoopTF.setTextFormatter(Util.getNumberFilter(5));
     }
 
     /**

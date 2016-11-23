@@ -14,10 +14,11 @@ import org.pcap4j.packet.Packet;
 
 /**
  * Import pcap table data model
+ *
  * @author GeorgeKH
  */
 public class ImportPcapTableData {
-    
+
     private BooleanProperty selected = new SimpleBooleanProperty(true);
     private SimpleStringProperty name = new SimpleStringProperty("");
     private SimpleIntegerProperty index = new SimpleIntegerProperty();
@@ -29,7 +30,9 @@ public class ImportPcapTableData {
     private SimpleStringProperty packetType = new SimpleStringProperty("");
 
     private Packet packet;
-    
+    private boolean hasVlan;
+    private long timeStamp;
+
     /**
      * Return enable property
      *
@@ -41,20 +44,22 @@ public class ImportPcapTableData {
 
     /**
      * Set selected
-     * @param selected 
+     *
+     * @param selected
      */
-    public void setSelected(Boolean selected){
+    public void setSelected(Boolean selected) {
         this.selected.setValue(selected);
     }
-    
+
     /**
      * Return true if selected otherwise return false
-     * @return 
+     *
+     * @return
      */
-    public boolean isSelected(){
+    public boolean isSelected() {
         return selected.getValue();
     }
-    
+
     /**
      * Return enable property value
      *
@@ -66,7 +71,8 @@ public class ImportPcapTableData {
 
     /**
      * Return name
-     * @return 
+     *
+     * @return
      */
     public String getName() {
         return name.getValue();
@@ -74,7 +80,8 @@ public class ImportPcapTableData {
 
     /**
      * Set name
-     * @param name 
+     *
+     * @param name
      */
     public void setName(String name) {
         this.name.set(name);
@@ -82,15 +89,17 @@ public class ImportPcapTableData {
 
     /**
      * Return name property
-     * @return 
+     *
+     * @return
      */
-    public StringProperty nameProperty(){
+    public StringProperty nameProperty() {
         return name;
     }
-    
+
     /**
      * Return index
-     * @return 
+     *
+     * @return
      */
     public int getIndex() {
         return index.getValue();
@@ -98,7 +107,8 @@ public class ImportPcapTableData {
 
     /**
      * Set Index
-     * @param index 
+     *
+     * @param index
      */
     public void setIndex(int index) {
         this.index.setValue(index);
@@ -106,7 +116,8 @@ public class ImportPcapTableData {
 
     /**
      * Return length
-     * @return 
+     *
+     * @return
      */
     public int getLength() {
         return length.getValue();
@@ -114,7 +125,8 @@ public class ImportPcapTableData {
 
     /**
      * Set length
-     * @param length 
+     *
+     * @param length
      */
     public void setLength(int length) {
         this.length.setValue(length);
@@ -122,7 +134,8 @@ public class ImportPcapTableData {
 
     /**
      * Return mac source address
-     * @return 
+     *
+     * @return
      */
     public String getMacSrc() {
         return macSrc.getValue();
@@ -130,7 +143,8 @@ public class ImportPcapTableData {
 
     /**
      * Set mac source address
-     * @param macSrc 
+     *
+     * @param macSrc
      */
     public void setMacSrc(String macSrc) {
         this.macSrc.setValue(macSrc);
@@ -138,7 +152,8 @@ public class ImportPcapTableData {
 
     /**
      * Return mac destination address
-     * @return 
+     *
+     * @return
      */
     public String getMacDst() {
         return macDst.getValue();
@@ -146,7 +161,8 @@ public class ImportPcapTableData {
 
     /**
      * Set mac destination address
-     * @param macDst 
+     *
+     * @param macDst
      */
     public void setMacDst(String macDst) {
         this.macDst.setValue(macDst);
@@ -154,7 +170,8 @@ public class ImportPcapTableData {
 
     /**
      * Return ip source address
-     * @return 
+     *
+     * @return
      */
     public String getIpSrc() {
         return ipSrc.getValue();
@@ -162,7 +179,8 @@ public class ImportPcapTableData {
 
     /**
      * Set ip source address
-     * @param ipSrc 
+     *
+     * @param ipSrc
      */
     public void setIpSrc(String ipSrc) {
         this.ipSrc.setValue(ipSrc);
@@ -170,7 +188,8 @@ public class ImportPcapTableData {
 
     /**
      * Return ip destination address
-     * @return 
+     *
+     * @return
      */
     public String getIpDst() {
         return ipDst.getValue();
@@ -178,7 +197,8 @@ public class ImportPcapTableData {
 
     /**
      * Set ip destination address
-     * @param ipDst 
+     *
+     * @param ipDst
      */
     public void setIpDst(String ipDst) {
         this.ipDst.setValue(ipDst);
@@ -186,7 +206,8 @@ public class ImportPcapTableData {
 
     /**
      * Return packet type
-     * @return 
+     *
+     * @return
      */
     public String getPacketType() {
         return packetType.getValue();
@@ -194,7 +215,8 @@ public class ImportPcapTableData {
 
     /**
      * Set packet type
-     * @param packetType 
+     *
+     * @param packetType
      */
     public void setPacketType(String packetType) {
         this.packetType.setValue(packetType);
@@ -202,18 +224,45 @@ public class ImportPcapTableData {
 
     /**
      * Return packet
-     * @return 
+     *
+     * @return
      */
     public Packet getPacket() {
         return packet;
     }
-    
+
     /**
      * Set packet
-     * @param packet 
+     *
+     * @param packet
      */
     public void setPacket(Packet packet) {
         this.packet = packet;
     }
-    
+
+    public void setHasVlan(boolean hasVlan) {
+        this.hasVlan = hasVlan;
+    }
+
+    public boolean hasVlan() {
+        return hasVlan;
+    }
+
+    /**
+     * Set timestamp value
+     *
+     * @param timeStamp
+     */
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    /**
+     * Return timestamp value
+     *
+     * @return
+     */
+    public long getTimeStamp() {
+        return timeStamp;
+    }
 }

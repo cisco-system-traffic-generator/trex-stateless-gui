@@ -23,12 +23,6 @@ import javafx.util.Callback;
  */
 public class TextFieldTableViewCell<S, T> implements Callback<TableColumn, TableCell> {
 
-    EnteredValueHandler enteredValueHandler;
-    
-    public TextFieldTableViewCell(EnteredValueHandler enteredValueHandler){
-        this.enteredValueHandler = enteredValueHandler;
-    }
-    
     @Override
     public TableCell call(TableColumn param) {
         return new TableCell<S, T>() {
@@ -44,7 +38,7 @@ public class TextFieldTableViewCell<S, T> implements Callback<TableColumn, Table
                 textField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
                     if (!newValue) {
                         commitEdit((T) textField.getText());
-                        enteredValueHandler.validateEnteredValue(getTableRow().getItem());
+                       
                     }
                 });
                 
@@ -79,15 +73,4 @@ public class TextFieldTableViewCell<S, T> implements Callback<TableColumn, Table
         };
     }
 
-    /**
-     * Interface for handling text input
-     */
-    public interface EnteredValueHandler{
-        
-        /**
-         * Validate entered text
-         * @param item 
-         */
-        public void validateEnteredValue(Object item);
-    }
 }

@@ -33,6 +33,7 @@ import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
+import org.pcap4j.packet.Dot1qVlanTagPacket;
 import org.pcap4j.packet.EthernetPacket;
 import org.pcap4j.packet.IllegalRawDataException;
 import org.pcap4j.packet.IpV4Packet;
@@ -152,6 +153,10 @@ public class PacketParser {
             packetInfo.setPacketRawData(formatPayLoad(new String(packet.getRawData())));
         }
 
+        // defien whether packet has vlan or not
+        if(packet.get(Dot1qVlanTagPacket.class) != null){
+            packetInfo.setVlanPacket(true);
+        }
         // If the packet has Ethernet
         if (packet.get(EthernetPacket.class) != null) {
             packetInfo.setEthernetHex(getHeaderOffset(packet.get(EthernetPacket.class).getHeader().toHexString().toUpperCase()));

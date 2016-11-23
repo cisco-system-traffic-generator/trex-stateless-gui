@@ -171,7 +171,7 @@ public class ConnectDialogController extends DialogView implements Initializable
     private boolean validateInput() {
         boolean isValid = true;
         Alert errMsg = Util.getAlert(Alert.AlertType.ERROR);
-        if (connectionsCB.getEditor().getText() == null || !Util.isValidIPAddress(connectionsCB.getEditor().getText())) {
+        if (connectionsCB.getEditor().getText() == null || !Util.isValidAddress(connectionsCB.getEditor().getText())) {
             errMsg.setContentText("Invalid TRex Host Name or IP address");
             isValid = false;
         } else if (!Util.isValidPort(rpcPort.getText())) {

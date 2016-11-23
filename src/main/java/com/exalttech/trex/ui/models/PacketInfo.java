@@ -42,6 +42,9 @@ public class PacketInfo {
     private String l4Hex = null;
     private String l4RawData = null;
 
+    private boolean vlanPacket = false;
+    private long timeStamp;
+    
     /**
      * @return the packet
      */
@@ -252,4 +255,37 @@ public class PacketInfo {
         this.l4RawData = l4owData;
     }
 
+    /**
+     * Return whether packet has vlan or not
+     * @return 
+     */
+    public boolean hasVlan(){
+        return vlanPacket;
+    }
+
+    /**
+     * Set packet has value
+     * @param vlanPacket 
+     */
+    public void setVlanPacket(boolean vlanPacket) {
+        this.vlanPacket = vlanPacket;
+    }
+
+    /**
+     * Set timestamp value
+     * @param timeStamp 
+     */
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    /**
+     * Return timestamp value
+     * @return 
+     */
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+    
+    
 }
