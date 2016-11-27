@@ -80,6 +80,7 @@ public class Util {
     private static final String APPLICATION_EXECUTABLE = "trex-stateless-gui.exe";
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
     private static final String VERSION_KEY = "version";
+    private static final int numOfCharacterLimit = 10000;
 
     /**
      * Convert JSON string to object
@@ -253,16 +254,28 @@ public class Util {
             // Check if it is an Array
             if ('[' == jsonString.charAt(0)) {
                 JsonArray jsonArray = parser.parse(jsonString).getAsJsonArray();
-                return gson.toJson(jsonArray);
+                return getSubString(gson.toJson(jsonArray));
             } else {
                 JsonObject json = parser.parse(jsonString).getAsJsonObject();
-                return gson.toJson(json);
+                return  getSubString(gson.toJson(json));
             }
         } catch (JsonSyntaxException ex) {
             // return the original string in case of exception
             LOG.error("Error formatting string", ex);
-            return jsonString;
+            return  getSubString(jsonString);
         }
+    }
+
+    /**
+     * 
+     * @param data
+     * @return 
+     */
+    private static String getSubString(String data) {
+        if (data.length() > numOfCharacterLimit) {
+            return "... "+data.substring(data.length()-numOfCharacterLimit);
+        }
+        return data;
     }
 
     /**

@@ -20,6 +20,7 @@ import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.models.common.RPCError;
 import com.exalttech.trex.remote.models.common.RPCRequest;
 import com.exalttech.trex.remote.models.params.Params;
+import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.util.CompressionUtils;
@@ -29,7 +30,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.zip.DataFormatException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -295,6 +298,56 @@ public class ConnectionManager {
                     LOG.warn("Error parsing response", ex);
                 }
 
+            }
+            return rpcResponse;
+        } else {
+            throw new InvalidRPCResponseException();
+        }
+    }
+
+    /**
+     *
+     * @param profilesList
+     * @return
+     * @throws JsonProcessingException
+     * @throws UnsupportedEncodingException
+     * @throws IncorrectRPCMethodException
+     * @throws InvalidRPCResponseException
+     */
+    public String sendAddStreamRequest(Profile[] profilesList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+        List<String> addStreamCommandList = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        RPCRequest rpcRequest = new RPCRequest();
+        String jsonRequestString;
+        for (int i = 0; i < profilesList.length; i++) {
+
+            rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
+            rpcRequest.setMethod(Constants.ADD_STREAM_METHOD);
+            rpcRequest.setParams(profilesList[i]);
+
+            jsonRequestString = mapper.writeValueAsString(rpcRequest);
+            jsonRequestString = Util.tuneJSONParams(jsonRequestString, profilesList[i], apiH);
+            addStreamCommandList.add(jsonRequestString);
+
+        }
+        String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
+        LOG.info(requestCommand);
+        logProperty.setValue("Sending request " + requestCommand);
+        byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
+
+        if (serverResponse != null) {
+            String rpcResponse = new String(serverResponse, "UTF-8");
+            
+            if (rpcResponse.contains("error")) {
+                try {
+                    rpcResponse = Util.removeFirstBrackets(rpcResponse);
+                    RPCError rpcError = mapper.readValue(rpcResponse, RPCError.class);
+                    LOG.error(rpcError.getError().getSpecificErr());
+                    LogsController.getInstance().appendText(LogType.ERROR, rpcError.getError().getSpecificErr());
+                    throw new IncorrectRPCMethodException(rpcError.getError().getSpecificErr() + "\n " + Util.toPrettyFormat(rpcResponse));
+                } catch (IOException ex) {
+                    LOG.warn("Error parsing response", ex);
+                }
             }
             return rpcResponse;
         } else {

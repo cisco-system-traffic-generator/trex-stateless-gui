@@ -181,10 +181,7 @@ public class RPCMethods {
         Profile[] updatedProfileList;
 
         updatedProfileList = trexTrafficProfile.prepareTrafficProfile(profileList, portID, handler);
-        for (int i = 0; i < updatedProfileList.length; i++) {
-
-            serverConnectionManager.sendRPCRequest(Constants.ADD_STREAM_METHOD, updatedProfileList[i]);
-        }
+        serverConnectionManager.sendAddStreamRequest(updatedProfileList);
         return validateStream(portID);
 
     }
