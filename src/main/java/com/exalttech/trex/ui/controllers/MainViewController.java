@@ -628,6 +628,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         releasePort.setDisable(true);
         assignedPortProfileMap.clear();
 
+        // clear console log
+        LogsController.getInstance().getConsoleLogView().clear();
+        LogsController.getInstance().getView().clear();
         // stop async subscriber
         ConnectionManager.getInstance().disconnectSubscriber();
         ConnectionManager.getInstance().disconnectRequester();

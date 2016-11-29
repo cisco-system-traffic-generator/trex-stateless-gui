@@ -118,4 +118,13 @@ public class LogsView extends AnchorPane {
         content.putString(sb.toString());
         clipboard.setContent(content);
     }
+
+    /**
+     * Clear log view
+     */
+    public void clear() {
+        sb.setLength(0);
+        logsContent.getChildren().clear();
+        Util.optimizeMemory();
+    }
 }
