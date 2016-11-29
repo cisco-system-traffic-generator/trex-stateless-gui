@@ -30,9 +30,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.zip.DataFormatException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -391,36 +393,41 @@ public class ConnectionManager {
                 return null;
             }
 
-            private String getDecompressedString(byte[] data) {
-                // if the length is larger than 8 bytes
-                if (data.length > 8) {
-
-                    // Take the first 4 bytes
-                    byte[] magicBytes = Arrays.copyOfRange(data, 0, 4);
-
-                    String magicString = DatatypeConverter.printHexBinary(magicBytes);
-
-                    /* check MAGIC in the first 4 bytes in case we have it, it is compressed */
-                    if (magicString.equals(MAGIC_STRING)) {
-
-                        // Skip another  4 bytes containing the uncompressed size of the  message
-                        byte[] compressedData = Arrays.copyOfRange(data, 8, data.length);
-
-                        try {
-                            return new String(CompressionUtils.decompress(compressedData));
-                        } catch (IOException | DataFormatException ex) {
-                            LOG.error("Failed to decompress data ", ex);
-                        }
-
-                    }
-
-                }
-                return new String(data);
-
-            }
         };
         new Thread(task).start();
         return ASYNC_PASS_STATUS;
+    }
+
+    /**
+     * Decompressed response
+     * @param data
+     * @return 
+     */
+    private String getDecompressedString(byte[] data) {
+        // if the length is larger than 8 bytes
+        if (data.length > 8) {
+
+            // Take the first 4 bytes
+            byte[] magicBytes = Arrays.copyOfRange(data, 0, 4);
+
+            String magicString = DatatypeConverter.printHexBinary(magicBytes);
+
+            /* check MAGIC in the first 4 bytes in case we have it, it is compressed */
+            if (magicString.equals(MAGIC_STRING)) {
+
+                // Skip another  4 bytes containing the uncompressed size of the  message
+                byte[] compressedData = Arrays.copyOfRange(data, 8, data.length);
+
+                try {
+                    return new String(CompressionUtils.decompress(compressedData));
+                } catch (IOException | DataFormatException ex) {
+                    LOG.error("Failed to decompress data ", ex);
+                }
+
+            }
+
+        }
+        return new String(data);
     }
 
     /**
@@ -523,9 +530,34 @@ public class ConnectionManager {
      */
     private byte[] getServerRPCResponse(String request) {
         synchronized (this) {
-            getRequester().send(request.getBytes(), 0);
-            return getRequester().recv(0);
+            try {
+                // prepare compression header
+                ByteBuffer pump_on_buf = ByteBuffer.allocate(8);
+                pump_on_buf.put((byte) 0xAB);
+                pump_on_buf.put((byte) 0xE8);
+                pump_on_buf.put((byte) 0x5C);
+                pump_on_buf.put((byte) 0xEA);
+                pump_on_buf.putInt(request.length());
+                byte[] data = pump_on_buf.array();
+                // compress request
+                byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
+                byte[] finalRequest = concatByteArrays(data, compressedRequest);
+                getRequester().send(finalRequest);
+                byte[] serverResponse = getRequester().recv(0);
+                // decompressed response
+                return getDecompressedString(serverResponse).getBytes();
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
         }
+    }
+
+    private byte[] concatByteArrays(byte[] a, byte[] b) {
+        byte[] c = new byte[a.length + b.length];
+        System.arraycopy(a, 0, c, 0, a.length);
+        System.arraycopy(b, 0, c, a.length, b.length);
+        return c;
     }
 
     /**
@@ -551,4 +583,5 @@ public class ConnectionManager {
     public String getApiH() {
         return apiH;
     }
+
 }
