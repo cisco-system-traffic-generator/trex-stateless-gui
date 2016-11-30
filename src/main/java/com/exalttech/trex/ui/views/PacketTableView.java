@@ -135,9 +135,9 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         // build btn bar
         HBox buttonContainer = new HBox();
         buttonContainer.setSpacing(5);
-        addPacketBtn = new StreamTableButton(StreamTableAction.ADD);
-        initializeStreamButtons(addPacketBtn, false);
-        buttonContainer.getChildren().add(addPacketBtn);
+//        addPacketBtn = new StreamTableButton(StreamTableAction.ADD);
+//        initializeStreamButtons(addPacketBtn, false);
+//        buttonContainer.getChildren().add(addPacketBtn);
 
         // add build stream btn
         buildPacketBtn = new StreamTableButton(StreamTableAction.BUILD);
@@ -258,9 +258,9 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     private void handleStreamTableAction(StreamTableAction action) {
         switch (action) {
-            case ADD:
-                viewStreamNameWindow(StreamBuilderType.ADD_STREAM);
-                break;
+//            case ADD:
+//                viewStreamNameWindow(StreamBuilderType.ADD_STREAM);
+//                break;
             case BUILD:
                 viewStreamNameWindow(StreamBuilderType.BUILD_STREAM);
                 break;
