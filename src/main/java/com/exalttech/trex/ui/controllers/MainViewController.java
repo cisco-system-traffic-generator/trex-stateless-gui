@@ -588,24 +588,17 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Reset the application to initial state
      */
     private void resetApplication(boolean didServerCrash) {
-        if (!didServerCrash) {
-            ConnectionManager.getInstance().setConnected(false);
-            // release all port
-            releaseAllPort(false);
-        }
-
-        // shutdown running services
-        shutdownRunningServices();
-
-        // close all open dialog
-        DialogManager.getInstance().closeAll();
-
         // clear tree
         devicesTree.setRoot(null);
-
         // hide all right side views
         statTableWrapper.setVisible(false);
         profileContainer.setVisible(false);
+
+        // close all open dialog
+        DialogManager.getInstance().closeAll();
+        // shutdown running services
+        shutdownRunningServices();
+
         cachedStatsList = new HashMap<>();
         connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
         statsMenuItem.setDisable(true);
@@ -631,10 +624,16 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         // clear console log
         LogsController.getInstance().getConsoleLogView().clear();
         LogsController.getInstance().getView().clear();
+
+        if (!didServerCrash) {
+            ConnectionManager.getInstance().setConnected(false);
+            // release all port
+            releaseAllPort(false);
+        }
+
         // stop async subscriber
         ConnectionManager.getInstance().disconnectSubscriber();
         ConnectionManager.getInstance().disconnectRequester();
-
         if (didServerCrash) {
             openConnectDialog();
         }
