@@ -281,7 +281,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     public void handleExitMenuItemClick(ActionEvent event) {
         // release all port
         handleAppClose();
-        Platform.exit();
+        System.exit(0);
     }
 
     /**
@@ -865,6 +865,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 });
             }
         });
+        TrexApp.getPrimaryStage().setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                System.exit(0);
+            }
+        });
         TrexApp.getPrimaryStage().addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
             if (openDashboardCombination.match(event) && ConnectionManager.getInstance().isConnected()) {
                 openStateDialog();
@@ -1323,7 +1329,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
         } catch (Exception ex) {
             LOG.error("Error closing the application", ex);
-            Platform.exit();
+            System.exit(0);
         }
     }
 

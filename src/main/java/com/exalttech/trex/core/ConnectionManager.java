@@ -532,16 +532,16 @@ public class ConnectionManager {
         synchronized (this) {
             try {
                 // prepare compression header
-                ByteBuffer pump_on_buf = ByteBuffer.allocate(8);
-                pump_on_buf.put((byte) 0xAB);
-                pump_on_buf.put((byte) 0xE8);
-                pump_on_buf.put((byte) 0x5C);
-                pump_on_buf.put((byte) 0xEA);
-                pump_on_buf.putInt(request.length());
-                byte[] data = pump_on_buf.array();
+                ByteBuffer headerByteBuffer = ByteBuffer.allocate(8);
+                headerByteBuffer.put((byte) 0xAB);
+                headerByteBuffer.put((byte) 0xE8);
+                headerByteBuffer.put((byte) 0x5C);
+                headerByteBuffer.put((byte) 0xEA);
+                headerByteBuffer.putInt(request.length());
+                byte[] headerBytes = headerByteBuffer.array();
                 // compress request
                 byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
-                byte[] finalRequest = concatByteArrays(data, compressedRequest);
+                byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
                 getRequester().send(finalRequest);
                 byte[] serverResponse = getRequester().recv(0);
                 // decompressed response
@@ -553,11 +553,11 @@ public class ConnectionManager {
         }
     }
 
-    private byte[] concatByteArrays(byte[] a, byte[] b) {
-        byte[] c = new byte[a.length + b.length];
-        System.arraycopy(a, 0, c, 0, a.length);
-        System.arraycopy(b, 0, c, a.length, b.length);
-        return c;
+    private byte[] concatByteArrays(byte[] firstDataArray, byte[] secondDataArray) {
+        byte[] concatedDataArray = new byte[firstDataArray.length + secondDataArray.length];
+        System.arraycopy(firstDataArray, 0, concatedDataArray, 0, firstDataArray.length);
+        System.arraycopy(secondDataArray, 0, concatedDataArray, firstDataArray.length, secondDataArray.length);
+        return concatedDataArray;
     }
 
     /**
