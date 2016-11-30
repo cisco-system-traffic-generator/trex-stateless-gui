@@ -547,7 +547,7 @@ public class ConnectionManager {
                 // decompressed response
                 return getDecompressedString(serverResponse).getBytes();
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error("Error sending request", ex);
                 return null;
             }
         }
