@@ -39,7 +39,7 @@ import static javafx.scene.layout.AnchorPane.setTopAnchor;
 public class ConsoleLogView extends AnchorPane {
 
     TextArea logsContent;
-    
+    StringBuffer sb;
     /**
      *
      */
@@ -59,7 +59,7 @@ public class ConsoleLogView extends AnchorPane {
         setLeftAnchor(logsContent, 0d);
         setBottomAnchor(logsContent, 0d);
         setRightAnchor(logsContent, 0d);
-
+        sb = new StringBuffer();
         getChildren().add(logsContent);
     }
 
@@ -69,11 +69,12 @@ public class ConsoleLogView extends AnchorPane {
      */
     public void append(String textToAppend) {
         if (textToAppend != null) {
-            String msg = LogType.INFO.getDisplayedText() + " " + Util.formatDate(new Date()) + " " + textToAppend + "\n";
+            sb.append(LogType.INFO.getDisplayedText()).append(" ").append(Util.formatDate(new Date())).append(" ").append(textToAppend).append("\n");
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    logsContent.appendText(msg);
+                    logsContent.appendText(sb.toString());
+                    sb.setLength(0);
                 }
             });
 
@@ -90,5 +91,14 @@ public class ConsoleLogView extends AnchorPane {
         final ClipboardContent content = new ClipboardContent();
         content.putString(logsContent.getText());
         clipboard.setContent(content);
+    }
+    
+    /**
+     * Clear log view
+     */
+    public void clear(){
+        logsContent.setText("");
+        logsContent.clear();
+        Util.optimizeMemory();
     }
 }
