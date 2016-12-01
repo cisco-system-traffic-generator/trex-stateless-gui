@@ -31,6 +31,7 @@ public class Preferences {
 
     private String loadLocation = "";
     private String savedLocation = "";
+    private String templatesLocation = "";
 
     /**
      *
@@ -43,10 +44,12 @@ public class Preferences {
      *
      * @param loadLocation
      * @param savedLocation
+     * @param templatesLocation
      */
-    public Preferences(String loadLocation, String savedLocation) {
+    public Preferences(String loadLocation, String savedLocation, String templatesLocation) {
         this.loadLocation = loadLocation;
         this.savedLocation = savedLocation;
+        this.templatesLocation = templatesLocation;
     }
 
     /**
@@ -85,6 +88,15 @@ public class Preferences {
      */
     public void setSavedLocation(String savedLocation) {
         this.savedLocation = savedLocation;
+    }
+
+    @XmlElement(name = "templates_location")
+    public String getTemplatesLocation() {
+        return templatesLocation;
+    }
+
+    public void setTemplatesLocation(String templatesLocation) {
+        this.templatesLocation = templatesLocation;
     }
 
 }

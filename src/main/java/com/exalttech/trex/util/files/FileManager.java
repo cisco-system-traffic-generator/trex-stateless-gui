@@ -34,6 +34,7 @@ public class FileManager {
     
     private static final String APP_DATA_PATH = File.separator + "TRex" + File.separator + "trex" + File.separator;
     private static final String PROFILES_PATH = "traffic-profiles" + File.separator;
+    private static final String TEMPLATES_PATH = "templates" + File.separator;
 
     /**
      * Return local file path
@@ -58,6 +59,20 @@ public class FileManager {
     public static String getProfilesFilePath() {
         createDirectoryIfNotExists(getLocalFilePath() + PROFILES_PATH);
         return getLocalFilePath() + PROFILES_PATH;
+    }
+
+    /**
+     * Return The templates files path
+     *
+     * @return
+     */
+    public static String getTemplatesFilePath() {
+        createDirectoryIfNotExists(getLocalFilePath() + TEMPLATES_PATH);
+        return getLocalFilePath() + TEMPLATES_PATH;
+    }
+
+    public static String getDefaultTemplatesFilePath() {
+        return getLocalFilePath() + TEMPLATES_PATH;
     }
 
     /**

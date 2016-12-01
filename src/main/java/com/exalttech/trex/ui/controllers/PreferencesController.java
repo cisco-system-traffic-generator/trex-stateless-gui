@@ -22,6 +22,8 @@ import com.exalttech.trex.util.Util;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.exalttech.trex.util.files.FileManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,6 +31,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -43,6 +46,8 @@ public class PreferencesController extends DialogView implements Initializable {
     TextField loadLocation;
     @FXML
     TextField savedLocation;
+    @FXML
+    TextField templatesLocation;
     DirectoryChooser chooser;
 
     /**
@@ -75,7 +80,7 @@ public class PreferencesController extends DialogView implements Initializable {
      */
     private void savePreferences(Stage current) {
         // update prefernces file
-        Preferences pref = new Preferences(loadLocation.getText(), savedLocation.getText());
+        Preferences pref = new Preferences(loadLocation.getText(), savedLocation.getText(), templatesLocation.getText());
         PreferencesManager.getInstance().savePreferences(pref);
 
         current.hide();
@@ -89,6 +94,8 @@ public class PreferencesController extends DialogView implements Initializable {
         if (pref != null) {
             loadLocation.setText(pref.getLoadLocation());
             savedLocation.setText(pref.getSavedLocation());
+            templatesLocation.setText(pref.getTemplatesLocation());
+            templatesLocation.setPromptText(FileManager.getTemplatesFilePath());
         }
     }
 
@@ -125,6 +132,24 @@ public class PreferencesController extends DialogView implements Initializable {
         File location = chooser.showDialog(((Button) (event.getSource())).getScene().getWindow());
         if (location != null) {
             savedLocation.setText(location.getAbsolutePath());
+        }
+    }
+
+    /**
+     * Select save location choose button click handler
+     *
+     * @param event
+     */
+    @FXML
+    public void selectTemplatesLocation(ActionEvent event) {
+        chooser.setTitle("Templates Directory");
+        File templatesDirectory = new File(templatesLocation.getText());
+        if (!Util.isNullOrEmpty(templatesLocation.getText()) && templatesDirectory.exists()) {
+            chooser.setInitialDirectory(new File(templatesLocation.getText()));
+        }
+        File location = chooser.showDialog(((Button) (event.getSource())).getScene().getWindow());
+        if (location != null) {
+            templatesLocation.setText(location.getAbsolutePath());
         }
     }
 

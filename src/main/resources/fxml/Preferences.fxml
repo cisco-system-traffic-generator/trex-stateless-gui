@@ -7,16 +7,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="220.0" prefWidth="450.0" style="-fx-background-color: #F7F7F7;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.PreferencesController">
+<AnchorPane id="AnchorPane" prefHeight="283.0" prefWidth="450.0" style="-fx-background-color: #F7F7F7;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.PreferencesController">
     <children>
         <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="preferencesWrapper" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
             <children>
                 <Label layoutX="14.0" layoutY="14.0" text="Load files from: " AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
                 <Label layoutX="14.0" layoutY="77.0" text="Save files to:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="72.0" />
+                <Label layoutX="14.0" layoutY="140.0" text="Templates dir:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="134.0" />
                 <TextField fx:id="loadLocation" disable="true" layoutX="11.0" layoutY="38.0" prefWidth="350.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="37.0" />
                 <TextField fx:id="savedLocation" disable="true" layoutX="11.0" layoutY="89.0" prefWidth="350.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="100.0" />
+                <TextField fx:id="templatesLocation" disable="true" layoutX="11.0" layoutY="140.0" prefWidth="350.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="163.0" />
                 <Button alignment="CENTER" layoutX="327.0" layoutY="37.0" mnemonicParsing="false" onAction="#selectLoadLocation" prefWidth="40.0" text="..." AnchorPane.leftAnchor="370.0" AnchorPane.topAnchor="37.0" />
                 <Button layoutX="327.0" layoutY="100.0" mnemonicParsing="false" onAction="#selectSavedLocation" prefWidth="40.0" text="..." AnchorPane.leftAnchor="370.0" AnchorPane.topAnchor="100.0" />
+                <Button layoutX="327.0" layoutY="100.0" mnemonicParsing="false" onAction="#selectTemplatesLocation" prefWidth="40.0" text="..." AnchorPane.leftAnchor="370.0" AnchorPane.topAnchor="163.0" />
             </children>
         </AnchorPane>
         <Button layoutX="333.0" layoutY="161.0" mnemonicParsing="false" onMouseClicked="#handleOKBtnClicked" prefWidth="80.0" styleClass="normalButton" text="OK" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" />

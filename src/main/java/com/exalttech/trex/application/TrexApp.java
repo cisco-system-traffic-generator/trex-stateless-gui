@@ -15,10 +15,14 @@
  */
 package com.exalttech.trex.application;
 
+import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.xored.javafx.packeteditor.TRexPacketCraftingTool;
+import com.xored.javafx.packeteditor.controllers.AppController;
 import com.xored.javafx.packeteditor.guice.TrexGuiceModule;
+import com.xored.javafx.packeteditor.service.ConfigurationService;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -46,6 +50,8 @@ public class TrexApp extends Application {
     private static final Logger LOG = Logger.getLogger(TrexApp.class.getName());
 
     private static Stage primaryStage;
+
+    private static AppController packetBuilderAppController;
 
     /**
      * Entry point to the Application
@@ -76,8 +82,8 @@ public class TrexApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        TRexPacketCraftingTool packetBuilder = new TRexPacketCraftingTool(injector);
-        packetBuilder.initAppController();
+        packetBuilderAppController = injector.getInstance(AppController.class);
+
         speedupTooltip();
         primaryStage = stage;
         AnchorPane page = (AnchorPane) FXMLLoader.load(getClass().getResource("/fxml/MainView.fxml"));
@@ -90,7 +96,14 @@ public class TrexApp extends Application {
         stage.setMinHeight(700);
         stage.getIcons().add(new Image("/icons/trex.png"));
 
+        PreferencesManager.getInstance().setPacketEditorConfigurations(packetBuilderAppController.getConfigurations());
+
         stage.show();
+    }
+
+    @Override
+    public void stop(){
+        packetBuilderAppController.terminate();
     }
 
     /**
