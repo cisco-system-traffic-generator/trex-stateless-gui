@@ -18,6 +18,7 @@ package com.exalttech.trex.util;
 import com.exalttech.trex.ui.models.datastore.Preferences;
 import com.exalttech.trex.ui.models.datastore.PreferencesWrapper;
 import com.exalttech.trex.util.files.XMLFileManager;
+import com.xored.javafx.packeteditor.service.ConfigurationService;
 
 /**
  * Preferences manager class
@@ -27,6 +28,8 @@ import com.exalttech.trex.util.files.XMLFileManager;
 public class PreferencesManager {
 
     private static PreferencesManager instance = null;
+
+    private ConfigurationService packetEditorConfigurations = null;
 
     /**
      * Return instance of preferences manager
@@ -79,6 +82,11 @@ public class PreferencesManager {
 
         // update current prefernces
         loadPreferences();
+
+        // propagate locations to packet editor
+        packetEditorConfigurations.setLoadLocation(getLoadLocation());
+        packetEditorConfigurations.setSaveLocation(getSaveLocation());
+        packetEditorConfigurations.setTemplatesLocation(getTemplatesLocation());
     }
 
     /**
@@ -105,6 +113,25 @@ public class PreferencesManager {
         } else {
             return "";
         }
+    }
+
+    public String getTemplatesLocation() {
+        if (preferences != null && !Util.isNullOrEmpty(preferences.getTemplatesLocation())) {
+            return preferences.getTemplatesLocation();
+        } else {
+            return "";
+        }
+    }
+
+    public ConfigurationService getPacketEditorConfigurations() {
+        return packetEditorConfigurations;
+    }
+
+    public void setPacketEditorConfigurations(ConfigurationService packetEditorConfigurations) {
+        this.packetEditorConfigurations = packetEditorConfigurations;
+        this.packetEditorConfigurations.setLoadLocation(getLoadLocation());
+        this.packetEditorConfigurations.setSaveLocation(getSaveLocation());
+        this.packetEditorConfigurations.setTemplatesLocation(getTemplatesLocation());
     }
 
 }
