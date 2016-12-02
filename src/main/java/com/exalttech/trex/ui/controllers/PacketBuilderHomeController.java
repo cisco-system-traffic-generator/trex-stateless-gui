@@ -104,7 +104,9 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @FXML
     ProtocolDataController protocolDataController;
     @FXML
-    Tab packetViewerTab;
+    Tab packetEditorTab;
+    @FXML
+    Tab fieldEngineTab;
     @FXML
     Tab packetViewerWithTreeTab;
     @FXML
@@ -207,7 +209,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 return;
             }
         }
-        hideStreamBuilderTab();
+//        hideStreamBuilderTab();
     }
 
     /**
@@ -376,7 +378,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     private void resetTabs() {
         streamTabPane.getTabs().clear();
-        streamTabPane.getTabs().addAll(streamPropertiesTab, packetViewerTab);
+        streamTabPane.getTabs().addAll(streamPropertiesTab, protocolSelectionTab, protocolDataTab, packetEditorTab, fieldEngineTab);
     }
 
     /**

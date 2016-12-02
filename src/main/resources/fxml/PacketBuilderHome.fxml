@@ -44,9 +44,14 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab fx:id="packetViewerTab" style=" " text="Advanced">
+                <Tab fx:id="packetEditorTab" style=" " text="Packet Editor">
                     <content>
-                        <fx:include source="/com/xored/javafx/packeteditor/controllers/app_emedded.fxml"/>
+                        <fx:include source="/com/xored/javafx/packeteditor/controllers/PacketEditor_embedded.fxml"/>
+                    </content>
+                </Tab>
+                <Tab fx:id="fieldEngineTab" style=" " text="Field Engine">
+                    <content>
+                        <fx:include source="/com/xored/javafx/packeteditor/controllers/FieldEngine_embedded.fxml"/>
                     </content>
                 </Tab>
             </tabs>
