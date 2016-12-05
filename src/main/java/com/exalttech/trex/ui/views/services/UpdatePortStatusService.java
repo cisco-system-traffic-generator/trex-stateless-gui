@@ -22,13 +22,13 @@ package com.exalttech.trex.ui.views.services;
 
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.models.Port;
-import com.exalttech.trex.util.Util;
+import com.exalttech.trex.ui.models.PortStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -36,19 +36,17 @@ import javafx.concurrent.Task;
  */
 public class UpdatePortStatusService extends ScheduledService<List<Port>> {
 
+    private static final Logger LOG = Logger.getLogger(UpdatePortStatusService.class.getName());
     List<Port> portList;
     Task portStatTask;
-    Map<String, String> resutlSet = new HashMap<>();
-    String portStatus="";
-    
+    ObjectMapper mapper = new ObjectMapper();
+
     /**
      *
      * @param portList
      */
     public UpdatePortStatusService(List<Port> portList) {
         this.portList = portList;
-        resutlSet.put("owner", "");
-        resutlSet.put("state", "");
     }
 
     @Override
@@ -67,21 +65,23 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
      * @return
      */
     private List<Port> updatePortList() {
-        for (Port port : portList) {
-            portStatus = ConnectionManager.getInstance().sendRequest("get_port_status", "\"port_id\": " + port.getIndex());
-            if (portStatus == null) {
+        try {
+            String response = ConnectionManager.getInstance().sendPortStatusRequest(portList);
+            if (response == null) {
                 return new ArrayList<>();
             }
-            portStatus = Util.removeFirstBrackets(portStatus);
-            portStatus = Util.fromJSONResult(portStatus, "result");
-            
-            Util.fromJSONResultSet(portStatus, resutlSet);
-            port.setOwner(resutlSet.get("owner"));
-            port.setStatus(resutlSet.get("state"));
-            System.gc();
+            List<PortStatus> portStatusList = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, PortStatus.class));
+            PortStatus portStatus = null;
+            for (Port port : portList) {
+                portStatus = portStatusList.get(port.getIndex());
+                port.setOwner(portStatus.getResult().getOwner());
+                port.setStatus(portStatus.getResult().getState());
+            }
+            return portList;
+        } catch (Exception ex) {
+            LOG.error("Error reading port status", ex);
+            return new ArrayList<>();
         }
-
-        return portList;
     }
 
     /**
