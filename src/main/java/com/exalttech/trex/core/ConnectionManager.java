@@ -350,12 +350,13 @@ public class ConnectionManager {
 
     /**
      * Handle server response
+     *
      * @param serverResponse
      * @param writeToLog
      * @return
      * @throws UnsupportedEncodingException
      * @throws IncorrectRPCMethodException
-     * @throws InvalidRPCResponseException 
+     * @throws InvalidRPCResponseException
      */
     private String handleResponse(byte[] serverResponse, boolean writeToLog) throws UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         if (serverResponse != null) {
@@ -570,11 +571,14 @@ public class ConnectionManager {
                 getRequester().send(finalRequest);
                 byte[] serverResponse = getRequester().recv(0);
                 // decompressed response
-                return getDecompressedString(serverResponse).getBytes();
+                if (serverResponse != null) {
+                    return getDecompressedString(serverResponse).getBytes();
+                }
             } catch (IOException ex) {
                 LOG.error("Error sending request", ex);
                 return null;
             }
+            return null;
         }
     }
 
