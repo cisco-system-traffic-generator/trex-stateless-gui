@@ -15,8 +15,10 @@
  */
 package com.exalttech.trex.ui.models;
 
+import com.exalttech.trex.remote.models.params.Params;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
 /**
@@ -170,6 +172,14 @@ public class Port {
     }
 
     /**
+     * Return port parameter
+     * @return 
+     */
+    public PortParams getPortParam(){
+        return new PortParams(index);
+    }
+    
+    /**
      *
      * @return
      */
@@ -178,4 +188,39 @@ public class Port {
         return new Gson().toJson(this);
     }
 
+    /**
+     * Port parameters model
+     */
+    public class PortParams extends Params {
+
+        @JsonProperty("port_id")
+        private Integer portId;
+
+        /**
+         * Constructor
+         * @param portId 
+         */
+        public PortParams(int portId){
+            this.portId = portId;
+        }
+        
+        /**
+         * 
+         * @param portId 
+         */
+        @JsonProperty("port_id")
+        public void setPortId(Integer portId) {
+            this.portId = portId;
+        }
+
+        /**
+         * 
+         * @return 
+         */
+        @JsonProperty("port_id")
+        public Integer getPortId() {
+            return portId;
+        }
+
+    }
 }

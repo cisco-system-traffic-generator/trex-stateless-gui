@@ -21,6 +21,7 @@ import com.exalttech.trex.remote.models.common.RPCError;
 import com.exalttech.trex.remote.models.common.RPCRequest;
 import com.exalttech.trex.remote.models.params.Params;
 import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.util.CompressionUtils;
@@ -230,17 +231,13 @@ public class ConnectionManager {
             }
             String request = "{   \"id\" : \"aggogxls\",   \"jsonrpc\" : \"2.0\",   \"method\" : \"" + cmd + "\",   \"params\" :" + param + " }";
             LOG.trace("Sending request \n" + Util.toPrettyFormat(request));
-            if (!"get_port_status".equals(cmd)) {
-                logProperty.setValue("Sending request " + Util.toPrettyFormat(request));
-            }
+            logProperty.setValue("Sending request " + Util.toPrettyFormat(request));
             byte[] reply = getServerRPCResponse(request);
 
             if (reply != null) {
                 String serversResponse = new String(reply, "UTF-8");
                 LOG.trace("Received Server response \n" + Util.toPrettyFormat(serversResponse));
-                if (!"get_port_status".equals(cmd)) {
-                    logProperty.setValue("Received Server response " + Util.toPrettyFormat(serversResponse));
-                }
+                logProperty.setValue("Received Server response " + Util.toPrettyFormat(serversResponse));
                 if (serversResponse.contains("error")) {
                     try {
                         String rpcResponse = Util.removeFirstBrackets(serversResponse);
@@ -284,27 +281,7 @@ public class ConnectionManager {
         LOG.trace("Sending request \n" + Util.toPrettyFormat(jsonRequestString));
         logProperty.setValue("Sending request " + Util.toPrettyFormat(jsonRequestString));
         byte[] serverResponse = getServerRPCResponse(jsonRequestString);
-
-        if (serverResponse != null) {
-            String rpcResponse = new String(serverResponse, "UTF-8");
-            LOG.trace("Received Server response \n" + Util.toPrettyFormat(rpcResponse));
-            logProperty.setValue("Received Server response " + Util.toPrettyFormat(rpcResponse));
-            if (rpcResponse.contains("error")) {
-                try {
-                    rpcResponse = Util.removeFirstBrackets(rpcResponse);
-                    RPCError rpcError = mapper.readValue(rpcResponse, RPCError.class);
-                    LOG.error(rpcError.getError().getSpecificErr());
-                    LogsController.getInstance().appendText(LogType.ERROR, rpcError.getError().getSpecificErr());
-                    throw new IncorrectRPCMethodException(rpcError.getError().getSpecificErr() + "\n " + Util.toPrettyFormat(rpcResponse));
-                } catch (IOException ex) {
-                    LOG.warn("Error parsing response", ex);
-                }
-
-            }
-            return rpcResponse;
-        } else {
-            throw new InvalidRPCResponseException();
-        }
+        return handleResponse(serverResponse, true);
     }
 
     /**
@@ -336,14 +313,61 @@ public class ConnectionManager {
         LOG.info(requestCommand);
         logProperty.setValue("Sending request " + requestCommand);
         byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
+        return handleResponse(serverResponse, false);
+    }
 
+    /**
+     * Send request for port status
+     *
+     * @param portList
+     * @return
+     * @throws JsonProcessingException
+     * @throws UnsupportedEncodingException
+     * @throws IncorrectRPCMethodException
+     * @throws InvalidRPCResponseException
+     */
+    public String sendPortStatusRequest(List<Port> portList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+        List<String> addStreamCommandList = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        RPCRequest rpcRequest = new RPCRequest();
+        String jsonRequestString;
+        for (Port port : portList) {
+            rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
+            rpcRequest.setMethod(Constants.PORT_STATUS_METHOD);
+            rpcRequest.setParams(port.getPortParam());
+
+            jsonRequestString = mapper.writeValueAsString(rpcRequest);
+            jsonRequestString = Util.tuneJSONParams(jsonRequestString, port.getPortParam(), apiH);
+            addStreamCommandList.add(jsonRequestString);
+
+        }
+        String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
+        LOG.info("Send port status request \n " + requestCommand);
+        byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
+
+        return handleResponse(serverResponse, false);
+    }
+
+    /**
+     * Handle server response
+     * @param serverResponse
+     * @param writeToLog
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws IncorrectRPCMethodException
+     * @throws InvalidRPCResponseException 
+     */
+    private String handleResponse(byte[] serverResponse, boolean writeToLog) throws UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         if (serverResponse != null) {
             String rpcResponse = new String(serverResponse, "UTF-8");
-            
+            LOG.trace("Received Server response \n" + Util.toPrettyFormat(rpcResponse));
+            if (writeToLog) {
+                logProperty.setValue("Received Server response " + Util.toPrettyFormat(rpcResponse));
+            }
             if (rpcResponse.contains("error")) {
                 try {
                     rpcResponse = Util.removeFirstBrackets(rpcResponse);
-                    RPCError rpcError = mapper.readValue(rpcResponse, RPCError.class);
+                    RPCError rpcError = new ObjectMapper().readValue(rpcResponse, RPCError.class);
                     LOG.error(rpcError.getError().getSpecificErr());
                     LogsController.getInstance().appendText(LogType.ERROR, rpcError.getError().getSpecificErr());
                     throw new IncorrectRPCMethodException(rpcError.getError().getSpecificErr() + "\n " + Util.toPrettyFormat(rpcResponse));
@@ -400,8 +424,9 @@ public class ConnectionManager {
 
     /**
      * Decompressed response
+     *
      * @param data
-     * @return 
+     * @return
      */
     private String getDecompressedString(byte[] data) {
         // if the length is larger than 8 bytes
