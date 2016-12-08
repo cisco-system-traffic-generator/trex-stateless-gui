@@ -108,6 +108,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @FXML
     Tab packetViewerTab;
     @FXML
+    Tab packetEditorTab;
+    @FXML
+    Tab fieldEngineTab;
+    @FXML
     Tab packetViewerWithTreeTab;
     @FXML
     Tab protocolSelectionTab;
@@ -426,6 +430,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.getTabs().add(protocolDataTab);
         streamTabPane.getTabs().add(advanceSettingsTab);
         streamTabPane.getTabs().add(packetViewerWithTreeTab);
+        streamTabPane.getTabs().add(packetEditorTab);
+        streamTabPane.getTabs().add(fieldEngineTab);
     }
 
     /**
