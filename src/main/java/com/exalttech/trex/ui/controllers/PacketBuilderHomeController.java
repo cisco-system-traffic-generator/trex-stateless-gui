@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.remote.models.profiles.Packet;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.dialog.DialogView;
@@ -471,8 +472,11 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             selectedProfile.getStream().getPacket().setMeta(Util.serializeObjectToString(builderDataBinder));
         }
         String encodedBinaryPacket = trafficProfile.encodeBinaryFromHexString(hexPacket);
-        selectedProfile.getStream().getPacket().setBinary(encodedBinaryPacket);
-//        selectedProfile.getStream().getPacket().setBinary(packetBuilderController.getModel().getPkt().binary);
+        Packet packet = selectedProfile.getStream().getPacket();
+        packet.setBinary(encodedBinaryPacket);
+        packet.setBinary(packetBuilderController.getModel().getPkt().binary);
+        packet.setModel(packetBuilderController.getModel().serialize());
+
     }
 
     @Override
