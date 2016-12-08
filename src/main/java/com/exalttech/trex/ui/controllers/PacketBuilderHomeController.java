@@ -195,7 +195,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @param pcapFileBinary
      */
     private void initEditStream(String pcapFileBinary) {
-        packetBuilderController.newPacket();
+        packetBuilderController.reset();
         if (!Util.isNullOrEmpty(selectedProfile.getStream().getPacket().getMeta())) {
             BuilderDataBinding dataBinding = (BuilderDataBinding) Util.deserializeStringToObject(selectedProfile.getStream().getPacket().getMeta());
             if (dataBinding != null) {
