@@ -480,8 +480,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         String encodedBinaryPacket = trafficProfile.encodeBinaryFromHexString(hexPacket);
         Packet packet = selectedProfile.getStream().getPacket();
         packet.setBinary(encodedBinaryPacket);
-        packet.setBinary(packetBuilderController.getModel().getPkt().binary);
-        packet.setModel(packetBuilderController.getModel().serialize());
+        
+        // Should be executed in advanced mode
+//        packet.setBinary(packetBuilderController.getModel().getPkt().binary);
+//        packet.setModel(packetBuilderController.getModel().serialize());
 
     }
 
