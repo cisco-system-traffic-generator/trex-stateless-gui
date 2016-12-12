@@ -18,7 +18,7 @@
 
     <groupId>com.exalttech</groupId>
     <artifactId>trex-stateless-gui</artifactId>
-    <version>2.15-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>TRex Stateless GUI Application</name>
@@ -29,7 +29,7 @@
     </properties>
 
     <organization>
-        <name>Exalt-Tech</name>
+        <name>Xored</name>
     </organization>
    
  
@@ -79,8 +79,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>com.github.kisel</groupId>
-            <artifactId>trex-packet-editor-gui</artifactId>
+            <groupId>com.github.cisco-system-traffic-generator</groupId>
+            <artifactId>trex-packet-editor</artifactId>
             <version>821fb6e</version>
         </dependency>
         <dependency>

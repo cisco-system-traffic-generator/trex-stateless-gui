@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'application'
 
 group = 'com.exalttech'
-version = '2.09-SNAPSHOT'
+version = '3.0-SNAPSHOT'
 
 description = """TRex Stateless GUI Application"""
 
@@ -15,7 +15,7 @@ if (!hasProperty('mainClass')) {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-repositories {
+repositories {  
      maven { url "http://oss.sonatype.org/content/groups/public/" }
      if (!project.hasProperty('local')) {
          maven { url "https://jitpack.io" }
@@ -27,7 +27,7 @@ repositories {
 dependencies {
 
     compile project(':trex-packet-editor')
-    compile group: 'com.github.kisel', name: 'trex-packet-editor-gui', version:'821fb6e'
+    compile group: 'com.github.cisco-system-traffic-generator', name: 'trex-packet-editor', version:'821fb6e'
     compile group: 'org.pcap4j', name: 'pcap4j-core', version:'1.6.1'
     compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version:'1.6.1'
     compile group: 'com.aquafx-project', name: 'aquafx', version:'0.1'
