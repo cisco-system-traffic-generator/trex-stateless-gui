@@ -62,6 +62,9 @@ public class Stream implements Cloneable {
     @JsonProperty("action_count")
     private int actionCount = 0;
 
+    @JsonProperty("advanced_mode")
+    private boolean advancedMode;
+    
     @JsonIgnore
     private FlowStats flowStats;
 
@@ -294,6 +297,15 @@ public class Stream implements Cloneable {
                 + ", additionalProperties=" + additionalProperties + "]";
     }
 
+    @JsonProperty("advanced_mode")
+    public boolean getAdvancedMode() {
+        return advancedMode;
+    }
+    
+    public void setAdvancedMode(boolean advancedMode) {
+        this.advancedMode = advancedMode; 
+    }
+    
     /**
      *
      * @param additionalProperties
