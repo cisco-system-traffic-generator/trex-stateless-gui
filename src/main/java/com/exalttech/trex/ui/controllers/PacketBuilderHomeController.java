@@ -17,6 +17,7 @@ package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.remote.models.profiles.Packet;
 import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.remote.models.profiles.Stream;
 import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.dialog.DialogWindow;
@@ -31,6 +32,7 @@ import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
@@ -81,6 +83,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     Button savePacket;
     @FXML
     Button nextStreamBtn;
+    @FXML
+    Button streamEditorModeBtn;
     @FXML
     Button prevStreamBtn;
     @FXML
@@ -144,6 +148,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private int currentSelectedProfileIndex;
     BuilderDataBinding builderDataBinder;
     TrafficProfile trafficProfile;
+    private boolean workWithPCAP;
 
     /**
      * Initializes the controller class.
@@ -177,17 +182,28 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         this.yamlFileName = yamlFileName;
         this.currentSelectedProfileIndex = selectedProfileIndex;
 
+        packetBuilderController.reset();
         streamPropertiesController.init(profileList, selectedProfileIndex);
         updateNextPrevButtonState();
         switch (type) {
             case ADD_STREAM:
                 hideStreamBuilderTab();
+                workWithPCAP = true;
+                showSimpleModeTabs(workWithPCAP);
                 break;
             case BUILD_STREAM:
+                workWithPCAP = false;
                 initStreamBuilder(new BuilderDataBinding());
+                showSimpleModeTabs(false);
                 break;
             case EDIT_STREAM:
                 initEditStream(pcapFileBinary);
+                if(selectedProfile.getStream().getAdvancedMode()) {
+                    showAdvancedModeTabs();
+                } else {
+                    workWithPCAP = getDataBinding() == null;
+                    showSimpleModeTabs(workWithPCAP);
+                }
                 break;
             default:
                 break;
@@ -200,9 +216,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @param pcapFileBinary
      */
     private void initEditStream(String pcapFileBinary) {
-        packetBuilderController.reset();
-        if (!Util.isNullOrEmpty(selectedProfile.getStream().getPacket().getMeta())) {
-            BuilderDataBinding dataBinding = (BuilderDataBinding) Util.deserializeStringToObject(selectedProfile.getStream().getPacket().getMeta());
+        Stream currentStream = selectedProfile.getStream();
+        streamEditorModeBtn.setText(currentStream.getAdvancedMode() ? "Simple mode" : "Advanced mode");
+        if (!Util.isNullOrEmpty(currentStream.getPacket().getMeta())) {
+            BuilderDataBinding dataBinding = getDataBinding();
             if (dataBinding != null) {
                 initStreamBuilder(dataBinding);
                 return;
@@ -221,6 +238,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             }
         }
     }
+    
+    private BuilderDataBinding getDataBinding() {
+        return (BuilderDataBinding) Util.deserializeStringToObject(selectedProfile.getStream().getPacket().getMeta());
+    }
 
     /**
      * Initialize Build stream builder in case of edit
@@ -231,6 +252,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
         isBuildPacket = true;
         streamTabPane.getTabs().remove(packetViewerTab);
+        String packetEditorModel = selectedProfile.getStream().getPacket().getModel();
+        if (!Strings.isNullOrEmpty(packetEditorModel)) {
+            packetBuilderController.loadUserModel(packetEditorModel);
+        }
         this.builderDataBinder = builderDataBinder;
         // initialize builder tabs
         protocolSelectionController.bindSelections(builderDataBinder.getProtocolSelection());
@@ -259,6 +284,29 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.getTabs().remove(packetViewerWithTreeTab);
     }
 
+    private void showSimpleModeTabs(boolean pcapMode) {
+        streamTabPane.getTabs().clear();
+        if (pcapMode) {
+            streamTabPane.getTabs().addAll(
+                    streamPropertiesTab,
+                    packetViewerTab
+            );
+        } else {
+            streamTabPane.getTabs().addAll(
+                    streamPropertiesTab,
+                    protocolSelectionTab,
+                    protocolDataTab,
+                    advanceSettingsTab,
+                    packetViewerWithTreeTab
+            );
+        }
+    }
+
+    private void showAdvancedModeTabs() {
+        streamTabPane.getTabs().clear();
+        streamTabPane.getTabs().addAll(streamPropertiesTab, packetEditorTab, fieldEngineTab);
+    }
+    
     /**
      * Load Pcap button click handler
      *
@@ -386,6 +434,26 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     /**
+     * Next stream button click handler
+     *
+     * @param event
+     */
+    @FXML
+    public void switchEditorMode(ActionEvent event) throws Exception {
+        Stream currentStream = streamPropertiesController.getUpdatedSelectedProfile().getStream();
+        boolean advancedMode = currentStream.getAdvancedMode();
+        streamEditorModeBtn.setText(!advancedMode ? "Simple mode" : "Advanced mode");
+        currentStream.setAdvancedMode(!advancedMode);
+        
+        if (advancedMode) {
+            boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
+            showSimpleModeTabs(workWithPCAP || emptyMeta);
+        } else {
+            showAdvancedModeTabs();
+        }
+    }
+
+    /**
      * Previous stream button click handler
      *
      * @param event
@@ -479,12 +547,14 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }
         String encodedBinaryPacket = trafficProfile.encodeBinaryFromHexString(hexPacket);
         Packet packet = selectedProfile.getStream().getPacket();
-        packet.setBinary(encodedBinaryPacket);
         
-        // Should be executed in advanced mode
-//        packet.setBinary(packetBuilderController.getModel().getPkt().binary);
-//        packet.setModel(packetBuilderController.getModel().serialize());
-
+        if (selectedProfile.getStream().getAdvancedMode()) {
+            packet.setBinary(packetBuilderController.getModel().getPkt().binary);
+            packet.setModel(packetBuilderController.getModel().serialize());
+        } else {
+            packet.setBinary(encodedBinaryPacket);
+            packet.setModel("");
+        }
     }
 
     @Override
