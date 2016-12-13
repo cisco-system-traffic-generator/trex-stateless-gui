@@ -20,6 +20,13 @@
  */
 package com.exalttech.trex.ui.views.logs;
 
+import com.exalttech.trex.core.ConnectionManager;
+import com.exalttech.trex.ui.controllers.MainViewController;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.xored.javafx.packeteditor.events.ScapyClientConnectedEvent;
+
 /**
  *
  * @author GeorgeKh

@@ -182,10 +182,13 @@ public class PacketHex {
      */
     public String getPacketHexFromList() {
         StringBuilder hexStringBuffer = new StringBuilder();
-        ListIterator<TreeItem<HexData>> arr = treeRoot.getChildren().get(0).getChildren().listIterator();
-        for (ListIterator<TreeItem<HexData>> i = arr; i.hasNext();) {
-            TreeItem<HexData> item = i.next();
-            hexStringBuffer.append(item.getValue().getHex()).append(' ');
+        ObservableList<TreeItem<HexData>> childrens = treeRoot.getChildren();
+        if (childrens.size() > 0) {
+            ListIterator<TreeItem<HexData>> arr = childrens.get(0).getChildren().listIterator();
+            for (ListIterator<TreeItem<HexData>> i = arr; i.hasNext(); ) {
+                TreeItem<HexData> item = i.next();
+                hexStringBuffer.append(item.getValue().getHex()).append(' ');
+            }
         }
         return hexStringBuffer.toString().replaceAll(" ", "").replaceAll("\n", "");
     }

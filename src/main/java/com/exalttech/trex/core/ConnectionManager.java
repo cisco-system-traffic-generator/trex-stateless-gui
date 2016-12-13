@@ -441,6 +441,8 @@ public class ConnectionManager {
      * @return
      */
     private String getDecompressedString(byte[] data) {
+        if (data==null) return null;
+
         // if the length is larger than 8 bytes
         if (data.length > 8) {
 

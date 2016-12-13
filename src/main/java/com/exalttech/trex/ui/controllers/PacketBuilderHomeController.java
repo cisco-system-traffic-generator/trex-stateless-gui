@@ -33,6 +33,7 @@ import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
@@ -132,9 +133,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
     @FXML
     StackPane fieldEditorTopPane;
-    
+
     @Inject
     FieldEditorController packetBuilderController;
+
+    @Inject
+    EventBus eventBus;
     
     PacketInfo packetInfo = null;
     private PacketParser parser;

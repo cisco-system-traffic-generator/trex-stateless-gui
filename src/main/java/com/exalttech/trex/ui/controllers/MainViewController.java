@@ -40,6 +40,7 @@ import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
 import com.exalttech.trex.ui.views.MultiplierView;
 import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
 import com.exalttech.trex.ui.views.PacketTableView;
+import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.ui.views.models.ProfileMultiplier;
@@ -60,6 +61,11 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.xored.javafx.packeteditor.events.InitPacketEditorEvent;
+import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -108,6 +114,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private static final Logger LOG = Logger.getLogger(MainViewController.class.getName());
     private final RPCMethods serverRPCMethods = new RPCMethods();
     private static final String DISABLED_MULTIPLIER_MSG = "Multiplier is disabled because all streams have latency enabled";
+
     @FXML
     TreeView devicesTree;
     @FXML
@@ -231,6 +238,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private Image rightArrow;
     private boolean treeviewOpened = true;
 
+    private EventBus eventBus;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         portManager = PortsManager.getInstance();
@@ -239,6 +248,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         leftArrow = new Image("/icons/arrow_left.png");
         rightArrow = new Image("/icons/arrow_right.png");
         initializeInlineComponent();
+        logsContainer.setDisable(false);
+        eventBus = TrexApp.injector.getInstance(EventBus.class);
     }
 
     /**
@@ -615,7 +626,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         stopAllStream.setDisable(true);
         pauseStream.setDisable(true);
         clearCache.setDisable(true);
-        logsContainer.setDisable(true);
+        logsContainer.setDisable(false);
         copyToClipboardBtn.setDisable(true);
         acquirePort.setDisable(true);
         releasePort.setDisable(true);
@@ -1671,5 +1682,19 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         FORCE_ACQUIRE_ALL,
         RELEASE_ALL,
         ACQUIRE_MY_PORT;
+    }
+
+    @Subscribe
+    public void handleScapyClientNeedConnectEvent(ScapyClientNeedConnectEvent event) {
+        LogsController.getInstance().getView().setDisable(false);
+        if (ConnectionManager.getInstance().isConnected()) {
+            LogsController.getInstance().appendText(LogType.ERROR, "Not connected to Scapy server. Please connect before using packet editor.");7
+        }
+        else {
+            openConnectDialog();
+            if (ConnectionManager.getInstance().isConnected()) {
+                eventBus.post(new InitPacketEditorEvent());
+            }
+        }
     }
 }
