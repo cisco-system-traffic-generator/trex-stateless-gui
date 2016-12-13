@@ -1688,7 +1688,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     public void handleScapyClientNeedConnectEvent(ScapyClientNeedConnectEvent event) {
         LogsController.getInstance().getView().setDisable(false);
         if (ConnectionManager.getInstance().isConnected()) {
-            LogsController.getInstance().appendText(LogType.ERROR, "Not connected to Scapy server. Please connect before using packet editor.");7
+            LogsController.getInstance().appendText(LogType.ERROR, "Not connected to Scapy server. Please connect before using packet editor.");
         }
         else {
             openConnectDialog();
