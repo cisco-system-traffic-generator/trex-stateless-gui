@@ -1,10 +1,10 @@
 #define TrexAppName "trex-stateless-gui"
 #define TrexDisplayAppName "TRex"
-#define TrexAppVersion "2.15-SNAPSHOT"
+#define TrexAppVersion "3.0-SNAPSHOT"
 #define TrexAppPublisher "TRex"
-#define TrexAppURL "http://www.exalt-tech.com/"
+#define TrexAppURL "https://github.com/cisco-system-traffic-generator/trex-stateless-gui"
 #define TrexAppExeName "trex-stateless-gui.exe"
-#define SetupExeBaseName "setupTrex"
+#define SetupExeBaseName "trex-stateless-gui"
 
 ;This file will be executed next to the application bundle image
 ;I.e. current directory will contain folder {#TrexAppName} with application files
