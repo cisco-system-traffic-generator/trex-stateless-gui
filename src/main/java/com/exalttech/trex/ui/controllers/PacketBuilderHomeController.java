@@ -475,7 +475,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             if (ConnectionManager.getInstance().isConnected()) {
                 streamEditorModeBtn.setText("Simple mode");
                 currentStream.setAdvancedMode(true);
-                showAdvancedModeTabs();
+                try {
+                    packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+                    showAdvancedModeTabs();
+                } catch (Exception e) {
+                    // Display error dialog.
+                }
             }
         }
     }

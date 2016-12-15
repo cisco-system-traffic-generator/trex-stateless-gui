@@ -20,9 +20,16 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Stream builder data binding model
@@ -48,6 +55,151 @@ public class BuilderDataBinding implements Serializable {
     List<VlanDataBinding> vlanDB = new ArrayList<>();
 
     AdvancedPropertiesDataBinding advancedPropertiesDB = new AdvancedPropertiesDataBinding();
+
+    public String serializeAsPacketModel() {
+
+        JsonObject model = new JsonObject();
+        model.add("protocols", new JsonArray());
+        model.add("instructions", new JsonArray());
+        Map<String, AddressDataBinding> l3Binds = new HashMap<>();
+        
+        l3Binds.put("Ether", macDB);
+        boolean isIPv4 = protocolSelection.getIpv4Property().get();
+        if (isIPv4) {
+            l3Binds.put("IP", ipv4DB);
+        }
+
+        l3Binds.entrySet().stream().forEach(entry -> {
+            JsonObject proto = new JsonObject();
+            String protoID = entry.getKey();
+            proto.add("id", new JsonPrimitive(protoID));
+            
+            JsonArray fields = new JsonArray();
+            
+            AddressDataBinding binding = entry.getValue();
+            
+            fields.add(buildProtoField("src", binding.getSource().getAddressProperty().getValue()));
+            fields.add(buildProtoField("dst", binding.getDestination().getAddressProperty().getValue()));
+            
+
+            if (protoID.equals("Ether") && ethernetDB.getOverrideProperty().get()) {
+                fields.add(buildProtoField("type", ethernetDB.getTypeProperty().getValue()));
+            }
+            proto.add("fields", fields);
+            model.getAsJsonArray("protocols").add(proto);
+//            String macSrcStep = binding.getSource().getStepProperty().getValue();
+//            String macScrOp = binding.getSource().getModeProperty().getValue();
+
+//            String macDstStep = binding.getDestination().getStepProperty().getValue();
+//            String macDstOp = binding.getDestination().getModeProperty().getValue();
+        });
+
+        boolean isVLAN = protocolSelection.getTaggedVlanProperty().get();
+        if (isVLAN) {
+            JsonObject dot1QProto = new JsonObject();
+            dot1QProto.add("id", new JsonPrimitive("Dot1Q"));
+            Map<String, String> fieldsMap = new HashMap<>();
+
+            fieldsMap.put("prio", vlanDB.get(0).getPriority().getValue());
+            fieldsMap.put("id", vlanDB.get(0).getCfi().getValue());
+            fieldsMap.put("vlan", vlanDB.get(0).getvID().getValue());
+            
+            dot1QProto.add("fields", buildProtoFieldsFromMap(fieldsMap));
+            
+            JsonArray protocols = model.getAsJsonArray("protocols");
+            if (protocols.size() == 2) {
+                JsonElement ipv4 = protocols.get(1);
+                protocols.set(1, dot1QProto);
+                protocols.add(ipv4);
+            } else {
+                model.getAsJsonArray("protocols").add(dot1QProto);
+            }
+            
+            
+            if (vlanDB.get(0).getOverrideTPID().getValue()) {
+                JsonArray etherFields = ((JsonObject) model.getAsJsonArray("protocols").get(0)).get("fields").getAsJsonArray();
+                if (etherFields.size() == 3) {
+                    etherFields.remove(2);
+                }
+                etherFields.add(buildProtoField("type", vlanDB.get(0).getTpid().getValue()));
+            }
+        }
+        
+        boolean isTCP = protocolSelection.getTcpProperty().get();
+        if (isTCP) {
+            JsonObject tcpProto = new JsonObject();
+            tcpProto.add("id", new JsonPrimitive("TCP"));
+            
+            Map<String, String> fieldsMap = new HashMap<>();
+            fieldsMap.put("sport", tcpProtocolDB.getSrcPort().getValue());
+            fieldsMap.put("dport", tcpProtocolDB.getDstPort().getValue());
+            fieldsMap.put("chksum", "0x"+tcpProtocolDB.getChecksum().getValue());
+            fieldsMap.put("seq", tcpProtocolDB.getSequeceNumber().getValue());
+            fieldsMap.put("urgptr", tcpProtocolDB.getUrgentPointer().getValue());
+            fieldsMap.put("ack", tcpProtocolDB.getAckNumber().getValue());
+
+            int tcp_flags = 0;
+            if (tcpProtocolDB.getUrg().get()) {
+                tcp_flags = tcp_flags | (1 << 5);
+            }
+            if (tcpProtocolDB.getAck().get()) {
+                tcp_flags = tcp_flags | (1 << 4);
+            }
+            if (tcpProtocolDB.getPsh().get()) {
+                tcp_flags = tcp_flags | (1 << 3);
+            }
+            if (tcpProtocolDB.getRst().get()) {
+                tcp_flags = tcp_flags | (1 << 2);
+            }
+            if (tcpProtocolDB.getSyn().get()) {
+                tcp_flags = tcp_flags | (1 << 1);
+            }
+            if (tcpProtocolDB.getFin().get()) {
+                tcp_flags = tcp_flags | 1;
+            }
+            fieldsMap.put("flags", String.valueOf(tcp_flags));
+
+            tcpProto.add("fields", buildProtoFieldsFromMap(fieldsMap));
+            model.getAsJsonArray("protocols").add(tcpProto);
+        }
+
+        // Field Engine instructions
+        advancedPropertiesDB.getCacheSizeType().getValue(); // Need check on "Enable"
+        String cacheSize = advancedPropertiesDB.getCacheValue().getValue();
+
+        boolean isUDP = protocolSelection.getUdpProperty().get();
+        if (isUDP) {
+            JsonObject udpProto = new JsonObject();
+            udpProto.add("id", new JsonPrimitive("UDP"));
+            
+            Map<String, String> fieldsMap = new HashMap<>();
+            fieldsMap.put("sport", udpProtocolDB.getSrcPort().getValue());
+            fieldsMap.put("dport", udpProtocolDB.getDstPort().getValue());
+            fieldsMap.put("len", udpProtocolDB.getLength().getValue());
+            fieldsMap.put("chksum", "0x"+udpProtocolDB.getChecksum().getValue());
+            
+            udpProto.add("fields", buildProtoFieldsFromMap(fieldsMap));
+            model.getAsJsonArray("protocols").add(udpProto);
+        }
+
+        String res = model.toString();
+        return res;
+    }
+    
+    private JsonArray buildProtoFieldsFromMap(Map<String, String> fieldsMap) {
+        JsonArray fields = new JsonArray();
+        fieldsMap.entrySet().forEach(entry -> {
+            fields.add(buildProtoField(entry.getKey(), entry.getValue()));
+        });
+        return fields;
+    }
+    
+    private JsonObject buildProtoField(String id, String val) {
+        JsonObject field = new JsonObject();
+        field.add("id", new JsonPrimitive(id));
+        field.add("value", new JsonPrimitive(val));
+        return field;
+    }
     
     /**
      * Constructor
