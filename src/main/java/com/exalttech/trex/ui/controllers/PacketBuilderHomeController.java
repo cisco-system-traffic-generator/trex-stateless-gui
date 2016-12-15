@@ -15,6 +15,8 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.application.TrexApp;
+import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.remote.models.profiles.Packet;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.remote.models.profiles.Stream;
@@ -37,9 +39,11 @@ import com.google.common.eventbus.EventBus;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
+import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -180,11 +184,20 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @param yamlFileName
      * @param type
      */
-    public void initStreamBuilder(String pcapFileBinary, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
+    public boolean initStreamBuilder(String pcapFileBinary, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
         this.selectedProfile = profileList.get(selectedProfileIndex);
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
         this.currentSelectedProfileIndex = selectedProfileIndex;
+
+        if (selectedProfile.getStream().getAdvancedMode()
+                && !ConnectionManager.getInstance().isConnected()) {
+            //mainViewController.openConnectDialog();
+            eventBus.post(new ScapyClientNeedConnectEvent());
+            if (!ConnectionManager.getInstance().isConnected()) {
+                return false;
+            }
+        }
 
         packetBuilderController.reset();
         streamPropertiesController.init(profileList, selectedProfileIndex);
@@ -212,6 +225,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             default:
                 break;
         }
+
+        return true;
     }
 
     /**
@@ -446,14 +461,22 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     public void switchEditorMode(ActionEvent event) throws Exception {
         Stream currentStream = streamPropertiesController.getUpdatedSelectedProfile().getStream();
         boolean advancedMode = currentStream.getAdvancedMode();
-        streamEditorModeBtn.setText(!advancedMode ? "Simple mode" : "Advanced mode");
-        currentStream.setAdvancedMode(!advancedMode);
-        
+
         if (advancedMode) {
+            streamEditorModeBtn.setText("Advanced mode");
+            currentStream.setAdvancedMode(false);
             boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
             showSimpleModeTabs(workWithPCAP || emptyMeta);
         } else {
-            showAdvancedModeTabs();
+            if (!ConnectionManager.getInstance().isConnected()) {
+                //mainViewController.openConnectDialog();
+                eventBus.post(new ScapyClientNeedConnectEvent());
+            }
+            if (ConnectionManager.getInstance().isConnected()) {
+                streamEditorModeBtn.setText("Simple mode");
+                currentStream.setAdvancedMode(true);
+                showAdvancedModeTabs();
+            }
         }
     }
 
