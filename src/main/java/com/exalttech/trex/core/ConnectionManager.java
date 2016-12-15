@@ -31,6 +31,7 @@ import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xored.javafx.packeteditor.scapy.ScapyServerClient;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -46,6 +47,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.DataFormatException;
 
 /**
@@ -174,16 +177,16 @@ public class ConnectionManager {
             context = ZMQ.context(1);
             setRequester(context.socket(ZMQ.REQ));
             getRequester().setReceiveTimeOut(3000);
-
             getRequester().connect(connectionString);
-            LogsController.getInstance().appendText(LogType.INFO, "Connecting to TRex:" + connectionString);
-
-            scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
-            
+            LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex server: " + connectionString);
         } catch (Exception ex) {
             LOG.error("Invalid hostname", ex);
             return false;
         }
+
+        // Just try to connect but don't account
+        scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
+
         return true;
     }
 
@@ -195,16 +198,41 @@ public class ConnectionManager {
     public boolean testConnection(boolean isAsync) {
         if (isAsync) {
             return !Util.isNullOrEmpty(getAsyncResponse());
-        } else if (isTrexAndScapyServersReachable()) {
-            LOG.error("Server is unreachable");
-            return false;
         }
+        else {
+            if (!connectTrex()) {
+                return false;
+            }
+        }
+        // Just try to connect, but don't account
+        connectScapy();
+
         return true;
     }
 
     private boolean isTrexAndScapyServersReachable() {
-        return sendRequest("ping") == null && scapyServerClient.isConnected();
+        return connectTrex() && connectScapy();
     }
+
+    private boolean connectTrex() {
+        if (sendRequest("ping") != null) {
+            return true;
+        }
+        LogsController.getInstance().appendText(LogType.ERROR, "Trex server is ureachable");
+        return false;
+    }
+
+    private boolean connectScapy() {
+        LogsController.getInstance().appendText(LogType.INFO, "Connecting to Scapy server: " + "tcp://" + ip +":"+ scapyPort);
+        scapyServerClient.closeConnection();
+        scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
+        if (scapyServerClient.isConnected()) {
+            return true;
+        }
+        LogsController.getInstance().appendText(LogType.ERROR, "Scapy server is ureachable");
+        return false;
+    }
+
     /**
      *
      * Send request without Parameters
@@ -265,8 +293,8 @@ public class ConnectionManager {
         } catch (UnsupportedEncodingException ex) {
             LOG.error("Error while sending request", ex);
         }
-        return null;
 
+        return null;
     }
 
     /**
@@ -400,38 +428,79 @@ public class ConnectionManager {
      * @return
      */
     public String getAsyncResponse() {
-
-        task = new Task<Void>() {
-
-            @Override
-            protected Void call() throws Exception {
+        LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex async port: " + "tcp://" + ip + ":" + asyncPort);
+        final String[] error = {null};
+        try {
+            runAndWait(() -> {
                 try {
                     ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
                     subscriber.setReceiveTimeOut(5000);
                     subscriber.connect("tcp://" + ip + ":" + asyncPort);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
-                    String res;
 
+                    String res;
                     while (!Thread.currentThread().isInterrupted()) {
                         try {
                             res = getDecompressedString(subscriber.recv());
                             if (res != null) {
                                 handleAsyncResponse(res);
                                 res = null;
+                                return;
                             }
-                        } catch (Exception ex) {
-                            LOG.error("Possible error while reading the Async request", ex);
+                            else {
+                                error[0] = "Error while verifing the Async request: " + "Async responce is null";
+                                return;
+                            }
+                        } catch (Exception e) {
+                            error[0] = "Error while verifing the Async request: " + e.getMessage();
+                            return;
                         }
                     }
-                } catch (Exception ex) {
-                    LOG.error("Possible error while reading the Async request", ex);
+                } catch (Exception e) {
+                    error[0] = "Error while verifing the Async request: " + e.getMessage();
                 }
-                return null;
-            }
+            });
+        } catch (InterruptedException e) {
+            error[0] = "Error while verifing the Async request: " + e.getMessage();
+        } catch (ExecutionException e) {
+            error[0] = "Error while verifing the Async request: " + e.getMessage();
+        }
+        if (error[0] == null) {
+            return ASYNC_PASS_STATUS;
+        }
+        LogsController.getInstance().appendText(LogType.ERROR, error[0]);
+        return null;
+    }
 
-        };
-        new Thread(task).start();
-        return ASYNC_PASS_STATUS;
+    /**
+     * Runs the specified {@link Runnable} on the
+     * JavaFX application thread and waits for completion.
+     *
+     * @param action the {@link Runnable} to run
+     * @throws NullPointerException if {@code action} is {@code null}
+     */
+    private static void runAndWait(Runnable action) throws InterruptedException, ExecutionException {
+        if (action == null)
+            throw new NullPointerException("action");
+
+        // run synchronously on JavaFX thread
+        if (Platform.isFxApplicationThread()) {
+            action.run();
+            return;
+        }
+
+        // queue on JavaFX thread and wait for completion
+        final CountDownLatch doneLatch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            try {
+                action.run();
+            } finally {
+                doneLatch.countDown();
+            }
+        });
+
+        doneLatch.await();
+
     }
 
     /**
