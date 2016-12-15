@@ -561,8 +561,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Return async stats list
      *
      * @param type
-     * @param keysList
-     * @param additionalKeyStr
      */
     private void getAsyncStatList(AsyncStatsType type) {
         getAsyncStatList(type, 0);
@@ -645,7 +643,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         // stop async subscriber
         ConnectionManager.getInstance().disconnectSubscriber();
         ConnectionManager.getInstance().disconnectRequester();
-        ConnectionManager.getInstance().disconnectScapyClient();
+        ConnectionManager.getInstance().disconnectScapy();
 
         if (didServerCrash) {
             openConnectDialog();
@@ -1429,8 +1427,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     /**
      * Enable update/Stop button button
-     *
-     * @param enable
      */
     private void enableUpdateBtn(boolean enableCounter, boolean enableUpdate) {
         Port currentPort = portManager.getPortList().get(lastLoadedPortPtofileIndex);
@@ -1687,13 +1683,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     @Subscribe
     public void handleScapyClientNeedConnectEvent(ScapyClientNeedConnectEvent event) {
         LogsController.getInstance().getView().setDisable(false);
-        if (ConnectionManager.getInstance().isConnected()) {
-            LogsController.getInstance().appendText(LogType.ERROR, "Not connected to Scapy server. Please connect before using packet editor.");
-        }
-        else {
+        if (!ConnectionManager.getInstance().isScapyConnected()) {
             openConnectDialog();
-            if (ConnectionManager.getInstance().isConnected()) {
+            if (ConnectionManager.getInstance().isScapyConnected()) {
                 eventBus.post(new InitPacketEditorEvent());
+                return;
             }
         }
     }

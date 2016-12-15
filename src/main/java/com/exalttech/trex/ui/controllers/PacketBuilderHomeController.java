@@ -46,9 +46,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -191,10 +189,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         this.currentSelectedProfileIndex = selectedProfileIndex;
 
         if (selectedProfile.getStream().getAdvancedMode()
-                && !ConnectionManager.getInstance().isConnected()) {
-            //mainViewController.openConnectDialog();
+                && !ConnectionManager.getInstance().isScapyConnected()) {
             eventBus.post(new ScapyClientNeedConnectEvent());
-            if (!ConnectionManager.getInstance().isConnected()) {
+            if (!ConnectionManager.getInstance().isScapyConnected()) {
+                alertCantOpenAdvancedMode("Can't open packet editor in Advanced mode: there is no connection to Scapy server");
                 return false;
             }
         }
@@ -467,20 +465,24 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             currentStream.setAdvancedMode(false);
             boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
             showSimpleModeTabs(workWithPCAP || emptyMeta);
-        } else {
-            if (!ConnectionManager.getInstance().isConnected()) {
-                //mainViewController.openConnectDialog();
+        }
+        else {
+            if (!ConnectionManager.getInstance().isScapyConnected()) {
                 eventBus.post(new ScapyClientNeedConnectEvent());
             }
-            if (ConnectionManager.getInstance().isConnected()) {
+            if (ConnectionManager.getInstance().isScapyConnected()) {
                 streamEditorModeBtn.setText("Simple mode");
                 currentStream.setAdvancedMode(true);
                 try {
                     packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
                     showAdvancedModeTabs();
-                } catch (Exception e) {
-                    // Display error dialog.
                 }
+                catch (Exception e) {
+                    // TODO: Display error dialog.
+                }
+            }
+            else {
+                alertCantOpenAdvancedMode("Can't open Advanced mode: there is no connection to Scapy server");
             }
         }
     }
@@ -598,4 +600,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     public void onEscapKeyPressed() {
         // ignoring global escape
     }
+
+    private void alertCantOpenAdvancedMode(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                message,
+                ButtonType.OK);
+        alert.show();
+    }
+
 }

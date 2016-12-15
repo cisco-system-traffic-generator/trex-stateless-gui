@@ -204,14 +204,11 @@ public class ConnectionManager {
                 return false;
             }
         }
-        // Just try to connect, but don't account
+        // Just try to connect, but don't take into the account
+        disconnectScapy();
         connectScapy();
 
         return true;
-    }
-
-    private boolean isTrexAndScapyServersReachable() {
-        return connectTrex() && connectScapy();
     }
 
     private boolean connectTrex() {
@@ -224,13 +221,16 @@ public class ConnectionManager {
 
     private boolean connectScapy() {
         LogsController.getInstance().appendText(LogType.INFO, "Connecting to Scapy server: " + "tcp://" + ip +":"+ scapyPort);
-        scapyServerClient.closeConnection();
         scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
         if (scapyServerClient.isConnected()) {
             return true;
         }
         LogsController.getInstance().appendText(LogType.ERROR, "Scapy server is ureachable");
         return false;
+    }
+
+    public void disconnectScapy() {
+        scapyServerClient.closeConnection();
     }
 
     /**
@@ -613,6 +613,14 @@ public class ConnectionManager {
         return this.connected;
     }
 
+    public boolean isTrexConnected() {
+        return this.connected;
+    }
+
+    public boolean isScapyConnected() {
+        return scapyServerClient.isConnected();
+    }
+
     /**
      *
      * @param connected
@@ -699,7 +707,4 @@ public class ConnectionManager {
         return apiH;
     }
 
-    public void disconnectScapyClient() {
-        scapyServerClient.closeConnection();
-    }
 }
