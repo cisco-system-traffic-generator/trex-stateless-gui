@@ -453,7 +453,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
             showSimpleModeTabs(workWithPCAP || emptyMeta);
         } else {
-            showAdvancedModeTabs();
+            try {
+                packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+                showAdvancedModeTabs();
+            } catch(Exception e) {
+                // Display error dialog.
+            }
         }
     }
 
