@@ -154,7 +154,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private int currentSelectedProfileIndex;
     BuilderDataBinding builderDataBinder;
     TrafficProfile trafficProfile;
-    private boolean workWithPCAP;
 
     /**
      * Initializes the controller class.
@@ -204,23 +203,16 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamPropertiesController.init(profileList, selectedProfileIndex);
         updateNextPrevButtonState();
         switch (type) {
-            case ADD_STREAM:
-                hideStreamBuilderTab();
-                workWithPCAP = true;
-                showSimpleModeTabs(workWithPCAP);
-                break;
             case BUILD_STREAM:
-                workWithPCAP = false;
                 initStreamBuilder(new BuilderDataBinding());
-                showSimpleModeTabs(false);
+                showSimpleModeTabs();
                 break;
             case EDIT_STREAM:
                 initEditStream(pcapFileBinary);
                 if(selectedProfile.getStream().getAdvancedMode()) {
                     showAdvancedModeTabs();
                 } else {
-                    workWithPCAP = getDataBinding() == null;
-                    showSimpleModeTabs(workWithPCAP);
+                    showSimpleModeTabs();
                 }
                 break;
             default:
@@ -304,22 +296,15 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.getTabs().remove(packetViewerWithTreeTab);
     }
 
-    private void showSimpleModeTabs(boolean pcapMode) {
+    private void showSimpleModeTabs() {
         streamTabPane.getTabs().clear();
-        if (pcapMode) {
-            streamTabPane.getTabs().addAll(
-                    streamPropertiesTab,
-                    packetViewerTab
-            );
-        } else {
-            streamTabPane.getTabs().addAll(
-                    streamPropertiesTab,
-                    protocolSelectionTab,
-                    protocolDataTab,
-                    advanceSettingsTab,
-                    packetViewerWithTreeTab
-            );
-        }
+        streamTabPane.getTabs().addAll(
+                streamPropertiesTab,
+                protocolSelectionTab,
+                protocolDataTab,
+                advanceSettingsTab,
+                packetViewerWithTreeTab
+        );
     }
 
     private void showAdvancedModeTabs() {
@@ -471,8 +456,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             if (advancedMode) {
                 streamEditorModeBtn.setText("Advanced mode");
                 currentStream.setAdvancedMode(false);
-                boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
-                showSimpleModeTabs(workWithPCAP || emptyMeta);
+                showSimpleModeTabs();
             } else {
                 if (ConnectionManager.getInstance().isScapyConnected()) {
                     streamEditorModeBtn.setText("Simple mode");
