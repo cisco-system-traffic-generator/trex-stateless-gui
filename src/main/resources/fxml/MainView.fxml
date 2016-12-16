@@ -186,7 +186,7 @@
                         </SplitPane>
                             </children>
                         </AnchorPane>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="149.0" prefWidth="1098.0" style="-fx-background-color: ;">
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="149.0" prefWidth="1098.0" style="-fx-background-color: null;">
                             <children>
                                 <AnchorPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color:#FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <children>

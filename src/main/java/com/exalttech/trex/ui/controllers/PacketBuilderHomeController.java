@@ -190,14 +190,20 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
         if (selectedProfile.getStream().getAdvancedMode()
                 && !ConnectionManager.getInstance().isScapyConnected()) {
-            eventBus.post(new ScapyClientNeedConnectEvent());
-            if (!ConnectionManager.getInstance().isScapyConnected()) {
-                alertWarning("Can't open packet editor in Advanced mode",
-                        "There is no connection to Scapy server."
-                                + "\nPlease refer to documentation about"
-                                + "\nScapy server and advanced mode.");
-                return false;
+            boolean loop = true;
+            while (loop) {
+                eventBus.post(new ScapyClientNeedConnectEvent());
+                if (ConnectionManager.getInstance().isScapyConnected()) {
+                    loop = false;
+                }
+                else {
+                    loop = alertWarning("Can't open packet editor in Advanced mode",
+                            "There is no connection to Scapy server."
+                                    + "\nPlease refer to documentation about"
+                                    + "\nScapy server and advanced mode.");
+                }
             }
+            return ConnectionManager.getInstance().isScapyConnected();
         }
 
         packetBuilderController.reset();
@@ -607,13 +613,22 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         // ignoring global escape
     }
 
-    private void alertWarning(String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.WARNING,
-                content,
-                ButtonType.OK);
+    private boolean alertWarning(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setHeaderText(header);
+        alert.setContentText(content + "\nWould you like to change ip or port and try connection again ?");
         alert.setTitle("Warning");
-        alert.show();
+
+        ButtonType buttonTypeOne = new ButtonType("Try", ButtonBar.ButtonData.YES);
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeCancel);
+
+        alert.showAndWait();
+        ButtonType res = alert.getResult();
+        if (res.getButtonData()== ButtonBar.ButtonData.CANCEL_CLOSE) {
+            return false;
+        }
+        return true;
     }
 
 }
