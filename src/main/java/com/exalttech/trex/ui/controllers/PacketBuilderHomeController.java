@@ -463,33 +463,30 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         Stream currentStream = streamPropertiesController.getUpdatedSelectedProfile().getStream();
         boolean advancedMode = currentStream.getAdvancedMode();
 
-        if (advancedMode) {
-            streamEditorModeBtn.setText("Advanced mode");
-            currentStream.setAdvancedMode(false);
-            boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
-            showSimpleModeTabs(workWithPCAP || emptyMeta);
-        }
-        else {
+        try {
             if (!ConnectionManager.getInstance().isScapyConnected()) {
                 eventBus.post(new ScapyClientNeedConnectEvent());
             }
-            if (ConnectionManager.getInstance().isScapyConnected()) {
-                streamEditorModeBtn.setText("Simple mode");
-                currentStream.setAdvancedMode(true);
-                try {
-                    packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+            packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+            if (advancedMode) {
+                streamEditorModeBtn.setText("Advanced mode");
+                currentStream.setAdvancedMode(false);
+                boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
+                showSimpleModeTabs(workWithPCAP || emptyMeta);
+            } else {
+                if (ConnectionManager.getInstance().isScapyConnected()) {
+                    streamEditorModeBtn.setText("Simple mode");
+                    currentStream.setAdvancedMode(true);
                     showAdvancedModeTabs();
-                }
-                catch (Exception e) {
-                    // TODO: Display error dialog.
+                } else {
+                    alertWarning("Can't open Advanced mode", "There is no connection to Scapy server."
+                            + "\nPlease refer to documentation about"
+                            + "\nScapy server and advanced configuration mode.");
                 }
             }
-            else {
-                alertWarning("Can't open Advanced mode",
-                        "There is no connection to Scapy server."
-                        + "\nPlease refer to documentation about"
-                        + "\nScapy server and advanced mode.");
-            }
+        } catch (Exception e) {
+            LOG.error("Unable to open advanced mode due to: " + e.getMessage());
+            alertWarning("Can't open Advanced mode", "Some errors occurred. See logs for more details.");
         }
     }
 
