@@ -20,6 +20,7 @@
  */
 package com.exalttech.trex.ui.models.datastore;
 
+import com.exalttech.trex.util.Util;
 import com.google.gson.Gson;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -64,7 +65,7 @@ public class Connection {
         this.ip = ip;
         this.rpcPort = rpcPort;
         this.asyncPort = asyncPort;
-        this.scapyPort = scapyPort;
+        this.scapyPort = Util.isNullOrEmpty(scapyPort) ? "4507" : scapyPort;
         this.user = user;
         this.fullControl = fullControl;
     }
@@ -124,6 +125,25 @@ public class Connection {
      */
     public void setAsyncPort(String asyncPort) {
         this.asyncPort = asyncPort;
+    }
+
+    /**
+     * Return Scapy port
+     *
+     * @return
+     */
+    @XmlElement(name = "scapy_port")
+    public String getScapyPort() {
+        return scapyPort;
+    }
+
+    /**
+     * Set Async port
+     *
+     * @param scapyPort
+     */
+    public void setScapyPort(String scapyPort) {
+        this.scapyPort = scapyPort;
     }
 
     /**

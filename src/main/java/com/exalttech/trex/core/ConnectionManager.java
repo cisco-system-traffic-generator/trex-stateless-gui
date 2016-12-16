@@ -219,9 +219,13 @@ public class ConnectionManager {
         return false;
     }
 
-    private boolean connectScapy() {
-        LogsController.getInstance().appendText(LogType.INFO, "Connecting to Scapy server: " + "tcp://" + ip +":"+ scapyPort);
-        scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
+    public boolean connectScapy() {
+        return connectScapy(ip, scapyPort);
+    }
+
+    public boolean connectScapy(String scapy_ip, String scapy_port) {
+        LogsController.getInstance().appendText(LogType.INFO, "Connecting to Scapy server: " + "tcp://" + scapy_ip + ":" + scapy_port);
+        scapyServerClient.connect("tcp://" + scapy_ip + ":" + scapy_port, 3000);
         if (scapyServerClient.isConnected()) {
             return true;
         }

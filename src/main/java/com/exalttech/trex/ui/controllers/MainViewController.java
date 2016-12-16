@@ -36,6 +36,8 @@ import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.SystemInfoReq;
+import com.exalttech.trex.ui.models.datastore.Connection;
+import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
 import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
 import com.exalttech.trex.ui.views.MultiplierView;
 import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
@@ -62,6 +64,7 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
+import com.exalttech.trex.util.files.XMLFileManager;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.xored.javafx.packeteditor.events.InitPacketEditorEvent;
@@ -1684,7 +1687,23 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     public void handleScapyClientNeedConnectEvent(ScapyClientNeedConnectEvent event) {
         LogsController.getInstance().getView().setDisable(false);
         if (!ConnectionManager.getInstance().isScapyConnected()) {
-            openConnectDialog();
+            ConnectionsWrapper connection = (ConnectionsWrapper) XMLFileManager.loadXML("connections.xml", ConnectionsWrapper.class);
+            Connection lastUsed = null;
+            for (Connection con : connection.getConnectionList()) {
+                if(con.isLastUsed()){
+                    lastUsed = con;
+                }
+            }
+            if (lastUsed == null) {
+                ConnectionManager.getInstance().connectScapy();
+            }
+            else {
+                ConnectionManager.getInstance().connectScapy(lastUsed.getIp(), lastUsed.getScapyPort());
+            }
+
+            if (!ConnectionManager.getInstance().isScapyConnected()) {
+                openConnectDialog();
+            }
             if (ConnectionManager.getInstance().isScapyConnected()) {
                 eventBus.post(new InitPacketEditorEvent());
                 return;

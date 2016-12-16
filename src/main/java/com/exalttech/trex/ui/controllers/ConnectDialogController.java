@@ -173,6 +173,9 @@ public class ConnectDialogController extends DialogView implements Initializable
         } else if (!Util.isValidPort(asyncPort.getText())) {
             errMsg.setContentText("Invalid Async Port Number(" + asyncPort.getText() + ")");
             isValid = false;
+        } else if (!Util.isValidPort(scapyPort.getText())) {
+            errMsg.setContentText("Invalid Scapy Port Number(" + scapyPort.getText() + ")");
+            isValid = false;
         } else if (Util.isNullOrEmpty(nameTF.getText())) {
             errMsg.setContentText("Name should not be empty");
             isValid = false;
@@ -218,6 +221,7 @@ public class ConnectDialogController extends DialogView implements Initializable
             selectedConnection = connectionMap.get(newValue);
             rpcPort.setText(selectedConnection.getRpcPort());
             asyncPort.setText(selectedConnection.getAsyncPort());
+            scapyPort.setText(Util.isNullOrEmpty(selectedConnection.getScapyPort()) ? "4507" : selectedConnection.getScapyPort());
             nameTF.setText(selectedConnection.getUser());
             fullControlRB.setSelected(selectedConnection.isFullControl());
         }
