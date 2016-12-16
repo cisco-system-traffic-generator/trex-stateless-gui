@@ -485,7 +485,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 alertCantOpenAdvancedMode("Can't open Advanced mode: there is no connection to Scapy server");
             }
         }
-    }
+     }
 
     /**
      * Previous stream button click handler
