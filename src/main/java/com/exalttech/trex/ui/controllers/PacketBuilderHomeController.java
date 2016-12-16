@@ -15,7 +15,6 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.remote.models.profiles.Packet;
 import com.exalttech.trex.remote.models.profiles.Profile;
@@ -43,7 +42,6 @@ import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -192,7 +190,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 && !ConnectionManager.getInstance().isScapyConnected()) {
             eventBus.post(new ScapyClientNeedConnectEvent());
             if (!ConnectionManager.getInstance().isScapyConnected()) {
-                alertCantOpenAdvancedMode("Can't open packet editor in Advanced mode: there is no connection to Scapy server");
+                alertWarning("Can't open packet editor in Advanced mode",
+                        "There is no connection to Scapy server."
+                                + "\nPlease refer to documentation about"
+                                + "\nScapy server and advanced mode.");
                 return false;
             }
         }
@@ -482,7 +483,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 }
             }
             else {
-                alertCantOpenAdvancedMode("Can't open Advanced mode: there is no connection to Scapy server");
+                alertWarning("Can't open Advanced mode",
+                        "There is no connection to Scapy server."
+                        + "\nPlease refer to documentation about"
+                        + "\nScapy server and advanced mode.");
             }
         }
     }
@@ -601,10 +605,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         // ignoring global escape
     }
 
-    private void alertCantOpenAdvancedMode(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                message,
+    private void alertWarning(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING,
+                content,
                 ButtonType.OK);
+        alert.setHeaderText(header);
+        alert.setTitle("Warning");
         alert.show();
     }
 

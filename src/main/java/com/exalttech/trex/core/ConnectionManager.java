@@ -428,6 +428,7 @@ public class ConnectionManager {
      * @return
      */
     public String getAsyncResponse() {
+        String ret = null;
         LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex async port: " + "tcp://" + ip + ":" + asyncPort);
         final String[] error = {null};
         try {
@@ -466,10 +467,46 @@ public class ConnectionManager {
             error[0] = "Error while verifing the Async request: " + e.getMessage();
         }
         if (error[0] == null) {
-            return ASYNC_PASS_STATUS;
+            ret = ASYNC_PASS_STATUS;
         }
-        LogsController.getInstance().appendText(LogType.ERROR, error[0]);
-        return null;
+        else {
+            LogsController.getInstance().appendText(LogType.ERROR, error[0]);
+            ret = null;
+        }
+
+        // Create async task
+        task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
+                    subscriber.setReceiveTimeOut(5000);
+                    subscriber.connect("tcp://" + ip + ":" + asyncPort);
+                    subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
+                    String res;
+
+                    while (!Thread.currentThread().isInterrupted()) {
+                        try {
+                            res = getDecompressedString(subscriber.recv());
+                            if (res != null) {
+                                handleAsyncResponse(res);
+                                res = null;
+                            }
+                        } catch (Exception ex) {
+                            LOG.error("Possible error while reading the Async request", ex);
+                        }
+                    }
+                } catch (Exception ex) {
+                    LOG.error("Possible error while reading the Async request", ex);
+                }
+                return null;
+            }
+
+        };
+        new Thread(task).start();
+
+        // return verified async port connection result
+        return ret;
     }
 
     /**
