@@ -60,7 +60,12 @@ public class BuilderDataBinding implements Serializable {
 
         JsonObject model = new JsonObject();
         model.add("protocols", new JsonArray());
-        model.add("instructions", new JsonArray());
+        
+        JsonObject fieldEngine = new JsonObject();
+        fieldEngine.add("instructions", new JsonArray());
+        fieldEngine.add("global_parameters", new JsonObject());
+        model.add("field_engine", fieldEngine);
+        
         Map<String, AddressDataBinding> l3Binds = new HashMap<>();
         
         l3Binds.put("Ether", macDB);
@@ -87,11 +92,14 @@ public class BuilderDataBinding implements Serializable {
             }
             proto.add("fields", fields);
             model.getAsJsonArray("protocols").add(proto);
-//            String macSrcStep = binding.getSource().getStepProperty().getValue();
-//            String macScrOp = binding.getSource().getModeProperty().getValue();
-
-//            String macDstStep = binding.getDestination().getStepProperty().getValue();
-//            String macDstOp = binding.getDestination().getModeProperty().getValue();
+            if (!"Fixed".equals(binding.getSource().getModeProperty().get())
+                && !"TRex Config".equals(binding.getSource().getModeProperty().get())) {
+                fieldEngine.getAsJsonArray("instructions").addAll(buildVMInstructions(protoID, "src", binding.getSource()));
+            }
+            if (!"Fixed".equals(binding.getDestination().getModeProperty().get())
+                && !"TRex Config".equals(binding.getDestination().getModeProperty().get())) {
+                fieldEngine.getAsJsonArray("instructions").addAll(buildVMInstructions(protoID, "dst", binding.getDestination()));
+            }
         });
 
         boolean isVLAN = protocolSelection.getTaggedVlanProperty().get();
@@ -164,9 +172,10 @@ public class BuilderDataBinding implements Serializable {
         }
 
         // Field Engine instructions
-        advancedPropertiesDB.getCacheSizeType().getValue(); // Need check on "Enable"
-        String cacheSize = advancedPropertiesDB.getCacheValue().getValue();
-
+        if("Enable".equals(advancedPropertiesDB.getCacheSizeType().getValue())) {
+            fieldEngine.getAsJsonObject("global_parameters").add("cache_size", new JsonPrimitive(advancedPropertiesDB.getCacheValue().getValue()));
+        }
+        
         boolean isUDP = protocolSelection.getUdpProperty().get();
         if (isUDP) {
             JsonObject udpProto = new JsonObject();
@@ -185,7 +194,53 @@ public class BuilderDataBinding implements Serializable {
         String res = model.toString();
         return res;
     }
-    
+
+    private JsonArray buildVMInstructions(String protoId, String fieldId, AddressDataBinding.AddressInfo binding) {
+        JsonArray instructions = new JsonArray();
+
+        Map<String, String> flowVarParameters = new HashMap<>();
+        String varName = protoId + "_" + fieldId;
+        flowVarParameters.put("name", varName);
+        
+        String operation;
+        switch (binding.getModeProperty().get()) {
+            case "Random Host":
+                operation = "random";
+                break;
+            case "Decrement Host":
+                operation = "dec";
+                break;
+            case "Increment Host":
+            default:
+                operation = "inc";
+                break;
+        }
+        flowVarParameters.put("op", operation);
+        flowVarParameters.put("max_value", binding.getAddressProperty().get());
+        flowVarParameters.put("step", binding.getStepProperty().get());
+
+        instructions.add(buildInstruction("STLVmFlowVar", flowVarParameters));
+
+        Map<String, String> flowWrVarParameters = new HashMap<>();
+        flowWrVarParameters.put("fv_name", varName);
+        flowWrVarParameters.put("pkt_offset", protoId + "." + fieldId);
+        
+        instructions.add(buildInstruction("STLVmWrFlowVar", flowWrVarParameters));
+        return instructions;
+    }
+
+    private JsonElement buildInstruction(String instructionId, Map<String, String> parameters) {
+        JsonObject instruction = new JsonObject();
+        instruction.add("id", new JsonPrimitive(instructionId));
+
+        JsonObject params = new JsonObject();
+        parameters.entrySet().stream().forEach(entry -> {
+            params.add(entry.getKey(), new JsonPrimitive(entry.getValue()));
+        });
+        instruction.add("parameters", params);
+        return instruction;
+    }
+
     private JsonArray buildProtoFieldsFromMap(Map<String, String> fieldsMap) {
         JsonArray fields = new JsonArray();
         fieldsMap.entrySet().forEach(entry -> {

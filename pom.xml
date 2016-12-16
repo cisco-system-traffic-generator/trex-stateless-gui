@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-packet-editor</artifactId>
-            <version>456f317</version>
+            <version>41b505a</version>
         </dependency>
         <dependency>
             <groupId>org.pcap4j</groupId>

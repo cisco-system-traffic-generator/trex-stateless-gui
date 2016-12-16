@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.remote.models.profiles.Packet;
 import com.exalttech.trex.remote.models.profiles.Profile;
@@ -42,6 +43,7 @@ import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
