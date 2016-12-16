@@ -15,7 +15,6 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.remote.models.profiles.Packet;
 import com.exalttech.trex.remote.models.profiles.Profile;
@@ -43,7 +42,6 @@ import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -192,7 +190,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 && !ConnectionManager.getInstance().isScapyConnected()) {
             eventBus.post(new ScapyClientNeedConnectEvent());
             if (!ConnectionManager.getInstance().isScapyConnected()) {
-                alertCantOpenAdvancedMode("Can't open packet editor in Advanced mode: there is no connection to Scapy server");
+                showAlert("Can't open packet editor in Advanced mode: there is no connection to Scapy server");
                 return false;
             }
         }
@@ -460,32 +458,31 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         Stream currentStream = streamPropertiesController.getUpdatedSelectedProfile().getStream();
         boolean advancedMode = currentStream.getAdvancedMode();
 
-        if (advancedMode) {
-            streamEditorModeBtn.setText("Advanced mode");
-            currentStream.setAdvancedMode(false);
-            boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
-            showSimpleModeTabs(workWithPCAP || emptyMeta);
-        }
-        else {
-            if (!ConnectionManager.getInstance().isScapyConnected()) {
-                eventBus.post(new ScapyClientNeedConnectEvent());
-            }
-            if (ConnectionManager.getInstance().isScapyConnected()) {
-                streamEditorModeBtn.setText("Simple mode");
-                currentStream.setAdvancedMode(true);
-                try {
-                    packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+        try {
+            packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+            if (advancedMode) {
+                streamEditorModeBtn.setText("Advanced mode");
+                currentStream.setAdvancedMode(false);
+                boolean emptyMeta = Strings.isNullOrEmpty(currentStream.getPacket().getMeta());
+                showSimpleModeTabs(workWithPCAP || emptyMeta);
+            } else {
+                if (!ConnectionManager.getInstance().isScapyConnected()) {
+                    eventBus.post(new ScapyClientNeedConnectEvent());
+                }
+                
+                if (ConnectionManager.getInstance().isScapyConnected()) {
+                    streamEditorModeBtn.setText("Simple mode");
+                    currentStream.setAdvancedMode(true);
                     showAdvancedModeTabs();
-                }
-                catch (Exception e) {
-                    // TODO: Display error dialog.
+                } else {
+                    showAlert("Can't open Advanced mode. It seems there is no connection to Scapy server.");
                 }
             }
-            else {
-                alertCantOpenAdvancedMode("Can't open Advanced mode: there is no connection to Scapy server");
-            }
+        } catch (Exception e) {
+            LOG.error("Unable to open advanced mode due to: " + e.getMessage());
+            showAlert("During import parameters some errors occurred. See logs for more details.");
         }
-     }
+    }
 
     /**
      * Previous stream button click handler
@@ -601,10 +598,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         // ignoring global escape
     }
 
-    private void alertCantOpenAdvancedMode(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                message,
-                ButtonType.OK);
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
         alert.show();
     }
 
