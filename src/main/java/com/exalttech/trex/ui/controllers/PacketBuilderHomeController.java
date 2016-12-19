@@ -15,7 +15,6 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.remote.models.profiles.Packet;
 import com.exalttech.trex.remote.models.profiles.Profile;
@@ -43,7 +42,6 @@ import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -420,6 +418,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      */
     private boolean saveStream() {
         try {
+            String fieldEngineError = packetBuilderController.getFieldEngineError();
+            if (!Strings.isNullOrEmpty(fieldEngineError))  {
+                streamTabPane.getSelectionModel().select(fieldEngineTab);
+                LOG.error("Unable to save stream due to errors in Field Engine:" + fieldEngineError);
+                return false;
+            }
             updateCurrentProfile();
             if (streamPropertiesController.isValidStreamPropertiesFields()) {
                 String yamlData = trafficProfile.convertTrafficProfileToYaml(profileList.toArray(new Profile[profileList.size()]));
