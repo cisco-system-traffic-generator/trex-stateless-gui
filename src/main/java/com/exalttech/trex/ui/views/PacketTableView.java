@@ -24,9 +24,9 @@ import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell;
 import com.exalttech.trex.ui.components.CheckBoxTableViewCell.CheckBoxTableChangeHandler;
+import com.exalttech.trex.ui.controllers.ImportPcapWizardController;
 import com.exalttech.trex.ui.controllers.PacketBuilderHomeController;
 import com.exalttech.trex.ui.controllers.ProfileStreamNameDialogController;
-import com.exalttech.trex.ui.controllers.ImportPcapWizardController;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.views.models.TableProfile;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
@@ -38,33 +38,16 @@ import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sun.javafx.scene.control.skin.TableHeaderRow;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -73,15 +56,18 @@ import javafx.util.Callback;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.pcap4j.core.NotOpenException;
-import org.pcap4j.core.PcapDumper;
-import org.pcap4j.core.PcapHandle;
-import org.pcap4j.core.PcapNativeException;
-import org.pcap4j.core.Pcaps;
+import org.pcap4j.core.*;
 import org.pcap4j.packet.EthernetPacket;
 import org.pcap4j.packet.IllegalRawDataException;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.namednumber.DataLinkType;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Stream table view implementation
@@ -92,7 +78,6 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
     private static final Logger LOG = Logger.getLogger(PacketTableView.class.getName());
 
-    StreamTableButton addPacketBtn;
     StreamTableButton buildPacketBtn;
     StreamTableButton editPacketBtn;
     StreamTableButton deleteButtonBtn;
@@ -148,10 +133,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         // build btn bar
         HBox buttonContainer = new HBox();
         buttonContainer.setSpacing(5);
-        addPacketBtn = new StreamTableButton(StreamTableAction.ADD);
-        initializeStreamButtons(addPacketBtn, false);
-        buttonContainer.getChildren().add(addPacketBtn);
-
+        
         // add build stream btn
         buildPacketBtn = new StreamTableButton(StreamTableAction.BUILD);
         buildPacketBtn.setId("buildStreamBtn");
@@ -271,9 +253,6 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     private void handleStreamTableAction(StreamTableAction action) {
         switch (action) {
-            case ADD:
-                viewStreamNameWindow(StreamBuilderType.ADD_STREAM);
-                break;
             case BUILD:
                 viewStreamNameWindow(StreamBuilderType.BUILD_STREAM);
                 break;
