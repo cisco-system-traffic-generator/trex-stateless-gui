@@ -200,7 +200,9 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                                     + "\nScapy server and advanced mode.");
                 }
             }
-            return ConnectionManager.getInstance().isScapyConnected();
+            if (!ConnectionManager.getInstance().isScapyConnected()) {
+                return false;
+            }
         }
 
         packetBuilderController.reset();
