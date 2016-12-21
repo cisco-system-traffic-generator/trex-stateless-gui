@@ -207,9 +207,11 @@ public class BuilderDataBinding implements Serializable {
             case "Random Host":
                 operation = "random";
                 break;
+            case "Decrement":
             case "Decrement Host":
                 operation = "dec";
                 break;
+            case "Increment":
             case "Increment Host":
             default:
                 operation = "inc";
