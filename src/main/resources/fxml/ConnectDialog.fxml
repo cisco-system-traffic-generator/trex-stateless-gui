@@ -22,7 +22,7 @@
                         </FXCollections>
                     </items>
                 </ComboBox>
-                <TitledPane fx:id="advanceTitledPan" animated="false" collapsible="true" expanded="false" onMouseClicked="#handleTitledPanelClicking" prefHeight="30.0" prefWidth="342.0" style="-fx-background-color:#FFFFFF;&#10;-fx-border-width: 0 0 0 0;" text="Show advanced options..." visible="true" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0">
+                <TitledPane fx:id="advanceTitledPan" animated="false" collapsible="true" expanded="false" onMouseClicked="#handleTitledPanelClicking" prefHeight="30.0" prefWidth="342.0" style="-fx-background-color:#FFFFFF;-fx-border-width: 0 0 0 0;" text="Show advanced options..." visible="true" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0">
                     <content>
                         <GridPane>
                             <children>

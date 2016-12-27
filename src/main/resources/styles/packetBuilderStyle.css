@@ -26,15 +26,15 @@
 
 .text-area{
     -fx-background-color: #FFFFFF;
-    -fx-font: 14px Consolas; 
-    -fx-highlight-fill: #0066FF; 
+    -fx-font: 14px Consolas;
+    -fx-highlight-fill: #0066FF;
     -fx-highlight-text-fill: white;
-    -fx-overflow: auto ; 
+    -fx-overflow: auto ;
 }
 
 .text-area .content {
     -fx-background-color: white;
-    -fx-overflow: none ; 
+    -fx-overflow: none ;
 }
 
 .text-area:focused .content {
@@ -52,7 +52,7 @@
     -fx-margin-right:100px;
     -fx-margin-left:100px;
     -fx-border-radius:3px;
-    -fx-background-radius:3px;	
+    -fx-background-radius:3px;
 
 }
 .tab  .tab-header-area .control-buttons-tab{
@@ -79,13 +79,13 @@
     -fx-margin-right:100px;
     -fx-margin-left:100px;
 }
-.tab:focused { 
+.tab:focused {
     -fx-border:none;
     -fx-focus-color: transparent;
     -fx-margin-right:100px;
     -fx-margin-left:100px;
 }
-.tab:selected .tab-label { 
+.tab:selected .tab-label {
     -fx-font: 14px ArialMT;
     -fx-text-fill: #666666;
     -fx-text-padding-left:10px;
@@ -93,7 +93,7 @@
     -fx-border:none;
     -fx-focus-color: transparent;
 }
-.tab:focused .tab-label { 
+.tab:focused .tab-label {
     -fx-border:none;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
@@ -121,7 +121,7 @@
     -fx-border-color:#d7d7d7;
 }
 .combo-box-popup .list-view  .list-cell:hover{
-    -fx-background-color:#0096C9;  
+    -fx-background-color:#0096C9;
 }
 .separator .line {
     -fx-background-color: #d7d7d7;
@@ -340,20 +340,20 @@
     -fx-text-fill:black;
 }
 
-Row hovered 
+/* Row hovered */
 .tree-table-view:row-selection .table-row-cell:filled:hover {
     -fx-background-insets: 0, 0 0 1 0;
     -fx-text-fill: black;
 }
 
-Selected row hovered 
+/* Selected row hovered */
 .tree-table-view:focused .table-row-cell:filled:focused:selected:hover {
 
     -fx-background-insets: 0, 1, 2;
     -fx-text-fill: black;
 }
 /*
- Selected row hovered when table not focused 
+ Selected row hovered when table not focused
 .tree-table-view:row-selection .table-row-cell:filled:focused:hover {
     -fx-background-color: navy;
     -fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2, 3 3 4 3;
@@ -379,7 +379,7 @@ Selected row hovered
     /*    -fx-border-width:1px 0px 0px 1px;*/
     -fx-border-width:0px 0px 0px 0px;
     -fx-border-style: solid;
-    -fx-border-color: #000000; 
+    -fx-border-color: #000000;
 }
 
 .statsTableColHeader{
@@ -387,7 +387,7 @@ Selected row hovered
     /*-fx-border-width:0px 1px 1px 0px;*/
     -fx-border-width:0px 0px 0px 0px;
     -fx-border-style: solid;
-    -fx-border-color: #000000; 
+    -fx-border-color: #000000;
     -fx-padding: 0px 0px 0px 10px;
     -fx-font-weight: bold;
     -fx-text-fill: #595959;
@@ -397,7 +397,7 @@ Selected row hovered
     -fx-border-width:0px 0px 0px 0px;
     /*-fx-border-width:0px 1px 1px 0px;*/
     -fx-border-style: solid;
-    -fx-border-color: #000000; 
+    -fx-border-color: #000000;
     -fx-padding: 0px 0px 0px 10px;
     -fx-background-color: #FFFFFF;
 }
@@ -425,10 +425,10 @@ Selected row hovered
     -fx-background-insets: 0 ;
 }
 .list-cell{
-    -fx-font: 12px Consolas; 
-    -fx-highlight-fill: #0066FF; 
+    -fx-font: 12px Consolas;
+    -fx-highlight-fill: #0066FF;
     -fx-highlight-text-fill: white;
-    -fx-overflow: auto ; 
+    -fx-overflow: auto ;
 }
 
 .list-cell:filled:selected:focused, .list-cell:filled:selected {
@@ -464,7 +464,7 @@ Selected row hovered
 **********************************/
 .table-view{
     -fx-border-style: solid;
-    -fx-border-color: #000000;  
+    -fx-border-color: #000000;
     -fx-border-width: 1px 0 0 1px;
 }
 .table-view .column-header {
@@ -472,7 +472,7 @@ Selected row hovered
     -fx-background-color: #F2F2F2;
     -fx-pref-height: 40px;
     -fx-border-style: solid;
-    -fx-border-color: #000000;  
+    -fx-border-color: #000000;
     -fx-border-width: 0 1px 1px 0;
 }
 .table-view, .table-view:focused {
@@ -485,9 +485,9 @@ Selected row hovered
     -fx-border-color: -fx-box-border;
     -fx-border-insets: 0;
 }
-.table-cell {     
+.table-cell {
     -fx-padding: 0.5em 0.5em 0.1em 0.3em;
-    -fx-border-color: transparent #000000 #000000 transparent;    
+    -fx-border-color: transparent #000000 #000000 transparent;
     -fx-border-insets: 0;
 }
 .table-row-cell:odd {
@@ -515,7 +515,7 @@ Selected row hovered
     -fx-background-color: #A2A2A2;
     -fx-border-color: #BFBFBF;
     -fx-border-style: solid;
-    -fx-border-width: 1px; 
+    -fx-border-width: 1px;
     -fx-text-alignment:center;
     -fx-text-fill: #FFFFFF;
     -fx-font: 13px System;
@@ -547,7 +547,7 @@ Selected row hovered
 /***************************
         TitledPane
 ****************************/
-.titled-pane 
+.titled-pane
 {
     -fx-text-fill: -fx-text-base-color;
 }

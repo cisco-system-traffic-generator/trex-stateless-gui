@@ -13,11 +13,11 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" fx:id="windowContainer" disable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="true" prefHeight="650.0" prefWidth="1030.0" snapToPixel="true" style="    -fx-background-color: #f0f0f0" visible="true" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.PacketBuilderHomeController">
+<AnchorPane id="AnchorPane" fx:id="windowContainer" disable="false" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="true" prefHeight="650.0" prefWidth="1030.0" snapToPixel="true" style="-fx-background-color: #f0f0f0" visible="true" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.PacketBuilderHomeController">
     <children>
         <TabPane fx:id="streamTabPane" layoutX="14.0" layoutY="16.0" opacity="1.0" prefHeight="586.0" prefWidth="1000.0" style="" tabClosingPolicy="UNAVAILABLE">
             <tabs>
-                <Tab id="streamPropertiesTab" fx:id="streamPropertiesTab" style="&#10;" text="Stream Properties">
+                <Tab id="streamPropertiesTab" fx:id="streamPropertiesTab" style="" text="Stream Properties">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
