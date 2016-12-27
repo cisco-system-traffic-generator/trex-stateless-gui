@@ -36,12 +36,13 @@ import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -50,7 +51,7 @@ import org.apache.log4j.Logger;
 public class RPCMethods {
 
     private static final Logger LOG = Logger.getLogger(RPCMethods.class.getName());
-    private static final int API_VERSION_MAJOR = 2;
+    private static final int API_VERSION_MAJOR = 3;
     private static final int API_VERSION_MINOR = 0;
     private static final String API_VERSION_TYPE = "core";
     private HashMap connectionHandler = new HashMap();
