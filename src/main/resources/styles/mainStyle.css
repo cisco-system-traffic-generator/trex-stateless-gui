@@ -161,7 +161,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-pref-width:150px;
     -fx-background-color:#f0f0f0;
 }
-.context-menu{
+.context-menu {
     -fx-background-color:#f0f0f0;
     -fx-border-width: 1px;
     -fx-border-style: solid;
