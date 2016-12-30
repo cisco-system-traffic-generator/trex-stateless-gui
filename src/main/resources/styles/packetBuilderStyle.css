@@ -24,7 +24,7 @@
     -fx-border:none;
 }
 
-.text-area{
+.text-area {
     -fx-background-color: #FFFFFF;
     -fx-font: 14px Consolas;
     -fx-highlight-fill: #0066FF;
@@ -340,25 +340,31 @@
     -fx-text-fill:black;
 }
 
-/* Row hovered */
+/***********************
+ Row hovered
+***********************/
 .tree-table-view:row-selection .table-row-cell:filled:hover {
     -fx-background-insets: 0, 0 0 1 0;
     -fx-text-fill: black;
 }
 
-/* Selected row hovered */
+/***********************
+ Selected row hovered
+***********************/
 .tree-table-view:focused .table-row-cell:filled:focused:selected:hover {
 
     -fx-background-insets: 0, 1, 2;
     -fx-text-fill: black;
 }
-/*
+
+/***********************
  Selected row hovered when table not focused
-.tree-table-view:row-selection .table-row-cell:filled:focused:hover {
+***********************/
+/*.tree-table-view:row-selection .table-row-cell:filled:focused:hover {
     -fx-background-color: navy;
     -fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2, 3 3 4 3;
-    -fx-text-fill: -fx-text-inner-color;*/
-/*}*/
+    -fx-text-fill: -fx-text-inner-color;
+}*/
 
 
 .tree-view{
@@ -370,10 +376,10 @@
     -fx-border-width: 0 0 0 0;
     -fx-focus-color: transparent;
 }
+
 /***************************
     Stats table
 ***************************/
-
 .statsTable{
     -fx-background-color: #FFFFFF;
     /*    -fx-border-width:1px 0px 0px 1px;*/
@@ -413,7 +419,7 @@
 /***********************
     Traffic profileDialog
 ***********************/
-.trafficProfileRightSide{
+.trafficProfileRightSide {
     -fx-background-color: #E4EDF8;
 }
 
@@ -421,19 +427,20 @@
     -fx-background-color: #FFFFFF;
 }
 
-.profileListView{
+.profileListView {
     -fx-background-insets: 0 ;
 }
-.list-cell{
+.list-cell {
     -fx-font: 12px Consolas;
     -fx-highlight-fill: #0066FF;
     -fx-highlight-text-fill: white;
     -fx-overflow: auto ;
 }
 
-.list-cell:filled:selected:focused, .list-cell:filled:selected {
+.list-cell:filled:selected:focused,
+.list-cell:filled:selected {
     -fx-background-color: linear-gradient(#328BDB 0%, #207BCF 25%, #1973C9 75%, #0A65BF 100%);
-    -fx-text-fill: white;
+    -fx-text-fill: gray;
 }
 
 .list-cell:odd {
