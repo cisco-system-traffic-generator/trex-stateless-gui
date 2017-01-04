@@ -584,6 +584,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         if (selectedProfile.getStream().getAdvancedMode()) {
             packet.setBinary(packetBuilderController.getModel().getPkt().binary);
             packet.setModel(packetBuilderController.getModel().serialize());
+            selectedProfile.getStream().setAdditionalProperties(packetBuilderController.getPktVmInstructions());
         } else {
             packet.setBinary(encodedBinaryPacket);
             packet.setModel("");
