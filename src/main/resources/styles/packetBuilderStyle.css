@@ -430,6 +430,7 @@
 .profileListView {
     -fx-background-insets: 0 ;
 }
+/*
 .list-cell {
     -fx-font: 12px Consolas;
     -fx-highlight-fill: #0066FF;
@@ -452,7 +453,7 @@
     -fx-cell-hover-color: #0093ff;
     -fx-text-fill: white;
 }
-/*.list-view .list-cell:odd {
+.list-view .list-cell:odd {
     -fx-background-color: white;
 }
 
