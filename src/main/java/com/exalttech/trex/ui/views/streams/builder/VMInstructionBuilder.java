@@ -360,6 +360,7 @@ public class VMInstructionBuilder {
      */
     public void setCacheSize(CacheSize cacheSize) {
         this.cacheSize = cacheSize;
+        vmCacheSize = cacheSize.getCacheValue();
     }
 
     /**
