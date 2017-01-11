@@ -193,8 +193,7 @@ public class BuilderDataBinding implements Serializable {
             model.getAsJsonArray("protocols").add(udpProto);
         }
 
-        String res = model.toString();
-        return res;
+        return model.toString();
     }
 
     private JsonArray buildVMInstructions(String protoId, String fieldId, AddressDataBinding.AddressInfo binding) {
@@ -204,6 +203,12 @@ public class BuilderDataBinding implements Serializable {
         String varName = protoId + "_" + fieldId;
         flowVarParameters.put("name", varName);
         
+        String initAndMinValue = "1";
+        flowVarParameters.put("init_value", initAndMinValue);
+        flowVarParameters.put("max_value", binding.getCountProperty().get());
+        flowVarParameters.put("min_value", initAndMinValue);
+        flowVarParameters.put("step", binding.getStepProperty().get());
+
         String operation;
         switch (binding.getModeProperty().get()) {
             case "Random Host":
@@ -220,8 +225,6 @@ public class BuilderDataBinding implements Serializable {
                 break;
         }
         flowVarParameters.put("op", operation);
-        flowVarParameters.put("max_value", binding.getAddressProperty().get());
-        flowVarParameters.put("step", binding.getStepProperty().get());
 
         instructions.add(buildInstruction("STLVmFlowVar", flowVarParameters));
 
