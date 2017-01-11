@@ -172,9 +172,11 @@ public class BuilderDataBinding implements Serializable {
         }
 
         // Field Engine instructions
+        String cache_size = "5000";
         if("Enable".equals(advancedPropertiesDB.getCacheSizeType().getValue())) {
-            fieldEngine.getAsJsonObject("global_parameters").add("cache_size", new JsonPrimitive(advancedPropertiesDB.getCacheValue().getValue()));
+            cache_size = advancedPropertiesDB.getCacheValue().getValue();
         }
+        fieldEngine.getAsJsonObject("global_parameters").add("cache_size", new JsonPrimitive(cache_size));
         
         boolean isUDP = protocolSelection.getUdpProperty().get();
         if (isUDP) {
