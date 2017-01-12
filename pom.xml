@@ -18,7 +18,7 @@
 
     <groupId>com.exalttech</groupId>
     <artifactId>trex-stateless-gui</artifactId>
-    <version>3.1 pre-release update 2</version>
+    <version>3.1-RC-u3</version>
     <packaging>jar</packaging>
 
     <name>TRex Stateless GUI Application</name>
