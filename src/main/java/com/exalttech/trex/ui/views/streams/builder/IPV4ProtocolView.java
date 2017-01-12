@@ -23,11 +23,12 @@ package com.exalttech.trex.ui.views.streams.builder;
 import com.exalttech.trex.ui.views.models.AddressProtocolData;
 import com.exalttech.trex.ui.views.streams.binders.IPV4AddressDataBinding;
 import com.exalttech.trex.util.Util;
-import java.util.function.UnaryOperator;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+
+import java.util.function.UnaryOperator;
 
 /**
  *
@@ -44,8 +45,14 @@ public class IPV4ProtocolView extends AbstractProtocolView {
     TextField dstCount;
     TextField srcCount;
 
+    TextField dstStep;
+    TextField srcStep;
+
     AddressProtocolData srcAddressData;
+
     AddressProtocolData dstAddressData;
+    private static String DEFAULT_STEP = "1";
+    public static final int STEP_CONTROL_OFFSET = 550;
 
     /**
      * Constructor
@@ -64,15 +71,19 @@ public class IPV4ProtocolView extends AbstractProtocolView {
      */
     private void bindComponent() {
         srcCount.disableProperty().bind(srcMode.valueProperty().isEqualTo("Fixed"));
+        srcStep.disableProperty().bind(srcMode.valueProperty().isEqualTo("Fixed"));
         dstCount.disableProperty().bind(dstMode.valueProperty().isEqualTo("Fixed"));
+        dstStep.disableProperty().bind(dstMode.valueProperty().isEqualTo("Fixed"));
 
         srcAddressData.getAddressProperty().bind(srcAddress.textProperty());
         srcAddressData.getTypeProperty().bind(srcMode.valueProperty());
         srcAddressData.getCountProperty().bind(srcCount.textProperty());
+        srcAddressData.getStepProperty().bind(srcStep.textProperty());
 
         dstAddressData.getAddressProperty().bind(dstAddress.textProperty());
         dstAddressData.getTypeProperty().bind(dstMode.valueProperty());
         dstAddressData.getCountProperty().bind(dstCount.textProperty());
+        dstAddressData.getStepProperty().bind(dstStep.textProperty());
     }
 
     /**
@@ -100,6 +111,15 @@ public class IPV4ProtocolView extends AbstractProtocolView {
         addInput(dstCount, 30, 460, 80);
         srcCount = new TextField();
         addInput(srcCount, 70, 460, 80);
+
+        addLabel("Step", 5, STEP_CONTROL_OFFSET);
+        dstStep = new TextField(DEFAULT_STEP);
+        addInput(dstStep, 30, STEP_CONTROL_OFFSET, 80);
+        
+        srcStep = new TextField(DEFAULT_STEP);
+        addInput(srcStep, 70, STEP_CONTROL_OFFSET, 80);
+
+        
 
         // define options
         srcMode.getItems().clear();
@@ -208,11 +228,13 @@ public class IPV4ProtocolView extends AbstractProtocolView {
         srcAddress.textProperty().bindBidirectional(ipv4DB.getSource().getAddressProperty());
         srcMode.valueProperty().bindBidirectional(ipv4DB.getSource().getModeProperty());
         srcCount.textProperty().bindBidirectional(ipv4DB.getSource().getCountProperty());
+        srcStep.textProperty().bindBidirectional(ipv4DB.getSource().getStepProperty());
 
         // bind destination fields
         dstAddress.textProperty().bindBidirectional(ipv4DB.getDestination().getAddressProperty());
         dstMode.valueProperty().bindBidirectional(ipv4DB.getDestination().getModeProperty());
         dstCount.textProperty().bindBidirectional(ipv4DB.getDestination().getCountProperty());
+        dstStep.textProperty().bindBidirectional(ipv4DB.getDestination().getStepProperty());
     }
 
 }

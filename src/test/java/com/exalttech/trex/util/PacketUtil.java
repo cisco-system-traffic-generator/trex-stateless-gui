@@ -17,12 +17,8 @@ package com.exalttech.trex.util;
 
 import com.exalttech.trex.packets.TrexEthernetPacket;
 import com.exalttech.trex.packets.TrexVlanPacket;
-import com.exalttech.trex.simulator.models.EthernetData;
-import com.exalttech.trex.simulator.models.IPV4Data;
-import com.exalttech.trex.simulator.models.PacketData;
-import com.exalttech.trex.simulator.models.PacketLength;
-import com.exalttech.trex.simulator.models.PayloadData;
 import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.simulator.models.*;
 import com.exalttech.trex.ui.models.PacketInfo;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.builder.Payload;
@@ -33,18 +29,6 @@ import com.exalttech.trex.util.files.FileManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
@@ -58,6 +42,15 @@ import org.pcap4j.packet.IllegalRawDataException;
 import org.pcap4j.packet.IpV4Packet;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.namednumber.EtherType;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  *
@@ -211,8 +204,8 @@ public class PacketUtil {
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.MAC_SRC, ethernetData.getSrcAddress().getType(), ethernetData.getSrcAddress().getCount(), ethernetData.getSrcAddress().getStep(), ethernetData.getSrcAddress().getAddress()));
         
         IPV4Data ipv4Data = packetData.getIpv4Data();
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Data.getDstAddress().getType(), ipv4Data.getDstAddress().getCount(), "1", ipv4Data.getDstAddress().getAddress()));
-        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Data.getSrcAddress().getType(), ipv4Data.getSrcAddress().getCount(), "1", ipv4Data.getSrcAddress().getAddress()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Data.getDstAddress().getType(), ipv4Data.getDstAddress().getCount(), ipv4Data.getDstAddress().getStep(), ipv4Data.getDstAddress().getAddress()));
+        instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Data.getSrcAddress().getType(), ipv4Data.getSrcAddress().getCount(), ipv4Data.getSrcAddress().getStep(), ipv4Data.getSrcAddress().getAddress()));
         // add ipv4 checksum instructions
         instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
         // add packet length instruction
