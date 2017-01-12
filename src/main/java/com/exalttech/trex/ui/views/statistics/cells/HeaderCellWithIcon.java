@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.ui.views.statistics.cells;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -26,22 +27,24 @@ import javafx.scene.layout.HBox;
  * @author Georgekh
  */
 public class HeaderCellWithIcon extends HBox implements StatisticCell {
-    
+
     ImageView statusView;
     Label titleLabel;
     
     public HeaderCellWithIcon(double width) {
-        getStyleClass().add("statsTableColHeader");
+        Platform.runLater(() -> {
+            getStyleClass().add("statsTableColHeader");
+        });
         setPrefSize(width, 25);
         setSpacing(5);
         setAlignment(Pos.CENTER);
+
         statusView = new ImageView();
         getChildren().add(statusView);
         titleLabel = new Label();
         titleLabel.getStyleClass().add("statHeaderWithIcon");
         titleLabel.setAlignment(Pos.CENTER);
         getChildren().add(titleLabel);
-
     }
     
     /**

@@ -16,6 +16,7 @@
 package com.exalttech.trex.ui.views.statistics.cells;
 
 import com.exalttech.trex.util.Util;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -37,10 +38,12 @@ public class StatisticCellWithArrows extends HBox implements StatisticCell {
         setPrefSize(width, 22);
         setSpacing(5);
         setAlignment(Pos.CENTER_RIGHT);
-        getStyleClass().add("statsTableColCell");
-        if (odd) {
-            getStyleClass().add("statsTableColCellOdd");
-        }
+        Platform.runLater(() -> {
+            getStyleClass().add("statsTableColCell");
+            if (odd) {
+                getStyleClass().add("statsTableColCellOdd");
+            }
+        });
         imageView = new ImageView();
         getChildren().add(imageView);
         value = new Label();

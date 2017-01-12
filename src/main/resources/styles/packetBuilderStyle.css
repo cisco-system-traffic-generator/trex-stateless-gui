@@ -382,7 +382,6 @@
 ***************************/
 .statsTable{
     -fx-background-color: #FFFFFF;
-    /*    -fx-border-width:1px 0px 0px 1px;*/
     -fx-border-width:0px 0px 0px 0px;
     -fx-border-style: solid;
     -fx-border-color: #000000;
@@ -390,8 +389,7 @@
 
 .statsTableColHeader{
     -fx-background-color: #D3D3D3;
-    /*-fx-border-width:0px 1px 1px 0px;*/
-    -fx-border-width:0px 0px 0px 0px;
+    -fx-border-width:0px 1px 1px 0px;
     -fx-border-style: solid;
     -fx-border-color: #000000;
     -fx-padding: 0px 0px 0px 10px;
@@ -400,8 +398,7 @@
 }
 
 .statsTableColCell{
-    -fx-border-width:0px 0px 0px 0px;
-    /*-fx-border-width:0px 1px 1px 0px;*/
+    -fx-border-width:0px 1px 1px 0px;
     -fx-border-style: solid;
     -fx-border-color: #000000;
     -fx-padding: 0px 0px 0px 10px;

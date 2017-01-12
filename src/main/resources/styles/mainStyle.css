@@ -392,7 +392,6 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 .statsTable{
     -fx-background-color: #FFFFFF;
     -fx-border-width:1px 0px 0px 1px;
-    /*-fx-border-width:0px 0px 0px 0px;*/
     -fx-border-style: solid;
     -fx-border-color: #cfcfcf; 
 }
@@ -400,7 +399,6 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 .statsTableColHeader{
     -fx-background-color: #32b4ea;
     -fx-border-width:0px 1px 1px 0px;
-    /*-fx-border-width:0px 0px 0px 0px;*/
     -fx-border-style: solid;
     -fx-border-color: #cfcfcf; 
     -fx-padding: 0px 0px 0px 10px;
@@ -413,13 +411,11 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-font-weight: bold;
 }
 .statsTableColCell{
-    /*-fx-border-width:0px 0px 0px 0px;*/
     -fx-border-width:0px 1px 1px 0px;
     -fx-border-style: solid;
-    -fx-border-color: #cfcfcf; 
-    -fx-padding: 0px 0px 0px 10px;
+    -fx-border-color: #cfcfcf;
     -fx-background-color: #FFFFFF;
-    -fx-padding: 0 10 0 10;
+    -fx-padding: 0px 10px 0px 10px;
 }
 .statsTableColCellOdd{
     -fx-background-color: rgba(50, 179, 234, 0.2);
