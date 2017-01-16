@@ -97,11 +97,7 @@ public class DialogWindow {
         createdStage.setScene(scene);
 
         createdStage.setResizable(resizable);
-        if (resizable) {
-            createdStage.initStyle(StageStyle.DECORATED);
-        } else {
-            createdStage.initStyle(StageStyle.UTILITY);
-        }
+        createdStage.initStyle(StageStyle.DECORATED);
         createdStage.setX(TrexApp.getPrimaryStage().getX() + parentXDistance);
         createdStage.setY(TrexApp.getPrimaryStage().getY() + parentYDistance);
         createdStage.initModality(Modality.NONE);
