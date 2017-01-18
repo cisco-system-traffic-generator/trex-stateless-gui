@@ -290,6 +290,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 }
             }
         });
+        Stream currentStream = selectedProfile.getStream();
+        currentStream.getFlagsProperty().addListener(((observable, oldValue, newValue) -> {
+            builderDataBinder.getStreamSelection().srcMacModePropertyProperty().setValue(((int) newValue & 1) == 1);
+            builderDataBinder.getStreamSelection().dstMacModePropertyProperty().setValue(((int) newValue & 2) == 2);
+            
+        }));
     }
 
     /**
@@ -574,7 +580,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         } else if (isBuildPacket) {
             hexPacket = PacketBuilderHelper.getPacketHex(protocolDataController.getProtocolData().getPacket().getRawData());
             selectedProfile.getStream().setAdditionalProperties(protocolDataController.getVm(advancedSettingsController.getCacheSize()));
-            selectedProfile.getStream().setFlags(protocolDataController.getFlagsValue());
             // save stream selected in stream property
             selectedProfile.getStream().getPacket().setMeta(Util.serializeObjectToString(builderDataBinder));
         }

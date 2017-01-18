@@ -18,28 +18,23 @@ package com.exalttech.trex.ui.controllers;
 import com.exalttech.trex.remote.models.profiles.Mode;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.util.Util;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
 /**
  * FXML Controller class
@@ -124,9 +119,15 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     TextField rxStreamID;
     @FXML
     Label rxStreamIDLabel;
+    @FXML
+    ComboBox<StreamMACMode> dstMacMode;
+    @FXML
+    ComboBox<StreamMACMode> srcMacMode;
 
     private List<Profile> profileList;
     private Profile selectedProfile;
+    
+    IntegerProperty flags = new SimpleIntegerProperty(0);
 
     /**
      * Initializes the controller class.
@@ -147,8 +148,37 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
      */
     public void init(List<Profile> profileList, int selectedProfileIndex) {
         this.profileList = profileList;
-        this.selectedProfile = profileList.get(selectedProfileIndex);
+        selectedProfile = profileList.get(selectedProfileIndex);
         fillStreamProperties(selectedProfileIndex);
+
+        flags.set(selectedProfile.getStream().getFlags());
+        selectedProfile.getStream().getFlagsProperty().bindBidirectional(flags);
+        int flagsValue = this.selectedProfile.getStream().getFlags();
+        int srcMacModeMask = 1;
+        StreamMACMode srcTrexConfigMode = new StreamMACMode("TRex Config", 0, srcMacModeMask);
+        StreamMACMode srcPacketMode = new StreamMACMode("Packet", 1, srcMacModeMask);
+
+        srcMacMode.getItems().addAll(srcTrexConfigMode,srcPacketMode);
+        if ((flagsValue & srcMacModeMask) == srcMacModeMask) {
+            srcMacMode.setValue(srcPacketMode);
+        } else {
+            srcMacMode.setValue(srcTrexConfigMode);
+        }
+
+        int dstMacModeMask = 6;
+
+        StreamMACMode dstTrexConfigMode = new StreamMACMode("TRex Config", 0, dstMacModeMask);
+        StreamMACMode dstPacketMode= new StreamMACMode("Packet", 2, dstMacModeMask);
+        StreamMACMode dstARPMode= new StreamMACMode("ARP", 4, dstMacModeMask);
+        dstMacMode.getItems().addAll(dstTrexConfigMode, dstPacketMode, dstARPMode);
+
+        StreamMACMode dstMacModeVal = dstTrexConfigMode;
+        if ((flagsValue & 2) == 2) {
+            dstMacModeVal = dstPacketMode;
+        } else if ((flagsValue & 4) == 4) {
+            dstMacModeVal = dstARPMode;
+        }
+        dstMacMode.setValue(dstMacModeVal);
     }
 
     /**
@@ -214,6 +244,14 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         
         // allow only 5 digits
         timeInLoopTF.setTextFormatter(Util.getNumberFilter(5));
+
+        srcMacMode.valueProperty().addListener((observable, oldValue, newValue) -> handleChangingMacMode(newValue));
+        dstMacMode.valueProperty().addListener((observable, oldValue, newValue) -> handleChangingMacMode(newValue));
+    }
+
+    private void handleChangingMacMode(StreamMACMode newValue) {
+        int current = flags.getValue();
+        flags.set(current & ~(newValue.mask) | newValue.value);
     }
 
     /**
