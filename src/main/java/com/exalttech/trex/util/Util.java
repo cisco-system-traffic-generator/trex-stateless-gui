@@ -18,6 +18,7 @@ package com.exalttech.trex.util;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.remote.models.params.Params;
 import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.ui.MultiplierType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,6 +33,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -343,7 +346,9 @@ public class Util {
      * @return
      */
     public static String formatDecimal(double numToFormat) {
-        return DECIMAL_FORMATTER.format(numToFormat);
+        return new BigDecimal(numToFormat)
+                .setScale(DECIMAL_FORMATTER.getMaximumFractionDigits(), RoundingMode.HALF_EVEN)
+                    .toPlainString();
     }
 
     /**
@@ -417,7 +422,9 @@ public class Util {
         String unitVal = "mμnpfaz";
         double data = num / (Math.pow(UNIT_VALUE, unitVal.indexOf(unit) + 1));
 
-        return FRACTION_FORMATTER.format(data);
+        return new BigDecimal(data)
+                .setScale(FRACTION_FORMATTER.getMaximumFractionDigits(), RoundingMode.HALF_EVEN)
+                    .toPlainString();
     }
 
     /**

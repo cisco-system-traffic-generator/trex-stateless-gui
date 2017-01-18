@@ -26,6 +26,9 @@ import com.exalttech.trex.ui.components.MultiplierOption;
 import com.exalttech.trex.ui.components.events.MultiplierSelectionEvent;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.util.Util;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -283,7 +286,9 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
      */
     private double calcTypeValue(double sliderValue, MultiplierType type) {
         if (rate != null) {
-            return Double.parseDouble(FRACTION_FORMATTER.format((sliderValue * type.getMaxRate(rate)) / (MultiplierType.percentage.getMaxRate(rate))));
+            return new BigDecimal((sliderValue * type.getMaxRate(rate)) / (MultiplierType.percentage.getMaxRate(rate)))
+                    .setScale(FRACTION_FORMATTER.getMaximumFractionDigits(), RoundingMode.HALF_EVEN)
+                        .doubleValue();
         }
         return 0;
     }

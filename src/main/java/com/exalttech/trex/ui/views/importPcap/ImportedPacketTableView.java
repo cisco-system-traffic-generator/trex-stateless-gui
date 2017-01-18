@@ -425,7 +425,8 @@ public class ImportedPacketTableView extends AnchorPane {
         if (ipg == 0) {
             ipg = 1;
         }
-        profile.getStream().getMode().setPps(Math.max(1.0, 1.0/ipg));
+        double ppsValue = Math.max(1.0, 1.0/ipg);
+        profile.getStream().getMode().setPps(ppsValue);
     }
 
     /**
