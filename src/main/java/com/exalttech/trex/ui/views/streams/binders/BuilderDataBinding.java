@@ -39,6 +39,8 @@ import java.util.Map;
 public class BuilderDataBinding implements Serializable {
 
     ProtocolSelectionDataBinding protocolSelection = new ProtocolSelectionDataBinding();
+    
+    StreamDataBinding streamSelection = new StreamDataBinding();
 
     EthernetDataBinding ethernetDB = new EthernetDataBinding();
 
@@ -55,6 +57,10 @@ public class BuilderDataBinding implements Serializable {
     List<VlanDataBinding> vlanDB = new ArrayList<>();
 
     AdvancedPropertiesDataBinding advancedPropertiesDB = new AdvancedPropertiesDataBinding();
+
+    public StreamDataBinding getStreamSelection() {
+        return streamSelection;
+    }
 
     public String serializeAsPacketModel() {
 
