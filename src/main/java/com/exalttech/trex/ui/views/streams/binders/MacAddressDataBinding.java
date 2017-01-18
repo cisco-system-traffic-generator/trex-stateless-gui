@@ -42,8 +42,8 @@ public class MacAddressDataBinding extends AddressDataBinding implements Seriali
      */
     @Override
     public void setInitialValues() {
-        getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_MAC_ADDRESS, "TRex Config");
-        getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_MAC_ADDRESS, "TRex Config");
+        getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_MAC_ADDRESS, "Fixed");
+        getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_MAC_ADDRESS, "Fixed");
 
     }
 }

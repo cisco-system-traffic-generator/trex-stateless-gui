@@ -21,14 +21,15 @@
 package com.exalttech.trex.ui.views.streams.builder;
 
 import com.exalttech.trex.ui.views.models.AddressProtocolData;
+import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
 import com.exalttech.trex.ui.views.streams.binders.MacAddressDataBinding;
 import com.exalttech.trex.util.Util;
-import java.util.function.UnaryOperator;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+
+import java.util.function.UnaryOperator;
 
 /**
  *
@@ -50,32 +51,44 @@ public class MacProtocolView extends AbstractProtocolView {
     AddressProtocolData srcAddressData;
     AddressProtocolData dstAddressData;
 
-    BooleanProperty srcModeCountDisabledProp = new SimpleBooleanProperty();
-    BooleanProperty dstModeCountDisabledProp = new SimpleBooleanProperty();
-
     /**
      * Constructor
      *
-     * @param dataBinding
+     * @param binding
      */
-    public MacProtocolView(MacAddressDataBinding dataBinding) {
-        super("Media Access Protocol", 180, dataBinding);
+    public MacProtocolView(BuilderDataBinding binding) {
+        super("Media Access Control", 180, binding.getMacDB());
         srcAddressData = new AddressProtocolData();
         dstAddressData = new AddressProtocolData();
-        bindComponent();
+        bindComponent(binding);
     }
 
     /**
      * Bind fields together
      */
-    private void bindComponent() {
-        srcModeCountDisabledProp.bind(srcMode.valueProperty().isEqualTo(MacType.FIXED.getTitle()).or(srcMode.valueProperty().isEqualTo(MacType.TREX_CONFIG.getTitle())));
-        srcCount.disableProperty().bind(srcModeCountDisabledProp);
-        srcStep.disableProperty().bind(srcModeCountDisabledProp);
+    private void bindComponent(BuilderDataBinding binding) {
+        BooleanProperty srcDisableProp = binding.getStreamSelection().srcMacModePropertyProperty();
+        BooleanProperty dstDisableProp = binding.getStreamSelection().dstMacModePropertyProperty();
+        
+        srcAddress.disableProperty().bind(srcDisableProp.not());
+        srcMode.disableProperty().bind(srcDisableProp.not());
+        srcDisableProp.addListener((observable, oldVal, newVal) -> {
+            if (!newVal) {
+                srcMode.setValue(MacMode.FIXED.getTitle());
+            }
+        });
+        srcCount.disableProperty().bind(srcDisableProp.not());
+        srcStep.disableProperty().bind(srcDisableProp.not());
 
-        dstModeCountDisabledProp.bind(dstMode.valueProperty().isEqualTo(MacType.FIXED.getTitle()).or(dstMode.valueProperty().isEqualTo(MacType.TREX_CONFIG.getTitle())));
-        dstCount.disableProperty().bind(dstModeCountDisabledProp);
-        dstStep.disableProperty().bind(dstModeCountDisabledProp);
+        dstAddress.disableProperty().bind(dstDisableProp.not());
+        dstMode.disableProperty().bind(dstDisableProp.not());
+        dstDisableProp.addListener((observable, oldVal, newVal) -> {
+            if (!newVal) {
+                dstMode.setValue(MacMode.FIXED.getTitle());
+            }
+        });
+        dstCount.disableProperty().bind(dstDisableProp.not());
+        dstStep.disableProperty().bind(dstDisableProp.not());
 
         srcAddressData.getAddressProperty().bind(srcAddress.textProperty());
         srcAddressData.getTypeProperty().bind(srcMode.valueProperty());
@@ -99,8 +112,11 @@ public class MacProtocolView extends AbstractProtocolView {
         addLabel("Address", 5, 100);
         dstAddress = new TextField();
         dstAddress.setId("macDstAddress");
+        dstAddress.setDisable(true);
         addInput(dstAddress, 30, 100, 220);
+        
         srcAddress = new TextField();
+        srcAddress.setDisable(true);
         srcAddress.setId("macSrcAddress");
         addInput(srcAddress, 72, 100, 220);
 
@@ -108,25 +124,33 @@ public class MacProtocolView extends AbstractProtocolView {
         dstMode = new ComboBox<>();
         dstMode.setId("macDstMode");
         addCombo(dstMode, 30, 330, 150);
+        
         srcMode = new ComboBox<>();
         srcMode.setId("macsrcMode");
         addCombo(srcMode, 70, 330, 150);
 
         addLabel("Count", 5, 490);
         dstCount = new TextField();
+        dstCount.setDisable(true);
         addInput(dstCount, 30, 490, 80);
+        
         srcCount = new TextField();
+        srcCount.setDisable(true);
         addInput(srcCount, 70, 490, 80);
 
         addLabel("Step", 5, 580);
         dstStep = new TextField();
+        dstStep.setDisable(true);
         addInput(dstStep, 30, 580, 80);
+        
         srcStep = new TextField();
+        srcStep.setDisable(true);
         addInput(srcStep, 70, 580, 80);
 
         srcMode.getItems().clear();
         dstMode.getItems().clear();
-        for (MacType type : MacType.values()) {
+        
+        for (MacMode type : MacMode.values()) {
             srcMode.getItems().add(type.getTitle());
             dstMode.getItems().add(type.getTitle());
         }
@@ -216,11 +240,10 @@ public class MacProtocolView extends AbstractProtocolView {
     /**
      * Enumerator present MAC type
      */
-    private enum MacType {
+    private enum MacMode {
         FIXED("Fixed"),
         INCREMENT("Increment"),
-        DECREMENET("Decrement"),
-        TREX_CONFIG("TRex Config");
+        DECREMENET("Decrement");
 
         String title;
 
@@ -229,7 +252,7 @@ public class MacProtocolView extends AbstractProtocolView {
          *
          * @param title
          */
-        private MacType(String title) {
+        private MacMode(String title) {
             this.title = title;
         }
 
