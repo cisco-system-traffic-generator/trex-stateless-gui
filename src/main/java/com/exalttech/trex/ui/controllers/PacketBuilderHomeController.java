@@ -39,6 +39,8 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
 import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -152,6 +154,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private int currentSelectedProfileIndex;
     BuilderDataBinding builderDataBinder;
     TrafficProfile trafficProfile;
+    private BooleanProperty isImportedStreamProperty = new SimpleBooleanProperty(false);
 
     /**
      * Initializes the controller class.
@@ -163,7 +166,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     public void initialize(URL url, ResourceBundle rb) {
         trafficProfile = new TrafficProfile();
         packetHex = new PacketHex(hexPane);
-        loadPcap.visibleProperty().bind(packetViewerTab.selectedProperty());
+        loadPcap.setVisible(false);
         nextStreamBtn.setGraphic(new ImageView(new Image("/icons/next_stream.png")));
         prevStreamBtn.setGraphic(new ImageView(new Image("/icons/prev_stream.png")));
         packetInfo = new PacketInfo();
@@ -180,11 +183,13 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @param type
      */
     public boolean initStreamBuilder(String pcapFileBinary, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
-        this.selectedProfile = profileList.get(selectedProfileIndex);
+        selectedProfile = profileList.get(selectedProfileIndex);
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
-        this.currentSelectedProfileIndex = selectedProfileIndex;
+        currentSelectedProfileIndex = selectedProfileIndex;
 
+        streamEditorModeBtn.visibleProperty().bind(isImportedStreamProperty.not());
+        
         if (selectedProfile.getStream().getAdvancedMode()
                 && !ConnectionManager.getInstance().isScapyConnected()) {
             boolean loop = true;
@@ -242,8 +247,19 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 initStreamBuilder(dataBinding);
                 return;
             }
+        } else {
+            isImportedStreamProperty.set(true);
         }
-        hideStreamBuilderTab();
+
+        if (isImportedStreamProperty.get()) {
+            streamTabPane.getTabs().remove(protocolDataTab);
+            streamTabPane.getTabs().remove(protocolSelectionTab);
+            streamTabPane.getTabs().remove(advanceSettingsTab);
+            streamTabPane.getTabs().remove(packetViewerWithTreeTab);
+            streamTabPane.getTabs().remove(packetEditorTab);
+            streamTabPane.getTabs().remove(fieldEngineTab);
+        }
+        
         if (pcapFileBinary != null) {
             try {
                 isBuildPacket = false;
@@ -258,7 +274,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
     
     private BuilderDataBinding getDataBinding() {
-        return (BuilderDataBinding) Util.deserializeStringToObject(selectedProfile.getStream().getPacket().getMeta());
+        String meta = selectedProfile.getStream().getPacket().getMeta();
+        boolean emptyMeta = meta == null; 
+        isImportedStreamProperty.setValue(emptyMeta);
+        return emptyMeta ? null : (BuilderDataBinding) Util.deserializeStringToObject(meta);
     }
 
     /**
@@ -267,9 +286,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * @param builderDataBinder
      */
     private void initStreamBuilder(BuilderDataBinding builderDataBinder) {
-
+        isImportedStreamProperty.setValue(false);
         isBuildPacket = true;
-        streamTabPane.getTabs().remove(packetViewerTab);
         String packetEditorModel = selectedProfile.getStream().getPacket().getModel();
         if (!Strings.isNullOrEmpty(packetEditorModel)) {
             packetBuilderController.loadUserModel(packetEditorModel);
@@ -298,25 +316,22 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }));
     }
 
-    /**
-     * Hide stream builder related tabs
-     */
-    private void hideStreamBuilderTab() {
-        streamTabPane.getTabs().remove(protocolDataTab);
-        streamTabPane.getTabs().remove(protocolSelectionTab);
-        streamTabPane.getTabs().remove(advanceSettingsTab);
-        streamTabPane.getTabs().remove(packetViewerWithTreeTab);
-    }
-
     private void showSimpleModeTabs() {
         streamTabPane.getTabs().clear();
-        streamTabPane.getTabs().addAll(
-                streamPropertiesTab,
-                protocolSelectionTab,
-                protocolDataTab,
-                advanceSettingsTab,
-                packetViewerWithTreeTab
-        );
+        if (isImportedStreamProperty.get()) {
+            streamTabPane.getTabs().addAll(
+                    streamPropertiesTab,
+                    packetViewerTab
+            );
+        } else {
+            streamTabPane.getTabs().addAll(
+                    streamPropertiesTab,
+                    protocolSelectionTab,
+                    protocolDataTab,
+                    advanceSettingsTab,
+                    packetViewerWithTreeTab
+            );
+        }
     }
 
     private void showAdvancedModeTabs() {
@@ -557,14 +572,20 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void loadStream() {
         resetTabs();
         streamTabPane.getSelectionModel().select(streamPropertiesTab);
-        this.selectedProfile = profileList.get(currentSelectedProfileIndex);
+        selectedProfile = profileList.get(currentSelectedProfileIndex);
+        Stream currentStream = selectedProfile.getStream();
         String windowTitle = "Edit Stream (" + selectedProfile.getName() + ")";
         // update window title
         Stage stage = (Stage) streamTabPane.getScene().getWindow();
         stage.setTitle(windowTitle);
 
         streamPropertiesController.init(profileList, currentSelectedProfileIndex);
-        initEditStream(selectedProfile.getStream().getPacket().getBinary());
+        initEditStream(currentStream.getPacket().getBinary());
+        if (currentStream.getAdvancedMode()) {
+            showAdvancedModeTabs();
+        } else {
+            showSimpleModeTabs();
+        }
     }
 
     /**

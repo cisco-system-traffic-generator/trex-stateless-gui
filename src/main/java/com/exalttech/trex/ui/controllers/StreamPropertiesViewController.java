@@ -128,6 +128,13 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     private Profile selectedProfile;
     
     IntegerProperty flags = new SimpleIntegerProperty(0);
+    private StreamMACMode dstARPMode;
+    private StreamMACMode dstPacketMode;
+    private StreamMACMode dstTrexConfigMode;
+    private StreamMACMode srcTrexConfigMode;
+    private StreamMACMode srcPacketMode;
+    private int srcMacModeMask;
+    private int dstMacModeMask;
 
     /**
      * Initializes the controller class.
@@ -138,6 +145,17 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initStreamPropertiesEvent();
+
+        srcMacModeMask = 1;
+        dstMacModeMask = 6;
+        srcTrexConfigMode = new StreamMACMode("TRex Config", 0, srcMacModeMask);
+        srcPacketMode = new StreamMACMode("Packet", 1, srcMacModeMask);
+        srcMacMode.getItems().addAll(srcTrexConfigMode,srcPacketMode);
+        
+        dstTrexConfigMode = new StreamMACMode("TRex Config", 0, dstMacModeMask);
+        dstPacketMode= new StreamMACMode("Packet", 2, dstMacModeMask);
+        dstARPMode= new StreamMACMode("ARP", 4, dstMacModeMask);
+        dstMacMode.getItems().addAll(dstTrexConfigMode, dstPacketMode, dstARPMode);
     }
 
     /**
@@ -151,26 +169,15 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         selectedProfile = profileList.get(selectedProfileIndex);
         fillStreamProperties(selectedProfileIndex);
 
-        flags.set(selectedProfile.getStream().getFlags());
-        selectedProfile.getStream().getFlagsProperty().bindBidirectional(flags);
         int flagsValue = this.selectedProfile.getStream().getFlags();
-        int srcMacModeMask = 1;
-        StreamMACMode srcTrexConfigMode = new StreamMACMode("TRex Config", 0, srcMacModeMask);
-        StreamMACMode srcPacketMode = new StreamMACMode("Packet", 1, srcMacModeMask);
-
-        srcMacMode.getItems().addAll(srcTrexConfigMode,srcPacketMode);
+        flags = new SimpleIntegerProperty(flagsValue);
+        selectedProfile.getStream().getFlagsProperty().bindBidirectional(flags);
+        
         if ((flagsValue & srcMacModeMask) == srcMacModeMask) {
             srcMacMode.setValue(srcPacketMode);
         } else {
             srcMacMode.setValue(srcTrexConfigMode);
         }
-
-        int dstMacModeMask = 6;
-
-        StreamMACMode dstTrexConfigMode = new StreamMACMode("TRex Config", 0, dstMacModeMask);
-        StreamMACMode dstPacketMode= new StreamMACMode("Packet", 2, dstMacModeMask);
-        StreamMACMode dstARPMode= new StreamMACMode("ARP", 4, dstMacModeMask);
-        dstMacMode.getItems().addAll(dstTrexConfigMode, dstPacketMode, dstARPMode);
 
         StreamMACMode dstMacModeVal = dstTrexConfigMode;
         if ((flagsValue & 2) == 2) {
