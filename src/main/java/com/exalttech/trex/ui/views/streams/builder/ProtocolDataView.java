@@ -301,12 +301,14 @@ public class ProtocolDataView extends Accordion {
      * @return
      */
     public int getFlagsValue() {
+        int flags = 0;
         if (macView.getSourceAddress().getType().contains("Fixed")) {
-            return 1;
-        } else if (macView.getDestinationAddress().getType().contains("Fixed")) {
-            return 2;
+            flags |= 1;
         }
-        return 0;
+        if (macView.getDestinationAddress().getType().contains("Fixed")) {
+            flags |= 2;
+        }
+        return flags;
     }
 
 }
