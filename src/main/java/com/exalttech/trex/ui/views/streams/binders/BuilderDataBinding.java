@@ -38,6 +38,8 @@ import java.util.Map;
  */
 public class BuilderDataBinding implements Serializable {
 
+    public static final String MODE_TREX_CONFIG = "TRex Config";
+    public static final String MODE_FIXED = "Fixed";
     ProtocolSelectionDataBinding protocolSelection = new ProtocolSelectionDataBinding();
 
     EthernetDataBinding ethernetDB = new EthernetDataBinding();
@@ -82,22 +84,28 @@ public class BuilderDataBinding implements Serializable {
             JsonArray fields = new JsonArray();
             
             AddressDataBinding binding = entry.getValue();
+            String srcMode = entry.getValue().getDestination().getModeProperty().get();
+            String dstMode = entry.getValue().getSource().getModeProperty().get();
             
-            fields.add(buildProtoField("src", binding.getSource().getAddressProperty().getValue()));
-            fields.add(buildProtoField("dst", binding.getDestination().getAddressProperty().getValue()));
+            if(!MODE_TREX_CONFIG.equals(srcMode)) {
+                fields.add(buildProtoField("src", binding.getSource().getAddressProperty().getValue()));
+            }
             
+            if(!MODE_TREX_CONFIG.equals(dstMode)) {
+                fields.add(buildProtoField("dst", binding.getDestination().getAddressProperty().getValue()));
+            }
 
             if (protoID.equals("Ether") && ethernetDB.getOverrideProperty().get()) {
                 fields.add(buildProtoField("type", ethernetDB.getTypeProperty().getValue()));
             }
             proto.add("fields", fields);
             model.getAsJsonArray("protocols").add(proto);
-            if (!"Fixed".equals(binding.getSource().getModeProperty().get())
-                && !"TRex Config".equals(binding.getSource().getModeProperty().get())) {
+            if (!MODE_FIXED.equals(binding.getSource().getModeProperty().get())
+                && !MODE_TREX_CONFIG.equals(binding.getSource().getModeProperty().get())) {
                 fieldEngine.getAsJsonArray("instructions").addAll(buildVMInstructions(protoID, "src", binding.getSource()));
             }
-            if (!"Fixed".equals(binding.getDestination().getModeProperty().get())
-                && !"TRex Config".equals(binding.getDestination().getModeProperty().get())) {
+            if (!MODE_FIXED.equals(binding.getDestination().getModeProperty().get())
+                && !MODE_TREX_CONFIG.equals(binding.getDestination().getModeProperty().get())) {
                 fieldEngine.getAsJsonArray("instructions").addAll(buildVMInstructions(protoID, "dst", binding.getDestination()));
             }
         });
