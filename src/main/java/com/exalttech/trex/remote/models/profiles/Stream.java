@@ -16,11 +16,14 @@
 package com.exalttech.trex.remote.models.profiles;
 
 import com.exalttech.trex.util.Util;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,9 +59,6 @@ public class Stream implements Cloneable {
     @JsonProperty("flags")
     private int flags = 0;
 
-    @JsonIgnore
-    private IntegerProperty flagsProperty = new SimpleIntegerProperty(0);
-
     @JsonProperty("action_count")
     private int actionCount = 0;
 
@@ -83,9 +83,6 @@ public class Stream implements Cloneable {
         mode = new Mode();
         packet = new Packet();
         flowStats = new FlowStats();
-        flagsProperty.addListener((observable, oldValue, newValue) -> {
-            this.flags = (int) newValue;
-        });
     }
 
     /**
@@ -256,7 +253,7 @@ public class Stream implements Cloneable {
      * @param flags
      */
     public void setFlags(int flags) {
-        flagsProperty.set(flags);
+        this.flags = flags;
     }
 
     /**
@@ -328,7 +325,4 @@ public class Stream implements Cloneable {
         return clonedStream;
     }
 
-    public IntegerProperty getFlagsProperty() {
-        return flagsProperty;
-    }
 }
