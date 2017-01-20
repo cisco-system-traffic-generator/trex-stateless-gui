@@ -85,7 +85,7 @@ public class ProtocolDataView extends Accordion {
      */
     public void doInitializingTabs(BuilderDataBinding selections) {
         this.selections = selections.getProtocolSelection();
-        macView = new MacProtocolView(selections);
+        macView = new MacProtocolView(selections.getMacDB());
         ethernetView = new EthernetProtocolView(selections.getEthernetDB());
         ipv4View = new IPV4ProtocolView(selections.getIpv4DB());
         tcpView = new TCPProtocolView(selections.getTcpProtocolDB());
@@ -294,4 +294,19 @@ public class ProtocolDataView extends Accordion {
         return additionalProperties;
 
     }
+
+    /**
+     * Return stream flag value
+     *
+     * @return
+     */
+    public int getFlagsValue() {
+        if (macView.getSourceAddress().getType().contains("Fixed")) {
+            return 1;
+        } else if (macView.getDestinationAddress().getType().contains("Fixed")) {
+            return 2;
+        }
+        return 0;
+    }
+
 }

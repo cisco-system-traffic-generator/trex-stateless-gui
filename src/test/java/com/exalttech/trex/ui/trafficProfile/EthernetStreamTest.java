@@ -71,8 +71,8 @@ public class EthernetStreamTest extends TrafficProfileTestBase {
      */
     private void setEthernetMacInfo() {
         clickOn("#protocolDataTab");
-        waitForNode("Media Access Control");
-        clickOn("Media Access Control");
+        waitForNode("Media Access Protocol");
+        clickOn("Media Access Protocol");
         waitForNode("#macDstAddress");
         interact(() -> {
             TextField macDstAddress = find(("#macDstAddress"));
@@ -94,8 +94,8 @@ public class EthernetStreamTest extends TrafficProfileTestBase {
      */
     private void verifyMacInformation() {
         clickOn("#protocolDataTab");
-        waitForNode("Media Access Control");
-        clickOn("Media Access Control");
+        waitForNode("Media Access Protocol");
+        clickOn("Media Access Protocol");
         waitForNode("#macDstAddress");
         verifyTextFieldValue("#macDstAddress", "12:00:00:00:00:22");
         verifyComboBoxSelection("#macDstMode", "Fixed");

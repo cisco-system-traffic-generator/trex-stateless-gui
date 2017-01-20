@@ -19,13 +19,12 @@ import com.exalttech.trex.packets.TrexEthernetPacket;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
 import com.exalttech.trex.ui.views.streams.builder.CacheSize;
 import com.exalttech.trex.ui.views.streams.builder.ProtocolDataView;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.layout.AnchorPane;
-
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.layout.AnchorPane;
 
 /**
  * Protocol data FXML controller
@@ -74,6 +73,15 @@ public class ProtocolDataController implements Initializable {
      */
     public TrexEthernetPacket getProtocolData() throws Exception {
         return dataView.getProtocolData();
+    }
+
+    /**
+     * Return stream flag value
+     *
+     * @return
+     */
+    public int getFlagsValue() {
+        return dataView.getFlagsValue();
     }
 
     /**

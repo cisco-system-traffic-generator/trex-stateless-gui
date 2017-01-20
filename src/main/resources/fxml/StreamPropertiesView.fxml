@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
@@ -79,23 +82,13 @@
                 <Label styleClass="streamPropertiesLabel" text="Gaps(in seconds)" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
             </children>
         </AnchorPane>
-        <AnchorPane layoutX="9.0" prefHeight="75.0" prefWidth="980.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="330.0">
+        <AnchorPane layoutX="9.0" prefHeight="150.0" prefWidth="980.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="330.0">
             <children>
                 <Label styleClass="streamPropertiesLabel" text="RX Stats" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                <CheckBox fx:id="rxEnableCB" mnemonicParsing="false" selected="true" text="Enabled" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
-                <Label fx:id="rxStreamIDLabel" text="PG ID" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="40.0" />
-                <TextField fx:id="rxStreamID"  prefWidth="120.0" AnchorPane.leftAnchor="150.0" text="1" AnchorPane.topAnchor="40.0" />
-                <CheckBox disable="true" layoutX="483.0" mnemonicParsing="false" selected="true" text="Latency enabled" AnchorPane.leftAnchor="352.0" AnchorPane.topAnchor="40.0" />
-            </children>
-        </AnchorPane>
-        <AnchorPane layoutX="9.0" prefHeight="75.0" prefWidth="980.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="415.0">
-            <children>
-                <Label styleClass="streamPropertiesLabel" text="MAC configuration" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                <Label text="Destination" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="45.0"/> 
-                <ComboBox fx:id="dstMacMode" AnchorPane.leftAnchor="90.0" AnchorPane.topAnchor="40.0" />
-                
-                <Label text="Source" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="75.0"/>
-                <ComboBox fx:id="srcMacMode" AnchorPane.leftAnchor="90.0" AnchorPane.topAnchor="70.0" />
+                <CheckBox fx:id="rxEnableCB" mnemonicParsing="false" selected="true" text="Enabled" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="60.0" />
+                <Label fx:id="rxStreamIDLabel" layoutX="130.0" text="PG ID" AnchorPane.topAnchor="60.0" />
+                <TextField fx:id="rxStreamID" layoutX="178.0" layoutY="57.0" prefWidth="120.0" text="1" />
+                <CheckBox disable="true" layoutX="483.0" mnemonicParsing="false" selected="true" text="Latency enabled" AnchorPane.leftAnchor="352.0" AnchorPane.topAnchor="60.0" />
             </children>
         </AnchorPane>
     </children>
