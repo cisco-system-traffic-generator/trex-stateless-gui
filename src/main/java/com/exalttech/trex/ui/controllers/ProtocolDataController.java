@@ -15,16 +15,18 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.packets.TrexEthernetPacket;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
 import com.exalttech.trex.ui.views.streams.builder.CacheSize;
 import com.exalttech.trex.ui.views.streams.builder.ProtocolDataView;
-import java.net.URL;
-import java.util.Map;
-import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
+
+import java.net.URL;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Protocol data FXML controller
@@ -52,7 +54,7 @@ public class ProtocolDataController implements Initializable {
      * Initialize view
      */
     private void initializeViews() {
-        dataView = new ProtocolDataView();
+        dataView = TrexApp.injector.getInstance(ProtocolDataView.class);
         protocolDataContainer.getChildren().add(dataView);
     }
 
