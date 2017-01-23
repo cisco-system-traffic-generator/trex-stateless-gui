@@ -23,12 +23,16 @@ package com.exalttech.trex.ui.views.streams.builder;
 import com.exalttech.trex.ui.views.models.AddressProtocolData;
 import com.exalttech.trex.ui.views.streams.binders.MacAddressDataBinding;
 import com.exalttech.trex.util.Util;
-import java.util.function.UnaryOperator;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+
+import java.util.function.UnaryOperator;
+
+import static com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding.MODE_FIXED;
+import static com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding.MODE_TREX_CONFIG;
 
 /**
  *
@@ -78,12 +82,12 @@ public class MacProtocolView extends AbstractProtocolView {
         dstStep.disableProperty().bind(dstModeCountDisabledProp);
 
         srcAddressData.getAddressProperty().bind(srcAddress.textProperty());
-        srcAddressData.getTypeProperty().bind(srcMode.valueProperty());
+        srcAddressData.getTypeProperty().bindBidirectional(srcMode.valueProperty());
         srcAddressData.getCountProperty().bind(srcCount.textProperty());
         srcAddressData.getStepProperty().bind(srcStep.textProperty());
 
         dstAddressData.getAddressProperty().bind(dstAddress.textProperty());
-        dstAddressData.getTypeProperty().bind(dstMode.valueProperty());
+        dstAddressData.getTypeProperty().bindBidirectional(dstMode.valueProperty());
         dstAddressData.getCountProperty().bind(dstCount.textProperty());
         dstAddressData.getStepProperty().bind(dstStep.textProperty());
     }
@@ -217,10 +221,10 @@ public class MacProtocolView extends AbstractProtocolView {
      * Enumerator present MAC type
      */
     private enum MacType {
-        FIXED("Fixed"),
+        FIXED(MODE_FIXED),
         INCREMENT("Increment"),
         DECREMENET("Decrement"),
-        TREX_CONFIG("TRex Config");
+        TREX_CONFIG(MODE_TREX_CONFIG);
 
         String title;
 

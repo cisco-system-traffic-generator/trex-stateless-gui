@@ -23,6 +23,8 @@ package com.exalttech.trex.ui.views.streams.binders;
 import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
 import java.io.Serializable;
 
+import static com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding.MODE_TREX_CONFIG;
+
 /**
  * Mac Address data binding model
  *
@@ -42,8 +44,8 @@ public class MacAddressDataBinding extends AddressDataBinding implements Seriali
      */
     @Override
     public void setInitialValues() {
-        getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_MAC_ADDRESS, "TRex Config");
-        getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_MAC_ADDRESS, "TRex Config");
+        getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_MAC_ADDRESS, MODE_TREX_CONFIG);
+        getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_MAC_ADDRESS, MODE_TREX_CONFIG);
 
     }
 }
