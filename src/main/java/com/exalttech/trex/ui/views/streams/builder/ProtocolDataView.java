@@ -23,6 +23,7 @@ package com.exalttech.trex.ui.views.streams.builder;
 import com.exalttech.trex.packets.TrexEthernetPacket;
 import com.exalttech.trex.packets.TrexIpV4Packet;
 import com.exalttech.trex.packets.TrexVlanPacket;
+import com.exalttech.trex.remote.models.profiles.Stream;
 import com.exalttech.trex.ui.views.models.AddressProtocolData;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
 import com.exalttech.trex.ui.views.streams.binders.AdvancedPropertiesDataBinding;
@@ -31,10 +32,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.xored.javafx.packeteditor.events.UpdateEtherLayerEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.TitledPane;
+
+import static com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding.MODE_FIXED;
+import static com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding.MODE_TREX_CONFIG;
+import static com.xored.javafx.packeteditor.events.UpdateEtherLayerEvent.MacMode.PACKET;
 import static javafx.scene.layout.AnchorPane.setLeftAnchor;
 import static javafx.scene.layout.AnchorPane.setRightAnchor;
 import static javafx.scene.layout.AnchorPane.setTopAnchor;
@@ -60,12 +69,21 @@ public class ProtocolDataView extends Accordion {
     VLanProtocolView vlanView;
     AdvancedPropertiesDataBinding cahceSizeDataBinding;
     
+    EventBus eventBus;
+    
     /**
      *
      */
     public ProtocolDataView() {
         getStyleClass().add("protocolData");
         init();
+    }
+
+    public ProtocolDataView(EventBus eventBus) {
+        this.eventBus = eventBus;
+        getStyleClass().add("protocolData");
+        init();
+        
     }
 
     /**
@@ -76,8 +94,24 @@ public class ProtocolDataView extends Accordion {
         setLeftAnchor(this, 0d);
         setRightAnchor(this, 0d);
         setPrefHeight(150);
+        eventBus.register(this);
     }
 
+    @Subscribe
+    public void handleUpdateEtherLayerEvent(UpdateEtherLayerEvent event) {
+        String modeValue;
+        if(event.getMode().equals(PACKET)) {
+            modeValue = MODE_FIXED;
+        } else {
+            modeValue = MODE_TREX_CONFIG;
+        }
+        if (event.getFieldName().equals("src")) {
+            macView.getSourceAddress().getTypeProperty().set(modeValue);
+        } else {
+            macView.getDestinationAddress().getTypeProperty().set(modeValue);
+        }
+    }
+    
     /**
      * Do initialize tabs
      *
