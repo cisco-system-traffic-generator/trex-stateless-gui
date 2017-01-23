@@ -15,14 +15,14 @@
  */
 package com.exalttech.trex.application;
 
+import com.exalttech.trex.application.guice.StatelessGUIModule;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.xored.javafx.packeteditor.controllers.AppController;
-import com.xored.javafx.packeteditor.guice.TrexGuiceModule;
+import com.xored.javafx.packeteditor.guice.GuiceModule;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -45,7 +45,7 @@ import java.nio.file.Paths;
  */
 public class TrexApp extends Application {
 
-    public static Injector injector = TrexGuiceModule.injector();
+    public static Injector injector = Guice.createInjector(new StatelessGUIModule(), new GuiceModule(true));
 
     private static final Logger LOG = Logger.getLogger(TrexApp.class.getName());
 
