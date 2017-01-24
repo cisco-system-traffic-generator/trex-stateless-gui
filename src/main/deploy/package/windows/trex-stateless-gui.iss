@@ -1,6 +1,6 @@
 #define TrexAppName "trex-stateless-gui"
 #define TrexDisplayAppName "TRex"
-#define TrexAppVersion "3.1 pre-release"
+#define TrexAppVersion "3.1-RC-u6"
 #define TrexAppPublisher "TRex"
 #define TrexAppURL "https://github.com/cisco-system-traffic-generator/trex-stateless-gui"
 #define TrexAppExeName "trex-stateless-gui.exe"
