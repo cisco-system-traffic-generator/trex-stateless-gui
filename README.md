@@ -1,4 +1,4 @@
-# TRex Stateless GUI *(Beta)*
+# TRex Stateless GUI
 
 TRex Stateless GUI application provides a graphical user interface for [TRex](https://trex-tgn.cisco.com/ "TRex").
 
@@ -8,7 +8,7 @@ TRex Stateless GUI application is a JavaFX based application.
 
 ![alt text](screenshots/trex-main-dashboard.PNG "TRex Main Dashboard") 
 
-The application main features can be split into two parts (TRex Management and Traffic Profile management):
+The application main features can be split into tree parts (TRex Management, Traffic Profile management and Packet Crafting tool):
 
 ### TRex Management
 
@@ -40,6 +40,16 @@ Traffic Profile Management is an offline tool, you can use it without connecting
 - Ability to export a stream to PCAP format.
 
 ![alt text](screenshots/trex-stream-properties.PNG "TRex Stream Properties") 
+
+## Advanced mode with Packet Crafting tool
+Packet Crafting Tool provides a capability to create any packet from scratch or load packet from PCAP file and modify it.
+![Packet Crafting Tool](https://raw.githubusercontent.com/kisel/trex-packet-editor-gui/master/docs/trex-packet-editor-main-dlg.png)
+
+Field Engine provides an easy way to add TRex VM instructions to a stream.
+
+<img src="https://cloud.githubusercontent.com/assets/2825175/20897636/b69ef016-bb55-11e6-8d7e-0e68c3c22311.png" width="400">
+
+Find more information about Packet Crafting tool on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki)
 
 ## Build a Native App
 
@@ -79,19 +89,6 @@ To install WiX and have the JavaFX Maven plugin use it during a build, do the fo
 Once that is complete, `mvn jfx:native` will create an MSI file in `(project)\target\jfx\native\bundles`.
 
 Running the MSI installs the application to `C:\Program Files (x86)\(project name)` without prompt. Additionally, it creates an uninstaller listing in the `Programs and Features` control panel.
-
-## Development environment and IDE
-
-It is recommended to use NetBeans IDE 8.1 or above. There is no need to install any additional plugins. Simply import the project.
-
-## Installation Wizard
-
-To install TRex, double click the installer binary and follow the instructions to complete the installation setup.
-
-![alt text](screenshots/installer-1.PNG "TRex Stream Builder") 
-
-![alt text](screenshots/installer-2.PNG "TRex Stream Builder") 
-
 
 ## YouTrack
 
