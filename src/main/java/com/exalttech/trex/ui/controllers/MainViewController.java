@@ -38,10 +38,8 @@ import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
-import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
-import com.exalttech.trex.ui.views.MultiplierView;
-import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
-import com.exalttech.trex.ui.views.PacketTableView;
+import com.exalttech.trex.ui.views.*;
+import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.ui.views.models.ProfileMultiplier;
@@ -72,6 +70,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
@@ -210,6 +209,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private PortsManager portManager;
     private final BooleanProperty disableProfileProperty = new SimpleBooleanProperty();
     StatsTableGenerator statsTableGenerator;
+    RightPaneContent rightPaneContent;
     boolean doAssignProfile = true;
     KeyCombination openDashboardCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
     KeyCombination connectCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
@@ -234,6 +234,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portManager = PortsManager.getInstance();
         portManager.setPortManagerHandler(this);
         statsTableGenerator = new StatsTableGenerator();
+        rightPaneContent = new RightPaneContent();
         leftArrow = new Image("/icons/arrow_left.png");
         rightArrow = new Image("/icons/arrow_right.png");
         initializeInlineComponent();
@@ -668,7 +669,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void buildPortInfoTable() {
         Port port = portManager.getPortList().get(getSelectedPortIndex());
-        statTableContainer.setContent(statsTableGenerator.generatePortInfoPane(port));
+
+        //statTableContainer.setContent(statsTableGenerator.generatePortInfoPane(port));
+
+        TabPane node = (TabPane) rightPaneContent.generatePortInfoPane(port);
+        statTableContainer.setFitToHeight(true);
+        statTableContainer.setFitToWidth(true);
+        statTableContainer.setContent(node);
     }
 
     /**
