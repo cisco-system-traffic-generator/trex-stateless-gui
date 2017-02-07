@@ -30,7 +30,27 @@ import com.google.gson.Gson;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Port {
 
+    String description;
+
+    String driver;
+
     int index;
+
+    boolean is_fc_supported;
+
+    boolean is_led_supported;
+
+    boolean is_link_supported;
+
+    boolean is_virtual;
+
+    int numa;
+
+    String pci_addr;
+
+    PortRx rx;
+
+    int[] supp_speeds;
 
     String status;
 
@@ -42,7 +62,7 @@ public class Port {
 
     int speed;
 
-    String driver;
+    PortStatus.PortStatusResult.PortStatusResultAttr attr;
 
     /**
      * Return index
@@ -60,6 +80,46 @@ public class Port {
      */
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getNuma() {
+        return numa;
+    }
+
+    public void setNuma(int numa) {
+        this.numa = numa;
+    }
+
+    public String getPci_addr() {
+        return pci_addr;
+    }
+
+    public void setPci_addr(String pci_addr) {
+        this.pci_addr = pci_addr;
+    }
+
+    public PortRx getRx() {
+        return rx;
+    }
+
+    public void setRx(PortRx rx) {
+        this.rx = rx;
+    }
+
+    public int[] getSupp_speeds() {
+        return supp_speeds;
+    }
+
+    public void setSupp_speeds(int[] supp_speeds) {
+        this.supp_speeds = supp_speeds;
     }
 
     /**
@@ -136,6 +196,24 @@ public class Port {
     }
 
     /**
+     * Return port attr
+     *
+     * @return
+     */
+    public PortStatus.PortStatusResult.PortStatusResultAttr getAttr() {
+        return attr;
+    }
+
+    /**
+     * Port attr to set
+     *
+     * @param attr
+     */
+    public void setAttr(PortStatus.PortStatusResult.PortStatusResultAttr attr) {
+        this.attr = attr;
+    }
+
+    /**
      * Return speed
      *
      * @return
@@ -178,7 +256,40 @@ public class Port {
     public PortParams getPortParam(){
         return new PortParams(index);
     }
-    
+
+
+    public boolean isIs_fc_supported() {
+        return is_fc_supported;
+    }
+
+    public void setIs_fc_supported(boolean is_fc_supported) {
+        this.is_fc_supported = is_fc_supported;
+    }
+
+    public boolean isIs_led_supported() {
+        return is_led_supported;
+    }
+
+    public void setIs_led_supported(boolean is_led_supported) {
+        this.is_led_supported = is_led_supported;
+    }
+
+    public boolean isIs_link_supported() {
+        return is_link_supported;
+    }
+
+    public void setIs_link_supported(boolean is_link_supported) {
+        this.is_link_supported = is_link_supported;
+    }
+
+    public boolean isIs_virtual() {
+        return is_virtual;
+    }
+
+    public void setIs_virtual(boolean is_virtual) {
+        this.is_virtual = is_virtual;
+    }
+
     /**
      *
      * @return
@@ -220,6 +331,36 @@ public class Port {
         @JsonProperty("port_id")
         public Integer getPortId() {
             return portId;
+        }
+
+    }
+
+    public class PortRx {
+
+        @JsonProperty("caps")
+        String[] caps;
+
+        @JsonProperty("counters")
+        int counters;
+
+        @JsonProperty("caps")
+        public String[] getCaps() {
+            return caps;
+        }
+
+        @JsonProperty("caps")
+        public void setCaps(String[] caps) {
+            this.caps = caps;
+        }
+
+        @JsonProperty("counters")
+        public int getCounters() {
+            return counters;
+        }
+
+        @JsonProperty("counters")
+        public void setCounters(int counters) {
+            this.counters = counters;
         }
 
     }

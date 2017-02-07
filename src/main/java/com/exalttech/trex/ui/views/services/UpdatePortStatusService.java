@@ -24,11 +24,12 @@ import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.PortStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -76,6 +77,7 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
                 portStatus = portStatusList.get(port.getIndex());
                 port.setOwner(portStatus.getResult().getOwner());
                 port.setStatus(portStatus.getResult().getState());
+                port.setAttr(portStatus.getResult().getAttr());
             }
             return portList;
         } catch (Exception ex) {

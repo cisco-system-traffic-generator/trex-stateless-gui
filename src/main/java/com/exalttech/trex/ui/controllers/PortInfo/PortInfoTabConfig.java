@@ -9,15 +9,28 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 
 public class PortInfoTabConfig extends GridPane {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(MainViewController.class.getName());
 
+    private Port port;
+
     @FXML private GridPane root;
-    @FXML private Button payloadButtonSave;
+    @FXML private Text textTabConfigPortNameTitle;
+    @FXML private Label labelTabConfigPortName;
+    @FXML private Label labelTabConfigPortIndex;
+    @FXML private Label labelTabConfigPortDriver;
+    @FXML private Label labelTabConfigPortOwner;
+    @FXML private Label labelTabConfigPortSpeed;
+    @FXML private Label labelTabConfigPortStatus;
+    @FXML private Label labelTabConfigPortPromiscuous;
+    @FXML private Label labelTabConfigPortFlowControl;
+    @FXML private Label labelTabConfigPortLink;
+    @FXML private Label labelTabConfigPortLED;
 
     private EventHandler<ActionEvent> handlerActionSaveExternal;
 
@@ -40,6 +53,7 @@ public class PortInfoTabConfig extends GridPane {
     };
 
     public PortInfoTabConfig(Injector injector, Port port) {
+        this.port = port;
         FXMLLoader fxmlLoader = injector.getInstance(FXMLLoader.class);
 
         fxmlLoader.setLocation(getClass().getResource("/fxml/PortInfo/TabConfig.fxml"));
@@ -52,7 +66,26 @@ public class PortInfoTabConfig extends GridPane {
             LOG.error("Failed to load fxml file: " + e.getMessage());
         }
 
-        //payloadButtonSave.setOnAction(handlerActionSaveInternal);
+        textTabConfigPortNameTitle.setText("Port " + port.getIndex());
+        labelTabConfigPortDriver.setText(port.getDriver());
+        labelTabConfigPortIndex.setText("" + port.getIndex());
+        labelTabConfigPortName.setText("Port " + port.getIndex());
+        labelTabConfigPortOwner.setText(port.getOwner());
+        labelTabConfigPortSpeed.setText("" + port.getSpeed());
+        labelTabConfigPortStatus.setText(port.getStatus());
+
+        labelTabConfigPortPromiscuous.setText(port.getAttr().getPromiscuous().toString());
+        labelTabConfigPortFlowControl.setText(port.getAttr().getFc().toString());
+        if (!port.isIs_led_supported()) {
+            labelTabConfigPortLED.setText("NOT SUPPORTED");
+        }
+        else if (port.getAttr().getLed() != null) {
+            labelTabConfigPortLED.setText(port.getAttr().getLed().toString());
+        }
+        else {
+            labelTabConfigPortLED.setText("N/A");
+        }
+        labelTabConfigPortLink.setText(port.getAttr().getLink().toString());
     }
 
 }

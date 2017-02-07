@@ -124,6 +124,21 @@ public class Constants {
     /**
      *
      */
+    public static final String SET_PORT_ATTR_METHOD = "set_port_attr";
+
+    /**
+     *
+     */
+    public static final String SET_L2_METHOD = "set_l2";
+
+    /**
+     *
+     */
+    public static final String SET_L3_METHOD = "set_l3";
+
+    /**
+     *
+     */
     public static final String SELECT_PROFILE = "Select profile";
 
     /**

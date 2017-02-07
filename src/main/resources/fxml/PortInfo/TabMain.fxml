@@ -9,7 +9,9 @@
 <fx:root fx:id="rootPortInfoTabMain"
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.GridPane"
-         styleClass="payloadvbox">
+         styleClass="payloadvbox"
+         alignment="center" hgap="10" vgap="10">
+    <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
     <HBox fx:id="payloadEditorHboxSize"
           visible="true"
           managed="true"

@@ -23,9 +23,7 @@ import com.exalttech.trex.remote.models.TrafficResponse;
 import com.exalttech.trex.remote.models.apisync.ApiSyncResult;
 import com.exalttech.trex.remote.models.common.RPCResult;
 import com.exalttech.trex.remote.models.multiplier.Multiplier;
-import com.exalttech.trex.remote.models.params.AcquireParams;
-import com.exalttech.trex.remote.models.params.CommonParams;
-import com.exalttech.trex.remote.models.params.TrafficParams;
+import com.exalttech.trex.remote.models.params.*;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.remote.models.validate.StreamValidation;
 import com.exalttech.trex.ui.models.Port;
@@ -366,6 +364,49 @@ public class RPCMethods {
             return false;
         }
 
+    }
+
+    public boolean setPortAttribute(int portID, Boolean link_status, Boolean promiscuous, Boolean led_status, Integer flow_ctrl_mode) throws Exception {
+        String logstr = "Set attributes on port(s) [" + portID + "]:";
+        LOG.trace(logstr);
+        LogsController.getInstance().appendText(LogType.INFO, logstr);
+
+        String handler = (String) connectionHandler.get(portID);
+        PortAttrParams attrs = new PortAttrParams(portID, handler,
+                link_status, promiscuous, led_status, flow_ctrl_mode);
+
+        String response = serverConnectionManager.sendRPCRequest(Constants.SET_PORT_ATTR_METHOD, attrs);
+
+        response = Util.removeFirstBrackets(response);
+        return true;
+    }
+
+    public boolean setSetL2(int portID, String dst_mac) throws Exception {
+        String logstr = "Set l2  on port(s) [" + portID + "]:";
+        LOG.trace(logstr);
+        LogsController.getInstance().appendText(LogType.INFO, logstr);
+
+        String handler = (String) connectionHandler.get(portID);
+        L2Params l2params = new L2Params(portID, handler, dst_mac);
+
+        String response = serverConnectionManager.sendRPCRequest(Constants.SET_L2_METHOD, l2params);
+
+        response = Util.removeFirstBrackets(response);
+        return true;
+    }
+
+    public boolean setSetL3(int portID, String dst_ipv4, String src_ipv4) throws Exception {
+        String logstr = "Set l3  on port(s) [" + portID + "]:";
+        LOG.trace(logstr);
+        LogsController.getInstance().appendText(LogType.INFO, logstr);
+
+        String handler = (String) connectionHandler.get(portID);
+        L3Params l3params = new L3Params(portID, handler, dst_ipv4, src_ipv4);
+
+        String response = serverConnectionManager.sendRPCRequest(Constants.SET_L3_METHOD, l3params);
+
+        response = Util.removeFirstBrackets(response);
+        return true;
     }
 
 }
