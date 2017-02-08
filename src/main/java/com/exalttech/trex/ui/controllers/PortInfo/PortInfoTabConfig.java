@@ -1,5 +1,6 @@
 package com.exalttech.trex.ui.controllers.PortInfo;
 
+import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
 import com.google.inject.Injector;
@@ -9,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
@@ -18,6 +20,7 @@ public class PortInfoTabConfig extends GridPane {
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(MainViewController.class.getName());
 
     private Port port;
+    private RPCMethods serverRPCMethods;
 
     @FXML private GridPane root;
     @FXML private Text textTabConfigPortNameTitle;
@@ -28,9 +31,10 @@ public class PortInfoTabConfig extends GridPane {
     @FXML private Label labelTabConfigPortSpeed;
     @FXML private Label labelTabConfigPortStatus;
     @FXML private Label labelTabConfigPortPromiscuous;
-    @FXML private Label labelTabConfigPortFlowControl;
+    @FXML private ChoiceBox choiceTabConfigPortFlowControl;
     @FXML private Label labelTabConfigPortLink;
     @FXML private Label labelTabConfigPortLED;
+    @FXML private Label labelTabConfigPortCapturing;
 
     private EventHandler<ActionEvent> handlerActionSaveExternal;
 
@@ -52,8 +56,10 @@ public class PortInfoTabConfig extends GridPane {
         }
     };
 
-    public PortInfoTabConfig(Injector injector, Port port) {
+    public PortInfoTabConfig(Injector injector, RPCMethods serverRPCMethods, Port port) {
         this.port = port;
+        this.serverRPCMethods = serverRPCMethods;
+
         FXMLLoader fxmlLoader = injector.getInstance(FXMLLoader.class);
 
         fxmlLoader.setLocation(getClass().getResource("/fxml/PortInfo/TabConfig.fxml"));
@@ -75,7 +81,8 @@ public class PortInfoTabConfig extends GridPane {
         labelTabConfigPortStatus.setText(port.getStatus());
 
         labelTabConfigPortPromiscuous.setText(port.getAttr().getPromiscuous().toString());
-        labelTabConfigPortFlowControl.setText(port.getAttr().getFc().toString());
+        String str = port.getAttr().getFc().toString();
+        choiceTabConfigPortFlowControl.getSelectionModel().select(str.substring(0, 1).toUpperCase() + str.substring(1));
         if (!port.isIs_led_supported()) {
             labelTabConfigPortLED.setText("NOT SUPPORTED");
         }

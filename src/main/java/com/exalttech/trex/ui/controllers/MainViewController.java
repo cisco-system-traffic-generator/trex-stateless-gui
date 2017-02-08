@@ -672,7 +672,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
         //statTableContainer.setContent(statsTableGenerator.generatePortInfoPane(port));
 
-        TabPane node = (TabPane) rightPaneContent.generatePortInfoPane(port);
+        TabPane node = (TabPane) rightPaneContent.generatePortInfoPane(serverRPCMethods, port);
         statTableContainer.setFitToHeight(true);
         statTableContainer.setFitToWidth(true);
         statTableContainer.setContent(node);

@@ -1,6 +1,7 @@
 package com.exalttech.trex.ui.views;
 
 import com.exalttech.trex.application.TrexApp;
+import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.controllers.PortInfo.PortInfoTabConfig;
 import com.exalttech.trex.ui.controllers.PortInfo.PortInfoTabMain;
@@ -23,7 +24,7 @@ public class RightPaneContent {
 
     TabPane tabPanePortInfo = new TabPane();
 
-    public Node generatePortInfoPane(Port port) {
+    public Node generatePortInfoPane(RPCMethods serverRPCMethods, Port port) {
         Tab tab;
 
         if (tabPanePortInfo.getTabs().size() == 0) {
@@ -36,7 +37,7 @@ public class RightPaneContent {
         }
         try {
             tab = tabPanePortInfo.getTabs().get(0);
-            rootPortInfoTabMain = new PortInfoTabMain(TrexApp.injector, port);
+            rootPortInfoTabMain = new PortInfoTabMain(TrexApp.injector, serverRPCMethods, port);
             tab.setContent(rootPortInfoTabMain);
         } catch (Exception e) {
             LOG.error("Failed to load fxml: ", e);
@@ -44,7 +45,7 @@ public class RightPaneContent {
 
         try {
             tab = tabPanePortInfo.getTabs().get(1);
-            rootPortInfoTabConfig = new PortInfoTabConfig(TrexApp.injector, port);
+            rootPortInfoTabConfig = new PortInfoTabConfig(TrexApp.injector, serverRPCMethods, port);
             tab.setContent(rootPortInfoTabConfig);
         } catch (Exception e) {
             LOG.error("Failed to load fxml: ", e);

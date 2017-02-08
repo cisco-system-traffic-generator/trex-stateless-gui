@@ -1,49 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.FXCollections?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.*?>
-
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <fx:root fx:id="rootPortInfoTabMain"
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.GridPane"
-         styleClass="payloadvbox"
-         alignment="center" hgap="10" vgap="10">
+         alignment="top_left"
+         hgap="10" vgap="10">
     <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
-    <HBox fx:id="payloadEditorHboxSize"
-          visible="true"
-          managed="true"
-          styleClass="payloadhbox">
-        <children>
-            <ChoiceBox fx:id="patternSizeChoice"
-                       styleClass="payloadchoicesize"
-                       value="Load size">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Load size"/>
-                        <String fx:value="Packet size"/>
-                    </FXCollections>
-                </items>
-            </ChoiceBox>
-            <Label text="-"
-                   HBox.hgrow="NEVER"
-                   fx:id="patternSizeLabel"
-                   styleClass="payloadlabel"/>
-            <TextField HBox.hgrow="ALWAYS"
-                       fx:id="patternSize"
-                       styleClass="payloadeditortextfield"/>
-            <Label text="bytes"
-                   HBox.hgrow="NEVER"
-                   fx:id="patternSizeLabel2"
-                   styleClass="payloadlabel"/>
-            <Button fx:id="payloadButtonSave"
-                    mnemonicParsing="false"
-                    HBox.hgrow="ALWAYS"
-                    text="Save"
-                    styleClass="payloadbutton">
-            </Button>
-        </children>
-    </HBox>
+
+    <Label                                text="Name:"   GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <Label fx:id="labelTabConfigPortName" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="2" />
+
+    <Label                                 text="Index:"  GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <Label fx:id="labelTabConfigPortIndex" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2" />
+
+    <Label                                  text="Driver:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <Label fx:id="labelTabConfigPortDriver" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="2" />
+
+    <Label                                text="Owner:"   GridPane.columnIndex="5" GridPane.rowIndex="1" />
+    <Label fx:id="labelTabConfigPortOwner" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="1" GridPane.columnSpan="2" />
+
+    <Label                                 text="Speed:"  GridPane.columnIndex="5" GridPane.rowIndex="2" />
+    <Label fx:id="labelTabConfigPortSpeed" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="2" GridPane.columnSpan="2" />
+
+    <Label                                  text="Status:" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+    <Label fx:id="labelTabConfigPortStatus" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="3" GridPane.columnSpan="2" />
+
+
+
+    <Label                                       text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+    <Label fx:id="labelTabConfigPortPromiscuous" text="_empty_"      GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <Button fx:id="buttonTabConfigPortPromiscuous" text="Sign In"    GridPane.columnIndex="2" GridPane.rowIndex="5" />
+
+    <Label                                       text="Flow control:"   GridPane.columnIndex="0" GridPane.rowIndex="6" />
+    <ChoiceBox fx:id="choiceTabConfigPortFlowControl"
+               prefWidth="127"
+               GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2" >
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Rx"/>
+                <String fx:value="Tx"/>
+                <String fx:value="Full"/>
+                <String fx:value="None"/>
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+
+    <Label                                  text="Link:"   GridPane.columnIndex="5" GridPane.rowIndex="5" />
+    <Label fx:id="labelTabConfigPortLink"   text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="5" />
+    <Button fx:id="buttonTabConfigPortLink" text="Sign In" GridPane.columnIndex="7" GridPane.rowIndex="5" />
+
+    <Label                                 text="LED:"    GridPane.columnIndex="5" GridPane.rowIndex="6" />
+    <Label fx:id="labelTabConfigPortLED"   text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="6" />
+    <Button fx:id="buttonTabConfigPortLED" text="Sign In" GridPane.columnIndex="7" GridPane.rowIndex="6" />
+
+
+
+    <Text fx:id="textTabConfigPortNameTitle" text="Port "
+          GridPane.columnIndex="3" GridPane.rowIndex="0"
+          GridPane.columnSpan="1">
+        <font>
+            <Font name="Tahoma" size="20.0" />
+        </font>
+    </Text>
+    <Button fx:id="buttonTabConfigPortAcquireRelease" text="Aquire" GridPane.columnIndex="3" GridPane.rowIndex="16" />
 </fx:root>
