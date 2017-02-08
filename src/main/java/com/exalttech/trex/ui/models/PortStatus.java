@@ -106,6 +106,7 @@ public class PortStatus {
             "attr",
             "max_stream_id",
             "owner",
+            "rx_info",
             "state"
     })
     public class PortStatusResult {
@@ -114,13 +115,36 @@ public class PortStatus {
         private PortStatusResultAttr attr;
 
         @JsonProperty("max_stream_id")
-        private String max_stream_id;
+        private int max_stream_id;
 
         @JsonProperty("owner")
         private String owner;
 
+        @JsonProperty("rx_info")
+        private PortStatusResultRxInfo rx_info;
+
         @JsonProperty("state")
         private String state;
+
+        @JsonProperty("max_stream_id")
+        public int getMax_stream_id() {
+            return max_stream_id;
+        }
+
+        @JsonProperty("max_stream_id")
+        public void setMax_stream_id(int max_stream_id) {
+            this.max_stream_id = max_stream_id;
+        }
+
+        @JsonProperty("rx_info")
+        public PortStatusResultRxInfo getRx_info() {
+            return rx_info;
+        }
+
+        @JsonProperty("rx_info")
+        public void setRx_info(PortStatusResultRxInfo rx_info) {
+            this.rx_info = rx_info;
+        }
 
         /**
          *
@@ -174,24 +198,6 @@ public class PortStatus {
         @JsonProperty("attr")
         public void setAttr(PortStatusResultAttr attr) {
             this.attr = attr;
-        }
-
-        /**
-         *
-         * @return
-         */
-        @JsonProperty("max_stream_id")
-        public String getMaxStreamId() {
-            return max_stream_id;
-        }
-
-        /**
-         *
-         * @param max_stream_id
-         */
-        @JsonProperty("max_stream_id")
-        public void setMaxStreamId(String max_stream_id) {
-            this.max_stream_id = max_stream_id;
         }
 
         /**
@@ -616,6 +622,154 @@ public class PortStatus {
                     public void setState(String state) {
                         this.state = state;
                     }
+                }
+            }
+        }
+
+
+        /**
+         * class present port status result-attr model
+         */
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        @JsonPropertyOrder({
+                "grat_arp",
+                "latency",
+                "queue",
+                "sniffer"
+        })
+        public class PortStatusResultRxInfo {
+
+            @JsonProperty("grat_arp")
+            private PortStatusResultRxInfoGratArp grat_arp;
+            @JsonProperty("latency")
+            private PortStatusResultRxInfoLatency latency;
+            @JsonProperty("queue")
+            private PortStatusResultRxInfoQueue queue;
+            @JsonProperty("sniffer")
+            private PortStatusResultRxInfoSniffer sniffer;
+
+            @JsonProperty("grat_arp")
+            public PortStatusResultRxInfoGratArp getGrat_arp() {
+                return grat_arp;
+            }
+
+            @JsonProperty("grat_arp")
+            public void setGrat_arp(PortStatusResultRxInfoGratArp grat_arp) {
+                this.grat_arp = grat_arp;
+            }
+
+            @JsonProperty("latency")
+            public PortStatusResultRxInfoLatency getLatency() {
+                return latency;
+            }
+
+            @JsonProperty("latency")
+            public void setLatency(PortStatusResultRxInfoLatency latency) {
+                this.latency = latency;
+            }
+
+            @JsonProperty("queue")
+            public PortStatusResultRxInfoQueue getQueue() {
+                return queue;
+            }
+
+            @JsonProperty("queue")
+            public void setQueue(PortStatusResultRxInfoQueue queue) {
+                this.queue = queue;
+            }
+
+            @JsonProperty("sniffer")
+            public PortStatusResultRxInfoSniffer getSniffer() {
+                return sniffer;
+            }
+
+            @JsonProperty("sniffer")
+            public void setSniffer(PortStatusResultRxInfoSniffer sniffer) {
+                this.sniffer = sniffer;
+            }
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            @JsonPropertyOrder({
+                    "is_active"
+            })
+            public class PortStatusResultRxInfoGratArp {
+
+                @JsonProperty("is_active")
+                private boolean is_active;
+
+                @JsonProperty("is_active")
+                public boolean isIs_active() {
+                    return is_active;
+                }
+
+                @JsonProperty("is_active")
+                public void setIs_active(boolean is_active) {
+                    this.is_active = is_active;
+                }
+            }
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            @JsonPropertyOrder({
+                    "is_active"
+            })
+            public class PortStatusResultRxInfoQueue {
+
+                @JsonProperty("is_active")
+                private boolean is_active;
+
+                @JsonProperty("is_active")
+                public boolean isIs_active() {
+                    return is_active;
+                }
+
+                @JsonProperty("is_active")
+                public void setIs_active(boolean is_active) {
+                    this.is_active = is_active;
+                }
+            }
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            @JsonPropertyOrder({
+                    "is_active"
+            })
+            public class PortStatusResultRxInfoLatency {
+
+                @JsonProperty("is_active")
+                private boolean is_active;
+
+                @JsonProperty("is_active")
+                public boolean isIs_active() {
+                    return is_active;
+                }
+
+                @JsonProperty("is_active")
+                public void setIs_active(boolean is_active) {
+                    this.is_active = is_active;
+                }
+            }
+
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            @JsonPropertyOrder({
+                    "is_active"
+            })
+            public class PortStatusResultRxInfoSniffer {
+
+                @JsonProperty("is_active")
+                private boolean is_active;
+
+                @JsonProperty("is_active")
+                public boolean isIs_active() {
+                    return is_active;
+                }
+
+                @JsonProperty("is_active")
+                public void setIs_active(boolean is_active) {
+                    this.is_active = is_active;
                 }
             }
         }

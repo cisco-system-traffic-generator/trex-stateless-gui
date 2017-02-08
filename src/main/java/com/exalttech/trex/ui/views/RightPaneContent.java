@@ -9,6 +9,7 @@ import com.exalttech.trex.ui.models.Port;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import org.apache.log4j.Logger;
 
@@ -23,6 +24,11 @@ public class RightPaneContent {
     private GridPane rootPortInfoTabConfig;
 
     TabPane tabPanePortInfo = new TabPane();
+
+    public RightPaneContent() {
+        tabPanePortInfo.getStyleClass().addAll("statRightPaneContent", "floating");
+    }
+
 
     public Node generatePortInfoPane(RPCMethods serverRPCMethods, Port port) {
         Tab tab;

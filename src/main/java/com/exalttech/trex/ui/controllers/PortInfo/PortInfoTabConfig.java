@@ -23,38 +23,6 @@ public class PortInfoTabConfig extends GridPane {
     private RPCMethods serverRPCMethods;
 
     @FXML private GridPane root;
-    @FXML private Text textTabConfigPortNameTitle;
-    @FXML private Label labelTabConfigPortName;
-    @FXML private Label labelTabConfigPortIndex;
-    @FXML private Label labelTabConfigPortDriver;
-    @FXML private Label labelTabConfigPortOwner;
-    @FXML private Label labelTabConfigPortSpeed;
-    @FXML private Label labelTabConfigPortStatus;
-    @FXML private Label labelTabConfigPortPromiscuous;
-    @FXML private ChoiceBox choiceTabConfigPortFlowControl;
-    @FXML private Label labelTabConfigPortLink;
-    @FXML private Label labelTabConfigPortLED;
-    @FXML private Label labelTabConfigPortCapturing;
-
-    private EventHandler<ActionEvent> handlerActionSaveExternal;
-
-    private ChangeListener<String> onlyNumberListener = (observable, oldValue, newValue) -> {
-        if (!newValue.matches("\\d*")) {
-            ((StringProperty) observable).set(oldValue);
-        }
-    };
-
-    private ChangeListener<String> onlyHexListener = (observable, oldValue, newValue) -> {
-        if (!newValue.matches("([0-9a-fA-F]*|0x[0-9a-fA-F]*|\\s*[0-9a-fA-F]*|\\s*0x[0-9a-fA-F]*)*")) {
-            ((StringProperty) observable).set(oldValue);
-        }
-    };
-
-    private EventHandler<ActionEvent> handlerActionSaveInternal = (event) -> {
-        if (handlerActionSaveExternal != null) {
-            handlerActionSaveExternal.handle(event);
-        }
-    };
 
     public PortInfoTabConfig(Injector injector, RPCMethods serverRPCMethods, Port port) {
         this.port = port;
@@ -71,28 +39,6 @@ public class PortInfoTabConfig extends GridPane {
         } catch (Exception e) {
             LOG.error("Failed to load fxml file: " + e.getMessage());
         }
-
-        textTabConfigPortNameTitle.setText("Port " + port.getIndex());
-        labelTabConfigPortDriver.setText(port.getDriver());
-        labelTabConfigPortIndex.setText("" + port.getIndex());
-        labelTabConfigPortName.setText("Port " + port.getIndex());
-        labelTabConfigPortOwner.setText(port.getOwner());
-        labelTabConfigPortSpeed.setText("" + port.getSpeed());
-        labelTabConfigPortStatus.setText(port.getStatus());
-
-        labelTabConfigPortPromiscuous.setText(port.getAttr().getPromiscuous().toString());
-        String str = port.getAttr().getFc().toString();
-        choiceTabConfigPortFlowControl.getSelectionModel().select(str.substring(0, 1).toUpperCase() + str.substring(1));
-        if (!port.isIs_led_supported()) {
-            labelTabConfigPortLED.setText("NOT SUPPORTED");
-        }
-        else if (port.getAttr().getLed() != null) {
-            labelTabConfigPortLED.setText(port.getAttr().getLed().toString());
-        }
-        else {
-            labelTabConfigPortLED.setText("N/A");
-        }
-        labelTabConfigPortLink.setText(port.getAttr().getLink().toString());
     }
 
 }

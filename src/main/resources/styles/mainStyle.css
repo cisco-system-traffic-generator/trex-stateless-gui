@@ -59,7 +59,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-padding:0;
 }
 
-.tab-pane{
+.tab-pane {
     -fx-background-color: transparent;
     -fx-focus-color: transparent;
     -fx-border-width:10px;
@@ -1135,4 +1135,54 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 
 .importedPcapPropertiesNote{
     -fx-background-color: #fff5cb !important;
+}
+
+/***********************************************************/
+.tab-pane {
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-border-width:10px;
+}
+.statRightPaneContent .tab-pane{
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-border-width:10px;
+}
+.statRightPaneContent .tab-content-area{
+    -fx-background-radius:0;
+    -fx-border-color:#BFBFBF;
+    -fx-background-color: #FFFFFF;
+}
+
+.statRightPaneContent .tab .tab-label{
+    -fx-text-fill: #606060;
+    -fx-text-padding-left:10px;
+    -fx-text-padding-right:10px;
+}
+
+.statRightPaneContent .tab{
+    -fx-border-radius: 3 3 0 0 !important;
+    -fx-background-radius: 3 3 0 0 !important;
+    -fx-background-color: #F2F2F2;
+}
+
+.statRightPaneContent .tab:selected {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #BFBFBF #BFBFBF #FFFFFF #BFBFBF; /*#FFFFFF;*/
+}
+.statRightPaneContent .tab:focused{
+    -fx-border:none;
+    -fx-border-width: 0 0 0 0;
+    -fx-focus-color: transparent;
+}
+.statRightPaneContent .tab:selected .tab-label {
+    -fx-background-color: #FFFFFF;
+    -fx-text-padding-left:10px;
+    -fx-text-padding-right:10px;
+    -fx-focus-color: transparent;
+}
+.statRightPaneContent .tab .tab-label:focused {
+    -fx-border:none;
+    -fx-border-width: 0 0 0 0;
+    -fx-focus-color: transparent;
 }

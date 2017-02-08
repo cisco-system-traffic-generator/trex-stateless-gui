@@ -11,35 +11,37 @@
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.GridPane"
          alignment="top_left"
-         hgap="10" vgap="10">
-    <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
+         hgap="10" vgap="10" >
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
 
     <Label                                text="Name:"   GridPane.columnIndex="0" GridPane.rowIndex="1" />
-    <Label fx:id="labelTabConfigPortName" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="2" />
+    <Label fx:id="labelTabMainPortName" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="2" />
 
     <Label                                 text="Index:"  GridPane.columnIndex="0" GridPane.rowIndex="2" />
-    <Label fx:id="labelTabConfigPortIndex" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2" />
+    <Label fx:id="labelTabMainPortIndex" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2" />
 
     <Label                                  text="Driver:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-    <Label fx:id="labelTabConfigPortDriver" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="2" />
+    <Label fx:id="labelTabMainPortDriver" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="2" />
 
     <Label                                text="Owner:"   GridPane.columnIndex="5" GridPane.rowIndex="1" />
-    <Label fx:id="labelTabConfigPortOwner" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="1" GridPane.columnSpan="2" />
+    <Label fx:id="labelTabMainPortOwner" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="1" GridPane.columnSpan="2" />
 
     <Label                                 text="Speed:"  GridPane.columnIndex="5" GridPane.rowIndex="2" />
-    <Label fx:id="labelTabConfigPortSpeed" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="2" GridPane.columnSpan="2" />
+    <Label fx:id="labelTabMainPortSpeed" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="2" GridPane.columnSpan="2" />
 
     <Label                                  text="Status:" GridPane.columnIndex="5" GridPane.rowIndex="3" />
-    <Label fx:id="labelTabConfigPortStatus" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="3" GridPane.columnSpan="2" />
+    <Label fx:id="labelTabMainPortStatus" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="3" GridPane.columnSpan="2" />
 
 
 
     <Label                                       text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-    <Label fx:id="labelTabConfigPortPromiscuous" text="_empty_"      GridPane.columnIndex="1" GridPane.rowIndex="5" />
-    <Button fx:id="buttonTabConfigPortPromiscuous" text="Sign In"    GridPane.columnIndex="2" GridPane.rowIndex="5" />
+    <Label fx:id="labelTabMainPortPromiscuous" text="_empty_"      GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <Button fx:id="buttonTabMainPortPromiscuous" text="Sign In"    GridPane.columnIndex="2" GridPane.rowIndex="5" />
 
     <Label                                       text="Flow control:"   GridPane.columnIndex="0" GridPane.rowIndex="6" />
-    <ChoiceBox fx:id="choiceTabConfigPortFlowControl"
+    <ChoiceBox fx:id="choiceTabMainPortFlowControl"
                prefWidth="127"
                GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2" >
         <items>
@@ -53,21 +55,32 @@
     </ChoiceBox>
 
     <Label                                  text="Link:"   GridPane.columnIndex="5" GridPane.rowIndex="5" />
-    <Label fx:id="labelTabConfigPortLink"   text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="5" />
-    <Button fx:id="buttonTabConfigPortLink" text="Sign In" GridPane.columnIndex="7" GridPane.rowIndex="5" />
+    <Label fx:id="labelTabMainPortLink"   text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="5" />
+    <Button fx:id="buttonTabMainPortLink" text="Sign In" GridPane.columnIndex="7" GridPane.rowIndex="5" />
 
     <Label                                 text="LED:"    GridPane.columnIndex="5" GridPane.rowIndex="6" />
-    <Label fx:id="labelTabConfigPortLED"   text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="6" />
-    <Button fx:id="buttonTabConfigPortLED" text="Sign In" GridPane.columnIndex="7" GridPane.rowIndex="6" />
+    <Label fx:id="labelTabMainPortLED"   text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="6" />
+    <Button fx:id="buttonTabMainPortLED" text="Sign In" GridPane.columnIndex="7" GridPane.rowIndex="6" />
 
 
 
-    <Text fx:id="textTabConfigPortNameTitle" text="Port "
-          GridPane.columnIndex="3" GridPane.rowIndex="0"
-          GridPane.columnSpan="1">
+    <Text fx:id="textTabMainPortNameTitle" text="Port "
+          GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.columnSpan="1">
         <font>
             <Font name="Tahoma" size="20.0" />
         </font>
     </Text>
-    <Button fx:id="buttonTabConfigPortAcquireRelease" text="Aquire" GridPane.columnIndex="3" GridPane.rowIndex="16" />
+    <HBox GridPane.columnIndex="2" GridPane.rowIndex="15" GridPane.columnSpan="4"  >
+        <Button fx:id="buttonTabMainPortAcquireRelease" text="Aquire">
+            <styleClass>
+                <String fx:value="normalButton" />
+            </styleClass>
+        </Button>
+        <Label text="    " />
+        <Button fx:id="buttonTabMainPortForceAcquire" text="Force Aquire">
+            <styleClass>
+                <String fx:value="normalButton" />
+            </styleClass>
+        </Button>
+    </HBox>
 </fx:root>
