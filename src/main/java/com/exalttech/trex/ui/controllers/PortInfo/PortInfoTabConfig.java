@@ -93,6 +93,14 @@ public class PortInfoTabConfig extends BorderPane {
                 }
             }
         });
+
+        toggleGroupTabConfigPortL2.setOnAction((e) -> {
+            setL2();
+        });
+
+        toggleGroupTabConfigPortL3.setOnAction((e) -> {
+            setL3();
+        });
     }
 
     private void updatePortForce(boolean metoo) {
@@ -105,6 +113,8 @@ public class PortInfoTabConfig extends BorderPane {
     }
 
     public void update(boolean full) {
+        boolean iamowner = portManager.isCurrentUserOwner(port.getIndex());
+
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
 
         String srcIPv4 = port.getAttr().getLayer_cfg().getIpv4().getSrc() != null
@@ -156,5 +166,44 @@ public class PortInfoTabConfig extends BorderPane {
             labelTabConfigPortSourceMAC.setText("");
         }
         labelTabConfigPortArpResolution.setText(port.getAttr().getLayer_cfg().getIpv4().getState());
+
+        if (toggleGroupTabConfigPortL2.isSelected()) {
+            setL2();
+        }
+        else if (toggleGroupTabConfigPortL3.isSelected()) {
+            setL3();
+        }
+    }
+
+    private void setL2() {
+        textFieldTabConfigPortSourceIPv4.setVisible(false);
+        textFieldTabConfigPortSourceIPv4.setDisable(true);
+        textFieldTabConfigPortSourceIPv4.setManaged(false);
+        textFieldTabConfigPortDestinationIPv4.setVisible(false);
+        textFieldTabConfigPortDestinationIPv4.setDisable(true);
+        textFieldTabConfigPortDestinationIPv4.setManaged(false);
+
+        labelTabConfigPortSourceMAC.setVisible(true);
+        labelTabConfigPortSourceMAC.setDisable(false);
+        labelTabConfigPortSourceMAC.setManaged(true);
+        textFieldTabConfigPortDestinationMAC.setVisible(true);
+        textFieldTabConfigPortDestinationMAC.setDisable(false);
+        textFieldTabConfigPortDestinationMAC.setManaged(true);
+    }
+
+    private void setL3() {
+        textFieldTabConfigPortSourceIPv4.setVisible(true);
+        textFieldTabConfigPortSourceIPv4.setDisable(false);
+        textFieldTabConfigPortSourceIPv4.setManaged(true);
+        textFieldTabConfigPortDestinationIPv4.setVisible(true);
+        textFieldTabConfigPortDestinationIPv4.setDisable(false);
+        textFieldTabConfigPortDestinationIPv4.setManaged(true);
+
+        labelTabConfigPortSourceMAC.setVisible(false);
+        labelTabConfigPortSourceMAC.setDisable(true);
+        labelTabConfigPortSourceMAC.setManaged(false);
+        textFieldTabConfigPortDestinationMAC.setVisible(false);
+        textFieldTabConfigPortDestinationMAC.setDisable(true);
+        textFieldTabConfigPortDestinationMAC.setManaged(false);
     }
 }

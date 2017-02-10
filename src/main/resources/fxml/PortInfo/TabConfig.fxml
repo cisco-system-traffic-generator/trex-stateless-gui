@@ -44,18 +44,21 @@
             </HBox>
 
             <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <Label fx:id="labelTabConfigPortSourceMAC" text="00:00:00:00:00:00" minWidth="${16 * s.width}"  GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2" >
-                <padding><Insets top="2" right="10" bottom="2" left="10"/></padding>
-            </Label>
-            <Label text="&#060;&#8722;L2&#8722;L3&#8722;&#062;"   GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.rowSpan="2" />
-            <TextField fx:id="textFieldTabConfigPortSourceIPv4" text="" promptText="source IPv4 address"
-                       minWidth="${16 * s.width}" GridPane.columnIndex="4" GridPane.rowIndex="2" GridPane.columnSpan="2" />
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                <Label fx:id="labelTabConfigPortSourceMAC" text="00:00:00:00:00:00" minWidth="${16 * s.width}" >
+                    <padding><Insets top="2" right="10" bottom="2" left="10"/></padding>
+                </Label>
+                <TextField fx:id="textFieldTabConfigPortSourceIPv4" text="" promptText="source IPv4 address"
+                           minWidth="${16 * s.width}" />
+            </HBox>
 
             <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <TextField fx:id="textFieldTabConfigPortDestinationMAC" text="" promptText="target MAC address"
-                       minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="2" />
-            <TextField fx:id="textFieldTabConfigPortDestinationIPv4" text="" promptText="target IPv4 address"
-                       minWidth="${16 * s.width}" GridPane.columnIndex="4" GridPane.rowIndex="3" GridPane.columnSpan="2" />
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                <TextField fx:id="textFieldTabConfigPortDestinationMAC" text="" promptText="target MAC address"
+                           minWidth="${16 * s.width}" />
+                <TextField fx:id="textFieldTabConfigPortDestinationIPv4" text="" promptText="target IPv4 address"
+                           minWidth="${16 * s.width}" />
+            </HBox>
 
             <Label text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
             <Label fx:id="labelTabConfigPortArpResolution" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="4"  GridPane.columnSpan="2" />
@@ -76,13 +79,13 @@
                 </styleClass>
             </Button>
             <Label text="    " />
-            <Button fx:id="buttonTabConfigPortReset" text="Reset" >
+            <Button fx:id="buttonTabConfigPortApply" text="Apply" >
                 <styleClass>
                     <String fx:value="normalButton" />
                 </styleClass>
             </Button>
             <Label text="    " />
-            <Button fx:id="buttonTabConfigPortApply" text="Apply" >
+            <Button fx:id="buttonTabConfigPortReset" text="Discard changes" >
                 <styleClass>
                     <String fx:value="normalButton" />
                 </styleClass>

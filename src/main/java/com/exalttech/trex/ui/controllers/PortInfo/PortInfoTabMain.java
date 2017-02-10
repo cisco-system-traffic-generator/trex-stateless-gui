@@ -47,6 +47,8 @@ public class PortInfoTabMain extends BorderPane {
     @FXML private Label labelTabMainPortMulticast;
     @FXML private Button buttonTabMainPortMulticast;
 
+    private boolean ledState;
+
     public PortInfoTabMain(Injector injector, RPCMethods serverRPCMethods, Port port) {
         this.port = port;
         this.serverRPCMethods = serverRPCMethods;
@@ -141,14 +143,17 @@ public class PortInfoTabMain extends BorderPane {
             try {
                 if (port.getAttr().getLed() == null) {
                     if (port.isIs_led_supported()) {
-                        serverRPCMethods.setPortAttribute(port.getIndex(), null, null, true, null, null);
+                        serverRPCMethods.setPortAttribute(port.getIndex(), null, null, !ledState, null, null);
+                        ledState = !ledState;
                     }
                 }
                 else if (port.getAttr().getLed().getOn()) {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, false, null, null);
+                    ledState = false;
                 }
                 else {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, true, null, null);
+                    ledState = true;
                 }
                 updatePortForce();
             } catch (Exception ex) {
@@ -189,12 +194,14 @@ public class PortInfoTabMain extends BorderPane {
     }
 
     public void update(boolean full) {
+        boolean iamowner = portManager.isCurrentUserOwner(port.getIndex());
+
         labelTabMainPortName.setText("Port " + port.getIndex());
         textTabMainPortNameTitle.setText("Port " + port.getIndex());
         labelTabMainPortDriver.setText(port.getDriver());
         labelTabMainPortIndex.setText("" + port.getIndex());
         labelTabMainPortOwner.setText(port.getOwner());
-        labelTabMainPortSpeed.setText("" + port.getSpeed());
+        labelTabMainPortSpeed.setText("" + port.getSpeed() + " Gb/s");
         labelTabMainPortStatus.setText(port.getStatus());
         labelTabMainPortRxFilterMode.setText(port.getAttr().getRx_filter_mode());
 
@@ -212,16 +219,28 @@ public class PortInfoTabMain extends BorderPane {
         }
         else if (port.getAttr().getLed() != null) {
             labelTabMainPortLED.setText(port.getAttr().getLed().toString());
-            buttonTabMainPortLED.setText(port.getAttr().getLed().toString().compareToIgnoreCase("on")==0 ? "Off" : "On");
+            buttonTabMainPortLED.setText(port.getAttr().getLed().getOn() ? "Off" : "On");
         }
         else {
-            labelTabMainPortLED.setText("N/A");
-            buttonTabMainPortLED.setText("On");
+            if (full) {
+                labelTabMainPortLED.setText("N/A");
+                buttonTabMainPortLED.setText("On");
+            }
+            else {
+                if (ledState) {
+                    labelTabMainPortLED.setText("on");
+                    buttonTabMainPortLED.setText("Off");
+                }
+                else {
+                    labelTabMainPortLED.setText("off");
+                    buttonTabMainPortLED.setText("On");
+                }
+            }
         }
         labelTabMainPortLink.setText(port.getAttr().getLink().toString());
         buttonTabMainPortLink.setText(port.getAttr().getLink().toString().compareToIgnoreCase("up")==0 ? "Down" : "Up");
 
-        if (port.getOwner()==null || port.getOwner().compareTo("")==0) {
+        if (port.getOwner()==null || port.getOwner().compareTo("")==0 || !iamowner) {
             buttonTabMainPortAcquireRelease.setText("Acquire port");
             buttonTabMainPortForceAcquire.setVisible(true);
             buttonTabMainPortForceAcquire.managedProperty().setValue(true);
