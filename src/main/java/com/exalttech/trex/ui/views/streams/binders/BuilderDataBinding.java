@@ -108,6 +108,12 @@ public class BuilderDataBinding implements Serializable {
                 && !MODE_TREX_CONFIG.equals(binding.getDestination().getModeProperty().get())) {
                 fieldEngine.getAsJsonArray("instructions").addAll(buildVMInstructions(protoID, "dst", binding.getDestination()));
             }
+            
+            if ("IP".equals(protoID)) {
+                Map<String, String> flowWrVarParameters = new HashMap<>();
+                flowWrVarParameters.put("offset", "IP");
+                fieldEngine.getAsJsonArray("instructions").add(buildInstruction("STLVmFixIpv4", flowWrVarParameters));
+            }
         });
 
         boolean isVLAN = protocolSelection.getTaggedVlanProperty().get();
