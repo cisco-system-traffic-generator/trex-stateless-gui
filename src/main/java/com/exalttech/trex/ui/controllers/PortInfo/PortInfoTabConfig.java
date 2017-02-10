@@ -271,6 +271,17 @@ public class PortInfoTabConfig extends BorderPane {
             buttonTabConfigPortForceAcquire.setVisible(true);
             buttonTabConfigPortForceAcquire.setDisable(false);
             buttonTabConfigPortForceAcquire.setManaged(true);
+
+            buttonTabConfigPortAcquireRelease.setText("Acquire port");
+            labelTabConfigPortSourceMAC.setDisable(true);
+            textFieldTabConfigPortSourceIPv4.setDisable(true);
+            labelTabConfigPortSourceMAC.setDisable(true);
+            textFieldTabConfigPortDestinationMAC.setDisable(true);
+            textFieldTabConfigPortDestinationIPv4.setDisable(true);
+            textFieldTabConfigPortPingIPv4.setDisable(true);
+            buttonTabConfigPortPing.setDisable(true);
+            toggleGroupTabConfigPortL2.setDisable(true);
+            toggleGroupTabConfigPortL3.setDisable(true);
         }
         else {
             buttonTabConfigPortResolveARP.setVisible(true);
@@ -292,6 +303,17 @@ public class PortInfoTabConfig extends BorderPane {
             buttonTabConfigPortForceAcquire.setVisible(false);
             buttonTabConfigPortForceAcquire.setDisable(true);
             buttonTabConfigPortForceAcquire.setManaged(false);
+
+            buttonTabConfigPortAcquireRelease.setText("Release port");
+            labelTabConfigPortSourceMAC.setDisable(false);
+            textFieldTabConfigPortSourceIPv4.setDisable(false);
+            labelTabConfigPortSourceMAC.setDisable(false);
+            textFieldTabConfigPortDestinationMAC.setDisable(false);
+            textFieldTabConfigPortDestinationIPv4.setDisable(false);
+            textFieldTabConfigPortPingIPv4.setDisable(false);
+            buttonTabConfigPortPing.setDisable(false);
+            toggleGroupTabConfigPortL2.setDisable(false);
+            toggleGroupTabConfigPortL3.setDisable(false);
         }
     }
 }

@@ -47,7 +47,7 @@ public class PortInfoTabMain extends BorderPane {
     @FXML private Label labelTabMainPortMulticast;
     @FXML private Button buttonTabMainPortMulticast;
 
-    private boolean ledState;
+    private int ledState = -1;
 
     public PortInfoTabMain(Injector injector, RPCMethods serverRPCMethods, Port port) {
         this.port = port;
@@ -143,17 +143,17 @@ public class PortInfoTabMain extends BorderPane {
             try {
                 if (port.getAttr().getLed() == null) {
                     if (port.isIs_led_supported()) {
-                        serverRPCMethods.setPortAttribute(port.getIndex(), null, null, !ledState, null, null);
-                        ledState = !ledState;
+                        serverRPCMethods.setPortAttribute(port.getIndex(), null, null, ledState != 1, null, null);
+                        ledState = ledState != 1 ? 1 : 0;
                     }
                 }
                 else if (port.getAttr().getLed().getOn()) {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, false, null, null);
-                    ledState = false;
+                    ledState = 0;
                 }
                 else {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, true, null, null);
-                    ledState = true;
+                    ledState = 1;
                 }
                 updatePortForce(false);
             } catch (Exception ex) {
@@ -228,15 +228,21 @@ public class PortInfoTabMain extends BorderPane {
             if (full) {
                 labelTabMainPortLED.setText("N/A");
                 buttonTabMainPortLED.setText("On");
+                ledState = -1;
             }
             else {
-                if (ledState) {
+                if (ledState == 1) {
                     labelTabMainPortLED.setText("on");
                     buttonTabMainPortLED.setText("Off");
                 }
-                else {
+                else if (ledState == 0) {
                     labelTabMainPortLED.setText("off");
                     buttonTabMainPortLED.setText("On");
+                }
+                else {
+                    labelTabMainPortLED.setText("N/A");
+                    buttonTabMainPortLED.setText("On");
+                    ledState = -1;
                 }
             }
         }
