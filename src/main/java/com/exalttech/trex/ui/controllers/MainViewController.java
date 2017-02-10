@@ -433,7 +433,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
             try {
                 stopRefreshingService();
-                // update aquire/release port icon state
+                // update acquire/release port icon state
                 updateAcquireReleaseBtnState(true);
                 // show table container by default
                 hideShowStatTable(true);

@@ -73,6 +73,17 @@
     <bottom>
         <HBox alignment="top_center">
             <padding><Insets top="1" right="10" bottom="10" left="10"/></padding>
+            <Button fx:id="buttonTabConfigPortAcquireRelease" text="Acquire port">
+                <styleClass>
+                    <String fx:value="normalButton" />
+                </styleClass>
+            </Button>
+            <Label text="    " />
+            <Button fx:id="buttonTabConfigPortForceAcquire" text="Force Acquire">
+                <styleClass>
+                    <String fx:value="normalButton" />
+                </styleClass>
+            </Button>
             <Button fx:id="buttonTabConfigPortResolveARP" text="Resolve ARP" >
                 <styleClass>
                     <String fx:value="normalButton" />

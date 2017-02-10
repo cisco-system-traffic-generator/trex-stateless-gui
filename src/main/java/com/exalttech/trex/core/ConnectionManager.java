@@ -43,6 +43,8 @@ import org.zeromq.ZMQ;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,6 +99,17 @@ public class ConnectionManager {
      */
     protected ConnectionManager() {
         bindLogProperty();
+
+        try {
+            InetAddress ip = InetAddress.getLocalHost();
+            String hostname = ip.getHostName();
+            String username = System.getProperty("user.name");
+            /*System.out.println("Your current IP address : " + ip);
+            System.out.println("Your current Hostname : " + hostname);*/
+            setClientName(username + "@" + hostname);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

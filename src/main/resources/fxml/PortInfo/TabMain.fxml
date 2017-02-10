@@ -83,13 +83,13 @@
     <bottom>
         <HBox alignment="top_center">
             <padding><Insets top="1" right="10" bottom="10" left="10"/></padding>
-            <Button fx:id="buttonTabMainPortAcquireRelease" text="Aquire">
+            <Button fx:id="buttonTabMainPortAcquireRelease" text="Acquire">
                 <styleClass>
                     <String fx:value="normalButton" />
                 </styleClass>
             </Button>
             <Label text="    " />
-            <Button fx:id="buttonTabMainPortForceAcquire" text="Force Aquire">
+            <Button fx:id="buttonTabMainPortForceAcquire" text="Force Acquire">
                 <styleClass>
                     <String fx:value="normalButton" />
                 </styleClass>

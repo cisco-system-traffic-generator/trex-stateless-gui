@@ -82,7 +82,7 @@ public class PortInfoTabMain extends BorderPane {
                 serverRPCMethods.releasePort(port.getIndex(), true);
                 buttonTabMainPortAcquireRelease.setText("Acquire port");
             }
-            updatePortForce();
+            updatePortForce(true);
         });
         buttonTabMainPortForceAcquire.setOnAction((e) -> {
             try {
@@ -94,7 +94,7 @@ public class PortInfoTabMain extends BorderPane {
             } catch (PortAcquireException ex) {
                 LOG.error("Error acquiring port " + port.getIndex() + ": " + ex.getMessage());
             }
-            updatePortForce();
+            updatePortForce(true);
         });
 
         buttonTabMainPortLink.setOnAction((e) -> {
@@ -105,7 +105,7 @@ public class PortInfoTabMain extends BorderPane {
                 else {
                     serverRPCMethods.setPortAttribute(port.getIndex(), true, null, null, null, null);
                 }
-                updatePortForce();
+                updatePortForce(false);
             } catch (Exception ex) {
                 LOG.error("Error changing link status of port " + port.getIndex() + ": " + ex.getMessage());
             }
@@ -119,7 +119,7 @@ public class PortInfoTabMain extends BorderPane {
                 else {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, true, null, null, null);
                 }
-                updatePortForce();
+                updatePortForce(false);
             } catch (Exception ex) {
                 LOG.error("Error changing promiscuous status of port " + port.getIndex() + ": " + ex.getMessage());
             }
@@ -133,7 +133,7 @@ public class PortInfoTabMain extends BorderPane {
                 else {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, null, null, true);
                 }
-                updatePortForce();
+                updatePortForce(false);
             } catch (Exception ex) {
                 LOG.error("Error changing multicast status of port " + port.getIndex() + ": " + ex.getMessage());
             }
@@ -155,7 +155,7 @@ public class PortInfoTabMain extends BorderPane {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, true, null, null);
                     ledState = true;
                 }
-                updatePortForce();
+                updatePortForce(false);
             } catch (Exception ex) {
                 LOG.error("Error changing LED status of port " + port.getIndex() + ": " + ex.getMessage());
             }
@@ -177,7 +177,7 @@ public class PortInfoTabMain extends BorderPane {
                 else if (((String)newValue).compareToIgnoreCase("full") == 0) {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, null, 3, null);
                 }
-                updatePortForce();
+                updatePortForce(false);
             } catch (Exception ex) {
                 LOG.error("Error changing flow control mode of port " + port.getIndex() + ": " + ex.getMessage());
             }
@@ -187,9 +187,12 @@ public class PortInfoTabMain extends BorderPane {
         //gridPanePortInfoTabMain.setGridLinesVisible(true);
     }
 
-    private void updatePortForce() {
+    private void updatePortForce(boolean full) {
         Platform.runLater(() -> {
             portManager.updatePortForce();
+            Platform.runLater(() -> {
+                update(full);
+            });
         });
     }
 

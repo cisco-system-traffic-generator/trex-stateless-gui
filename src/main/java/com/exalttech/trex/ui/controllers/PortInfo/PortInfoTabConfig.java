@@ -1,6 +1,7 @@
 package com.exalttech.trex.ui.controllers.PortInfo;
 
 import com.exalttech.trex.core.RPCMethods;
+import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
@@ -41,6 +42,8 @@ public class PortInfoTabConfig extends BorderPane {
     @FXML private Button buttonTabConfigPortResolveARP;
     @FXML private Button buttonTabConfigPortReset;
     @FXML private Button buttonTabConfigPortApply;
+    @FXML private Button buttonTabConfigPortAcquireRelease;
+    @FXML private Button buttonTabConfigPortForceAcquire;
 
     private String savedPingIPv4 = "";
 
@@ -96,24 +99,52 @@ public class PortInfoTabConfig extends BorderPane {
 
         toggleGroupTabConfigPortL2.setOnAction((e) -> {
             setL2();
+            verifyOwner();
         });
 
         toggleGroupTabConfigPortL3.setOnAction((e) -> {
             setL3();
+            verifyOwner();
+        });
+
+        buttonTabConfigPortAcquireRelease.setOnAction((e) -> {
+            if (buttonTabConfigPortAcquireRelease.getText().startsWith("Acquire")) {
+                try {
+                    serverRPCMethods.acquireServerPort(port.getIndex(), false);
+                    buttonTabConfigPortAcquireRelease.setText("Release port");
+                } catch (PortAcquireException ex) {
+                    LOG.error("Error acquiring port " + port.getIndex() + ": " + ex.getMessage());
+                }
+            }
+            else {
+                serverRPCMethods.releasePort(port.getIndex(), true);
+                buttonTabConfigPortAcquireRelease.setText("Acquire port");
+            }
+            updatePortForce(true);
+        });
+        buttonTabConfigPortForceAcquire.setOnAction((e) -> {
+            try {
+                serverRPCMethods.acquireServerPort(port.getIndex(), true);
+                buttonTabConfigPortAcquireRelease.setText("Release port");
+                buttonTabConfigPortForceAcquire.setVisible(false);
+                buttonTabConfigPortForceAcquire.setDisable(true);
+            } catch (PortAcquireException ex) {
+                LOG.error("Error acquiring port " + port.getIndex() + ": " + ex.getMessage());
+            }
+            updatePortForce(true);
         });
     }
 
-    private void updatePortForce(boolean metoo) {
+    private void updatePortForce(boolean full) {
         Platform.runLater(() -> {
             portManager.updatePortForce();
             Platform.runLater(() -> {
-                update(true);
+                update(full);
             });
         });
     }
 
     public void update(boolean full) {
-        boolean iamowner = portManager.isCurrentUserOwner(port.getIndex());
 
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
 
@@ -173,6 +204,8 @@ public class PortInfoTabConfig extends BorderPane {
         else if (toggleGroupTabConfigPortL3.isSelected()) {
             setL3();
         }
+
+        verifyOwner();
     }
 
     private void setL2() {
@@ -189,6 +222,10 @@ public class PortInfoTabConfig extends BorderPane {
         textFieldTabConfigPortDestinationMAC.setVisible(true);
         textFieldTabConfigPortDestinationMAC.setDisable(false);
         textFieldTabConfigPortDestinationMAC.setManaged(true);
+
+        buttonTabConfigPortResolveARP.setVisible(false);
+        buttonTabConfigPortResolveARP.setDisable(true);
+        buttonTabConfigPortResolveARP.setManaged(false);
     }
 
     private void setL3() {
@@ -205,5 +242,56 @@ public class PortInfoTabConfig extends BorderPane {
         textFieldTabConfigPortDestinationMAC.setVisible(false);
         textFieldTabConfigPortDestinationMAC.setDisable(true);
         textFieldTabConfigPortDestinationMAC.setManaged(false);
+
+        buttonTabConfigPortResolveARP.setVisible(true);
+        buttonTabConfigPortResolveARP.setDisable(false);
+        buttonTabConfigPortResolveARP.setManaged(true);
+    }
+
+    private void verifyOwner() {
+        boolean iamowner = portManager.isCurrentUserOwner(port.getIndex());
+
+        if (!iamowner) {
+            buttonTabConfigPortResolveARP.setVisible(false);
+            buttonTabConfigPortResolveARP.setDisable(true);
+            buttonTabConfigPortResolveARP.setManaged(false);
+
+            buttonTabConfigPortApply.setVisible(false);
+            buttonTabConfigPortApply.setDisable(true);
+            buttonTabConfigPortApply.setManaged(false);
+
+            buttonTabConfigPortReset.setVisible(false);
+            buttonTabConfigPortReset.setDisable(true);
+            buttonTabConfigPortReset.setManaged(false);
+
+            buttonTabConfigPortAcquireRelease.setVisible(true);
+            buttonTabConfigPortAcquireRelease.setDisable(false);
+            buttonTabConfigPortAcquireRelease.setManaged(true);
+
+            buttonTabConfigPortForceAcquire.setVisible(true);
+            buttonTabConfigPortForceAcquire.setDisable(false);
+            buttonTabConfigPortForceAcquire.setManaged(true);
+        }
+        else {
+            buttonTabConfigPortResolveARP.setVisible(true);
+            buttonTabConfigPortResolveARP.setDisable(false);
+            buttonTabConfigPortResolveARP.setManaged(true);
+
+            buttonTabConfigPortApply.setVisible(true);
+            buttonTabConfigPortApply.setDisable(false);
+            buttonTabConfigPortApply.setManaged(true);
+
+            buttonTabConfigPortReset.setVisible(true);
+            buttonTabConfigPortReset.setDisable(false);
+            buttonTabConfigPortReset.setManaged(true);
+
+            buttonTabConfigPortAcquireRelease.setVisible(false);
+            buttonTabConfigPortAcquireRelease.setDisable(true);
+            buttonTabConfigPortAcquireRelease.setManaged(false);
+
+            buttonTabConfigPortForceAcquire.setVisible(false);
+            buttonTabConfigPortForceAcquire.setDisable(true);
+            buttonTabConfigPortForceAcquire.setManaged(false);
+        }
     }
 }

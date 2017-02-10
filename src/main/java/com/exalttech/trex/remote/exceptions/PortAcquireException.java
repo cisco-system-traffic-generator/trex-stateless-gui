@@ -32,6 +32,6 @@ public class PortAcquireException extends Exception {
      * @param message
      */
     public PortAcquireException(String message) {
-        super("Failed to aquire port" + message);
+        super("Failed to acquire port" + message);
     }
 }

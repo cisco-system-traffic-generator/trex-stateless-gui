@@ -33,7 +33,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -177,8 +179,15 @@ public class ConnectDialogController extends DialogView implements Initializable
             errMsg.setContentText("Invalid Scapy Port Number(" + scapyPort.getText() + ")");
             isValid = false;
         } else if (Util.isNullOrEmpty(nameTF.getText())) {
-            errMsg.setContentText("Name should not be empty");
-            isValid = false;
+            try {
+                InetAddress ip = InetAddress.getLocalHost();
+                String hostname = ip.getHostName();
+                String username = System.getProperty("user.name");
+                nameTF.setText(username + "@" + ip.getHostAddress());
+            } catch (UnknownHostException e) {
+                errMsg.setContentText("Name should not be empty");
+                isValid = false;
+            }
         }
 
         if (!isValid) {
@@ -196,6 +205,14 @@ public class ConnectDialogController extends DialogView implements Initializable
         ConnectionsWrapper connection = (ConnectionsWrapper) XMLFileManager.loadXML("connections.xml", ConnectionsWrapper.class);
         if (connection != null && connection.getConnectionList() != null) {
             fillConnectionItem(connection.getConnectionList());
+        }
+        try {
+            InetAddress ip = InetAddress.getLocalHost();
+            String hostname = ip.getHostName();
+            String username = System.getProperty("user.name");
+            nameTF.setText(username + "@" + ip.getHostAddress());
+        } catch (UnknownHostException e) {
+            ;
         }
     }
 
