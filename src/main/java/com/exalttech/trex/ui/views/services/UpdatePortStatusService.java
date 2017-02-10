@@ -78,6 +78,9 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
                 port.setOwner(portStatus.getResult().getOwner());
                 port.setStatus(portStatus.getResult().getState());
                 port.setAttr(portStatus.getResult().getAttr());
+
+                // Is it right ?
+                port.setSpeed(port.getAttr().getSpeed());
             }
             return portList;
         } catch (Exception ex) {

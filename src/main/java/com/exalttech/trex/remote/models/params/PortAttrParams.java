@@ -38,10 +38,10 @@ public class PortAttrParams extends Params {
     @JsonProperty("port_id")
     private Integer portId;
 
-    public PortAttrParams(Integer portId, String handler, Boolean link_status, Boolean promiscuous, Boolean led_status, Integer flow_ctrl_mode) {
+    public PortAttrParams(Integer portId, String handler, Boolean link_status, Boolean promiscuous, Boolean led_status, Integer flow_ctrl_mode, Boolean multicast) {
         this.handler = handler;
         this.portId = portId;
-        this.attr = new Attr(link_status, promiscuous, led_status, flow_ctrl_mode);
+        this.attr = new Attr(link_status, promiscuous, led_status, flow_ctrl_mode, multicast);
     }
 
     @JsonProperty("attr")
@@ -93,6 +93,8 @@ public class PortAttrParams extends Params {
         private LedStatus led_status;
         @JsonProperty("flow_ctrl_mode")
         private FlowCtrlMode flow_ctrl_mode;
+        @JsonProperty("multicast")
+        private Multicast multicast;
 
         /**
          * @param force
@@ -100,11 +102,12 @@ public class PortAttrParams extends Params {
          * @param mul
          * @param portId
          */
-        public Attr(Boolean link_status, Boolean promiscuous, Boolean led_status, Integer flow_ctrl_mode) {
+        public Attr(Boolean link_status, Boolean promiscuous, Boolean led_status, Integer flow_ctrl_mode, Boolean multicast) {
             this.link_status = link_status != null ? new LinkStatus(link_status) : null;
             this.promiscuous = promiscuous != null ? new Promiscuous(promiscuous) : null;
             this.led_status = led_status != null ? new LedStatus(led_status) : null;
             this.flow_ctrl_mode = flow_ctrl_mode != null ? new FlowCtrlMode(flow_ctrl_mode) : null;
+            this.multicast = multicast != null ? new Multicast(multicast) : null;
         }
 
         @JsonProperty("link_status")
@@ -180,6 +183,28 @@ public class PortAttrParams extends Params {
             private boolean enabled;
 
             public Promiscuous(boolean enabled) {
+                this.enabled = enabled;
+            }
+
+            public boolean isEnabled() {
+                return enabled;
+            }
+
+            public void setEnabled(boolean enabled) {
+                this.enabled = enabled;
+            }
+        }
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @Generated("org.jsonschema2pojo")
+        @JsonPropertyOrder({
+                "enabled"
+        })
+        private class Multicast {
+            @JsonProperty("enabled")
+            private boolean enabled;
+
+            public Multicast(boolean enabled) {
                 this.enabled = enabled;
             }
 

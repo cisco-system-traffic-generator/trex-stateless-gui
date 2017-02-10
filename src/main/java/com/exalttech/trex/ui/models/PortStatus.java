@@ -215,14 +215,44 @@ public class PortStatus {
 
             @JsonProperty("fc")
             private PortStatusResultAttrFc fc;
-            @JsonProperty("link")
-            private PortStatusResultAttrLink link;
-            @JsonProperty("promiscuous")
-            private PortStatusResultAttrPromiscuous promiscuous;
-            @JsonProperty("led")
-            private PortStatusResultAttrLed led;
             @JsonProperty("layer_cfg")
             private PortStatusResultAttrLayerCfg layer_cfg;
+            @JsonProperty("link")
+            private PortStatusResultAttrLink link;
+            @JsonProperty("multicast")
+            private PortStatusResultAttrMulticast multicast;
+            @JsonProperty("promiscuous")
+            private PortStatusResultAttrPromiscuous promiscuous;
+            @JsonProperty("rx_filter_mode")
+            private String rx_filter_mode;
+            @JsonProperty("speed")
+            private int speed;
+            @JsonProperty("led")
+            private PortStatusResultAttrLed led;
+
+            public PortStatusResultAttrMulticast getMulticast() {
+                return multicast;
+            }
+
+            public void setMulticast(PortStatusResultAttrMulticast multicast) {
+                this.multicast = multicast;
+            }
+
+            public String getRx_filter_mode() {
+                return rx_filter_mode;
+            }
+
+            public void setRx_filter_mode(String rx_filter_mode) {
+                this.rx_filter_mode = rx_filter_mode;
+            }
+
+            public int getSpeed() {
+                return speed;
+            }
+
+            public void setSpeed(int speed) {
+                this.speed = speed;
+            }
 
             /**
              *
@@ -406,6 +436,44 @@ public class PortStatus {
                     "enabled"
             })
             public class PortStatusResultAttrPromiscuous {
+
+                @JsonProperty("enabled")
+                private boolean enabled;
+
+                /**
+                 *
+                 * @return
+                 */
+                @JsonProperty("enabled")
+                public boolean getEnabled() {
+                    return enabled;
+                }
+
+                /**
+                 *
+                 * @param enabled
+                 */
+                @JsonProperty("enabled")
+                public void setEnabled(boolean enabled) {
+                    this.enabled = enabled;
+                }
+
+                public String toString() {
+                    if (enabled) return "enabled";
+                    return "disabled";
+                }
+
+            }
+
+            /**
+             * class present port status result-attr-link-up model
+             */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            @JsonPropertyOrder({
+                    "enabled"
+            })
+            public class PortStatusResultAttrMulticast {
 
                 @JsonProperty("enabled")
                 private boolean enabled;

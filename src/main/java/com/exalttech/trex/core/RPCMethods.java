@@ -366,14 +366,14 @@ public class RPCMethods {
 
     }
 
-    public boolean setPortAttribute(int portID, Boolean link_status, Boolean promiscuous, Boolean led_status, Integer flow_ctrl_mode) throws Exception {
+    public boolean setPortAttribute(int portID, Boolean link_status, Boolean promiscuous, Boolean led_status, Integer flow_ctrl_mode, Boolean multicast) throws Exception {
         String logstr = "Set attributes on port(s) [" + portID + "]:";
         LOG.trace(logstr);
         LogsController.getInstance().appendText(LogType.INFO, logstr);
 
         String handler = (String) connectionHandler.get(portID);
         PortAttrParams attrs = new PortAttrParams(portID, handler,
-                link_status, promiscuous, led_status, flow_ctrl_mode);
+                link_status, promiscuous, led_status, flow_ctrl_mode, multicast);
 
         String response = serverConnectionManager.sendRPCRequest(Constants.SET_PORT_ATTR_METHOD, attrs);
 
