@@ -310,8 +310,8 @@ public class ProtocolDataView extends Accordion {
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_DST, ipv4Dst.getType(), ipv4Dst.getCount(), ipv4Dst.getStep(), ipv4Dst.getAddress()));
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Src.getType(), ipv4Src.getCount(), ipv4Src.getStep(), ipv4Src.getAddress()));
         // add ipv4 checksum instructions
-        instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
         instructionsList.addAll(vmInstructionBuilder.getPacketLenVMInstruction("pkt_len", selections.getFrameLengthType(), selections.getMinLength(), selections.getMaxLength(), selections.isTaggedVlanSelected()));
+        instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
 
         Map<String, Object> additionalProperties = new HashMap<>();
 
