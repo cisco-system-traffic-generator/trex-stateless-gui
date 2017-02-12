@@ -32,6 +32,7 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.components.CustomTreeItem;
 import com.exalttech.trex.ui.components.CustomTreeItem.TreeItemType;
 import com.exalttech.trex.ui.components.NotificationPanel;
+import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabMain;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
@@ -39,7 +40,6 @@ import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
 import com.exalttech.trex.ui.views.*;
-import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.ui.views.models.ProfileMultiplier;
@@ -1008,10 +1008,20 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void openStateDialog() {
         try {
             if (DialogManager.getInstance().getNumberOfOpenedDialog() < 4) {
-                DialogWindow statsWindow = new DialogWindow("Dashboard.fxml", "Dashboard", 50, 10, true, TrexApp.getPrimaryStage());
+                DialogWindow statsWindow = new DialogWindow("Dashboard/Dashboard.fxml", "Dashboard", 50, 10, true, TrexApp.getPrimaryStage());
                 statsWindow.setMinSize(380, 400);
-                DashboardController dashboardController = (DashboardController) statsWindow.getController();
-                dashboardController.init();
+
+                Pane root = statsWindow.getRootPane();
+                TabPane tabPane = (TabPane) root.getChildren().get(0);
+                Tab tabMain = new Tab("Main");
+                tabMain.setClosable(false);
+                tabPane.getTabs().add(0, tabMain);
+
+                DashboardTabMain dashboardTabMain = new DashboardTabMain(TrexApp.injector, serverRPCMethods, portManager.getPortList().get(0));
+                if (dashboardTabMain != null) {
+                    //tabMain.setContent(dashboardTabMain);
+                }
+
                 statsWindow.show(false);
             }
         } catch (IOException ex) {

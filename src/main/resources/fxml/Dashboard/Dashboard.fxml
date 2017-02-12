@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane id="AnchorPane" fx:id="rootAnchorPaneDashboard" minHeight="300.0" minWidth="300.0" prefHeight="705.0"
+            prefWidth="1000.0" style="-fx-background-color:#f0f0f0;" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1">
+    <TabPane id="AnchorPane"
+             fx:id="tabPaneDashboard"
+             minHeight="300.0" minWidth="300.0" prefHeight="705.0" prefWidth="1000.0"
+             style="-fx-background-color:#f0f0f0;"
+             xmlns="http://javafx.com/javafx/8"
+             xmlns:fx="http://javafx.com/fxml/1">
+    </TabPane>
+</AnchorPane>

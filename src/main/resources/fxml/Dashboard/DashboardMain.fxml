@@ -12,10 +12,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane id="AnchorPane" fx:id="mainDashboardContainer" minHeight="300.0" minWidth="300.0" prefHeight="705.0"
-            prefWidth="1000.0" style="-fx-background-color:#f0f0f0;" xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.DashboardController">
-
+<fx:root id="AnchorPane"
+         fx:id="mainDashboardContainer"
+         minHeight="300.0" minWidth="300.0" prefHeight="705.0" prefWidth="1000.0"
+         style="-fx-background-color:#f0f0f0;"
+         xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml/1"
+         type="javafx.scene.layout.AnchorPane">
     <children>
         <AnchorPane layoutY="0.0" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color:#E4E2E2;"
                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -53,7 +56,7 @@
                                                     styleClass="dashboardStatsContainer" AnchorPane.leftAnchor="10.0"
                                                     AnchorPane.topAnchor="10.0">
                                             <children>
-                                                <fx:include fx:id="latencyChart" source="LatencyChart.fxml"/>
+                                                <fx:include fx:id="latencyChart" source="../LatencyChart.fxml"/>
                                                 <Label layoutY="173.0" onMouseClicked="#handleShowSeriesButtonClicked"
                                                        prefHeight="24.0" prefWidth="24.0" styleClass="settingsIcon"
                                                        AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
@@ -114,4 +117,4 @@
                     prefWidth="980.0" style="" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0"
                     AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="268.0"/>
     </children>
-</AnchorPane>
+</fx:root>

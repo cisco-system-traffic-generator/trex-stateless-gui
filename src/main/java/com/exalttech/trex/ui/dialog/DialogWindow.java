@@ -20,7 +20,7 @@ import com.xored.javafx.packeteditor.view.FieldEditorView;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -37,6 +37,7 @@ public class DialogWindow {
     String layoutFile;
     FXMLLoader loader;
     Stage dialogStage;
+    Pane rootPane;
 
     /**
      *
@@ -62,7 +63,9 @@ public class DialogWindow {
      */
     public void show(boolean isLockParent) {
         DialogKeyPressHandler controller = (DialogKeyPressHandler) getController();
-        controller.setupStage(dialogStage);
+        if (controller != null) {
+            controller.setupStage(dialogStage);
+        }
         if (isLockParent) {
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.showAndWait();
@@ -84,11 +87,11 @@ public class DialogWindow {
      */
     private Stage buildDialogWindow(String title, double parentXDistance, double parentYDistance, boolean resizable, Stage owner) throws IOException {
 
-        AnchorPane page = loader.load();
+        rootPane = loader.load();
         Stage createdStage = new Stage();
         createdStage.setTitle(title);
         createdStage.initOwner(owner);
-        Scene scene = new Scene(page);
+        Scene scene = new Scene(rootPane);
         scene.getStylesheets().add(TrexApp.class.getResource("/styles/mainStyle.css").toExternalForm());
 
         // Packet editor
@@ -124,4 +127,9 @@ public class DialogWindow {
         dialogStage.setMinWidth(width);
         dialogStage.setMinHeight(height);
     }
+
+    public Pane getRootPane() {
+        return rootPane;
+    }
+
 }
