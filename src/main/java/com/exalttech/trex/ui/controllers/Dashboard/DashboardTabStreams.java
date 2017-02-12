@@ -59,9 +59,23 @@ public class DashboardTabStreams extends BorderPane {
      */
     private void initializeReadingStats() {
         readingStatService = new RefreshingService();
-        readingStatService.setPeriod(Duration.seconds(Constants.REFRESH_TWO_INTERVAL_SECONDS));
+        readingStatService.setPeriod(Duration.seconds(Constants.REFRESH_FIFTEEN_INTERVAL_SECONDS));
         readingStatService.setOnSucceeded((WorkerStateEvent event) -> {
-            ;
+            try {
+                String response = serverRPCMethods.getStreamList(0);
+            } catch (Exception e) {
+                LOG.error("Failed to get stream list: " + e.getMessage());
+            }
+            try {
+                String response2 = serverRPCMethods.getStream(0, 0);
+            } catch (Exception e) {
+                LOG.error("Failed to get stream: " + e.getMessage());
+            }
+            try {
+                String response3 = serverRPCMethods.getStreamStats(0, 0);
+            } catch (Exception e) {
+                LOG.error("Failed to get stream stats: " + e.getMessage());
+            }
         });
         readingStatService.start();
     }

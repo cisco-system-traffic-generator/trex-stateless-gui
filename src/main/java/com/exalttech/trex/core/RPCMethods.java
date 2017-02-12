@@ -409,4 +409,46 @@ public class RPCMethods {
         return true;
     }
 
+    public String getStreamList(int portID) throws Exception {
+        String logstr = "Get stream list  on port(s) [" + portID + "]:";
+        LOG.trace(logstr);
+        LogsController.getInstance().appendText(LogType.INFO, logstr);
+
+        String handler = (String) connectionHandler.get(portID);
+        CommonParams params = new CommonParams(portID, handler);
+
+        String response = serverConnectionManager.sendRPCRequest(Constants.PORT_GET_STREAM_LIST_METHOD, params);
+
+        response = Util.removeFirstBrackets(response);
+        return response;
+    }
+
+    public String getStream(int portID, int streamId) throws Exception {
+        String logstr = "Get stream  on port(s) [" + portID + "]:";
+        LOG.trace(logstr);
+        LogsController.getInstance().appendText(LogType.INFO, logstr);
+
+        String handler = (String) connectionHandler.get(portID);
+        StreamParams params = new StreamParams(portID, streamId, handler);
+
+        String response = serverConnectionManager.sendRPCRequest(Constants.PORT_GET_STREAM_METHOD, params);
+
+        response = Util.removeFirstBrackets(response);
+        return response;
+    }
+
+    public String getStreamStats(int portID, int streamId) throws Exception {
+        String logstr = "Get stream stats  on port(s) [" + portID + "]:";
+        LOG.trace(logstr);
+        LogsController.getInstance().appendText(LogType.INFO, logstr);
+
+        String handler = (String) connectionHandler.get(portID);
+        StreamParams params = new StreamParams(portID, streamId, handler);
+
+        String response = serverConnectionManager.sendRPCRequest(Constants.PORT_GET_STREAM_STATS_METHOD, params);
+
+        response = Util.removeFirstBrackets(response);
+        return response;
+    }
+
 }

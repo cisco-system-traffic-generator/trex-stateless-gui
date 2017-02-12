@@ -251,10 +251,18 @@ public class Port {
 
     /**
      * Return port parameter
-     * @return 
+     * @return
      */
     public PortParams getPortParam(){
         return new PortParams(index);
+    }
+
+    /**
+     * Return stream parameter
+     * @return
+     */
+    public StreamParams getStreamParam(int streamId){
+        return new StreamParams(index, streamId);
     }
 
 
@@ -309,15 +317,15 @@ public class Port {
 
         /**
          * Constructor
-         * @param portId 
+         * @param portId
          */
         public PortParams(int portId){
             this.portId = portId;
         }
-        
+
         /**
-         * 
-         * @param portId 
+         *
+         * @param portId
          */
         @JsonProperty("port_id")
         public void setPortId(Integer portId) {
@@ -325,12 +333,70 @@ public class Port {
         }
 
         /**
-         * 
-         * @return 
+         *
+         * @return
          */
         @JsonProperty("port_id")
         public Integer getPortId() {
             return portId;
+        }
+
+    }
+
+    /**
+     * Stream parameters model
+     */
+    public class StreamParams extends Params {
+
+        @JsonProperty("port_id")
+        private Integer portId;
+        @JsonProperty("stream_id")
+        private Integer streamId;
+
+        /**
+         * Constructor
+         * @param portId
+         * @param streamId
+         */
+        public StreamParams(int portId, int streamId){
+            this.portId = portId;
+            this.streamId = streamId;
+        }
+
+        /**
+         *
+         * @param portId
+         */
+        @JsonProperty("port_id")
+        public void setPortId(Integer portId) {
+            this.portId = portId;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @JsonProperty("port_id")
+        public Integer getPortId() {
+            return portId;
+        }
+
+        /**
+         *
+         * @param streamId
+         */
+        @JsonProperty("stream_id")
+        public void setStreamId(Integer streamId) {
+            this.streamId = streamId;
+        }
+
+        /**
+         *
+         * @return
+         */
+        @JsonProperty("stream_id")
+        public Integer getStreamId() {
+            return streamId;
         }
 
     }

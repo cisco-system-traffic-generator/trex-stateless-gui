@@ -115,11 +115,26 @@ public class Constants {
      *
      */
     public static final String PORT_STATUS_METHOD = "get_port_status";
-    
+
     /**
      *
      */
     public static final String ADD_STREAM_METHOD = "add_stream";
+
+    /**
+     *
+     */
+    public static final String PORT_GET_STREAM_LIST_METHOD = "get_stream_list";
+
+    /**
+     *
+     */
+    public static final String PORT_GET_STREAM_METHOD = "get_stream";
+
+    /**
+     *
+     */
+    public static final String PORT_GET_STREAM_STATS_METHOD = "get_stream_stats";
 
     /**
      *
