@@ -12,14 +12,16 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane id="AnchorPane" fx:id="rootAnchorPaneDashboard" minHeight="300.0" minWidth="300.0" prefHeight="705.0"
-            prefWidth="1000.0" style="-fx-background-color:#f0f0f0;" xmlns="http://javafx.com/javafx/8"
+<AnchorPane id="AnchorPane" fx:id="rootAnchorPaneDashboard" minHeight="765.0" minWidth="800.0" prefHeight="765.0"
+            prefWidth="1020.0" style="-fx-background-color:#f0f0f0;" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1">
     <TabPane id="AnchorPane"
              fx:id="tabPaneDashboard"
-             minHeight="300.0" minWidth="300.0" prefHeight="705.0" prefWidth="1000.0"
+             minHeight="320.0" minWidth="320.0" prefHeight="725.0" prefWidth="1020.0"
              style="-fx-background-color:#f0f0f0;"
              xmlns="http://javafx.com/javafx/8"
-             xmlns:fx="http://javafx.com/fxml/1">
+             xmlns:fx="http://javafx.com/fxml/1"
+             AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
+             AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
     </TabPane>
 </AnchorPane>

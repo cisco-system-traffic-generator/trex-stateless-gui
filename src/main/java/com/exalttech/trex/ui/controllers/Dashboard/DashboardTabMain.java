@@ -63,7 +63,7 @@ import java.util.ResourceBundle;
  *
  * @author Georgekh
  */
-public class DashboardTabMain extends DialogView implements Initializable, DialogCloseHandler {
+public class DashboardTabMain extends AnchorPane /*DialogView implements Initializable, DialogCloseHandler*/ {
 
     private static final Logger LOG = Logger.getLogger(DashboardTabMain.class.getName());
 
@@ -97,7 +97,6 @@ public class DashboardTabMain extends DialogView implements Initializable, Dialo
     @FXML
     LatencyChartController latencyChartController;
 
-    Port port;
     RPCMethods serverRPCMethods;
     PortsManager portManager;
 
@@ -109,10 +108,10 @@ public class DashboardTabMain extends DialogView implements Initializable, Dialo
     Stage currentStage;
     StatsTableGenerator statsTableGenerator;
 
-    public DashboardTabMain(Injector injector, RPCMethods serverRPCMethods, Port port) {
-        this.port = port;
+    public DashboardTabMain(Injector injector, RPCMethods serverRPCMethods, Stage stage) {
         this.serverRPCMethods = serverRPCMethods;
         this.portManager = PortsManager.getInstance();
+        this.currentStage = stage;
 
         FXMLLoader fxmlLoader = injector.getInstance(FXMLLoader.class);
         fxmlLoader.setLocation(getClass().getResource("/fxml/Dashboard/DashboardMain.fxml"));
@@ -124,42 +123,46 @@ public class DashboardTabMain extends DialogView implements Initializable, Dialo
         } catch (Exception e) {
             LOG.error("Failed to load fxml file: " + e.getMessage());
         }
+
+        initializze();
     }
 
     /**
      *
-     * @param location
-     * @param resources
      */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    //@Override
+    public void initializze() {
         clearCacheBtn.setGraphic(new ImageView(new Image("/icons/clean.png")));
-        portManager = PortsManager.getInstance();
+
         initializePortFilter();
         initializeGauge();
         initializeStatsWidgets();
         initializeReadingStats();
+        initCloseAndSize();
 
-        // add current dashboard to opening window
-        DialogManager.getInstance().addHandler(this);
         statsTableGenerator = new StatsTableGenerator();
     }
 
     /**
      * Init stage
      */
-    public void init() {
-        currentStage = (Stage) mainDashboardContainer.getScene().getWindow();
-        currentStage.getScene().getWindow().setOnCloseRequest((WindowEvent event) -> {
+    public void initCloseAndSize() {
+        currentStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, (window) -> {
             stopRunningThread();
             statsTableGenerator.reset();
-            // remove current opened dashboard from opening window
-            DialogManager.getInstance().removeHandler(this);
             Util.optimizeMemory();
         });
 
         // add size listener
         currentStage.getScene().widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                buildPortStatTable();
+            }
+        });
+
+        // add size listener
+        currentStage.getScene().heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 buildPortStatTable();
@@ -323,7 +326,7 @@ public class DashboardTabMain extends DialogView implements Initializable, Dialo
     /**
      * Close dashboard dialog
      */
-    @Override
+    //@Override
     public void closeDialog() {
         stopRunningThread();
         currentStage.close();
@@ -334,10 +337,10 @@ public class DashboardTabMain extends DialogView implements Initializable, Dialo
      *
      * @param stage
      */
-    @Override
+    //@Override
     public void onEnterKeyPressed(Stage stage) {
 
-        // fire close event 
+        // fire close event
         stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
     }
 

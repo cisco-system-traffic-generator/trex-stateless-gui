@@ -33,6 +33,7 @@ import com.exalttech.trex.ui.components.CustomTreeItem;
 import com.exalttech.trex.ui.components.CustomTreeItem.TreeItemType;
 import com.exalttech.trex.ui.components.NotificationPanel;
 import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabMain;
+import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabStreams;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
@@ -670,8 +671,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void buildPortInfoTable() {
         Port port = portManager.getPortList().get(getSelectedPortIndex());
 
-        //statTableContainer.setContent(statsTableGenerator.generatePortInfoPane(port));
-
         TabPane node = (TabPane) rightPaneContent.generatePortInfoPane(serverRPCMethods, port);
         statTableContainer.setFitToHeight(true);
         statTableContainer.setFitToWidth(true);
@@ -1008,18 +1007,28 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void openStateDialog() {
         try {
             if (DialogManager.getInstance().getNumberOfOpenedDialog() < 4) {
-                DialogWindow statsWindow = new DialogWindow("Dashboard/Dashboard.fxml", "Dashboard", 50, 10, true, TrexApp.getPrimaryStage());
-                statsWindow.setMinSize(380, 400);
+                DialogWindow statsWindow = new DialogWindow("Dashboard/Dashboard.fxml", "Dashboard",
+                        50, 10, true, TrexApp.getPrimaryStage());
+                statsWindow.setMinSize(400, 420);
 
                 Pane root = statsWindow.getRootPane();
                 TabPane tabPane = (TabPane) root.getChildren().get(0);
+                tabPane.getStyleClass().addAll("statRightPaneContent", "floating");
+
                 Tab tabMain = new Tab("Main");
                 tabMain.setClosable(false);
                 tabPane.getTabs().add(0, tabMain);
-
-                DashboardTabMain dashboardTabMain = new DashboardTabMain(TrexApp.injector, serverRPCMethods, portManager.getPortList().get(0));
+                DashboardTabMain dashboardTabMain = new DashboardTabMain(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
                 if (dashboardTabMain != null) {
-                    //tabMain.setContent(dashboardTabMain);
+                    tabMain.setContent(dashboardTabMain);
+                }
+
+                Tab tabStreams = new Tab("Streams");
+                tabStreams.setClosable(false);
+                tabPane.getTabs().add(1, tabStreams);
+                DashboardTabStreams dashboardTabStreams = new DashboardTabStreams(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
+                if (dashboardTabStreams != null) {
+                    tabStreams.setContent(dashboardTabStreams);
                 }
 
                 statsWindow.show(false);

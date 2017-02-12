@@ -105,6 +105,7 @@ public class DialogWindow {
         createdStage.setY(TrexApp.getPrimaryStage().getY() + parentYDistance);
         createdStage.initModality(Modality.NONE);
         createdStage.getIcons().add(new Image("/icons/trex.png"));
+
         return createdStage;
     }
 
@@ -130,6 +131,10 @@ public class DialogWindow {
 
     public Pane getRootPane() {
         return rootPane;
+    }
+
+    public Stage getDialogStage() {
+        return dialogStage;
     }
 
 }

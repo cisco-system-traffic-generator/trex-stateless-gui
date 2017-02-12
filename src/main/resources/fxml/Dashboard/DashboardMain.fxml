@@ -15,7 +15,7 @@
 <fx:root id="AnchorPane"
          fx:id="mainDashboardContainer"
          minHeight="300.0" minWidth="300.0" prefHeight="705.0" prefWidth="1000.0"
-         style="-fx-background-color:#f0f0f0;"
+         style="-fx-background-color:#ffffff;"
          xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml/1"
          type="javafx.scene.layout.AnchorPane">
