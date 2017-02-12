@@ -13,29 +13,30 @@
  * limitations under the License.
  ******************************************************************************
  */
-package com.exalttech.trex.ui.controllers;
+package com.exalttech.trex.ui.controllers.Dashboard;
 
+import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.ui.PortsManager;
+import com.exalttech.trex.ui.controllers.LatencyChartController;
+import com.exalttech.trex.ui.controllers.LatencySeriesOptionWindowController;
 import com.exalttech.trex.ui.dialog.DialogCloseHandler;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.dialog.DialogWindow;
+import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.StatsInfoView;
 import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Util;
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import com.google.inject.Injector;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -51,14 +52,20 @@ import jfxtras.labs.scene.control.gauge.linear.SimpleMetroArcGauge;
 import jfxtras.labs.scene.control.gauge.linear.elements.PercentSegment;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
+
 /**
  * Dashboard FXML controller
  *
  * @author Georgekh
  */
-public class DashboardController extends DialogView implements Initializable, DialogCloseHandler {
+public class DashboardTabMain extends DialogView implements Initializable, DialogCloseHandler {
 
-    private static final Logger LOG = Logger.getLogger(DashboardController.class.getName());
+    private static final Logger LOG = Logger.getLogger(DashboardTabMain.class.getName());
 
     @FXML
     ScrollPane statTableContainer;
@@ -90,14 +97,34 @@ public class DashboardController extends DialogView implements Initializable, Di
     @FXML
     LatencyChartController latencyChartController;
 
+    Port port;
+    RPCMethods serverRPCMethods;
+    PortsManager portManager;
+
     boolean ownerFilter;
     RefreshingService readingStatService = new RefreshingService();
     Map<String, String> currentStatsList = new HashMap<>();
     Map<String, String> cachedStatsList = new HashMap<>();
     private SimpleMetroArcGauge simpleMetroArcGauge;
-    PortsManager portManager;
     Stage currentStage;
     StatsTableGenerator statsTableGenerator;
+
+    public DashboardTabMain(Injector injector, RPCMethods serverRPCMethods, Port port) {
+        this.port = port;
+        this.serverRPCMethods = serverRPCMethods;
+        this.portManager = PortsManager.getInstance();
+
+        FXMLLoader fxmlLoader = injector.getInstance(FXMLLoader.class);
+        fxmlLoader.setLocation(getClass().getResource("/fxml/Dashboard/DashboardMain.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+
+        try {
+            fxmlLoader.load();
+        } catch (Exception e) {
+            LOG.error("Failed to load fxml file: " + e.getMessage());
+        }
+    }
 
     /**
      *
