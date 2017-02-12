@@ -1143,27 +1143,28 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-focus-color: transparent;
     -fx-border-width:10px;
 }
-.statRightPaneContent .tab-pane{
+.statRightPaneContent .tab-pane {
     -fx-background-color: transparent;
     -fx-focus-color: transparent;
     -fx-border-width:10px;
 }
-.statRightPaneContent .tab-content-area{
+.statRightPaneContent .tab-content-area {
     -fx-background-radius:0;
     -fx-border-color:#BFBFBF;
     -fx-background-color: #FFFFFF;
 }
 
-.statRightPaneContent .tab .tab-label{
+.statRightPaneContent .tab .tab-label {
     -fx-text-fill: #606060;
     -fx-text-padding-left:10px;
     -fx-text-padding-right:10px;
 }
 
-.statRightPaneContent .tab{
+.statRightPaneContent .tab {
     -fx-border-radius: 3 3 0 0 !important;
     -fx-background-radius: 3 3 0 0 !important;
     -fx-background-color: #F2F2F2;
+    -fx-border-color: #BFBFBF;
 }
 
 .statRightPaneContent .tab:selected {
