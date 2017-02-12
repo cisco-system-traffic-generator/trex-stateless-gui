@@ -1672,7 +1672,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private enum AsyncStatsType {
         PORT,
         TUI,
-        GLOBAL;
+        GLOBAL
     }
 
     /**
@@ -1688,7 +1688,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         ACQUIRE_ALL,
         FORCE_ACQUIRE_ALL,
         RELEASE_ALL,
-        ACQUIRE_MY_PORT;
+        ACQUIRE_MY_PORT
     }
 
     @Subscribe
