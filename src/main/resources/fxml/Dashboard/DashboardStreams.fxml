@@ -28,16 +28,17 @@
     <bottom>
         <HBox fx:id="gridPaneStreamStatsBottomHbox"
               alignment="top_center">
-            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-            <GridPane fx:id="gridPaneStreamStatsBottomGridPane"
-                      alignment="top_center"
-                      hgap="10" vgap="10">
-                <fx:define>
-                    <Rectangle fx:id="s" width="12" height="12"/>
-                </fx:define>
-                <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-
-            </GridPane>
+            <ScrollPane>
+                <padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
+                <GridPane fx:id="borderPaneStreamStatsBottomGridPane"
+                          alignment="top_center"
+                          hgap="10" vgap="10">
+                    <fx:define>
+                        <Rectangle fx:id="s" width="12" height="12"/>
+                    </fx:define>
+                    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                </GridPane>
+            </ScrollPane>
         </HBox>
     </bottom>
 </fx:root>

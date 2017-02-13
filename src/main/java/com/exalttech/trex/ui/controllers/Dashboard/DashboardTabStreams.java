@@ -17,10 +17,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Injector;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -37,8 +43,8 @@ public class DashboardTabStreams extends BorderPane {
     @FXML BorderPane borderPaneStreamStats;
     @FXML HBox borderPaneStreamStatsTopHbox;
     @FXML HBox borderPaneStreamStatsCenterHbox;
-    @FXML HBox gridPaneStreamStatsBottomHbox;
-    @FXML GridPane gridPaneStreamStatsBottomGridPane;
+    @FXML HBox borderPaneStreamStatsBottomHbox;
+    @FXML GridPane borderPaneStreamStatsBottomGridPane;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(MainViewController.class.getName());
 
@@ -175,11 +181,37 @@ public class DashboardTabStreams extends BorderPane {
         }
         return statTable;*/
 
-        BorderPane top = new BorderPane();
-        top.setRight(statsTableGenerator.generateGlobalStatPane());
-        borderPaneStreamStatsTopHbox.getChildren().add(0, top);
+        ObservableList<Node> children = borderPaneStreamStatsTopHbox.getChildren();
+        if (children.size() > 1) {
+            children.remove(0, 1);
+        }
+        borderPaneStreamStatsTopHbox.getChildren().add(0, generateUtilizationProcChart());
+        borderPaneStreamStatsTopHbox.getChildren().add(1, statsTableGenerator.generateGlobalStatPane());
+
+        int j = 1;
+        for (Integer i : streamList) {
+            if (j < 9) {
+                borderPaneStreamStatsBottomGridPane.add(new Label("Stream " + i), j, 0);
+                j++;
+            }
+            else {
+                break;
+            }
+        }
+        if (j >= 9) {
+            borderPaneStreamStatsBottomGridPane.add(new Label("...."), j, 0);
+        }
 
         return;
+    }
+
+
+    public LineChart generateUtilizationProcChart() {
+        Axis x = new NumberAxis();
+        Axis y = new NumberAxis(0, 100, 10);
+        LineChart lineChart = new LineChart(x, y);
+
+        return lineChart;
     }
 
 }

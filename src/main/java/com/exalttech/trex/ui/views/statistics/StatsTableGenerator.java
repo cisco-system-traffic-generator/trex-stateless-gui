@@ -22,7 +22,9 @@ import com.exalttech.trex.util.Util;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.GridPane;
 import org.apache.log4j.Logger;
@@ -532,16 +534,6 @@ public class StatsTableGenerator {
             statTable.add((Node) cell, 1, rowIndex++);
         }
         return statTable;
-    }
-
-
-    public LineChart generateUtilizationProcChart() {
-        XYChart.Series series = new XYChart.Series();
-        int xlength = 100;
-
-        lineChart
-
-        return lineChart;
     }
 
 }
