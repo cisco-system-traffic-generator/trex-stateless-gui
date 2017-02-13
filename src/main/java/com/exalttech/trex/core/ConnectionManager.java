@@ -604,6 +604,8 @@ public class ConnectionManager {
             AsyncResponseManager.getInstance().setTRexEventValue(res);
         } else if (res.contains(Constants.TREX_LATENCY)) {
             AsyncResponseManager.getInstance().setTrexLatencyProperty(res);
+        } else if (res.contains(Constants.TREX_FLOW_STATS)) {
+            AsyncResponseManager.getInstance().setTrexFlowStatsProperty(res);
         }
     }
 

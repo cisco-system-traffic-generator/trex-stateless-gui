@@ -50,6 +50,7 @@ public class AsyncResponseManager {
     private StringProperty trexGlobalResponse = new SimpleStringProperty();
     private StringProperty trexEventValueProperty = new SimpleStringProperty();
     private StringProperty trexLatencyProperty = new SimpleStringProperty();
+    private StringProperty trexFlowStatsProperty = new SimpleStringProperty();
     private BooleanProperty trexEventProperty = new SimpleBooleanProperty();
 
     /**
@@ -105,12 +106,30 @@ public class AsyncResponseManager {
     }
 
     /**
+     * Set trex latency response
+     *
+     * @param trexFlowStatsResponse
+     */
+    public void setTrexFlowStatsProperty(String trexFlowStatsResponse) {
+        this.trexFlowStatsProperty.set(trexFlowStatsResponse);
+    }
+
+    /**
      * Return trex latency property
      *
      * @return
      */
     public StringProperty getTrexLatencyProperty() {
         return trexLatencyProperty;
+    }
+
+    /**
+     * Return trex latency property
+     *
+     * @return
+     */
+    public StringProperty getTrexFlowStatsProperty() {
+        return trexFlowStatsProperty;
     }
 
     /**

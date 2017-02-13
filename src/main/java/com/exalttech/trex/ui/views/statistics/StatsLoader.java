@@ -49,6 +49,8 @@ public class StatsLoader {
     private Map<String, String> loadedStatsList = new HashMap<>();
     private Map<String, String> previousStatsList = new HashMap<>();
     private Map<String, String> latencyStatsMap = new HashMap<>();
+    private Map<String, String> loadedFlowStatsMap = new HashMap<>();
+    private Map<String, String> previousFlowStatsMap = new HashMap<>();
 
     /**
      * Protected constructor
@@ -89,6 +91,24 @@ public class StatsLoader {
     }
 
     /**
+     * Return flow stats map
+     *
+     * @return
+     */
+    public Map<String, String> getLoadedFlowStatsMap() {
+        return loadedFlowStatsMap;
+    }
+
+    /**
+     * Return flow stats map
+     *
+     * @return
+     */
+    public Map<String, String> getPreviousFlowStatsMap() {
+        return previousFlowStatsMap;
+    }
+
+    /**
      * Start listening on stats changes for updating
      */
     public void start() {
@@ -107,6 +127,16 @@ public class StatsLoader {
                 String data = Util.fromJSONResult(newValue, "data");
                 if (!Util.isNullOrEmpty(data)) {
                     latencyStatsMap = Util.getStatsFromJSONString(data);
+                }
+            }
+        });
+
+        AsyncResponseManager.getInstance().getTrexFlowStatsProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (newValue != null) {
+                String data = Util.fromJSONResult(newValue, "data");
+                if (!Util.isNullOrEmpty(data)) {
+                    previousFlowStatsMap = loadedFlowStatsMap;
+                    loadedFlowStatsMap = Util.getStatsFromJSONString(data);
                 }
             }
         });

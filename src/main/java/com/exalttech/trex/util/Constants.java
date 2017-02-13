@@ -199,6 +199,11 @@ public class Constants {
     /**
      *
      */
+    public static final String TREX_FLOW_STATS = "\"flow_stats\"";
+
+    /**
+     *
+     */
     private Constants() {
         // private constructor
     }
