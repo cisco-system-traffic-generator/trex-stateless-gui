@@ -531,37 +531,4 @@ public class StatsTableGenerator {
         return statTable;
     }
 
-    /**
-     * Build global statistic pane
-     *
-     * @return
-     */
-    public GridPane generateFlowStatsPane() {
-        Map<String, String> statsMap = StatsLoader.getInstance().getLoadedFlowStatsMap();
-        statTable.getChildren().clear();
-        Util.optimizeMemory();
-
-        double columnWidth = 150;
-        addHeaderCell("Value", 1, columnWidth);
-        addCounterColumn(StatisticConstantsKeys.GLOBAL_STATS_ROW_NAME);
-        rowIndex = 1;
-        odd = true;
-        for (StatisticRow row : StatisticConstantsKeys.GLOBAL_STATS_KEY) {
-            StatisticCell cell = getGridCell(row, columnWidth, row.getKey());
-            ((StatisticLabelCell) cell).setLeftPosition();
-            if (row.getAttributeName().equals("active-port")) {
-                cell.updateItem("", PortsManager.getInstance().getActivePort());
-            } else {
-                String value = statsList.get(row.getAttributeName());
-                if (row.isFormatted()) {
-                    value = Util.getFormatted(value, true, row.getUnit());
-                }
-                cell.updateItem("", value);
-            }
-            statTable.getChildren().remove(cell);
-            statTable.add((Node) cell, 1, rowIndex++);
-        }
-        return statTable;
-    }
-
 }
