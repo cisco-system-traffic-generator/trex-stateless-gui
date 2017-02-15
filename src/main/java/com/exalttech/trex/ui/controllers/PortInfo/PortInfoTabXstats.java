@@ -5,11 +5,13 @@ import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
+import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
 import com.google.inject.Injector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
@@ -23,8 +25,13 @@ public class PortInfoTabXstats extends BorderPane {
     private PortsManager portManager;
 
     @FXML private Text textTabConfigPortNameTitle;
+    @FXML ScrollPane statXTableContainer;
+    @FXML AnchorPane statXTableWrapper;
+    @FXML CheckBox   statXTableNotEmpty;
+    @FXML TextField  statXTableFilter;
 
     private String savedPingIPv4 = "";
+    StatsTableGenerator statsTableGenerator;
 
     public PortInfoTabXstats(Injector injector, RPCMethods serverRPCMethods, Port port) {
         this.port = port;
@@ -43,6 +50,7 @@ public class PortInfoTabXstats extends BorderPane {
             LOG.error("Failed to load fxml file: " + e.getMessage());
         }
 
+        statsTableGenerator = new StatsTableGenerator();
         update(true);
     }
 
@@ -56,7 +64,9 @@ public class PortInfoTabXstats extends BorderPane {
     }
 
     public void update(boolean full) {
-
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
+        statXTableContainer.setContent(statsTableGenerator.generateXStatPane(port,
+                statXTableNotEmpty.isSelected(), statXTableFilter.getText()));
+        statXTableContainer.setVisible(true);
     }
 }

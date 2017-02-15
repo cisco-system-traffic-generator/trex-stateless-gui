@@ -489,7 +489,7 @@ public class ConnectionManager {
             if (writeToLog) {
                 logProperty.setValue("Received Server response " + Util.toPrettyFormat(rpcResponse));
             }
-            if (rpcResponse.contains("error")) {
+            if (rpcResponse.contains("\"error\"")) {
                 try {
                     rpcResponse = Util.removeFirstBrackets(rpcResponse);
                     RPCError rpcError = new ObjectMapper().readValue(rpcResponse, RPCError.class);
