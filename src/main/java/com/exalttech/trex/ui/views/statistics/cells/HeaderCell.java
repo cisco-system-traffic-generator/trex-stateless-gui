@@ -23,11 +23,21 @@ import javafx.scene.control.Label;
  * @author Georgekh
  */
 public class HeaderCell extends Label implements StatisticCell{
-    
+
     public HeaderCell(double width){
         setPrefSize(width, 25);
         setAlignment(Pos.CENTER);
         getStyleClass().add("statsTableColHeader");
+    }
+
+    public HeaderCell(double width, String value){
+        this(width);
+        setText(value);
+    }
+
+    public HeaderCell(String value){
+        setAlignment(Pos.CENTER);
+        setText(value);
     }
 
     /**

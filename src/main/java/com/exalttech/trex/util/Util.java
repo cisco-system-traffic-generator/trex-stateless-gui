@@ -40,12 +40,7 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -332,7 +327,7 @@ public class Util {
             }
             int exp = (int) (Math.log(data) / Math.log(UNIT_VALUE));
             String pre = ("KMGTPE").charAt(exp - 1) + "";
-            return String.format("%3.2f %s", data / Math.pow(UNIT_VALUE, exp), pre);
+            return String.format(Locale.ROOT, "%3.2f %s", data / Math.pow(UNIT_VALUE, exp), pre);
         } catch (Exception ex) {
             LOG.error("Error formatting string", ex);
             return "0";
