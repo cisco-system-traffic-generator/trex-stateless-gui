@@ -23,52 +23,22 @@
         </HBox>
     </top>
     <center>
-        <GridPane fx:id="gridPanePortInfoTabConfig"
-                 alignment="top_center"
-                 hgap="10" vgap="10">
-            <fx:define>
-                <Rectangle fx:id="s" width="12" height="12"/>
-            </fx:define>
-            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-
-            <Label text="Mode:"   GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <HBox GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="2" >
-                <RadioButton fx:id="toggleGroupTabConfigPortL2" selected="false" text="L2">
-                    <padding><Insets right="10"/></padding>
-                    <toggleGroup>
-                        <ToggleGroup fx:id="toggleGroupTabConfigPortMode" />
-                    </toggleGroup>
-                </RadioButton>
-                <RadioButton fx:id="toggleGroupTabConfigPortL3" selected="false"
-                                text="L3" toggleGroup="$toggleGroupTabConfigPortMode" />
-            </HBox>
-
-            <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <HBox GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
-                <Label fx:id="labelTabConfigPortSourceMAC" text="00:00:00:00:00:00" minWidth="${16 * s.width}" >
-                    <padding><Insets top="2" right="10" bottom="2" left="10"/></padding>
-                </Label>
-                <TextField fx:id="textFieldTabConfigPortSourceIPv4" text="" promptText="source IPv4 address"
-                           minWidth="${16 * s.width}" />
-            </HBox>
-
-            <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <HBox GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="2">
-                <TextField fx:id="textFieldTabConfigPortDestinationMAC" text="" promptText="target MAC address"
-                           minWidth="${16 * s.width}" />
-                <TextField fx:id="textFieldTabConfigPortDestinationIPv4" text="" promptText="target IPv4 address"
-                           minWidth="${16 * s.width}" />
-            </HBox>
-
-            <Label text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-            <Label fx:id="labelTabConfigPortArpResolution" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="4"  GridPane.columnSpan="2" />
-
-            <Label text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <TextField fx:id="textFieldTabConfigPortPingIPv4" text="" promptText="ping IPv4 address"
-                       minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.columnSpan="2" />
-            <Button fx:id="buttonTabConfigPortPing" text="Ping" GridPane.columnIndex="3" GridPane.rowIndex="5">
-            </Button>
-        </GridPane>
+        <AnchorPane id="statXTableContainer" fx:id="statXTableWrapper" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
+            <children>
+                <VBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="8.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="8.0">
+                            <children>
+                                <CheckBox fx:id="statXTableNotEmpty" text="Not empty only," />
+                                <Label text="  Filter:" />
+                                <TextField fx:id="statXTableFilter" promptText="Filter" prefWidth="90"/>
+                            </children>
+                        </HBox>
+                        <ScrollPane fx:id="statXTableContainer" content="$null" maxWidth="-1.0" minWidth="-1.0" prefHeight="369.0" prefWidth="779.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
     </center>
     <bottom>
         <HBox alignment="top_center">
