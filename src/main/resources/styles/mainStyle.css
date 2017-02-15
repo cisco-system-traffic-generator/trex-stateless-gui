@@ -1187,3 +1187,8 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-border-width: 0 0 0 0;
     -fx-focus-color: transparent;
 }
+
+.xstat-checkbox .label {
+   -fx-font-size: 8;
+   -fx-font-weight: normal;
+}

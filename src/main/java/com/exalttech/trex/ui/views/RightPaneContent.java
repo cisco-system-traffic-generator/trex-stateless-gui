@@ -52,7 +52,7 @@ public class RightPaneContent {
             tab = new Tab("Layer Configuration");
             tab.setClosable(false);
             tabPanePortInfo.getTabs().add(1, tab);
-            tab = new Tab("Xstats");
+            tab = new Tab("HW counters");
             tab.setClosable(false);
             tabPanePortInfo.getTabs().add(2, tab);
 
@@ -81,9 +81,15 @@ public class RightPaneContent {
             }
         }
         else {
-            ((PortInfoTabMain)   tabPanePortInfo.getTabs().get(0).getContent()).update(false);
-            ((PortInfoTabConfig) tabPanePortInfo.getTabs().get(1).getContent()).update(false);
-            ((PortInfoTabXstats) tabPanePortInfo.getTabs().get(2).getContent()).update(false);
+            if (tabPanePortInfo.getSelectionModel().getSelectedIndex() == 0) {
+                ((PortInfoTabMain) tabPanePortInfo.getTabs().get(0).getContent()).update(false);
+            }
+            if (tabPanePortInfo.getSelectionModel().getSelectedIndex() == 1) {
+                ((PortInfoTabConfig) tabPanePortInfo.getTabs().get(1).getContent()).update(false);
+            }
+            if (tabPanePortInfo.getSelectionModel().getSelectedIndex() == 2) {
+                ((PortInfoTabXstats) tabPanePortInfo.getTabs().get(2).getContent()).update(false);
+            }
         }
 
         return tabPanePortInfo;

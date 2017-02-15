@@ -13,8 +13,8 @@
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.BorderPane">
     <top>
-        <HBox alignment="bottom_center">
-            <padding><Insets top="10" right="10" bottom="1" left="10"/></padding>
+        <HBox visible="false" alignment="bottom_center">
+            <padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
             <Text fx:id="textTabConfigPortNameTitle" text="Port ">
                 <font>
                     <Font name="Tahoma" size="20.0" />
@@ -23,18 +23,27 @@
         </HBox>
     </top>
     <center>
-        <AnchorPane id="statXTableContainer" fx:id="statXTableWrapper" prefHeight="200.0" prefWidth="200.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
+        <AnchorPane id="statXTableContainer"
+                    fx:id="statXTableWrapper"
+                    prefHeight="200.0" prefWidth="200.0"
+                    visible="true">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
             <children>
-                <VBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="8.0">
+                <VBox alignment="CENTER_LEFT" spacing="10.0"
+                      AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" >
                     <children>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="8.0">
+                        <HBox alignment="CENTER_LEFT" spacing="10.0"
+                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <children>
                                 <CheckBox fx:id="statXTableNotEmpty" text="Not empty only," />
                                 <Label text="  Filter:" />
                                 <TextField fx:id="statXTableFilter" promptText="Filter" prefWidth="90"/>
                             </children>
                         </HBox>
-                        <ScrollPane fx:id="statXTableContainer" content="$null" maxWidth="-1.0" minWidth="-1.0" prefHeight="369.0" prefWidth="779.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <ScrollPane fx:id="statXTableContainer" content="$null"
+                                    maxWidth="-1.0" minWidth="-1.0" prefWidth="779.0"
+                                    visible="true"
+                                    VBox.vgrow="ALWAYS"/>
                     </children>
                 </VBox>
             </children>

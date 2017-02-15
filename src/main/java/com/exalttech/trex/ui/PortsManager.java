@@ -104,7 +104,7 @@ public class PortsManager {
      */
     public void startPortStatusScheduler() {
         updatePortStatusService = new UpdatePortStatusService(portList);
-        updatePortStatusService.setPeriod(Duration.seconds(Constants.REFRESH_FIFTEEN_INTERVAL_SECONDS));
+        updatePortStatusService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
         updatePortStatusService.setRestartOnFailure(false);
         updatePortStatusService.setOnSucceeded((WorkerStateEvent event) -> {
             portList = (List<Port>) event.getSource().getValue();

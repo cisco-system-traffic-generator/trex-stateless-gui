@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 public class PortInfoTabXstats extends BorderPane {
@@ -65,8 +66,8 @@ public class PortInfoTabXstats extends BorderPane {
 
     public void update(boolean full) {
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
-        statXTableContainer.setContent(statsTableGenerator.generateXStatPane(port,
-                statXTableNotEmpty.isSelected(), statXTableFilter.getText()));
+        Pane pane = statsTableGenerator.generateXStatPane(port, statXTableNotEmpty.isSelected(), statXTableFilter.getText());
+        statXTableContainer.setContent(pane);
         statXTableContainer.setVisible(true);
     }
 }

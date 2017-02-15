@@ -20,14 +20,18 @@ import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.views.statistics.cells.*;
 import com.exalttech.trex.util.Util;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.TextAlignment;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -50,7 +54,9 @@ public class StatsTableGenerator {
 
     GridPane statTable = new GridPane();
     GridPane statXTable = new GridPane();
-    GridPane statXTablePinned = new GridPane();
+    Integer statXTableMouseColIndex = null;
+    Integer statXTableMouseRowIndex = null;
+    CheckBox statXTableCheckbox = null;
 
     Map<String, StatisticCell> gridCellsMap = new HashMap<>();
     StringBuilder keyBuffer = new StringBuilder(30);
@@ -79,11 +85,8 @@ public class StatsTableGenerator {
         statXTable.setCache(false);
         statXTable.getStyleClass().add("statsTable");
         statXTable.setGridLinesVisible(false);
-
-        statXTablePinned = new GridPane();
-        statXTablePinned.setCache(false);
-        statXTablePinned.getStyleClass().add("statsTable");
-        statXTablePinned.setGridLinesVisible(false);
+        statXTableCheckbox = new CheckBox("Click to pin/unpin");
+        statXTableCheckbox.getStyleClass().add("xstat-checkbox");
     }
 
     /**
@@ -434,12 +437,12 @@ public class StatsTableGenerator {
             , String key0, String value0, double columnWidth0, int columnIndex0
             , String key1, String value1, double columnWidth1, int columnIndex1)
     {
-        addAttrCell2(table, null, null, null
+        addAttrCell2(table, null
                 , key0, value0, columnWidth0, columnIndex0
                 , key1, value1, columnWidth1, columnIndex1);
     }
 
-    private void addAttrCell2(GridPane table, Consumer<MouseEvent>  onDragDetected, Consumer<DragEvent> onDragOver, Consumer<DragEvent> onDragDropped
+    private void addAttrCell2(GridPane table, CheckBox checkbox
             , String key0, String value0, double columnWidth0, int columnIndex0
             , String key1, String value1, double columnWidth1, int columnIndex1)
     {
@@ -454,34 +457,18 @@ public class StatsTableGenerator {
         odd = odd2;
         StatisticRow row1 = new StatisticRow(key1, key1, CellType.ATTR_CELL, false, "");
         row1.setRightPosition(false);
-        StatisticCell cell1 = getGridCell(row1, columnWidth1, key1);
-        cell1.updateItem("", value1);
-        table.getChildren().remove(cell1);
-        table.add((Node) cell1, columnIndex1, rowIndex);
+        if (checkbox == null) {
+            StatisticCell cell1 = getGridCell(row1, columnWidth1, key1);
+            cell1.updateItem("", value1);
+            table.getChildren().remove(cell1);
+            table.add((Node) cell1, columnIndex1, rowIndex);
+        }
+        else {
+            checkbox.setTextAlignment(TextAlignment.LEFT);
+            table.add((Node) checkbox, columnIndex1, rowIndex);
+        }
 
         rowIndex++;
-
-        if (onDragDetected != null) {
-            ((StatisticLabelCell) cell0).setOnDragDetected((event) -> {
-                onDragDetected.accept(event);
-                event.consume();
-            });
-            ((StatisticLabelCell) cell1).setOnDragDetected(((StatisticLabelCell) cell0).getOnDragDetected());
-        }
-        if (onDragOver != null) {
-            ((StatisticLabelCell) cell0).setOnDragOver((event) -> {
-                onDragOver.accept(event);
-                event.consume();
-            });
-            ((StatisticLabelCell) cell1).setOnDragOver(((StatisticLabelCell) cell0).getOnDragOver());
-        }
-        if (onDragDropped != null) {
-            ((StatisticLabelCell) cell0).setOnDragDropped((event) -> {
-                onDragDropped.accept(event);
-                event.consume();
-            });
-            ((StatisticLabelCell) cell1).setOnDragDropped(((StatisticLabelCell) cell0).getOnDragDropped());
-        }
     }
 
     /**
@@ -679,7 +666,6 @@ public class StatsTableGenerator {
 
     public GridPane generateXStatPane(Port port, boolean notempty, String filter) {
         statXTable.getChildren().clear();
-        statXTablePinned.getChildren().clear();
         Util.optimizeMemory();
         Map<String, Integer> xstatsList = port.getXstats();
         Map<String, Integer> xstatsListPinned = port.getXstatsPinned();
@@ -689,110 +675,73 @@ public class StatsTableGenerator {
         addHeaderCell(statXTable, "xstats-header1", "Value", 1, WIDTH_COL_1);
         rowIndex = 1;
         odd = true;
+        xstatsListPinned.forEach( (k,v) -> {
+            if (v != null) {
+                CheckBox check = null;
+                if (statXTableMouseRowIndex != null && statXTableMouseRowIndex == rowIndex) {
+                    statXTableCheckbox.setSelected(false);
+                    statXTableCheckbox.setText("click to un-pin");
+                    statXTableCheckbox.setOnAction((e) -> {
+                        xstatsListPinned.remove(k, v);
+                    });
+                    check = statXTableCheckbox;
+                }
+                addAttrCell2(statXTable,
+                        check,
+                        "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
+                        "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1);
+            }
+        });
         xstatsList.forEach( (k,v) -> {
             if (v != null && (!notempty || (notempty && v != 0)) && xstatsListPinned.get(k) == null) {
                 if ((filter == null || filter.trim().length() == 0) || k.contains(filter)) {
+                    CheckBox check = null;
+                    if (statXTableMouseRowIndex != null && statXTableMouseRowIndex == rowIndex) {
+                        statXTableCheckbox.setSelected(false);
+                        statXTableCheckbox.setText("click to pin");
+                        statXTableCheckbox.setOnAction((e) -> {
+                            xstatsListPinned.put(k, v);
+                        });
+                        check = statXTableCheckbox;
+                    }
                     addAttrCell2(statXTable,
-                            (event) -> {
-                                Dragboard db = ((StatisticLabelCell) event.getSource()).startDragAndDrop(TransferMode.ANY);
-                                ClipboardContent content = new ClipboardContent();
-                                Node node = ((StatisticLabelCell)gridCellsMap.get("xstats-pinned-val-0-last-empty"));
-                                content.putString(node.getStyle());
-                                content.put(dragDataFormat, k);
-                                db.setContent(content);
-                                node.setStyle(dragTargetStyle);
-                            },
-                            null,
-                            null,
+                            check,
                             "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
                             "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1);
                 }
             }
         });
-        int left_heght = rowIndex;
-        addAttrCell2(statXTable,
-                null,
-                (event) -> {
-                    if (event.getGestureSource() != ((StatisticLabelCell) event.getSource()) &&
-                            event.getDragboard().hasContent(dragDataFormat))
-                    {
-                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                    }
-                },
-                (event) -> {
-                    Dragboard db = event.getDragboard();
-                    boolean success = false;
-                    if (db.hasContent(dragDataFormat)) {
-                        String dragdata = (String)db.getContent(dragDataFormat);
-                        xstatsListPinned.remove(dragdata, xstatsList.get(dragdata));
-                        success = true;
-                    }
-                    event.setDropCompleted(success);
-                    Node node = ((StatisticLabelCell)gridCellsMap.get("xstats-val-0-last-empty"));
-                    String style = (String)db.getString();
-                    node.setStyle(style);
-                },
-                "xstats-val-0-last-empty", "", WIDTH_COL_0 * 1.5, 0,
-                "xstats-val-1-last-empty", "", WIDTH_COL_1, 1);
-
-        rowIndex = 0;
-        addHeaderCell(statXTablePinned, "xstats-pinned-header0", "Xstat", 0, WIDTH_COL_0 * 1.5);
-        addHeaderCell(statXTablePinned, "xstats-pinned-header1", "Value", 1, WIDTH_COL_1);
-        rowIndex = 1;
-        odd = true;
-        xstatsListPinned.forEach( (k,v) -> {
-            if (v != null) {
-                odd = (rowIndex % 2) == 1;
-                addAttrCell2(statXTablePinned,
-                        (event) -> {
-                            Dragboard db = ((StatisticLabelCell) event.getSource()).startDragAndDrop(TransferMode.ANY);
-                            ClipboardContent content = new ClipboardContent();
-                            Node node = ((StatisticLabelCell)gridCellsMap.get("xstats-val-0-last-empty"));
-                            content.putString(node.getStyle());
-                            content.put(dragDataFormat, k);
-                            db.setContent(content);
-                            node.setStyle(dragTargetStyle);
-                        },
-                        null,
-                        null,
-                        "xstats-pinned-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
-                        "xstats-pinned-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1);
+        statXTable.setOnMouseMoved((e) -> {
+            Node target = (Node)e.getTarget() ;
+            if (target instanceof StatisticCell && rowIndex > 0) {
+                Integer col = GridPane.getColumnIndex(target);
+                Integer row = GridPane.getRowIndex(target);
+                statXTableMouseColIndex = col;
+                statXTableMouseRowIndex = row;
             }
         });
-        int right_heght = rowIndex;
-        addAttrCell2(statXTablePinned,
-                null,
-                (event) -> {
-                    if (event.getGestureSource() != ((StatisticLabelCell) event.getSource()) &&
-                            event.getDragboard().hasContent(dragDataFormat))
-                    {
-                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-                    }
-                },
-                (event) -> {
-                    Dragboard db = event.getDragboard();
-                    boolean success = false;
-                    if (db.hasContent(dragDataFormat)) {
-                        String dragdata = (String)db.getContent(dragDataFormat);
-                        xstatsListPinned.put(dragdata, xstatsList.get(dragdata));
-                        success = true;
-                    }
-                    event.setDropCompleted(success);
 
-                    Node node = ((StatisticLabelCell)gridCellsMap.get("xstats-pinned-val-0-last-empty"));
-                    String style = (String)db.getString();
-                    node.setStyle(style);
-                },
-                "xstats-pinned-val-0-last-empty", "", WIDTH_COL_0 * 1.5, 0,
-                "xstats-pinned-val-1-last-empty", "", WIDTH_COL_1, 1);
+        statXTable.setOnMouseEntered((e) -> {
+            Node target = (Node)e.getTarget() ;
+            if (target instanceof StatisticCell && rowIndex > 0) {
+                Integer col = GridPane.getColumnIndex(target);
+                Integer row = GridPane.getRowIndex(target);
+                statXTableMouseColIndex = col;
+                statXTableMouseRowIndex = row;
+            }
+        });
+
+        statXTable.setOnMouseExited((e) -> {
+            Node target = (Node)e.getTarget() ;
+            Integer col = GridPane.getColumnIndex(target);
+            Integer row = GridPane.getRowIndex(target);
+            //statXTableMouseColIndex = null;
+            //statXTableMouseRowIndex = null;
+        });
 
         GridPane gp = new GridPane();
         gp.setGridLinesVisible(false);
-        gp.add(new Label("Xstats all counters"), 1, 0);
-        gp.add(statXTable, 1, 1, 1, right_heght > left_heght ? 1 : 2);
-        gp.add(new Label(" <-- drag-n-drop --> "), 2, 1);
-        gp.add(new Label("Xstats pinned counters"), 3, 0);
-        gp.add(statXTablePinned, 3, 1, 1, right_heght > left_heght ? 2 : 1);
+        gp.add(statXTable, 1, 1, 1, 2);
 
         return gp;
     }
