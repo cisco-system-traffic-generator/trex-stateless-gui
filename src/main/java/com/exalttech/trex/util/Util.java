@@ -49,6 +49,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextFormatter;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -129,6 +130,53 @@ public class Util {
         for (String key : jsonObj.keySet()) {
             statsList.put(key, String.valueOf(jsonObj.get(key)));
         }
+        return statsList;
+    }
+
+    /**
+     * Prepare and return list of Stats object from JSON string
+     *
+     * @param jsonNames
+     * @param jsonValues
+     * @return
+     */
+    public static Map<String, Integer> getXStatsFromJSONString(String jsonNames, String jsonValues) {
+        Map<String, Integer> statsList = new HashMap<>();
+        JSONObject jsonObjN = null;
+        JSONObject jsonObjV = null;
+        JSONArray jsonArrN = null;
+        JSONArray  jsonArrV = null;
+
+        if (jsonValues.startsWith("[")) {
+            jsonArrV = new JSONArray(jsonValues);
+        }
+        else {
+            jsonObjV = new JSONObject(jsonValues);
+            jsonArrV = new JSONArray();
+            jsonArrV.put(jsonObjV);
+        }
+
+        if (jsonNames.startsWith("[")) {
+            jsonArrN = new JSONArray(jsonNames);
+        }
+        else {
+            jsonObjN = new JSONObject(jsonNames);
+            jsonArrN = new JSONArray();
+            jsonArrN.put(jsonObjN);
+        }
+
+        for (int i = 0; i < jsonArrV.length(); i++) {
+            jsonObjN = jsonArrN.getJSONObject(i);
+            jsonObjV = jsonArrV.getJSONObject(i);
+
+            JSONArray names = jsonObjN.getJSONObject("result").getJSONArray("xstats_names");
+            JSONArray values = jsonObjV.getJSONObject("result").getJSONArray("xstats_values");
+
+            for (int j = 0; j < names.length(); j++) {
+                statsList.put(names.getString(j), values.getInt(j));
+            }
+        }
+
         return statsList;
     }
 

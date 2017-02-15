@@ -21,6 +21,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Port model
  *
@@ -63,6 +66,10 @@ public class Port {
     int speed;
 
     PortStatus.PortStatusResult.PortStatusResultAttr attr;
+
+    Map<String, Integer> xstats;
+
+    Map<String, Integer> xstatsPinned;
 
     /**
      * Return index
@@ -211,6 +218,25 @@ public class Port {
      */
     public void setAttr(PortStatus.PortStatusResult.PortStatusResultAttr attr) {
         this.attr = attr;
+    }
+
+    public Map<String, Integer> getXstats() {
+        return xstats;
+    }
+
+    public void setXstats(Map<String, Integer> xstats) {
+        this.xstats = xstats;
+    }
+
+    public Map<String, Integer> getXstatsPinned() {
+        if (xstatsPinned==null) {
+            xstatsPinned = new HashMap<>();
+        }
+        return xstatsPinned;
+    }
+
+    public void setXstatsPinned(Map<String, Integer> xstatsPinned) {
+        this.xstatsPinned = xstatsPinned;
     }
 
     /**

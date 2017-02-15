@@ -119,6 +119,21 @@ public class Constants {
     /**
      *
      */
+    public static final String PORT_XSTATS_NAMES_METHOD = "get_port_xstats_names";
+
+    /**
+     *
+     */
+    public static final String PORT_XSTATS_VALUES_METHOD = "get_port_xstats_values";
+
+    /**
+     *
+     */
+    public static final String GET_UTILIZATION_METHOD = "get_utilization";
+
+    /**
+     *
+     */
     public static final String ADD_STREAM_METHOD = "add_stream";
 
     /**

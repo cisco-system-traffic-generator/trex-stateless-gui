@@ -405,6 +405,74 @@ public class ConnectionManager {
     }
 
     /**
+     * Send request for port status
+     *
+     * @param port
+     * @return
+     * @throws JsonProcessingException
+     * @throws UnsupportedEncodingException
+     * @throws IncorrectRPCMethodException
+     * @throws InvalidRPCResponseException
+     */
+    public String sendPortXStatsNamesRequest(Port port) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+        List<String> addStreamCommandList = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        RPCRequest rpcRequest = new RPCRequest();
+        String jsonRequestString;
+
+        rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
+        rpcRequest.setMethod(Constants.PORT_XSTATS_NAMES_METHOD);
+        rpcRequest.setParams(port.getPortParam());
+
+        jsonRequestString = mapper.writeValueAsString(rpcRequest);
+        jsonRequestString = Util.tuneJSONParams(jsonRequestString, port.getPortParam(), apiH);
+        addStreamCommandList.add(jsonRequestString);
+
+        String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
+        LOG.info("Send port xstats_names request \n " + requestCommand);
+        byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
+
+        return handleResponse(serverResponse, false);
+    }
+
+    /**
+     * Send request for port status
+     *
+     * @param port
+     * @return
+     * @throws JsonProcessingException
+     * @throws UnsupportedEncodingException
+     * @throws IncorrectRPCMethodException
+     * @throws InvalidRPCResponseException
+     */
+    public String sendPortXStatsValuesRequest(Port port) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+        List<String> addStreamCommandList = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        RPCRequest rpcRequest = new RPCRequest();
+        String jsonRequestString;
+
+        rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
+        rpcRequest.setMethod(Constants.PORT_XSTATS_VALUES_METHOD);
+        rpcRequest.setParams(port.getPortParam());
+
+        jsonRequestString = mapper.writeValueAsString(rpcRequest);
+        jsonRequestString = Util.tuneJSONParams(jsonRequestString, port.getPortParam(), apiH);
+        addStreamCommandList.add(jsonRequestString);
+
+        String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
+        LOG.info("Send port xstats_names request \n " + requestCommand);
+        byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
+
+        return handleResponse(serverResponse, false);
+    }
+
+    public String sendUtilizationRequest() throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+        String serverResponse = sendRequest(Constants.GET_UTILIZATION_METHOD, "");
+
+        return serverResponse;
+    }
+
+    /**
      * Handle server response
      *
      * @param serverResponse

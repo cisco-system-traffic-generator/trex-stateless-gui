@@ -23,6 +23,7 @@ package com.exalttech.trex.ui.views.services;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.PortStatus;
+import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -30,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -78,6 +80,11 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
                 port.setOwner(portStatus.getResult().getOwner());
                 port.setStatus(portStatus.getResult().getState());
                 port.setAttr(portStatus.getResult().getAttr());
+
+                String response2 = ConnectionManager.getInstance().sendPortXStatsNamesRequest(port);
+                String response3 = ConnectionManager.getInstance().sendPortXStatsValuesRequest(port);
+                Map<String, Integer> loadedXStatsList = Util.getXStatsFromJSONString(response2, response3);
+                port.setXstats(loadedXStatsList);
 
                 // Is it right ?
                 port.setSpeed(port.getAttr().getSpeed());
