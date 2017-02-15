@@ -5,6 +5,7 @@ import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.controllers.PortInfo.PortInfoTabConfig;
 import com.exalttech.trex.ui.controllers.PortInfo.PortInfoTabMain;
+import com.exalttech.trex.ui.controllers.PortInfo.PortInfoTabXstats;
 import com.exalttech.trex.ui.models.Port;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
@@ -43,6 +44,7 @@ public class RightPaneContent {
         if (tabPanePortInfo.getTabs().size() == 0) {
             PortInfoTabMain   rootPortInfoTabMain;
             PortInfoTabConfig rootPortInfoTabConfig;
+            PortInfoTabXstats rootPortInfoTabXstats;
 
             tab = new Tab("Main");
             tab.setClosable(false);
@@ -50,6 +52,9 @@ public class RightPaneContent {
             tab = new Tab("Layer Configuration");
             tab.setClosable(false);
             tabPanePortInfo.getTabs().add(1, tab);
+            tab = new Tab("Xstats");
+            tab.setClosable(false);
+            tabPanePortInfo.getTabs().add(2, tab);
 
             try {
                 tab = tabPanePortInfo.getTabs().get(0);
@@ -66,10 +71,19 @@ public class RightPaneContent {
             } catch (Exception e) {
                 LOG.error("Failed to create port info right pane: ", e);
             }
+
+            try {
+                tab = tabPanePortInfo.getTabs().get(2);
+                rootPortInfoTabXstats = new PortInfoTabXstats(TrexApp.injector, serverRPCMethods, port);
+                tab.setContent(rootPortInfoTabXstats);
+            } catch (Exception e) {
+                LOG.error("Failed to create port info right pane: ", e);
+            }
         }
         else {
-            ((PortInfoTabMain) tabPanePortInfo.getTabs().get(0).getContent()).update(false);
+            ((PortInfoTabMain)   tabPanePortInfo.getTabs().get(0).getContent()).update(false);
             ((PortInfoTabConfig) tabPanePortInfo.getTabs().get(1).getContent()).update(false);
+            ((PortInfoTabXstats) tabPanePortInfo.getTabs().get(2).getContent()).update(false);
         }
 
         return tabPanePortInfo;
