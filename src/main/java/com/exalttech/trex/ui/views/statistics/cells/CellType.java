@@ -26,5 +26,6 @@ public enum CellType {
     ARROWS_CELL,
     DEFAULT_CELL,
     HEADER_CELL,
+    ATTR_CELL,
     HEADER_WITH_ICON;
 }

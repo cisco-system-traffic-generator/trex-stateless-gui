@@ -18,26 +18,22 @@ package com.exalttech.trex.ui.views.statistics;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.SystemInfoReq;
+import com.exalttech.trex.ui.views.statistics.cells.*;
 import com.exalttech.trex.util.Util;
-import java.util.HashMap;
-import java.util.Map;
-
-import javafx.scene.chart.Axis;
+import javafx.scene.Node;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
+import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import org.apache.log4j.Logger;
-import com.exalttech.trex.ui.views.statistics.cells.CellType;
-import com.exalttech.trex.ui.views.statistics.cells.HeaderCell;
-import com.exalttech.trex.ui.views.statistics.cells.HeaderCellWithIcon;
-import com.exalttech.trex.ui.views.statistics.cells.StatisticCell;
-import com.exalttech.trex.ui.views.statistics.cells.StatisticCellWithArrows;
-import com.exalttech.trex.ui.views.statistics.cells.StatisticConstantsKeys;
-import com.exalttech.trex.ui.views.statistics.cells.StatisticLabelCell;
-import com.exalttech.trex.ui.views.statistics.cells.StatisticRow;
+
+import java.util.HashMap;
 import java.util.List;
-import javafx.scene.Node;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  *
@@ -51,13 +47,24 @@ public class StatsTableGenerator {
     Map<String, String> prevStatsList;
     Map<String, Long> totalValues = new HashMap<>();
     Map<String, Long> prevTotalValues = new HashMap<>();
+
     GridPane statTable = new GridPane();
-//    Map<String, StatisticCell> gridCellsMap = new HashMap<>();
+    GridPane statXTable = new GridPane();
+    GridPane statXTablePinned = new GridPane();
+
     Map<String, StatisticCell> gridCellsMap = new HashMap<>();
     StringBuilder keyBuffer = new StringBuilder(30);
 
+
+    private static DataFormat dragDataFormat = new DataFormat("drag-n-drop-format");
+    private static String dragTargetStyle = "-fx-border-style: solid inside; -fx-border-width: 2;" +
+            "-fx-border-insets: 2; -fx-border-radius: 1; -fx-border-color: green;";
+
     private boolean odd;
     private int rowIndex;
+
+    private static final int WIDTH_COL_0 = 145;
+    private static final int WIDTH_COL_1 = 150;
 
     /**
      * Constructor
@@ -67,6 +74,16 @@ public class StatsTableGenerator {
         statTable.setCache(false);
         statTable.getStyleClass().add("statsTable");
         statTable.setGridLinesVisible(false);
+
+        statXTable = new GridPane();
+        statXTable.setCache(false);
+        statXTable.getStyleClass().add("statsTable");
+        statXTable.setGridLinesVisible(false);
+
+        statXTablePinned = new GridPane();
+        statXTablePinned.setCache(false);
+        statXTablePinned.getStyleClass().add("statsTable");
+        statXTablePinned.setGridLinesVisible(false);
     }
 
     /**
@@ -76,7 +93,7 @@ public class StatsTableGenerator {
      * @return
      */
     public GridPane getPortStatTable(Map<String, String> cached, int portIndex) {
-        return getPortStatTable(cached, portIndex, false, 150, false);
+        return getPortStatTable(cached, portIndex, false, WIDTH_COL_1, false);
     }
 
     /**
@@ -143,12 +160,34 @@ public class StatsTableGenerator {
      * @param counterList
      */
     private void addCounterColumn(List<String> counterList) {
-        double firstColWidth = 145;
-        rowIndex = 1;
-        addHeaderCell("Counter", 0, firstColWidth);
+        addCounterColumn(counterList, 0, "Counter", "Counter");
+    }
+    private void addCounterColumn(List<String> counterList, int columnIndex, String key, String header) {
+        double firstColWidth = WIDTH_COL_0;
+        rowIndex = 0;
+        addHeaderCell(key, header, columnIndex, firstColWidth);
         odd = true;
+        rowIndex = 1;
         for (String label : counterList) {
-            addDefaultCell(label, label, firstColWidth, 0);
+            addDefaultCell(label, label, firstColWidth, columnIndex);
+        }
+    }
+
+    /**
+     * Add counter column
+     *
+     * @param attrList
+     */
+    private void addAttrColumn(List<String> attrList) {
+        addAttrColumn(statTable, attrList, "port-attrs", "Port attrs");
+    }
+
+    private void addAttrColumn(GridPane table, List<String> attrList, String key, String header) {
+        double firstColWidth = WIDTH_COL_0;
+        addHeaderCell(table, key, header, 0, firstColWidth, rowIndex++);
+        odd = true;
+        for (String label : attrList) {
+            addDefaultCell(table, label, label, firstColWidth, 0);
         }
     }
 
@@ -157,7 +196,6 @@ public class StatsTableGenerator {
      *
      * @param port
      * @param width
-     * @param extraKey
      * @param columnIndex
      */
     private void addPortInfoCells(Port port, double width, int columnIndex) {
@@ -198,16 +236,14 @@ public class StatsTableGenerator {
      * @return
      */
     private StatisticCell getGridCell(StatisticRow row, double width, String key) {
-        if (gridCellsMap.get(key) != null) {
-            StatisticCell cell = gridCellsMap.get(key);
+        StatisticCell cell = gridCellsMap.get(key);
+        if (cell != null) {
             cell.setPrefWidth(width);
-            return cell;
         } else {
-            StatisticCell cell = createGridCell(row, width);
+            cell = createGridCell(row, width);
             gridCellsMap.put(key, cell);
-            return cell;
-
         }
+        return cell;
     }
 
     /**
@@ -222,6 +258,7 @@ public class StatsTableGenerator {
             case ERROR_CELL:
                 odd = !odd;
                 return new StatisticLabelCell(width, odd, CellType.ERROR_CELL, row.isRightPosition());
+            case ATTR_CELL:
             case DEFAULT_CELL:
                 odd = !odd;
                 return new StatisticLabelCell(width, odd, CellType.DEFAULT_CELL, row.isRightPosition());
@@ -242,16 +279,29 @@ public class StatsTableGenerator {
     /**
      * Add header cell
      *
-     * @param title
-     * @param columnIndex
-     * @param columnWidth
      */
     private void addHeaderCell(String title, int columnIndex, double columnWidth) {
-        StatisticRow row = new StatisticRow(title, title, CellType.HEADER_CELL, false, "");
+        addHeaderCell(statTable, title, title, columnIndex, columnWidth, 0);
+    }
+
+    private void addHeaderCell(String key, String title, int columnIndex, double columnWidth) {
+        addHeaderCell(statTable, key, title, columnIndex, columnWidth, 0);
+    }
+
+    private void addHeaderCell(GridPane table, String key, String title, int columnIndex, double columnWidth) {
+        addHeaderCell(table, key, title, columnIndex, columnWidth, 0);
+    }
+
+    private void addHeaderCell(String key, String title, int columnIndex, double columnWidth, int rowIndex) {
+        addHeaderCell(statTable, key, title, columnIndex, columnWidth, rowIndex);
+    }
+
+    private void addHeaderCell(GridPane table, String key, String title, int columnIndex, double columnWidth, int rowIndex) {
+        StatisticRow row = new StatisticRow(key, title, CellType.HEADER_CELL, false, "");
         StatisticCell cell = getGridCell(row, columnWidth, row.getKey());
         cell.updateItem("", title);
-        statTable.getChildren().remove(cell);
-        statTable.add((Node) cell, columnIndex, 0);
+        table.getChildren().remove(cell);
+        table.add((Node) cell, columnIndex, rowIndex);
     }
 
     /**
@@ -267,6 +317,7 @@ public class StatsTableGenerator {
         switch (row.getCellType()) {
             case ERROR_CELL:
                 return calcTotal(row.getAttributeName(), String.valueOf(getStatsDifference(keyBuffer.toString())));
+            case ATTR_CELL:
             case DEFAULT_CELL:
                 if (row.isFormatted()) {
                     return Util.getFormatted(String.valueOf(getStatsDifference(keyBuffer.toString())), true, row.getUnit());
@@ -303,7 +354,6 @@ public class StatsTableGenerator {
     /**
      * Add total column
      *
-     * @param statTable
      * @param columnIndex
      * @param columnWidth
      */
@@ -324,7 +374,7 @@ public class StatsTableGenerator {
     /**
      * return equivalent total value
      *
-     * @param key
+     * @param row
      * @return
      */
     private String getTotalValue(StatisticRow row) {
@@ -343,13 +393,95 @@ public class StatsTableGenerator {
      * @param columnWidth
      * @param columnIndex
      */
-    private void addDefaultCell(String key, String value, double columnWidth, int columnIndex) {
+    private StatisticCell addDefaultCell(String key, String value, double columnWidth, int columnIndex) {
+        return addDefaultCell(statTable, key, value, columnWidth, columnIndex);
+    }
+
+    private StatisticCell addDefaultCell(GridPane table, String key, String value, double columnWidth, int columnIndex) {
         StatisticRow row = new StatisticRow(key, key, CellType.DEFAULT_CELL, false, "");
         row.setRightPosition(false);
         StatisticCell cell = getGridCell(row, columnWidth, key);
         cell.updateItem("", value);
-        statTable.getChildren().remove(cell);
-        statTable.add((Node) cell, columnIndex, rowIndex++);
+        table.getChildren().remove(cell);
+        table.add((Node) cell, columnIndex, rowIndex++);
+        return cell;
+    }
+
+    /**
+     * Add cell of type default
+     *
+     * @param key
+     * @param value
+     * @param columnWidth
+     * @param columnIndex
+     */
+    private void addAttrCell(String key, String value, double columnWidth, int columnIndex) {
+        addAttrCell(statTable, key, value, columnWidth, columnIndex);
+    }
+
+    private void addAttrCell(GridPane table
+            , String key, String value, double columnWidth, int columnIndex)
+    {
+        StatisticRow row = new StatisticRow(key, key, CellType.ATTR_CELL, false, "");
+        row.setRightPosition(false);
+        StatisticCell cell = getGridCell(row, columnWidth, key);
+        cell.updateItem("", value);
+        table.getChildren().remove(cell);
+        table.add((Node) cell, columnIndex, rowIndex++);
+    }
+
+    private void addAttrCell2(GridPane table
+            , String key0, String value0, double columnWidth0, int columnIndex0
+            , String key1, String value1, double columnWidth1, int columnIndex1)
+    {
+        addAttrCell2(table, null, null, null
+                , key0, value0, columnWidth0, columnIndex0
+                , key1, value1, columnWidth1, columnIndex1);
+    }
+
+    private void addAttrCell2(GridPane table, Consumer<MouseEvent>  onDragDetected, Consumer<DragEvent> onDragOver, Consumer<DragEvent> onDragDropped
+            , String key0, String value0, double columnWidth0, int columnIndex0
+            , String key1, String value1, double columnWidth1, int columnIndex1)
+    {
+        boolean odd2 = odd;
+        StatisticRow row0 = new StatisticRow(key0, key0, CellType.ATTR_CELL, false, "");
+        row0.setRightPosition(false);
+        StatisticCell cell0 = getGridCell(row0, columnWidth0, key0);
+        cell0.updateItem("", value0);
+        table.getChildren().remove(cell0);
+        table.add((Node) cell0, columnIndex0, rowIndex);
+
+        odd = odd2;
+        StatisticRow row1 = new StatisticRow(key1, key1, CellType.ATTR_CELL, false, "");
+        row1.setRightPosition(false);
+        StatisticCell cell1 = getGridCell(row1, columnWidth1, key1);
+        cell1.updateItem("", value1);
+        table.getChildren().remove(cell1);
+        table.add((Node) cell1, columnIndex1, rowIndex);
+
+        rowIndex++;
+
+        if (onDragDetected != null) {
+            ((StatisticLabelCell) cell0).setOnDragDetected((event) -> {
+                onDragDetected.accept(event);
+                event.consume();
+            });
+            ((StatisticLabelCell) cell1).setOnDragDetected(((StatisticLabelCell) cell0).getOnDragDetected());
+        }
+        if (onDragOver != null) {
+            ((StatisticLabelCell) cell0).setOnDragOver((event) -> {
+                onDragOver.accept(event);
+                event.consume();
+            });
+            ((StatisticLabelCell) cell1).setOnDragOver(((StatisticLabelCell) cell0).getOnDragOver());
+        }
+        if (onDragDropped != null) {
+            ((StatisticLabelCell) cell0).setOnDragDropped((event) -> {
+                onDragDropped.accept(event);
+                event.consume();
+            });
+            ((StatisticLabelCell) cell1).setOnDragDropped(((StatisticLabelCell) cell0).getOnDragDropped());
+        }
     }
 
     /**
@@ -393,8 +525,17 @@ public class StatsTableGenerator {
      * @param columnIndex
      * @param columnWidth
      */
-    private void addEmptyCell(String key, int columnIndex, double columnWidth) {
-        addDefaultCell(key, "", columnWidth, columnIndex++);
+    private StatisticCell addEmptyCell(String key, int columnIndex, double columnWidth) {
+        return addDefaultCell(key, "", columnWidth, columnIndex++);
+    }
+    private void addEmptyColumn(int rowindex, int columnindex, int count) {
+        int rowIndexSaved  = rowIndex;
+        rowIndex = rowindex;
+        for (int i = 0; i < count; i++) {
+            odd = true;
+            StatisticCell cell = addEmptyCell("empy-col-" + columnindex + "-" + rowIndex, columnindex, WIDTH_COL_0 / 3);
+        }
+        rowIndex = rowIndexSaved;
     }
 
     /**
@@ -488,7 +629,7 @@ public class StatsTableGenerator {
         statTable.getChildren().clear();
         Util.optimizeMemory();
 
-        double columnWidth = 150;
+        double columnWidth = WIDTH_COL_1;
         addHeaderCell("Value", 1, columnWidth);
         addCounterColumn(StatisticConstantsKeys.PORT_ROW_NAME);
         rowIndex = 1;
@@ -536,4 +677,123 @@ public class StatsTableGenerator {
         return statTable;
     }
 
+    public GridPane generateXStatPane(Port port, boolean notempty, String filter) {
+        statXTable.getChildren().clear();
+        statXTablePinned.getChildren().clear();
+        Util.optimizeMemory();
+        Map<String, Integer> xstatsList = port.getXstats();
+        Map<String, Integer> xstatsListPinned = port.getXstatsPinned();
+
+        rowIndex = 0;
+        addHeaderCell(statXTable, "xstats-header0", "Xstat", 0, WIDTH_COL_0 * 1.5);
+        addHeaderCell(statXTable, "xstats-header1", "Value", 1, WIDTH_COL_1);
+        rowIndex = 1;
+        odd = true;
+        xstatsList.forEach( (k,v) -> {
+            if (v != null && (!notempty || (notempty && v != 0)) && xstatsListPinned.get(k) == null) {
+                if ((filter == null || filter.trim().length() == 0) || k.contains(filter)) {
+                    addAttrCell2(statXTable,
+                            (event) -> {
+                                Dragboard db = ((StatisticLabelCell) event.getSource()).startDragAndDrop(TransferMode.ANY);
+                                ClipboardContent content = new ClipboardContent();
+                                Node node = ((StatisticLabelCell)gridCellsMap.get("xstats-pinned-val-0-last-empty"));
+                                content.putString(node.getStyle());
+                                content.put(dragDataFormat, k);
+                                db.setContent(content);
+                                node.setStyle(dragTargetStyle);
+                            },
+                            null,
+                            null,
+                            "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
+                            "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1);
+                }
+            }
+        });
+        int left_heght = rowIndex;
+        addAttrCell2(statXTable,
+                null,
+                (event) -> {
+                    if (event.getGestureSource() != ((StatisticLabelCell) event.getSource()) &&
+                            event.getDragboard().hasContent(dragDataFormat))
+                    {
+                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                    }
+                },
+                (event) -> {
+                    Dragboard db = event.getDragboard();
+                    boolean success = false;
+                    if (db.hasContent(dragDataFormat)) {
+                        String dragdata = (String)db.getContent(dragDataFormat);
+                        xstatsListPinned.remove(dragdata, xstatsList.get(dragdata));
+                        success = true;
+                    }
+                    event.setDropCompleted(success);
+                    Node node = ((StatisticLabelCell)gridCellsMap.get("xstats-val-0-last-empty"));
+                    String style = (String)db.getString();
+                    node.setStyle(style);
+                },
+                "xstats-val-0-last-empty", "", WIDTH_COL_0 * 1.5, 0,
+                "xstats-val-1-last-empty", "", WIDTH_COL_1, 1);
+
+        rowIndex = 0;
+        addHeaderCell(statXTablePinned, "xstats-pinned-header0", "Xstat", 0, WIDTH_COL_0 * 1.5);
+        addHeaderCell(statXTablePinned, "xstats-pinned-header1", "Value", 1, WIDTH_COL_1);
+        rowIndex = 1;
+        odd = true;
+        xstatsListPinned.forEach( (k,v) -> {
+            if (v != null) {
+                odd = (rowIndex % 2) == 1;
+                addAttrCell2(statXTablePinned,
+                        (event) -> {
+                            Dragboard db = ((StatisticLabelCell) event.getSource()).startDragAndDrop(TransferMode.ANY);
+                            ClipboardContent content = new ClipboardContent();
+                            Node node = ((StatisticLabelCell)gridCellsMap.get("xstats-val-0-last-empty"));
+                            content.putString(node.getStyle());
+                            content.put(dragDataFormat, k);
+                            db.setContent(content);
+                            node.setStyle(dragTargetStyle);
+                        },
+                        null,
+                        null,
+                        "xstats-pinned-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
+                        "xstats-pinned-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1);
+            }
+        });
+        int right_heght = rowIndex;
+        addAttrCell2(statXTablePinned,
+                null,
+                (event) -> {
+                    if (event.getGestureSource() != ((StatisticLabelCell) event.getSource()) &&
+                            event.getDragboard().hasContent(dragDataFormat))
+                    {
+                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                    }
+                },
+                (event) -> {
+                    Dragboard db = event.getDragboard();
+                    boolean success = false;
+                    if (db.hasContent(dragDataFormat)) {
+                        String dragdata = (String)db.getContent(dragDataFormat);
+                        xstatsListPinned.put(dragdata, xstatsList.get(dragdata));
+                        success = true;
+                    }
+                    event.setDropCompleted(success);
+
+                    Node node = ((StatisticLabelCell)gridCellsMap.get("xstats-pinned-val-0-last-empty"));
+                    String style = (String)db.getString();
+                    node.setStyle(style);
+                },
+                "xstats-pinned-val-0-last-empty", "", WIDTH_COL_0 * 1.5, 0,
+                "xstats-pinned-val-1-last-empty", "", WIDTH_COL_1, 1);
+
+        GridPane gp = new GridPane();
+        gp.setGridLinesVisible(false);
+        gp.add(new Label("Xstats all counters"), 1, 0);
+        gp.add(statXTable, 1, 1, 1, right_heght > left_heght ? 1 : 2);
+        gp.add(new Label(" <-- drag-n-drop --> "), 2, 1);
+        gp.add(new Label("Xstats pinned counters"), 3, 0);
+        gp.add(statXTablePinned, 3, 1, 1, right_heght > left_heght ? 2 : 1);
+
+        return gp;
+    }
 }
