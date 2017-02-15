@@ -23,7 +23,7 @@
         </HBox>
     </top>
     <center>
-        <AnchorPane id="statXTableContainer" fx:id="statXTableWrapper" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
+        <AnchorPane id="statXTableContainer" fx:id="statXTableWrapper" prefHeight="200.0" prefWidth="200.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
             <children>
                 <VBox alignment="CENTER_LEFT" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="8.0">
                     <children>
@@ -43,34 +43,6 @@
     <bottom>
         <HBox alignment="top_center">
             <padding><Insets top="1" right="10" bottom="10" left="10"/></padding>
-            <Button fx:id="buttonTabConfigPortAcquireRelease" text="Acquire port">
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
-            <Label text="    " />
-            <Button fx:id="buttonTabConfigPortForceAcquire" text="Force Acquire">
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
-            <Button fx:id="buttonTabConfigPortResolveARP" text="Resolve ARP" >
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
-            <Label text="    " />
-            <Button fx:id="buttonTabConfigPortApply" text="Apply" >
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
-            <Label text="    " />
-            <Button fx:id="buttonTabConfigPortReset" text="Discard changes" >
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
         </HBox>
     </bottom>
 </fx:root>
