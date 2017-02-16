@@ -13,7 +13,7 @@
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.BorderPane">
     <top>
-        <HBox visible="false" alignment="bottom_center">
+        <HBox visible="false" managed="false" alignment="bottom_center">
             <padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
             <Text fx:id="textTabConfigPortNameTitle" text="Port ">
                 <font>
@@ -27,18 +27,27 @@
                     fx:id="statXTableWrapper"
                     prefHeight="200.0" prefWidth="200.0"
                     visible="true">
-            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <padding><Insets top="10" right="10" bottom="0" left="10"/></padding>
             <children>
-                <VBox alignment="CENTER_LEFT" spacing="10.0"
+                <VBox alignment="CENTER" spacing="0.0"
                       AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" >
                     <children>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0"
+                        <HBox spacing="10.0"
                               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <padding><Insets left="10"/></padding>
                             <children>
-                                <CheckBox fx:id="statXTableNotEmpty" text="Not empty only," />
-                                <Label text="  Filter:" />
+                                <CheckBox fx:id="statXTableNotEmpty" text="Not empty only;" />
+                                <Label text="  Text filter:" />
                                 <TextField fx:id="statXTableFilter" promptText="Filter" prefWidth="90"/>
                             </children>
+                        </HBox>
+                        <HBox style="-fx-font-size: 75%;">
+                            <padding><Insets left="10"/></padding>
+                            <Label text="Click " />
+                            <Label text="&#x271a;" style="-fx-text-fill: green;"/>
+                            <Label text="/" />
+                            <Label text="&#x2716;" style="-fx-text-fill: red;"/>
+                            <Label text=" to pin/un-pin the counter" />
                         </HBox>
                         <ScrollPane fx:id="statXTableContainer" content="$null"
                                     maxWidth="-1.0" minWidth="-1.0" prefWidth="779.0"

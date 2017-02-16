@@ -20,20 +20,16 @@ import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.views.statistics.cells.*;
 import com.exalttech.trex.util.Util;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.geometry.HPos;
 import javafx.scene.Node;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.TextAlignment;
 import org.apache.log4j.Logger;
 
+import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +50,6 @@ public class StatsTableGenerator {
 
     GridPane statTable = new GridPane();
     GridPane statXTable = new GridPane();
-    Integer statXTableMouseColIndex = null;
-    Integer statXTableMouseRowIndex = null;
-    CheckBox statXTableCheckbox = null;
 
     Map<String, StatisticCell> gridCellsMap = new HashMap<>();
     StringBuilder keyBuffer = new StringBuilder(30);
@@ -71,6 +64,7 @@ public class StatsTableGenerator {
 
     private static final int WIDTH_COL_0 = 145;
     private static final int WIDTH_COL_1 = 150;
+    private static final int WIDTH_COL_PIN = 48;
 
     /**
      * Constructor
@@ -85,8 +79,6 @@ public class StatsTableGenerator {
         statXTable.setCache(false);
         statXTable.getStyleClass().add("statsTable");
         statXTable.setGridLinesVisible(false);
-        statXTableCheckbox = new CheckBox("Click to pin/unpin");
-        statXTableCheckbox.getStyleClass().add("xstat-checkbox");
     }
 
     /**
@@ -457,16 +449,54 @@ public class StatsTableGenerator {
         odd = odd2;
         StatisticRow row1 = new StatisticRow(key1, key1, CellType.ATTR_CELL, false, "");
         row1.setRightPosition(false);
-        if (checkbox == null) {
-            StatisticCell cell1 = getGridCell(row1, columnWidth1, key1);
-            cell1.updateItem("", value1);
-            table.getChildren().remove(cell1);
-            table.add((Node) cell1, columnIndex1, rowIndex);
-        }
-        else {
-            checkbox.setTextAlignment(TextAlignment.LEFT);
+        StatisticCell cell1 = getGridCell(row1, columnWidth1, key1);
+        cell1.updateItem("", value1);
+
+        table.getChildren().remove(cell1);
+        table.add((Node) cell1, columnIndex1, rowIndex);
+        if (checkbox != null) {
             table.add((Node) checkbox, columnIndex1, rowIndex);
         }
+
+        rowIndex++;
+    }
+
+    private void addXstatRow(GridPane table
+            , Consumer<MouseEvent> col2MouseHandler, String col2AddStyleClass, String col2RemoveStyleClass, Tooltip tooltip
+            , String key0, String value0, double columnWidth0, int columnIndex0
+            , String key1, String value1, double columnWidth1, int columnIndex1
+            , String key2, String value2, double columnWidth2, int columnIndex2)
+    {
+        boolean odd2 = odd;
+        StatisticRow row0 = new StatisticRow(key0, key0, CellType.ATTR_CELL, false, "");
+        row0.setRightPosition(false);
+        StatisticCell cell0 = getGridCell(row0, columnWidth0, key0);
+        cell0.updateItem("", value0);
+        table.getChildren().remove(cell0);
+        table.add((Node) cell0, columnIndex0, rowIndex);
+
+        odd = odd2;
+        StatisticRow row1 = new StatisticRow(key1, key1, CellType.ATTR_CELL, false, "");
+        row1.setRightPosition(false);
+        StatisticCell cell1 = getGridCell(row1, columnWidth1, key1);
+        cell1.updateItem("", value1);
+        table.getChildren().remove(cell1);
+        table.add((Node) cell1, columnIndex1, rowIndex);
+
+        odd = odd2;
+        StatisticRow row2 = new StatisticRow(key2, key2, CellType.ATTR_CELL, false, "");
+        row2.setRightPosition(false);
+        StatisticCell cell2 = getGridCell(row2, columnWidth2, key2);
+        cell2.updateItem("", value2);
+        table.getChildren().remove(cell2);
+        table.add((Node) cell2, columnIndex2, rowIndex);
+        GridPane.setHalignment((Node) cell2, HPos.CENTER);
+        ((Node) cell2).getStyleClass().removeAll(col2RemoveStyleClass);
+        ((Node) cell2).getStyleClass().add(col2AddStyleClass);
+        ((Node) cell2).setOnMouseClicked((event) -> {
+            col2MouseHandler.accept(event);
+            event.consume();
+        });
 
         rowIndex++;
     }
@@ -671,72 +701,42 @@ public class StatsTableGenerator {
         Map<String, Integer> xstatsListPinned = port.getXstatsPinned();
 
         rowIndex = 0;
-        addHeaderCell(statXTable, "xstats-header0", "Xstat", 0, WIDTH_COL_0 * 1.5);
+        addHeaderCell(statXTable, "xstats-header0", "Counter", 0, WIDTH_COL_0 * 1.5);
         addHeaderCell(statXTable, "xstats-header1", "Value", 1, WIDTH_COL_1);
+        addHeaderCell(statXTable, "xstats-header2", "Pin", 2, WIDTH_COL_PIN);
         rowIndex = 1;
         odd = true;
         xstatsListPinned.forEach( (k,v) -> {
             if (v != null) {
-                CheckBox check = null;
-                if (statXTableMouseRowIndex != null && statXTableMouseRowIndex == rowIndex) {
-                    statXTableCheckbox.setSelected(false);
-                    statXTableCheckbox.setText("click to un-pin");
-                    statXTableCheckbox.setOnAction((e) -> {
-                        xstatsListPinned.remove(k, v);
-                    });
-                    check = statXTableCheckbox;
-                }
-                addAttrCell2(statXTable,
-                        check,
+                Node check = new Label("\u2716");
+                GridPane.setHalignment(check, HPos.CENTER);
+                addXstatRow(statXTable,
+                        (event) -> {
+                            xstatsListPinned.remove(k, v);
+                        },
+                        "xstat-red", "xstat-green",
+                        new Tooltip("Click '\u2716' to un-pin the counter."),
                         "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
-                        "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1);
+                        "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1,
+                        "xstats-val-2-" + rowIndex, "\u2716", WIDTH_COL_PIN, 2);
             }
         });
         xstatsList.forEach( (k,v) -> {
             if (v != null && (!notempty || (notempty && v != 0)) && xstatsListPinned.get(k) == null) {
                 if ((filter == null || filter.trim().length() == 0) || k.contains(filter)) {
-                    CheckBox check = null;
-                    if (statXTableMouseRowIndex != null && statXTableMouseRowIndex == rowIndex) {
-                        statXTableCheckbox.setSelected(false);
-                        statXTableCheckbox.setText("click to pin");
-                        statXTableCheckbox.setOnAction((e) -> {
-                            xstatsListPinned.put(k, v);
-                        });
-                        check = statXTableCheckbox;
-                    }
-                    addAttrCell2(statXTable,
-                            check,
+                    Node check = new Label("\u271a");
+                    GridPane.setHalignment(check, HPos.CENTER);
+                    addXstatRow(statXTable,
+                            (event) -> {
+                                xstatsListPinned.put(k, v);
+                            },
+                            "xstat-green", "xstat-red",
+                            new Tooltip("Click '\u271a' to pin the counter.\nPinned counter is always visible."),
                             "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
-                            "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1);
+                            "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1,
+                            "xstats-val-2-" + rowIndex, "\u271a", WIDTH_COL_PIN, 2);
                 }
             }
-        });
-        statXTable.setOnMouseMoved((e) -> {
-            Node target = (Node)e.getTarget() ;
-            if (target instanceof StatisticCell && rowIndex > 0) {
-                Integer col = GridPane.getColumnIndex(target);
-                Integer row = GridPane.getRowIndex(target);
-                statXTableMouseColIndex = col;
-                statXTableMouseRowIndex = row;
-            }
-        });
-
-        statXTable.setOnMouseEntered((e) -> {
-            Node target = (Node)e.getTarget() ;
-            if (target instanceof StatisticCell && rowIndex > 0) {
-                Integer col = GridPane.getColumnIndex(target);
-                Integer row = GridPane.getRowIndex(target);
-                statXTableMouseColIndex = col;
-                statXTableMouseRowIndex = row;
-            }
-        });
-
-        statXTable.setOnMouseExited((e) -> {
-            Node target = (Node)e.getTarget() ;
-            Integer col = GridPane.getColumnIndex(target);
-            Integer row = GridPane.getRowIndex(target);
-            //statXTableMouseColIndex = null;
-            //statXTableMouseRowIndex = null;
         });
 
         GridPane gp = new GridPane();
