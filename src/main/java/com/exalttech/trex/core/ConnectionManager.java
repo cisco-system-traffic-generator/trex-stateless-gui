@@ -295,7 +295,7 @@ public class ConnectionManager {
                 String serversResponse = new String(reply, "UTF-8");
                 LOG.trace("Received Server response \n" + Util.toPrettyFormat(serversResponse));
                 logProperty.setValue("Received Server response " + Util.toPrettyFormat(serversResponse));
-                if (serversResponse.contains("error")) {
+                if (serversResponse.contains("\"error\"")) {
                     try {
                         String rpcResponse = Util.removeFirstBrackets(serversResponse);
                         RPCError rpcError = mapper.readValue(rpcResponse, RPCError.class);

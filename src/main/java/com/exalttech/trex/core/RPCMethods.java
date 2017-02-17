@@ -351,6 +351,23 @@ public class RPCMethods {
 
     /**
      *
+     * @return
+     */
+    public String getSupportedCmds() {
+        LOG.trace("Get supported RPC commands");
+        try {
+            String response = serverConnectionManager.sendRequest(Constants.GET_SUPPORTED_CMDS_METHOD, "");
+            response = Util.removeFirstBrackets(response);
+            return response;
+        } catch (Exception ex) {
+            LOG.error("Failed to ping RPC Server", ex);
+            return null;
+        }
+
+    }
+
+    /**
+     *
      * @return true if the ping was successful false otherwise
      */
     public Boolean pingRPCServer() {

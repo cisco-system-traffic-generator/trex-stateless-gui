@@ -59,7 +59,21 @@ public class Constants {
      * RPC Commands
      *
      */
+
+    /**
+     *
+     */
+    public static final String GET_SUPPORTED_CMDS_METHOD = "get_supported_cmds";
+
+    /**
+     *
+     */
     public static final String PING_METHOD = "ping";
+
+    /**
+     *
+     */
+    public static final String CAPTURE_METHOD = "capture";
 
     /**
      *

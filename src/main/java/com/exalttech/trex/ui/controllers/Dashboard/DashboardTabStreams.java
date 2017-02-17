@@ -99,13 +99,9 @@ public class DashboardTabStreams extends BorderPane {
         readingStatService.setPeriod(Duration.seconds(Constants.REFRESH_FIFTEEN_INTERVAL_SECONDS));
         readingStatService.setOnSucceeded((WorkerStateEvent event) -> {
             try {
-                String response = serverRPCMethods.getStreamList(0);
-                JSONObject jsonObject = new JSONObject(response);
-                if (!"null".equals(jsonObject.get("result").toString())) {
-                    String result = ((JSONArray) jsonObject.get("result")).toString();
-                    ObjectMapper mapper = new ObjectMapper();
-                    streamList = mapper.readValue(result, mapper.getTypeFactory().constructCollectionType(List.class, Integer.class));
-                }
+                //String response = serverRPCMethods.getSupportedCmds();
+                //String response = serverRPCMethods.getStreamList(0);
+                //JSONObject jsonObject = new JSONObject(response);
                 generateFlowStatsPane(streamList);
             } catch (Exception e) {
                 LOG.error("Failed to get stream list: " + e.getMessage());

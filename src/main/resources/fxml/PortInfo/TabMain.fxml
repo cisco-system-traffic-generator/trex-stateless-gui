@@ -48,19 +48,22 @@
             <Label                                  text="Status:" GridPane.columnIndex="5" GridPane.rowIndex="3" />
             <Label fx:id="labelTabMainPortStatus" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="3" GridPane.columnSpan="2" />
 
+            <Label                                  text="Capturing:" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+            <Label fx:id="labelTabMainPortCapture" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="4" GridPane.columnSpan="2" />
 
-            <Label                                       text="Multicast:" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-            <Label fx:id="labelTabMainPortMulticast" text="_empty_"      GridPane.columnIndex="6" GridPane.rowIndex="4" />
-            <Button fx:id="buttonTabMainPortMulticast" text=""    GridPane.columnIndex="7" GridPane.rowIndex="4" />
 
-            <Label                                       text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <Label fx:id="labelTabMainPortPromiscuous" text="_empty_"      GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Button fx:id="buttonTabMainPortPromiscuous" text=""    GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <Label                                       text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <Label fx:id="labelTabMainPortMulticast" text="_empty_"      GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Button fx:id="buttonTabMainPortMulticast" text=""    GridPane.columnIndex="2" GridPane.rowIndex="5" />
 
-            <Label                                       text="Flow control:"   GridPane.columnIndex="0" GridPane.rowIndex="6" />
+            <Label                                       text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+            <Label fx:id="labelTabMainPortPromiscuous" text="_empty_"      GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Button fx:id="buttonTabMainPortPromiscuous" text=""    GridPane.columnIndex="2" GridPane.rowIndex="6" />
+
+            <Label                                       text="Flow control:"   GridPane.columnIndex="0" GridPane.rowIndex="7" />
             <ChoiceBox fx:id="choiceTabMainPortFlowControl"
                        prefWidth="127"
-                       GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2" >
+                       GridPane.columnIndex="1" GridPane.rowIndex="7" GridPane.columnSpan="2" >
                 <items>
                     <FXCollections fx:factory="observableArrayList">
                         <String fx:value="Rx"/>
