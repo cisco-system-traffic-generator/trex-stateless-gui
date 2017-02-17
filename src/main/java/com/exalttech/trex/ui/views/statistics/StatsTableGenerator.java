@@ -694,9 +694,11 @@ public class StatsTableGenerator {
         return statTable;
     }
 
-    public GridPane generateXStatPane(Port port, boolean notempty, String filter) {
-        statXTable.getChildren().clear();
-        Util.optimizeMemory();
+    public GridPane generateXStatPane(boolean full, Port port, boolean notempty, String filter) {
+        if (full) {
+            statXTable.getChildren().clear();
+            Util.optimizeMemory();
+        }
         Map<String, Integer> xstatsList = port.getXstats();
         Map<String, Integer> xstatsListPinned = port.getXstatsPinned();
 

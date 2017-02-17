@@ -6,6 +6,7 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
+import com.exalttech.trex.util.Util;
 import com.google.inject.Injector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -33,6 +34,8 @@ public class PortInfoTabXstats extends BorderPane {
 
     private String savedPingIPv4 = "";
     StatsTableGenerator statsTableGenerator;
+    boolean statXTableNotEmpty_changed = false;
+    boolean statXTableFilter_changed = false;
 
     public PortInfoTabXstats(Injector injector, RPCMethods serverRPCMethods, Port port) {
         this.port = port;
@@ -51,6 +54,16 @@ public class PortInfoTabXstats extends BorderPane {
             LOG.error("Failed to load fxml file: " + e.getMessage());
         }
 
+        statXTableNotEmpty.setOnAction((e) -> {
+            statXTableNotEmpty_changed = true;
+        });
+
+        statXTableFilter.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!oldValue.equals(newValue)) {
+                statXTableFilter_changed = true;
+            }
+        });
+
         statsTableGenerator = new StatsTableGenerator();
         update(true);
     }
@@ -65,8 +78,17 @@ public class PortInfoTabXstats extends BorderPane {
     }
 
     public void update(boolean full) {
+        if (statXTableNotEmpty_changed) {
+            statXTableNotEmpty_changed = false;
+            full = true;
+        }
+        if (statXTableFilter_changed) {
+            statXTableFilter_changed = false;
+            full = true;
+        }
+
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
-        Pane pane = statsTableGenerator.generateXStatPane(port, statXTableNotEmpty.isSelected(), statXTableFilter.getText());
+        Pane pane = statsTableGenerator.generateXStatPane(full, port, statXTableNotEmpty.isSelected(), statXTableFilter.getText());
 
         statXTableContainer.setContent(pane);
         statXTableContainer.setVisible(true);
