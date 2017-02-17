@@ -429,11 +429,8 @@ public class ConnectionManager {
         jsonRequestString = Util.tuneJSONParams(jsonRequestString, port.getPortParam(), apiH);
         addStreamCommandList.add(jsonRequestString);
 
-        Level log = LOG.getLevel();
-        LOG.setLevel(Level.OFF);
         String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
         LOG.info("Send port xstats_names request \n " + requestCommand);
-        //LOG.setLevel(log);
 
         byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
 
@@ -464,11 +461,8 @@ public class ConnectionManager {
         jsonRequestString = Util.tuneJSONParams(jsonRequestString, port.getPortParam(), apiH);
         addStreamCommandList.add(jsonRequestString);
 
-        Level log = LOG.getLevel();
-        LOG.setLevel(Level.OFF);
         String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
         LOG.info("Send port xstats_values request \n " + requestCommand);
-        //LOG.setLevel(log);
 
         byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
 
