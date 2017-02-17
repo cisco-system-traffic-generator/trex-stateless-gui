@@ -187,8 +187,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
         currentSelectedProfileIndex = selectedProfileIndex;
-
-        streamEditorModeBtn.visibleProperty().bind(isImportedStreamProperty.not());
         
         if (selectedProfile.getStream().getAdvancedMode()
                 && !ConnectionManager.getInstance().isScapyConnected()) {
@@ -266,10 +264,13 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 File pcapFile = trafficProfile.decodePcapBinary(pcapFileBinary);
                 parser.parseFile(pcapFile.getAbsolutePath(), packetInfo);
                 packetHex.setData(packetInfo);
-                packetBuilderController.loadPcapBinary(Base64.getDecoder().decode(pcapFileBinary.getBytes()));
             } catch (IOException ex) {
                 LOG.error("Failed to load PCAP value", ex);
             }
+        }
+        String base64UserModel = currentStream.getPacket().getModel();
+        if (!Strings.isNullOrEmpty(base64UserModel)) {
+            packetBuilderController.loadUserModel(base64UserModel);
         }
     }
     
@@ -479,13 +480,19 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             if (!ConnectionManager.getInstance().isScapyConnected()) {
                 eventBus.post(new ScapyClientNeedConnectEvent());
             }
-            packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
             if (advancedMode) {
                 streamEditorModeBtn.setText("Advanced mode");
                 currentStream.setAdvancedMode(false);
                 showSimpleModeTabs();
             } else {
                 if (ConnectionManager.getInstance().isScapyConnected()) {
+                    if (isImportedStreamProperty.getValue()) {
+                        byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
+                        byte[] packet = Base64.getDecoder().decode(base64Packet);
+                        packetBuilderController.loadPcapBinary(packet);
+                    } else {
+                        packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+                    }
                     streamEditorModeBtn.setText("Simple mode");
                     currentStream.setAdvancedMode(true);
                     showAdvancedModeTabs();
