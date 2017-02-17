@@ -1216,6 +1216,9 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-scale-shape: false;
     -fx-padding: 0.3666667em; /* 16x16 = 8+8 */
 }
+#statXTableNotEmpty { -fx-rotate:180; }
+#statXTableNotEmpty > .text { -fx-rotate: 180; }
+#statXTableNotEmpty > .box > .mark { -fx-rotate: 180; }
 
 .xstat-red {
     -fx-text-fill: red;
