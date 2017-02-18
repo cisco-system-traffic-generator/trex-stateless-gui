@@ -20,16 +20,14 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
+import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Stream builder data binding model
@@ -109,14 +107,40 @@ public class BuilderDataBinding implements Serializable {
                 fieldEngine.getAsJsonArray("instructions").addAll(buildVMInstructions(protoID, "dst", binding.getDestination()));
             }
             
-            if ("IP".equals(protoID)) {
-                Map<String, String> flowWrVarParameters = new HashMap<>();
-                flowWrVarParameters.put("offset", "IP");
-                fieldEngine.getAsJsonArray("instructions").add(buildInstruction("STLVmFixIpv4", flowWrVarParameters));
-            }
         });
 
         boolean isVLAN = protocolSelection.getTaggedVlanProperty().get();
+        String pktLenName = "pkt_len";
+        String frameLenghtType = protocolSelection.getFrameLengthType();
+        boolean pktSizeChanged = !frameLenghtType.equals("Fixed");
+        if (pktSizeChanged) {
+            LinkedHashMap<String, String> instructionParam = new LinkedHashMap<>();
+            String operation = PacketBuilderHelper.getOperationFromType(frameLenghtType);
+            Integer minLength = Integer.valueOf(protocolSelection.getMinLength()) - 4;
+            Integer maxLength = Integer.valueOf(protocolSelection.getMaxLength()) - 4 ;
+
+            instructionParam.put("init_value", minLength.toString());
+            instructionParam.put("max_value", maxLength.toString());
+            instructionParam.put("min_value", minLength.toString());
+
+            instructionParam.put("name", pktLenName);
+            instructionParam.put("op", operation);
+            instructionParam.put("size", "2");
+            instructionParam.put("step", "1");
+            fieldEngine.getAsJsonArray("instructions").add(buildInstruction("STLVmFlowVar", instructionParam));
+
+            instructionParam.clear();
+            instructionParam.put("fv_name", pktLenName);
+            fieldEngine.getAsJsonArray("instructions").add(buildInstruction("STLVmTrimPktSize", instructionParam));
+            
+            instructionParam.clear();
+            instructionParam.put("add_val", isVLAN ? "-18" : "-14");
+            instructionParam.put("is_big", "true");
+            instructionParam.put("fv_name", pktLenName);
+            instructionParam.put("pkt_offset", isVLAN ? "20" : "16");
+            fieldEngine.getAsJsonArray("instructions").add(buildInstruction("STLVmWrFlowVar", instructionParam));
+        }
+        
         if (isVLAN) {
             JsonObject dot1QProto = new JsonObject();
             dot1QProto.add("id", new JsonPrimitive("Dot1Q"));
@@ -205,6 +229,21 @@ public class BuilderDataBinding implements Serializable {
             
             udpProto.add("fields", buildProtoFieldsFromMap(fieldsMap));
             model.getAsJsonArray("protocols").add(udpProto);
+            
+            if (pktSizeChanged) {
+                LinkedHashMap<String, String> instructionParam = new LinkedHashMap<>();
+                instructionParam.put("add_val", isVLAN ? "-38" : "-34");
+                instructionParam.put("is_big", "true");
+                instructionParam.put("fv_name", pktLenName);
+                instructionParam.put("pkt_offset", isVLAN ? "42" : "38");
+                fieldEngine.getAsJsonArray("instructions").add(buildInstruction("STLVmWrFlowVar", instructionParam));
+            }
+        }
+
+        if (isIPv4 || pktSizeChanged) {
+            Map<String, String> flowWrVarParameters = new HashMap<>();
+            flowWrVarParameters.put("offset", "IP");
+            fieldEngine.getAsJsonArray("instructions").add(buildInstruction("STLVmFixIpv4", flowWrVarParameters));
         }
 
         return model.toString();
