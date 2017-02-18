@@ -468,6 +468,7 @@ public class StatsTableGenerator {
         addDefaultCell("info-host-name", systemInfoReq.getResult().getHostname(), columnWidth, 1);
         addDefaultCell("info-port-count", String.valueOf(systemInfoReq.getResult().getPortCount()), columnWidth, 1);
         addDefaultCell("info-up-time", systemInfoReq.getResult().getUptime(), columnWidth, 1);
+        addDefaultCell("info-api-version", systemInfoReq.getResult().getApiVersion(), columnWidth, 1);
 
         return statTable;
     }

@@ -42,7 +42,6 @@ import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
 import com.exalttech.trex.ui.views.MultiplierView;
 import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
 import com.exalttech.trex.ui.views.PacketTableView;
-import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.ui.views.models.ProfileMultiplier;
@@ -53,20 +52,12 @@ import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.ProfileManager;
 import com.exalttech.trex.util.Util;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-
 import com.exalttech.trex.util.files.XMLFileManager;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xored.javafx.packeteditor.events.InitPacketEditorEvent;
 import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 import javafx.application.Platform;
@@ -80,31 +71,26 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * Main view FXML controller
@@ -337,6 +323,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         systemInfoReq.setPort(ConnectionManager.getInstance().getRpcPort());
         portManager.setPortList(systemInfoReq.getResult().getPorts());
         portManager.startPortStatusScheduler();
+
+        String versionResponse = ConnectionManager.getInstance().sendRequest("get_version", "");
+        Gson gson = new Gson();
+        JsonObject version = gson.fromJson(versionResponse, JsonArray.class).get(0).getAsJsonObject();
+        systemInfoReq.getResult().setApiVersion(version.getAsJsonObject("result").getAsJsonPrimitive("version").getAsString());
     }
 
     /**

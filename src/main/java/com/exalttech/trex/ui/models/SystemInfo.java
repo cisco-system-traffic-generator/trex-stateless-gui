@@ -41,6 +41,16 @@ public class SystemInfo {
     List<Port> ports;
     String uptime;
 
+    String apiVersion;
+
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
+
     /**
      * Return core type
      *

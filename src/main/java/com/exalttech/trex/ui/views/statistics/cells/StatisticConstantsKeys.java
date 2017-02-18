@@ -40,7 +40,7 @@ public class StatisticConstantsKeys {
     public static final List<String> PORT_ROW_NAME = Arrays.asList("Port name", "Driver", "Index", "Port Owner", 
             "Speed", "Status");
     public static final List<String> SYSTEM_INFO_ROW_NAME = Arrays.asList("ID", "jsonrpc", "IP", "Port", 
-            "Core Type", "Core Count", "Host Name", "Port Count", "Up Time");
+            "Core Type", "Core Count", "Host Name", "Port Count", "Up Time", "API version");
     
     public static final List<String> Stream_ROW_NAME = Arrays.asList("tx-bytes", "rx-bytes", "tx-pkts", "rx-pkts");
     
