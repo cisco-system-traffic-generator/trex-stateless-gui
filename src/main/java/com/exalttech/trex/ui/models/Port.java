@@ -68,6 +68,8 @@ public class Port {
 
     PortStatus.PortStatusResult.PortStatusResultAttr attr;
 
+    PortStatus.PortStatusResult.PortStatusResultRxInfo rx_info;
+
     Map<String, Integer> xstats;
 
     Map<String, Integer> xstatsPinned;
@@ -221,6 +223,14 @@ public class Port {
      */
     public void setAttr(PortStatus.PortStatusResult.PortStatusResultAttr attr) {
         this.attr = attr;
+    }
+
+    public PortStatus.PortStatusResult.PortStatusResultRxInfo getRx_info() {
+        return rx_info;
+    }
+
+    public void setRx_info(PortStatus.PortStatusResult.PortStatusResultRxInfo rx_info) {
+        this.rx_info = rx_info;
     }
 
     public Map<String, Integer> getXstats() {

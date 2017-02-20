@@ -23,7 +23,6 @@ package com.exalttech.trex.ui.views.services;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.PortStatus;
-import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.models.datastore.CaptureStatus;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Util;
@@ -83,6 +82,7 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
                 port.setOwner(portStatus.getResult().getOwner());
                 port.setStatus(portStatus.getResult().getState());
                 port.setAttr(portStatus.getResult().getAttr());
+                port.setRx_info(portStatus.getResult().getRx_info());
 
                 String response1 = ConnectionManager.getInstance().sendRequest(Constants.CAPTURE_METHOD,
                         "\"command\":\"status\"");

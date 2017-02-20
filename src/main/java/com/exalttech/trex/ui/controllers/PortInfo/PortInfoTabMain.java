@@ -47,6 +47,10 @@ public class PortInfoTabMain extends BorderPane {
     @FXML private Label labelTabMainPortRxFilterMode;
     @FXML private Label labelTabMainPortMulticast;
     @FXML private Button buttonTabMainPortMulticast;
+    @FXML private Label labelTabMainPortNUMA;
+    @FXML private Label labelTabMainPortPCI;
+    @FXML private Label labelTabMainPortRxQueueing;
+    @FXML private Label labelTabMainPortGratARP;
 
     private int ledState = -1;
 
@@ -214,6 +218,11 @@ public class PortInfoTabMain extends BorderPane {
 
         labelTabMainPortMulticast.setText(port.getAttr().getMulticast().toString());
         buttonTabMainPortMulticast.setText(port.getAttr().getMulticast().toString().compareToIgnoreCase("enabled")==0 ? "Disable" : "Enable");
+
+        labelTabMainPortNUMA.setText("" + port.getNuma());
+        labelTabMainPortPCI.setText(port.getPci_addr());
+        labelTabMainPortRxQueueing.setText(port.getRx_info().getQueue().isIs_active() ? "on" : "off");
+        labelTabMainPortGratARP.setText(port.getRx_info().getGrat_arp().isIs_active() ? "on" : "off");
 
         String str = port.getAttr().getFc().toString();
         choiceTabMainPortFlowControl.getSelectionModel().select(str.substring(0, 1).toUpperCase() + str.substring(1));
