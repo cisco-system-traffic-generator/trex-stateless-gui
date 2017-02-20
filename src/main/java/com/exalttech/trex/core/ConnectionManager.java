@@ -461,12 +461,12 @@ public class ConnectionManager {
         jsonRequestString = Util.tuneJSONParams(jsonRequestString, port.getPortParam(), apiH);
         addStreamCommandList.add(jsonRequestString);
 
-        String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
-        LOG.info("Send port xstats_values request \n " + requestCommand);
+        //String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
+        //LOG.info("Send port xstats_values request \n " + requestCommand);
 
         byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
 
-        return handleResponse(serverResponse, false);
+        return handleResponse(serverResponse, false, false);
     }
 
     public String sendUtilizationRequest() throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
@@ -486,9 +486,15 @@ public class ConnectionManager {
      * @throws InvalidRPCResponseException
      */
     private String handleResponse(byte[] serverResponse, boolean writeToLog) throws UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+        return handleResponse(serverResponse, writeToLog, true);
+    }
+
+    private String handleResponse(byte[] serverResponse, boolean writeToLog, boolean logTrace) throws UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         if (serverResponse != null) {
             String rpcResponse = new String(serverResponse, "UTF-8");
-            LOG.trace("Received Server response \n" + Util.toPrettyFormat(rpcResponse));
+            if (logTrace) {
+                LOG.trace("Received Server response \n" + Util.toPrettyFormat(rpcResponse));
+            }
             if (writeToLog) {
                 logProperty.setValue("Received Server response " + Util.toPrettyFormat(rpcResponse));
             }

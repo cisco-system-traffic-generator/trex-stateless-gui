@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DashboardTabStreams extends BorderPane {
 
@@ -90,6 +91,10 @@ public class DashboardTabStreams extends BorderPane {
         borderPaneStreamStatsGridPane.getStyleClass().add("statsTable");
         initializeReadingStats();
         initCloseAndSize();
+
+        ObservableList<Node> children = borderPaneStreamStatsTopHbox.getChildren();
+        children.clear();
+        children.add(0, generateUtilizationProcChart());
     }
 
     /**
@@ -97,7 +102,7 @@ public class DashboardTabStreams extends BorderPane {
      */
     private void initializeReadingStats() {
         readingStatService = new RefreshingService();
-        readingStatService.setPeriod(Duration.seconds(Constants.REFRESH_FIFTEEN_INTERVAL_SECONDS));
+        readingStatService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
         readingStatService.setOnSucceeded((WorkerStateEvent event) -> {
             try {
                 //String response = serverRPCMethods.getSupportedCmds();
@@ -107,18 +112,6 @@ public class DashboardTabStreams extends BorderPane {
             } catch (Exception e) {
                 LOG.error("Failed to get stream list: " + e.getMessage());
             }
-
-            /* Not working now *//*
-            try {
-                String response2 = serverRPCMethods.getStream(0, 0);
-            } catch (Exception e) {
-                LOG.error("Failed to get stream: " + e.getMessage());
-            }
-            try {
-                String response3 = serverRPCMethods.getStreamStats(0, 0);
-            } catch (Exception e) {
-                LOG.error("Failed to get stream stats: " + e.getMessage());
-            }*/
         });
         readingStatService.start();
     }
@@ -158,32 +151,42 @@ public class DashboardTabStreams extends BorderPane {
      * @return
      */
     public void generateFlowStatsPane(List<Integer> streamList) {
-        ObservableList<Node> children = borderPaneStreamStatsTopHbox.getChildren();
-        children.clear();
-        children.add(0, generateUtilizationProcChart());
-        //children.add(1, statsTableGenerator.generateGlobalStatPane());
-
         int first_column_width = 99;
-        int second_header_width = 99;
+        int second_header_width = 128;
 
-        borderPaneStreamStatsGridPane.add(new HeaderCell(first_column_width, " "), 0, 0);
+        borderPaneStreamStatsGridPane.getChildren().clear();
+        borderPaneStreamStatsGridPane.add(new HeaderCell(first_column_width, "Stream"), 0, 0);
 
-        flowStatsListPrev = StatsLoader.getInstance().getPreviousFlowStatsMap();
-        flowStatsListLast = StatsLoader.getInstance().getLoadedFlowStatsMap();
-        FlowStatsTimeStamp ts_prev = (FlowStatsTimeStamp) Util.fromJSONString(flowStatsListPrev.get("ts"), FlowStatsTimeStamp.class);
-        FlowStatsTimeStamp ts_last = (FlowStatsTimeStamp) Util.fromJSONString(flowStatsListLast.get("ts"), FlowStatsTimeStamp.class);
+        flowStatsListPrev = new HashMap<String, String>(StatsLoader.getInstance().getPreviousFlowStatsMap());
+        flowStatsListLast = new HashMap<String, String>(StatsLoader.getInstance().getLoadedFlowStatsMap());
+        FlowStatsTimeStamp ts_p = (FlowStatsTimeStamp) Util.fromJSONString(flowStatsListPrev.get("ts"), FlowStatsTimeStamp.class);
+        FlowStatsTimeStamp ts_l = (FlowStatsTimeStamp) Util.fromJSONString(flowStatsListLast.get("ts"), FlowStatsTimeStamp.class);
 
-        HashMap<String, FlowStatsData> streams = new HashMap<>();
-        HashSet<Integer> ports = new HashSet<>();
+        HashMap<String, FlowStatsData> streams_l = new HashMap<>();
+        HashSet<Integer> ports_l = new HashSet<>();
         flowStatsListLast.forEach((k,v) -> {
             if (!k.equals("ts")) {
                 String stream_id = k;
                 FlowStatsData stream_data = (FlowStatsData) Util.fromJSONString(v, FlowStatsData.class);
-                streams.put(k, stream_data);
-                stream_data.getTx_pkts().forEach((pk,pv) -> ports.add(pk));
-                stream_data.getRx_pkts().forEach((pk,pv) -> ports.add(pk));
-                stream_data.getTx_bytes().forEach((pk,pv) -> ports.add(pk));
-                stream_data.getRx_bytes().forEach((pk,pv) -> ports.add(pk));
+                streams_l.put(k, stream_data);
+                stream_data.getTx_pkts().forEach((pk,pv) -> ports_l.add(pk));
+                stream_data.getRx_pkts().forEach((pk,pv) -> ports_l.add(pk));
+                stream_data.getTx_bytes().forEach((pk,pv) -> ports_l.add(pk));
+                stream_data.getRx_bytes().forEach((pk,pv) -> ports_l.add(pk));
+            }
+        });
+
+        HashMap<String, FlowStatsData> streams_p = new HashMap<>();
+        HashSet<Integer> ports_p = new HashSet<>();
+        flowStatsListPrev.forEach((k,v) -> {
+            if (!k.equals("ts")) {
+                String stream_id = k;
+                FlowStatsData stream_data = (FlowStatsData) Util.fromJSONString(v, FlowStatsData.class);
+                streams_p.put(k, stream_data);
+                stream_data.getTx_pkts().forEach((pk,pv) -> ports_p.add(pk));
+                stream_data.getRx_pkts().forEach((pk,pv) -> ports_p.add(pk));
+                stream_data.getTx_bytes().forEach((pk,pv) -> ports_p.add(pk));
+                stream_data.getRx_bytes().forEach((pk,pv) -> ports_p.add(pk));
             }
         });
 
@@ -202,29 +205,75 @@ public class DashboardTabStreams extends BorderPane {
 
         AtomicInteger rowIndex = new AtomicInteger(1);
         AtomicBoolean odd = new AtomicBoolean(false);
-        streams.forEach((k,v) -> {
+        double ts_delta = (ts_l.getValue() - ts_p.getValue()) * 1.0 / ts_l.getFreq();
+
+        streams_l.forEach((k,v) -> {
             borderPaneStreamStatsGridPane.add(new StatisticLabelCell("Stream " + k, first_column_width, odd.get(), CellType.DEFAULT_CELL, false), 0, rowIndex.get());
 
-            AtomicInteger tx_pkts = new AtomicInteger(0);
-            AtomicInteger rx_pkts = new AtomicInteger(0);
-            AtomicInteger tx_bytes = new AtomicInteger(0);
-            AtomicInteger rx_bytes = new AtomicInteger(0);
+            AtomicLong tx_pkts_p = new AtomicLong(0);
+            AtomicLong rx_pkts_p = new AtomicLong(0);
+            AtomicLong tx_bytes_p = new AtomicLong(0);
+            AtomicLong rx_bytes_p = new AtomicLong(0);
+
+            streams_p.forEach((k_p,v_p) -> {
+                if (k_p.equals(k)) {
+                    v_p.getTx_pkts().forEach((k2, v2) -> {
+                        tx_pkts_p.addAndGet(v2);
+                    });
+                    v_p.getTx_bytes().forEach((k2, v2) -> {
+                        tx_bytes_p.addAndGet(v2);
+                    });
+                    v_p.getRx_pkts().forEach((k2, v2) -> {
+                        rx_pkts_p.addAndGet(v2);
+                    });
+                    v_p.getRx_bytes().forEach((k2, v2) -> {
+                        rx_bytes_p.addAndGet(v2);
+                    });
+                }
+            });
+
+            AtomicLong tx_pkts_l = new AtomicLong(0);
+            AtomicLong rx_pkts_l = new AtomicLong(0);
+            AtomicLong tx_bytes_l = new AtomicLong(0);
+            AtomicLong rx_bytes_l = new AtomicLong(0);
+
             v.getTx_pkts().forEach((k2,v2) -> {
-                tx_pkts.addAndGet(v2);
+                tx_pkts_l.addAndGet(v2);
             });
             v.getTx_bytes().forEach((k2,v2) -> {
-                tx_bytes.addAndGet(v2);
+                tx_bytes_l.addAndGet(v2);
             });
             v.getRx_pkts().forEach((k2,v2) -> {
-                rx_pkts.addAndGet(v2);
+                rx_pkts_l.addAndGet(v2);
             });
             v.getRx_bytes().forEach((k2,v2) -> {
-                rx_bytes.addAndGet(v2);
+                rx_bytes_l.addAndGet(v2);
             });
-            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(tx_pkts.toString(),  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 6, rowIndex.get());
-            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(rx_pkts.toString(),  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 7, rowIndex.get());
-            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(tx_bytes.toString(), second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 8, rowIndex.get());
-            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(rx_bytes.toString(), second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 9, rowIndex.get());
+
+            // BPS L1 from pps and BPS L2
+            // def calc_bps_L1 (bps, pps):
+            // if (pps == 0) or (bps == 0):
+            // return 0
+            //
+            // factor = bps / (pps * 8.0)
+            // return bps * ( 1 + (20 / factor) )
+            double pps = (tx_pkts_l.get() - tx_pkts_p.get()) / ts_delta;
+            double bpsL2 = (tx_bytes_l.get() - tx_bytes_p.get()) / ts_delta;
+            double bpsL1 = bpsL2 + pps * 16;
+            pps = ((int) (pps * 100.0)) / 100.0;
+            bpsL2 = ((int) (bpsL2 * 100.0)) / 100.0 * 8;
+            bpsL1 = ((int) (bpsL1 * 100.0)) / 100.0 * 8;
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell("" + pps,  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 1, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell("" + bpsL2,  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 2, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell("" + bpsL1,  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 3, rowIndex.get());
+
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell("" + ((int)((rx_pkts_l.get() - rx_pkts_p.get())  / ts_delta * 100.0)) / 100.0,  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 4, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell("" + ((int)((rx_bytes_l.get() - rx_bytes_p.get()) / ts_delta * 100.0)) / 100.0,  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 5, rowIndex.get());
+
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(tx_pkts_l.toString(),  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 6, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(rx_pkts_l.toString(),  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 7, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(tx_bytes_l.toString(), second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 8, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(rx_bytes_l.toString(), second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 9, rowIndex.get());
 
             rowIndex.addAndGet(1);
             odd.getAndSet(!odd.get());
