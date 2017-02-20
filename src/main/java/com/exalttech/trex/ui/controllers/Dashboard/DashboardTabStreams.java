@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import javax.annotation.Generated;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DashboardTabStreams extends BorderPane {
@@ -160,7 +161,7 @@ public class DashboardTabStreams extends BorderPane {
         ObservableList<Node> children = borderPaneStreamStatsTopHbox.getChildren();
         children.clear();
         children.add(0, generateUtilizationProcChart());
-        children.add(1, statsTableGenerator.generateGlobalStatPane());
+        //children.add(1, statsTableGenerator.generateGlobalStatPane());
 
         int first_column_width = 99;
         int second_header_width = 99;
@@ -200,8 +201,10 @@ public class DashboardTabStreams extends BorderPane {
         borderPaneStreamStatsGridPane.add(new HeaderCell(second_header_width, "rx_bytes"), colIndex++, 0);
 
         AtomicInteger rowIndex = new AtomicInteger(1);
+        AtomicBoolean odd = new AtomicBoolean(false);
         streams.forEach((k,v) -> {
-            borderPaneStreamStatsGridPane.add(new HeaderCell(second_header_width, "Stream " + k), 0, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell("Stream " + k, first_column_width, odd.get(), CellType.DEFAULT_CELL, false), 0, rowIndex.get());
+
             AtomicInteger tx_pkts = new AtomicInteger(0);
             AtomicInteger rx_pkts = new AtomicInteger(0);
             AtomicInteger tx_bytes = new AtomicInteger(0);
@@ -218,13 +221,13 @@ public class DashboardTabStreams extends BorderPane {
             v.getRx_bytes().forEach((k2,v2) -> {
                 rx_bytes.addAndGet(v2);
             });
-
-            borderPaneStreamStatsGridPane.add(new HeaderCell(second_header_width, tx_pkts.toString()), 6, rowIndex.get());
-            borderPaneStreamStatsGridPane.add(new HeaderCell(second_header_width, rx_pkts.toString()), 7, rowIndex.get());
-            borderPaneStreamStatsGridPane.add(new HeaderCell(second_header_width, tx_bytes.toString()), 8, rowIndex.get());
-            borderPaneStreamStatsGridPane.add(new HeaderCell(second_header_width, rx_bytes.toString()), 9, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(tx_pkts.toString(),  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 6, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(rx_pkts.toString(),  second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 7, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(tx_bytes.toString(), second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 8, rowIndex.get());
+            borderPaneStreamStatsGridPane.add(new StatisticLabelCell(rx_bytes.toString(), second_header_width, odd.get(), CellType.DEFAULT_CELL, true), 9, rowIndex.get());
 
             rowIndex.addAndGet(1);
+            odd.getAndSet(!odd.get());
         });
 
         return;

@@ -19,6 +19,7 @@ import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.remote.models.params.Params;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.MultiplierType;
+import com.exalttech.trex.ui.models.datastore.CaptureStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -178,6 +179,29 @@ public class Util {
         }
 
         return statsList;
+    }
+
+    /**
+     * Prepare and return list of Stats object from JSON string
+     *
+     * @param jsonValues
+     * @return
+     */
+    public static CaptureStatus[] getCaptureStatusFromJSONString(String jsonValues) {
+        String result = removeFirstBrackets(jsonValues);
+        JSONArray capture_array = null;
+        CaptureStatus[] capture = new CaptureStatus[0];
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            if (!"null".equals(jsonObject.get("result").toString())) {
+                capture_array = jsonObject.getJSONArray("result");
+                result = capture_array.toString();
+                capture = (CaptureStatus[]) Util.fromJSONString(result, CaptureStatus[].class);
+            }
+        } catch (Exception ex) {
+            LOG.error("Error parsing capture status json response: " + jsonValues, ex);
+        }
+        return capture;
     }
 
     /**

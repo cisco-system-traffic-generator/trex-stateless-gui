@@ -29,6 +29,11 @@ public class StatisticLabelCell extends Label implements StatisticCell {
 
     CellType type;
 
+    public StatisticLabelCell(String value, double width, boolean odd, CellType type, boolean isRightPosition) {
+        this(width, odd, type, isRightPosition);
+        setText(value);
+    }
+
     public StatisticLabelCell(double width, boolean odd, CellType type, boolean isRightPosition) {
         this.type = type;
         setPrefSize(width, 25);

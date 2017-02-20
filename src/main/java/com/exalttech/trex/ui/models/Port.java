@@ -16,6 +16,7 @@
 package com.exalttech.trex.ui.models;
 
 import com.exalttech.trex.remote.models.params.Params;
+import com.exalttech.trex.ui.models.datastore.CaptureStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -70,6 +71,8 @@ public class Port {
     Map<String, Integer> xstats;
 
     Map<String, Integer> xstatsPinned;
+
+    CaptureStatus[] captureStatus;
 
     /**
      * Return index
@@ -237,6 +240,14 @@ public class Port {
 
     public void setXstatsPinned(Map<String, Integer> xstatsPinned) {
         this.xstatsPinned = xstatsPinned;
+    }
+
+    public CaptureStatus[] getCaptureStatus() {
+        return captureStatus;
+    }
+
+    public void setCaptureStatus(CaptureStatus[] captureStatus) {
+        this.captureStatus = captureStatus;
     }
 
     /**

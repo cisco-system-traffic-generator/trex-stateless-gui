@@ -49,7 +49,7 @@
             <Label fx:id="labelTabMainPortStatus" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="3" GridPane.columnSpan="2" />
 
             <Label                                  text="Capturing:" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-            <Label fx:id="labelTabMainPortCapture" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="4" GridPane.columnSpan="2" />
+            <Label fx:id="labelTabMainPortCaptureStatus" text="None / Tx / Rx / Tx+Rx" GridPane.columnIndex="6" GridPane.rowIndex="4" GridPane.columnSpan="2" />
 
 
             <Label                                       text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
