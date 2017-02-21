@@ -1250,16 +1250,16 @@ ToggleSwitch {
     -fx-padding-top: 3px;
 }
 
-#statXTableResetFilter,
+/*#statXTableResetFilter,
 #statXTableResetFilter > .text {
     -fx-label-padding: 1px 1px 1px 1px;
     -fx-padding: 1px 1px 1px 1px;
     -fx-font-size: 1.6em;
     -fx-font-weight: 900;
-    -fx-text-alignment: top;
-    -fx-alignment: top;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
     -fx-margin:0px;
-}
+}*/
 
 #statXTableResetFilter {
     -fx-min-height: 2em;
@@ -1268,6 +1268,11 @@ ToggleSwitch {
     -fx-min-width: 2em;
     -fx-pref-width: 2em;
     -fx-max-width: 2em;
+    -fx-label-padding: 1px 1px 5px 1px;
+    -fx-font-size: 1.6em;
+    -fx-font-weight: 900;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
 }
 
 #statXTableResetFilter:pressed {
