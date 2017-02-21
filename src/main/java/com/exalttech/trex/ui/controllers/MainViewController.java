@@ -32,6 +32,8 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.components.CustomTreeItem;
 import com.exalttech.trex.ui.components.CustomTreeItem.TreeItemType;
 import com.exalttech.trex.ui.components.NotificationPanel;
+import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabCapture;
+import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabLatency;
 import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabMain;
 import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabStreams;
 import com.exalttech.trex.ui.dialog.DialogManager;
@@ -1029,6 +1031,22 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 DashboardTabStreams dashboardTabStreams = new DashboardTabStreams(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
                 if (dashboardTabStreams != null) {
                     tabStreams.setContent(dashboardTabStreams);
+                }
+
+                Tab tabLatency = new Tab("Latency");
+                tabLatency.setClosable(false);
+                tabPane.getTabs().add(2, tabLatency);
+                DashboardTabLatency dashboardTabLatency = new DashboardTabLatency(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
+                if (dashboardTabLatency != null) {
+                    tabLatency.setContent(dashboardTabLatency);
+                }
+
+                Tab tabCapture = new Tab("Capture");
+                tabCapture.setClosable(false);
+                tabPane.getTabs().add(3, tabCapture);
+                DashboardTabCapture dashboardTabCapture = new DashboardTabCapture(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
+                if (dashboardTabCapture != null) {
+                    tabCapture.setContent(dashboardTabCapture);
                 }
 
                 statsWindow.show(false);

@@ -701,6 +701,10 @@ public class StatsTableGenerator {
         }
         Map<String, Integer> xstatsList = port.getXstats();
         Map<String, Integer> xstatsListPinned = port.getXstatsPinned();
+        String pinnedChar = "\u2716";
+        String notPinnedChar = "\u271a";
+        //String pinnedChar = "\u2611";
+        //String notPinnedChar = "\u2610";
 
         rowIndex = 0;
         addHeaderCell(statXTable, "xstats-header0", "Counter", 0, WIDTH_COL_0 * 1.5);
@@ -710,33 +714,33 @@ public class StatsTableGenerator {
         odd = true;
         xstatsListPinned.forEach( (k,v) -> {
             if (v != null) {
-                Node check = new Label("\u2716");
+                Node check = new Label(pinnedChar);
                 GridPane.setHalignment(check, HPos.CENTER);
                 addXstatRow(statXTable,
                         (event) -> {
                             xstatsListPinned.remove(k, v);
                         },
                         "xstat-red", "xstat-green",
-                        new Tooltip("Click '\u2716' to un-pin the counter."),
+                        new Tooltip("Click '" + pinnedChar + "' to un-pin the counter."),
                         "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
                         "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1,
-                        "xstats-val-2-" + rowIndex, "\u2716", WIDTH_COL_PIN, 2);
+                        "xstats-val-2-" + rowIndex, pinnedChar, WIDTH_COL_PIN, 2);
             }
         });
         xstatsList.forEach( (k,v) -> {
             if (v != null && (!notempty || (notempty && v != 0)) && xstatsListPinned.get(k) == null) {
                 if ((filter == null || filter.trim().length() == 0) || k.contains(filter)) {
-                    Node check = new Label("\u271a");
+                    Node check = new Label(notPinnedChar);
                     GridPane.setHalignment(check, HPos.CENTER);
                     addXstatRow(statXTable,
                             (event) -> {
                                 xstatsListPinned.put(k, v);
                             },
                             "xstat-green", "xstat-red",
-                            new Tooltip("Click '\u271a' to pin the counter.\nPinned counter is always visible."),
+                            new Tooltip("Click '" + notPinnedChar + "' to pin the counter.\nPinned counter is always visible."),
                             "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
                             "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1,
-                            "xstats-val-2-" + rowIndex, "\u271a", WIDTH_COL_PIN, 2);
+                            "xstats-val-2-" + rowIndex, notPinnedChar, WIDTH_COL_PIN, 2);
                 }
             }
         });
