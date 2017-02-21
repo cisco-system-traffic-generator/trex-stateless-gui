@@ -8,6 +8,7 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 <?import javafx.scene.shape.Rectangle?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
 
 <fx:root fx:id="rootPortInfoTabConfig"
          xmlns:fx="http://javafx.com/fxml"
@@ -32,19 +33,17 @@
                 <VBox alignment="CENTER" spacing="0.0"
                       AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" >
                     <children>
-                        <HBox spacing="10.0"
+                        <HBox spacing="10.0" alignment="CENTER_LEFT"
                               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <padding><Insets left="10"/></padding>
                             <children>
                                 <CheckBox fx:id="statXTableNotEmpty" text="Not empty">
-                                    <padding><Insets top="3"/></padding>
                                 </CheckBox>
-                                <Label text="   Filter:">
-                                    <padding><Insets top="6"/></padding>
+                                <Label text="Filter:">
                                 </Label>
-                                <TextField fx:id="statXTableFilter" promptText="counter name" prefWidth="130"/>
-                                <Label fx:id="statXTableResetFilter" style="" text="&#x27F3;" >
-                                </Label>
+                                <CustomTextField fx:id="statXTableFilter" promptText="counter name" prefWidth="130" >
+                                    <padding><Insets top="3"/></padding>
+                                </CustomTextField>
                             </children>
                         </HBox>
                         <HBox style="-fx-font-size: 75%;">

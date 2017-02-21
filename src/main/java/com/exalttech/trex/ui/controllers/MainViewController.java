@@ -78,6 +78,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -1014,7 +1015,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 statsWindow.setMinSize(400, 420);
 
                 Pane root = statsWindow.getRootPane();
-                TabPane tabPane = (TabPane) root.getChildren().get(0);
+
+                BorderPane borderPane = (BorderPane) root.getChildren().get(0);
+                borderPane.getStyleClass().addAll("statRightPaneContent", "floating");
+
+                TabPane tabPane = (TabPane) root.getChildren().get(1);
                 tabPane.getStyleClass().addAll("statRightPaneContent", "floating");
 
                 Tab tabMain = new Tab("Main");

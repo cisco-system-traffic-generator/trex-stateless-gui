@@ -9,6 +9,7 @@ import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
 import com.exalttech.trex.util.Util;
 import com.google.inject.Injector;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -18,6 +19,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import org.controlsfx.control.textfield.CustomTextField;
+import org.controlsfx.control.textfield.TextFields;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class PortInfoTabXstats extends BorderPane {
 
@@ -31,8 +37,7 @@ public class PortInfoTabXstats extends BorderPane {
     @FXML ScrollPane statXTableContainer;
     @FXML AnchorPane statXTableWrapper;
     @FXML CheckBox   statXTableNotEmpty;
-    @FXML TextField  statXTableFilter;
-    @FXML Label statXTableResetFilter;
+    @FXML CustomTextField statXTableFilter;
 
     private String savedPingIPv4 = "";
     StatsTableGenerator statsTableGenerator;
@@ -66,14 +71,18 @@ public class PortInfoTabXstats extends BorderPane {
             }
         });
 
-
-        statXTableResetFilter.setOnMouseClicked((event) -> {
-            statXTableFilter.clear();
-            statXTableNotEmpty.setSelected(false);
-        });
-
+        setupClearButtonField(statXTableFilter);
         statsTableGenerator = new StatsTableGenerator();
         update(true);
+    }
+    private void setupClearButtonField(CustomTextField customTextField) {
+        try {
+            Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
+            m.setAccessible(true);
+            m.invoke(null, customTextField, customTextField.rightProperty());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updatePortForce(boolean full) {

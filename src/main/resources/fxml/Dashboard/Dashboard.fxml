@@ -15,6 +15,9 @@
 <AnchorPane id="AnchorPane" fx:id="rootAnchorPaneDashboard" minHeight="765.0" minWidth="800.0" prefHeight="765.0"
             prefWidth="1020.0" style="-fx-background-color:#f0f0f0;" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1">
+    <BorderPane fx:id="borderPaneGlobalStats"
+                style="-fx-background-color:#f0f0f0;">
+    </BorderPane>
     <TabPane id="AnchorPane"
              fx:id="tabPaneDashboard"
              minHeight="320.0" minWidth="320.0" prefHeight="725.0" prefWidth="1020.0"
