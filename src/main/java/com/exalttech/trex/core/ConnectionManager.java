@@ -461,12 +461,12 @@ public class ConnectionManager {
         jsonRequestString = Util.tuneJSONParams(jsonRequestString, port.getPortParam(), apiH);
         addStreamCommandList.add(jsonRequestString);
 
-        //String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
-        //LOG.info("Send port xstats_values request \n " + requestCommand);
+        String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
+        LOG.info("Send port xstats_values request \n " + requestCommand);
 
         byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
 
-        return handleResponse(serverResponse, false, false);
+        return handleResponse(serverResponse, false, true);
     }
 
     public String sendUtilizationRequest() throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {

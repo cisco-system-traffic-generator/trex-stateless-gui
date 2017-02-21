@@ -70,9 +70,9 @@ public class Port {
 
     PortStatus.PortStatusResult.PortStatusResultRxInfo rx_info;
 
-    Map<String, Integer> xstats;
+    Map<String, Long> xstats;
 
-    Map<String, Integer> xstatsPinned;
+    Map<String, Long> xstatsPinned;
 
     CaptureStatus[] captureStatus;
 
@@ -233,22 +233,22 @@ public class Port {
         this.rx_info = rx_info;
     }
 
-    public Map<String, Integer> getXstats() {
+    public Map<String, Long> getXstats() {
         return xstats;
     }
 
-    public void setXstats(Map<String, Integer> xstats) {
+    public void setXstats(Map<String, Long> xstats) {
         this.xstats = xstats;
     }
 
-    public Map<String, Integer> getXstatsPinned() {
+    public Map<String, Long> getXstatsPinned() {
         if (xstatsPinned==null) {
             xstatsPinned = new HashMap<>();
         }
         return xstatsPinned;
     }
 
-    public void setXstatsPinned(Map<String, Integer> xstatsPinned) {
+    public void setXstatsPinned(Map<String, Long> xstatsPinned) {
         this.xstatsPinned = xstatsPinned;
     }
 

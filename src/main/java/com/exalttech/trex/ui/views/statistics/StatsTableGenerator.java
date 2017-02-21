@@ -699,8 +699,8 @@ public class StatsTableGenerator {
             statXTable.getChildren().clear();
             Util.optimizeMemory();
         }
-        Map<String, Integer> xstatsList = port.getXstats();
-        Map<String, Integer> xstatsListPinned = port.getXstatsPinned();
+        Map<String, Long> xstatsList = port.getXstats();
+        Map<String, Long> xstatsListPinned = port.getXstatsPinned();
         String pinnedChar = "\u2716";
         String notPinnedChar = "\u271a";
         //String pinnedChar = "\u2611";

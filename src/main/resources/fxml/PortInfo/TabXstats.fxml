@@ -36,13 +36,13 @@
                               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <padding><Insets left="10"/></padding>
                             <children>
-                                <CheckBox fx:id="statXTableNotEmpty" text="Not empty only">
+                                <CheckBox fx:id="statXTableNotEmpty" text="Not empty">
                                     <padding><Insets top="3"/></padding>
                                 </CheckBox>
-                                <Label text="  Text filter:">
+                                <Label text="  Counter name filter:">
                                     <padding><Insets top="6"/></padding>
                                 </Label>
-                                <TextField fx:id="statXTableFilter" promptText="Filter" prefWidth="90"/>
+                                <TextField fx:id="statXTableFilter" promptText="" prefWidth="90"/>
                             </children>
                         </HBox>
                         <HBox style="-fx-font-size: 75%;">

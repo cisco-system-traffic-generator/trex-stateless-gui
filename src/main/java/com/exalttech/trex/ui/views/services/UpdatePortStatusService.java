@@ -102,7 +102,7 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
 
                 String response2 = ConnectionManager.getInstance().sendPortXStatsNamesRequest(port);
                 String response3 = ConnectionManager.getInstance().sendPortXStatsValuesRequest(port);
-                Map<String, Integer> loadedXStatsList = Util.getXStatsFromJSONString(response2, response3);
+                Map<String, Long> loadedXStatsList = Util.getXStatsFromJSONString(response2, response3);
                 port.setXstats(loadedXStatsList);
 
                 // Is it right ?

@@ -141,11 +141,11 @@ public class Util {
      * @param jsonValues
      * @return
      */
-    public static Map<String, Integer> getXStatsFromJSONString(String jsonNames, String jsonValues) {
-        Map<String, Integer> statsList = new HashMap<>();
+    public static Map<String, Long> getXStatsFromJSONString(String jsonNames, String jsonValues) {
+        Map<String, Long> statsList = new HashMap<>();
         JSONObject jsonObjN = null;
         JSONObject jsonObjV = null;
-        JSONArray jsonArrN = null;
+        JSONArray  jsonArrN = null;
         JSONArray  jsonArrV = null;
 
         if (jsonValues.startsWith("[")) {
@@ -174,7 +174,7 @@ public class Util {
             JSONArray values = jsonObjV.getJSONObject("result").getJSONArray("xstats_values");
 
             for (int j = 0; j < names.length(); j++) {
-                statsList.put(names.getString(j), values.getInt(j));
+                statsList.put(names.getString(j), values.getLong(j));
             }
         }
 
