@@ -16,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import org.controlsfx.control.ToggleSwitch;
 
 public class PortInfoTabMain extends BorderPane {
 
@@ -34,19 +35,15 @@ public class PortInfoTabMain extends BorderPane {
     @FXML private Label labelTabMainPortOwner;
     @FXML private Label labelTabMainPortSpeed;
     @FXML private Label labelTabMainPortStatus;
-    @FXML private Label labelTabMainPortPromiscuous;
-    @FXML private Button buttonTabMainPortPromiscuous;
+    @FXML private ToggleSwitch buttonTabMainPortPromiscuous;
     @FXML private ChoiceBox choiceTabMainPortFlowControl;
-    @FXML private Label labelTabMainPortLink;
-    @FXML private Button buttonTabMainPortLink;
-    @FXML private Label labelTabMainPortLED;
-    @FXML private Button buttonTabMainPortLED;
+    @FXML private ToggleSwitch buttonTabMainPortLink;
+    @FXML private ToggleSwitch buttonTabMainPortLED;
     @FXML private Label labelTabMainPortCaptureStatus;
     @FXML private Button buttonTabMainPortAcquireRelease;
     @FXML private Button buttonTabMainPortForceAcquire;
     @FXML private Label labelTabMainPortRxFilterMode;
-    @FXML private Label labelTabMainPortMulticast;
-    @FXML private Button buttonTabMainPortMulticast;
+    @FXML private ToggleSwitch buttonTabMainPortMulticast;
     @FXML private Label labelTabMainPortNUMA;
     @FXML private Label labelTabMainPortPCI;
     @FXML private Label labelTabMainPortRxQueueing;
@@ -102,7 +99,7 @@ public class PortInfoTabMain extends BorderPane {
             updatePortForce(true);
         });
 
-        buttonTabMainPortLink.setOnAction((e) -> {
+        buttonTabMainPortLink.selectedProperty().addListener((e) -> {
             try {
                 if (port.getAttr().getLink().getUp()) {
                     serverRPCMethods.setPortAttribute(port.getIndex(), false, null, null, null, null);
@@ -116,7 +113,7 @@ public class PortInfoTabMain extends BorderPane {
             }
         });
 
-        buttonTabMainPortPromiscuous.setOnAction((e) -> {
+        buttonTabMainPortPromiscuous.selectedProperty().addListener((e) -> {
             try {
                 if (port.getAttr().getPromiscuous().getEnabled()) {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, false, null, null, null);
@@ -130,7 +127,7 @@ public class PortInfoTabMain extends BorderPane {
             }
         });
 
-        buttonTabMainPortMulticast.setOnAction((e) -> {
+        buttonTabMainPortMulticast.selectedProperty().addListener((e) -> {
             try {
                 if (port.getAttr().getMulticast().getEnabled()) {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, null, null, false);
@@ -144,7 +141,7 @@ public class PortInfoTabMain extends BorderPane {
             }
         });
 
-        buttonTabMainPortLED.setOnAction((e) -> {
+        buttonTabMainPortLED.selectedProperty().addListener((e) -> {
             try {
                 if (port.getAttr().getLed() == null) {
                     if (port.isIs_led_supported()) {
@@ -182,7 +179,7 @@ public class PortInfoTabMain extends BorderPane {
                 else if (((String)newValue).compareToIgnoreCase("full") == 0) {
                     serverRPCMethods.setPortAttribute(port.getIndex(), null, null, null, 3, null);
                 }
-                updatePortForce(false);
+                updatePortForce(true);
             } catch (Exception ex) {
                 LOG.error("Error changing flow control mode of port " + port.getIndex() + ": " + ex.getMessage());
             }
@@ -213,51 +210,54 @@ public class PortInfoTabMain extends BorderPane {
         labelTabMainPortStatus.setText(port.getStatus());
         labelTabMainPortRxFilterMode.setText(port.getAttr().getRx_filter_mode());
 
-        labelTabMainPortPromiscuous.setText(port.getAttr().getPromiscuous().toString());
-        buttonTabMainPortPromiscuous.setText(port.getAttr().getPromiscuous().toString().compareToIgnoreCase("enabled")==0 ? "Disable" : "Enable");
+        boolean ison = port.getAttr().getPromiscuous().toString().compareToIgnoreCase("enabled")==0;
+        buttonTabMainPortPromiscuous.setText(ison ? "On" : "Off");
+        buttonTabMainPortPromiscuous.setSelected(ison);
 
-        labelTabMainPortMulticast.setText(port.getAttr().getMulticast().toString());
-        buttonTabMainPortMulticast.setText(port.getAttr().getMulticast().toString().compareToIgnoreCase("enabled")==0 ? "Disable" : "Enable");
+        ison = port.getAttr().getMulticast().toString().compareToIgnoreCase("enabled")==0;
+        buttonTabMainPortMulticast.setText(ison ? "On" : "Off");
+        buttonTabMainPortMulticast.setSelected(ison);
 
         labelTabMainPortNUMA.setText("" + port.getNuma());
         labelTabMainPortPCI.setText(port.getPci_addr());
         labelTabMainPortRxQueueing.setText(port.getRx_info().getQueue().isIs_active() ? "on" : "off");
         labelTabMainPortGratARP.setText(port.getRx_info().getGrat_arp().isIs_active() ? "on" : "off");
 
-        String str = port.getAttr().getFc().toString();
-        choiceTabMainPortFlowControl.getSelectionModel().select(str.substring(0, 1).toUpperCase() + str.substring(1));
+        if (full) {
+            String str = port.getAttr().getFc().toString();
+            choiceTabMainPortFlowControl.getSelectionModel().select(str.substring(0, 1).toUpperCase() + str.substring(1));
+        }
+
         if (!port.isIs_led_supported()) {
-            labelTabMainPortLED.setText("NOT SUPPORTED");
-            buttonTabMainPortLED.setVisible(false);
+            buttonTabMainPortLED.setText("NOT SUPPORTED");
+            buttonTabMainPortLED.setDisable(true);
         }
         else if (port.getAttr().getLed() != null) {
-            labelTabMainPortLED.setText(port.getAttr().getLed().toString());
-            buttonTabMainPortLED.setText(port.getAttr().getLed().getOn() ? "Off" : "On");
+            ison = port.getAttr().getLed().getOn();
+            buttonTabMainPortLED.setText(ison ? "On" : "Off");
+            buttonTabMainPortLED.setSelected(ison);
         }
         else {
             if (full) {
-                labelTabMainPortLED.setText("N/A");
-                buttonTabMainPortLED.setText("On");
+                buttonTabMainPortLED.setText("Off");
                 ledState = -1;
             }
             else {
                 if (ledState == 1) {
-                    labelTabMainPortLED.setText("on");
-                    buttonTabMainPortLED.setText("Off");
+                    buttonTabMainPortLED.setText("On");
                 }
                 else if (ledState == 0) {
-                    labelTabMainPortLED.setText("off");
-                    buttonTabMainPortLED.setText("On");
+                    buttonTabMainPortLED.setText("Off");
                 }
                 else {
-                    labelTabMainPortLED.setText("N/A");
-                    buttonTabMainPortLED.setText("On");
+                    buttonTabMainPortLED.setText("Off");
                     ledState = -1;
                 }
             }
         }
-        labelTabMainPortLink.setText(port.getAttr().getLink().toString());
-        buttonTabMainPortLink.setText(port.getAttr().getLink().toString().compareToIgnoreCase("up")==0 ? "Down" : "Up");
+        boolean up = port.getAttr().getLink().toString().compareToIgnoreCase("up")==0;
+        buttonTabMainPortLink.setText(up ? "Up" : "Down");
+        buttonTabMainPortLink.setSelected(up);
 
         if (port.getOwner()==null || port.getOwner().compareTo("")==0 || !iamowner) {
             buttonTabMainPortAcquireRelease.setText("Acquire port");
@@ -265,10 +265,10 @@ public class PortInfoTabMain extends BorderPane {
             buttonTabMainPortForceAcquire.managedProperty().setValue(true);
             buttonTabMainPortForceAcquire.setDisable(false);
 
-            buttonTabMainPortLED.setVisible(false);
-            buttonTabMainPortLink.setVisible(false);
-            buttonTabMainPortPromiscuous.setVisible(false);
-            buttonTabMainPortMulticast.setVisible(false);
+            buttonTabMainPortLED.setDisable(true);
+            buttonTabMainPortLink.setDisable(true);
+            buttonTabMainPortPromiscuous.setDisable(true);
+            buttonTabMainPortMulticast.setDisable(true);
             choiceTabMainPortFlowControl.setDisable(true);
         }
         else {
@@ -278,16 +278,16 @@ public class PortInfoTabMain extends BorderPane {
             buttonTabMainPortForceAcquire.setDisable(true);
 
             if (port.isIs_led_supported()) {
-                buttonTabMainPortLED.setVisible(true);
+                buttonTabMainPortLED.setDisable(false);
             }
             else {
-                buttonTabMainPortLED.setVisible(false);
+                buttonTabMainPortLED.setDisable(true);
             }
             if (port.isIs_link_supported()) {
-                buttonTabMainPortLink.setVisible(true);
+                buttonTabMainPortLink.setDisable(false);
             }
             else {
-                buttonTabMainPortLink.setVisible(false);
+                buttonTabMainPortLink.setDisable(true);
             }
             if (port.isIs_fc_supported()) {
                 choiceTabMainPortFlowControl.setDisable(false);
@@ -295,8 +295,8 @@ public class PortInfoTabMain extends BorderPane {
             else {
                 choiceTabMainPortFlowControl.setDisable(true);
             }
-            buttonTabMainPortPromiscuous.setVisible(true);
-            buttonTabMainPortMulticast.setVisible(true);
+            buttonTabMainPortPromiscuous.setDisable(false);
+            buttonTabMainPortMulticast.setDisable(false);
         }
 
         CaptureStatus[] capture = port.getCaptureStatus();

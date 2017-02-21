@@ -703,8 +703,8 @@ public class StatsTableGenerator {
         Map<String, Long> xstatsListPinned = port.getXstatsPinned();
         String pinnedChar = "\u2716";
         String notPinnedChar = "\u271a";
-        //String pinnedChar = "\u2611";
-        //String notPinnedChar = "\u2610";
+        /*String pinnedChar = "\u2611";
+        String notPinnedChar = "\u2610";*/
 
         rowIndex = 0;
         addHeaderCell(statXTable, "xstats-header0", "Counter", 0, WIDTH_COL_0 * 1.5);

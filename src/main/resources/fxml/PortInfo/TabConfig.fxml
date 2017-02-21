@@ -25,7 +25,7 @@
     <center>
         <GridPane fx:id="gridPanePortInfoTabConfig"
                  alignment="top_center"
-                 hgap="10" vgap="10">
+                 hgap="10" vgap="10" >
             <fx:define>
                 <Rectangle fx:id="s" width="12" height="12"/>
             </fx:define>
@@ -44,7 +44,7 @@
             </HBox>
 
             <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <HBox GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
+            <HBox GridPane.rowSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
                 <Label fx:id="labelTabConfigPortSourceMAC" text="00:00:00:00:00:00" minWidth="${16 * s.width}" >
                     <padding><Insets top="2" right="10" bottom="2" left="10"/></padding>
                 </Label>
@@ -52,21 +52,21 @@
                            minWidth="${16 * s.width}" />
             </HBox>
 
-            <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <HBox GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.columnSpan="2">
+            <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2">
                 <TextField fx:id="textFieldTabConfigPortDestinationMAC" text="" promptText="target MAC address"
                            minWidth="${16 * s.width}" />
                 <TextField fx:id="textFieldTabConfigPortDestinationIPv4" text="" promptText="target IPv4 address"
                            minWidth="${16 * s.width}" />
             </HBox>
 
-            <Label text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-            <Label fx:id="labelTabConfigPortArpResolution" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="4"  GridPane.columnSpan="2" />
+            <Label text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <Label fx:id="labelTabConfigPortArpResolution" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
 
-            <Label text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <Label text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
             <TextField fx:id="textFieldTabConfigPortPingIPv4" text="" promptText="ping IPv4 address"
-                       minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.columnSpan="2" />
-            <Button fx:id="buttonTabConfigPortPing" text="Ping" GridPane.columnIndex="3" GridPane.rowIndex="5">
+                       minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2" />
+            <Button fx:id="buttonTabConfigPortPing" text="Ping" GridPane.columnIndex="3" GridPane.rowIndex="6">
             </Button>
         </GridPane>
     </center>

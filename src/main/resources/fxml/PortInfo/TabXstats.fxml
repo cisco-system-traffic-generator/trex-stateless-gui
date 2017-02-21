@@ -39,10 +39,12 @@
                                 <CheckBox fx:id="statXTableNotEmpty" text="Not empty">
                                     <padding><Insets top="3"/></padding>
                                 </CheckBox>
-                                <Label text="  Counter name filter:">
+                                <Label text="   Filter:">
                                     <padding><Insets top="6"/></padding>
                                 </Label>
-                                <TextField fx:id="statXTableFilter" promptText="" prefWidth="90"/>
+                                <TextField fx:id="statXTableFilter" promptText="counter name" prefWidth="130"/>
+                                <Label fx:id="statXTableResetFilter" style="" text="&#x27F3;" >
+                                </Label>
                             </children>
                         </HBox>
                         <HBox style="-fx-font-size: 75%;">

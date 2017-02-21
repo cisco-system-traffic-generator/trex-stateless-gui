@@ -32,6 +32,7 @@ public class Preferences {
     private String loadLocation = "";
     private String savedLocation = "";
     private String templatesLocation = "";
+    private boolean javaConsoleLogging = true;
 
     /**
      *
@@ -50,6 +51,16 @@ public class Preferences {
         this.loadLocation = loadLocation;
         this.savedLocation = savedLocation;
         this.templatesLocation = templatesLocation;
+    }
+
+
+    @XmlElement(name = "java_console_logging")
+    public boolean isJavaConsoleLogging() {
+        return javaConsoleLogging;
+    }
+
+    public void setJavaConsoleLogging(boolean javaConsoleLogging) {
+        this.javaConsoleLogging = javaConsoleLogging;
     }
 
     /**

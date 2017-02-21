@@ -1234,7 +1234,42 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-content-display: center;
 }
 
+.xstat-green,
+.xstat-red {
+    /*-fx-font-size: 1.5em;*/
+    -fx-font-weight: 100;
+}
+
 .xstat-green:pressed,
 .xstat-red:pressed {
+    -fx-background-color: grey;
+}
+
+ToggleSwitch {
+    -fx-pref-width: 6em;
+    -fx-padding-top: 3px;
+}
+
+#statXTableResetFilter,
+#statXTableResetFilter > .text {
+    -fx-label-padding: 1px 1px 1px 1px;
+    -fx-padding: 1px 1px 1px 1px;
+    -fx-font-size: 1.6em;
+    -fx-font-weight: 900;
+    -fx-text-alignment: top;
+    -fx-alignment: top;
+    -fx-margin:0px;
+}
+
+#statXTableResetFilter {
+    -fx-min-height: 2em;
+    -fx-pref-height: 2em;
+    -fx-max-height: 2em;
+    -fx-min-width: 2em;
+    -fx-pref-width: 2em;
+    -fx-max-width: 2em;
+}
+
+#statXTableResetFilter:pressed {
     -fx-background-color: grey;
 }

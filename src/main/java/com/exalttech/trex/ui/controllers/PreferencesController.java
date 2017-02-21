@@ -29,6 +29,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
@@ -48,6 +49,9 @@ public class PreferencesController extends DialogView implements Initializable {
     TextField savedLocation;
     @FXML
     TextField templatesLocation;
+    @FXML
+    CheckBox checkboxToggleJavaConsoleLog;
+
     DirectoryChooser chooser;
 
     /**
@@ -81,6 +85,7 @@ public class PreferencesController extends DialogView implements Initializable {
     private void savePreferences(Stage current) {
         // update prefernces file
         Preferences pref = new Preferences(loadLocation.getText(), savedLocation.getText(), templatesLocation.getText());
+        pref.setJavaConsoleLogging(checkboxToggleJavaConsoleLog.isSelected());
         PreferencesManager.getInstance().savePreferences(pref);
 
         current.hide();
@@ -96,6 +101,7 @@ public class PreferencesController extends DialogView implements Initializable {
             savedLocation.setText(pref.getSavedLocation());
             templatesLocation.setText(pref.getTemplatesLocation());
             templatesLocation.setPromptText(FileManager.getTemplatesFilePath());
+            checkboxToggleJavaConsoleLog.setSelected(pref.isJavaConsoleLogging());
         }
     }
 

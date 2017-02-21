@@ -8,6 +8,7 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
+<?import org.controlsfx.control.ToggleSwitch?>
 <fx:root fx:id="rootPortInfoTabMain"
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.BorderPane">
@@ -39,6 +40,14 @@
             <Label                                  text="Rx filter mode:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
             <Label fx:id="labelTabMainPortRxFilterMode" text="_empty_" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2" />
 
+            <Label                                       text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <ToggleSwitch fx:id="buttonTabMainPortMulticast" alignment="center" GridPane.columnIndex="1" GridPane.rowIndex="5" >  </ToggleSwitch>
+
+            <Label                                       text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+            <ToggleSwitch fx:id="buttonTabMainPortPromiscuous" alignment="center" GridPane.columnIndex="1" GridPane.rowIndex="6" >  </ToggleSwitch>
+
+
+
             <Label                                text="Owner:"   GridPane.columnIndex="5" GridPane.rowIndex="1" />
             <Label fx:id="labelTabMainPortOwner" text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="1" GridPane.columnSpan="2" />
 
@@ -51,22 +60,13 @@
             <Label                                  text="Capturing:" GridPane.columnIndex="5" GridPane.rowIndex="4" />
             <Label fx:id="labelTabMainPortCaptureStatus" text="None / Tx / Rx / Tx+Rx" GridPane.columnIndex="6" GridPane.rowIndex="4" GridPane.columnSpan="2" />
 
-
-            <Label                                       text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <Label fx:id="labelTabMainPortMulticast" text="_empty_"      GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Button fx:id="buttonTabMainPortMulticast" text=""    GridPane.columnIndex="2" GridPane.rowIndex="5" />
-
-            <Label                                       text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-            <Label fx:id="labelTabMainPortPromiscuous" text="_empty_"      GridPane.columnIndex="1" GridPane.rowIndex="6" />
-            <Button fx:id="buttonTabMainPortPromiscuous" text=""    GridPane.columnIndex="2" GridPane.rowIndex="6" />
-
             <Label                                  text="Link:"   GridPane.columnIndex="5" GridPane.rowIndex="5" />
-            <Label fx:id="labelTabMainPortLink"   text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="5" />
-            <Button fx:id="buttonTabMainPortLink" text="Sign In" GridPane.columnIndex="7" GridPane.rowIndex="5" />
+            <ToggleSwitch fx:id="buttonTabMainPortLink" alignment="center" GridPane.columnIndex="6" GridPane.rowIndex="5" >  </ToggleSwitch>
 
             <Label                                 text="LED:"    GridPane.columnIndex="5" GridPane.rowIndex="6" />
-            <Label fx:id="labelTabMainPortLED"   text="_empty_" GridPane.columnIndex="6" GridPane.rowIndex="6" />
-            <Button fx:id="buttonTabMainPortLED" text="Sign In" GridPane.columnIndex="7" GridPane.rowIndex="6" />
+            <ToggleSwitch fx:id="buttonTabMainPortLED" alignment="center" GridPane.columnIndex="6" GridPane.rowIndex="6" >  </ToggleSwitch>
+
+
 
             <Label                                 text="NUMA node:"  GridPane.columnIndex="9" GridPane.rowIndex="1" />
             <Label fx:id="labelTabMainPortNUMA" text="-1" GridPane.columnIndex="10" GridPane.rowIndex="1" GridPane.columnSpan="2" />
