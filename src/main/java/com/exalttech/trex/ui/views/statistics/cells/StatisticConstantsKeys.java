@@ -28,7 +28,7 @@ public class StatisticConstantsKeys {
     /**
      *
      */
-    public static final List<String> PORT_STATS_ROW_NAME = Arrays.asList("Owner", "State", "Tx bps L2", "Tx pps", "Rx bps", "Rx pps", "opackets",
+    public static final List<String> PORT_STATS_ROW_NAME = Arrays.asList("Owner", "State", "Tx bps L2", "Tx bps L1", "Tx pps", "Rx bps", "Rx pps", "opackets",
             "ipackets", "obytes", "ibytes", "tx-bytes", "rx-bytes", "tx-pkts", "rx-pkts", "oerrors", "ierrors");
 
     /**
@@ -48,6 +48,7 @@ public class StatisticConstantsKeys {
     public static final List<StatisticRow> GLOBAL_STATS_KEY = new ArrayList();
     static{
         PORT_STATS_KEY.add(new StatisticRow("m_total_tx_bps", "m_total_tx_bps", CellType.ARROWS_CELL, false, "bps"));
+        PORT_STATS_KEY.add(new StatisticRow("m_total_tx_bps_l1", "m_total_tx_bps_l1", CellType.ARROWS_CELL, false, "bps"));
         PORT_STATS_KEY.add(new StatisticRow("m_total_tx_pps", "m_total_tx_pps", CellType.ARROWS_CELL, false, "pps"));
         PORT_STATS_KEY.add(new StatisticRow("m_total_rx_bps", "m_total_rx_bps", CellType.ARROWS_CELL, false, "bps"));
         PORT_STATS_KEY.add(new StatisticRow("m_total_rx_pps", "m_total_rx_pps", CellType.ARROWS_CELL, false, "pps"));

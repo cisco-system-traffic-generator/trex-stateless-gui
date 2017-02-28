@@ -50,12 +50,6 @@ public class Constants {
     public static final int RPC_REQUEST_ID_LENGTH = 6;
 
     /**
-     *
-     */
-    public static final List<String> PORT_STATS_ROW_NAME = Arrays.asList("Owner", "State", "Tx bps L2", "Tx pps", "Rx bps", "Rx pps", "opackets",
-            "ipackets", "obytes", "ibytes", "tx-bytes", "rx-bytes", "tx-pkts", "rx-pkts", "oerrors", "ierrors");
-
-    /**
      * RPC Commands
      *
      */

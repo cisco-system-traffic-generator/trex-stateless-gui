@@ -84,10 +84,7 @@ public class DashboardTabPorts extends AnchorPane {
     }
 
     private void buildPortStatTable() {
-        double colWidth = (statTableContainer.getWidth() - 150) / (portManager.getPortCount(false) + 1);
-        if (colWidth < 130) {
-            colWidth = 150;
-        }
+        double colWidth = (statTableContainer.getWidth() - 170) / (portManager.getPortCount(false) + 1);
         statTableContainer.setContent(
                 statsTableGenerator.getPortStatTable(
                         cachedStatsList,

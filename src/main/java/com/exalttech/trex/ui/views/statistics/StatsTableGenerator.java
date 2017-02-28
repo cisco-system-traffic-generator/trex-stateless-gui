@@ -127,6 +127,7 @@ public class StatsTableGenerator {
 
         addCounterColumn(StatisticConstantsKeys.PORT_STATS_ROW_NAME);
 
+        double l1_total = 0;
         int columnIndex = 1;
         for (int i = startPortIndex; i < endPortIndex; i++) {
             rowIndex = 0;
@@ -135,21 +136,62 @@ public class StatsTableGenerator {
             if (visiblePorts == null || visiblePorts.contains(port.getIndex())) {
                 // add owner and port status
                 addPortInfoCells(port, columnWidth, columnIndex);
+
+                StatisticRow row_m_tx_bps = null;
+                StatisticRow row_m_tx_pps = null;
+                StatisticRow row_m_tx_bps_l1 = null;
+                int rowIndex_row_m_tx_bps_l1 = -1;
+                boolean odd_l1 = odd;
+                String stat_value_m_tx_bps = "222.22";
+                String stat_value_m_tx_pps = "333.33";
                 for (StatisticRow key : StatisticConstantsKeys.PORT_STATS_KEY) {
                     keyBuffer.setLength(0);
                     keyBuffer.append(key.getKey()).append("-").append(i);
 
-                    StatisticCell cell = getGridCell(key, columnWidth, keyBuffer.toString());
+                    if (keyBuffer.toString().startsWith("m_total_tx_bps_l1-" + i)) {
+                        row_m_tx_bps_l1 = key;
+                        rowIndex_row_m_tx_bps_l1 = rowIndex++;
+                        odd_l1 = odd;
+                        odd = !odd;
+                        continue;
+                    }
 
-                    cell.updateItem(getPrevValue(key, i, false), getStatValue(key, i));
+                    StatisticCell cell = getGridCell(key, columnWidth, keyBuffer.toString());
+                    String stat_value = getStatValue(key, i);
+                    cell.updateItem(getPrevValue(key, i, false), stat_value);
                     statTable.getChildren().remove(cell);
                     statTable.add((Node) cell, columnIndex, rowIndex++);
+
+                    if (keyBuffer.toString().startsWith("m_total_tx_bps-" + i)) {
+                        row_m_tx_bps = key;
+                        stat_value_m_tx_bps = new String(stat_value);
+                    }
+                    else if (keyBuffer.toString().startsWith("m_total_tx_pps-" + i)) {
+                        row_m_tx_pps = key;
+                        stat_value_m_tx_pps = new String(stat_value);
+                    }
+                }
+                if (row_m_tx_bps_l1 != null && row_m_tx_bps != null && row_m_tx_pps != null) {
+                    // l1 <-- m_tx_bps + m_tx_pps * 20.0 * 8.0
+                    double m_tx_bps = Double.parseDouble(stat_value_m_tx_bps);
+                    double m_tx_pps = Double.parseDouble(stat_value_m_tx_pps);
+                    double m_tx_bps_l1 = m_tx_bps + m_tx_pps * 20.0 * 8.0;
+
+                    odd = odd_l1;
+                    rowIndex = rowIndex_row_m_tx_bps_l1;
+                    l1_total += m_tx_bps_l1;
+                    keyBuffer.setLength(0);
+                    keyBuffer.append(row_m_tx_bps_l1.getKey()).append("-").append(i);
+                    StatisticCell cell = getGridCell(row_m_tx_bps_l1, columnWidth, keyBuffer.toString());
+                    cell.updateItem("" + m_tx_bps_l1, "" + m_tx_bps_l1);
+                    statTable.getChildren().remove(cell);
+                    statTable.add((Node) cell, columnIndex, rowIndex_row_m_tx_bps_l1);
                 }
                 columnIndex++;
             }
         }
         if (isMultiPort) {
-            addTotalColumn(columnWidth, columnIndex);
+            addTotalColumn(columnWidth, columnIndex, l1_total);
         }
         return statTable;
 
@@ -358,7 +400,7 @@ public class StatsTableGenerator {
      * @param columnIndex
      * @param columnWidth
      */
-    private void addTotalColumn(double columnWidth, int columnIndex) {
+    private void addTotalColumn(double columnWidth, int columnIndex, double l1_total) {
         rowIndex = 1;
         odd = true;
         addHeaderCell("Total", columnIndex, columnWidth);
@@ -366,7 +408,18 @@ public class StatsTableGenerator {
         addEmptyCell("total-status", columnIndex, columnWidth);
         for (StatisticRow row : StatisticConstantsKeys.PORT_STATS_KEY) {
             StatisticCell cell = getGridCell(row, columnWidth, row.getKey() + "-total");
-            cell.updateItem(getPrevValue(row, 0, true), getTotalValue(row));
+            if ((row.getKey() + "-total").startsWith("m_total_tx_bps_l1-total")) {
+                cell.updateItem("" + l1_total, "" + l1_total);
+            }
+            else {
+                if (row.isFormatted()) {
+                    cell.updateItem(getPrevValue(row, 0, true),
+                            Util.getFormatted(getTotalValue(row), true, row.getUnit()));
+                }
+                else {
+                    cell.updateItem(getPrevValue(row, 0, true), getTotalValue(row));
+                }
+            }
             statTable.getChildren().remove(cell);
             statTable.add((Node) cell, columnIndex, rowIndex++);
         }
