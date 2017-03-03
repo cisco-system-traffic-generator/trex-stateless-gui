@@ -84,19 +84,8 @@
                     <String fx:value="normalButton" />
                 </styleClass>
             </Button>
-            <Button fx:id="buttonTabConfigPortResolveARP" text="Resolve ARP" >
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
             <Label text="    " />
             <Button fx:id="buttonTabConfigPortApply" text="Apply" >
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
-            <Label text="    " />
-            <Button fx:id="buttonTabConfigPortReset" text="Discard changes" >
                 <styleClass>
                     <String fx:value="normalButton" />
                 </styleClass>

@@ -81,6 +81,7 @@ public class RPCMethods {
             RPCResult rpcResult = mapper.readValue(response, RPCResult.class);
             String handler = (String) rpcResult.getResult();
             connectionHandler.put(portID, handler);
+            serverConnectionManager.propagatePortHandler(portID, handler);
             return handler;
 
         } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException ex) {
@@ -278,7 +279,11 @@ public class RPCMethods {
         LOG.trace("Releasing Handler from port(s) [" + portID + "]:");
         LogsController.getInstance().appendText(LogType.INFO, "Releasing Handler from port(s) [" + portID + "]:");
         String handler = (String) connectionHandler.get(portID);
-        return buildCommonRPCRequest(portID, handler, Constants.RELEASE_HANDLER_METHOD);
+        boolean released = buildCommonRPCRequest(portID, handler, Constants.RELEASE_HANDLER_METHOD);
+        if(released) {
+            serverConnectionManager.invalidatePortHandler(portID);
+        }
+        return released;
     }
 
     /**

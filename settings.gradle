@@ -1,3 +1,6 @@
 rootProject.name = 'trex-stateless-gui'
 include 'trex-packet-editor'
 project(':trex-packet-editor').projectDir = new File(new File('../trex-packet-editor').getAbsolutePath())
+
+include 'trex-java-sdk'
+project(':trex-java-sdk').projectDir = new File(new File('../trex-java-sdk').getAbsolutePath())

@@ -313,6 +313,22 @@ public class Port {
     }
 
 
+    public String getSrcMac() {
+        return getAttr().getLayer_cfg().getEther().getSrc();
+    }
+    public String getDstMac() {
+        return getAttr().getLayer_cfg().getEther().getDst();
+    }
+    public void setDstMac(String mac) {
+        getAttr().getLayer_cfg().getEther().setDst(mac);
+    }
+    public String getSrcIp() {
+        return getAttr().getLayer_cfg().getIpv4().getSrc();
+    }
+    public String getDstIp() {
+        return getAttr().getLayer_cfg().getIpv4().getDst();
+    }
+    
     public boolean isIs_fc_supported() {
         return is_fc_supported;
     }

@@ -1,5 +1,7 @@
 package com.exalttech.trex.ui.controllers.PortInfo;
 
+import com.cisco.trex.stateless.TRexClient;
+import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.PortsManager;
@@ -7,15 +9,13 @@ import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
 import com.google.inject.Injector;
 import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 
 public class PortInfoTabConfig extends BorderPane {
@@ -39,14 +39,14 @@ public class PortInfoTabConfig extends BorderPane {
     @FXML private Label labelTabConfigPortArpResolution;
     @FXML private TextField textFieldTabConfigPortPingIPv4;
     @FXML private Button buttonTabConfigPortPing;
-    @FXML private Button buttonTabConfigPortResolveARP;
-    @FXML private Button buttonTabConfigPortReset;
     @FXML private Button buttonTabConfigPortApply;
     @FXML private Button buttonTabConfigPortAcquireRelease;
     @FXML private Button buttonTabConfigPortForceAcquire;
 
     private String savedPingIPv4 = "";
 
+    private TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
+    
     public PortInfoTabConfig(Injector injector, RPCMethods serverRPCMethods, Port port) {
         this.port = port;
         this.serverRPCMethods = serverRPCMethods;
@@ -66,13 +66,9 @@ public class PortInfoTabConfig extends BorderPane {
 
         update(true);
 
-        buttonTabConfigPortReset.setOnAction((e) -> {
-            update(true);
-            textFieldTabConfigPortPingIPv4.setText(savedPingIPv4);
-        });
-
         buttonTabConfigPortPing.setOnAction((e) -> {
             savedPingIPv4 = textFieldTabConfigPortPingIPv4.getText();
+//            trexClient.pingHost(savedPingIPv4);
         });
 
         buttonTabConfigPortApply.setOnAction((e) -> {
@@ -86,13 +82,19 @@ public class PortInfoTabConfig extends BorderPane {
                 }
             }
             else if (toggleGroupTabConfigPortL3.isSelected()) {
-                String srcIPv4 = textFieldTabConfigPortSourceIPv4.getText();
-                String dstIPv4 = textFieldTabConfigPortDestinationIPv4.getText();
                 try {
-                    serverRPCMethods.setSetL3(port.getIndex(), dstIPv4, srcIPv4);
+                    String portSrcIP = textFieldTabConfigPortSourceIPv4.getText();
+                    String portDstIP = textFieldTabConfigPortDestinationIPv4.getText();
+                    trexClient.serviceMode(port.getIndex(), true);
+                    trexClient.setL3Mode(port.getIndex(), null, portSrcIP, portDstIP);
+                    String nextHopMac = trexClient.resolveArp(port.getIndex(), portSrcIP, portDstIP);
+                    trexClient.setL3Mode(port.getIndex(), nextHopMac, portSrcIP, portDstIP);
+                    
                     updatePortForce(true);
                 } catch (Exception e1) {
                     LOG.error("Failed to set L3 mode: " + e1.getMessage());
+                } finally {
+                    trexClient.serviceMode(port.getIndex(), false);
                 }
             }
         });
@@ -148,18 +150,22 @@ public class PortInfoTabConfig extends BorderPane {
 
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
 
-        String srcIPv4 = port.getAttr().getLayer_cfg().getIpv4().getSrc() != null
-                ? port.getAttr().getLayer_cfg().getIpv4().getSrc()
+        String srcIPv4 = port.getSrcIp() != null
+                ? port.getSrcIp()
                 : null;
-        String dstIPv4 = port.getAttr().getLayer_cfg().getIpv4().getDst() != null
-                ? port.getAttr().getLayer_cfg().getIpv4().getDst()
+        
+        String dstIPv4 = port.getDstIp() != null
+                ? port.getDstIp()
                 : null;
-        String srcMAC = port.getAttr().getLayer_cfg().getEther().getSrc() != null
-                ? port.getAttr().getLayer_cfg().getEther().getSrc()
+        
+        String srcMAC = port.getSrcMac() != null
+                ? port.getSrcMac()
                 : null;
-        String dstMAC = port.getAttr().getLayer_cfg().getEther().getDst() != null
-                ? port.getAttr().getLayer_cfg().getEther().getDst()
+        
+        String dstMAC = port.getDstMac() != null
+                ? port.getDstMac()
                 : null;
+        
         if (full) {
             if (port.getAttr().getLayer_cfg().getIpv4().getState().compareToIgnoreCase("none") != 0) {
                 toggleGroupTabConfigPortMode.selectToggle(toggleGroupTabConfigPortL3);
@@ -196,8 +202,19 @@ public class PortInfoTabConfig extends BorderPane {
         else {
             labelTabConfigPortSourceMAC.setText("");
         }
-        labelTabConfigPortArpResolution.setText(port.getAttr().getLayer_cfg().getIpv4().getState());
-
+        String arpState = port.getAttr().getLayer_cfg().getIpv4().getState().toUpperCase();
+        
+        labelTabConfigPortArpResolution.setText(arpState);
+        Paint color = Color.BLACK;
+        switch (arpState) {
+            case "RESOLVED":
+                color =  Color.GREEN;
+                break;
+            case "UNRESOLVED":
+                color =  Color.RED;
+                break;
+        }
+        labelTabConfigPortArpResolution.setTextFill(color);
         if (toggleGroupTabConfigPortL2.isSelected()) {
             setL2();
         }
@@ -222,10 +239,6 @@ public class PortInfoTabConfig extends BorderPane {
         textFieldTabConfigPortDestinationMAC.setVisible(true);
         textFieldTabConfigPortDestinationMAC.setDisable(false);
         textFieldTabConfigPortDestinationMAC.setManaged(true);
-
-        buttonTabConfigPortResolveARP.setVisible(false);
-        buttonTabConfigPortResolveARP.setDisable(true);
-        buttonTabConfigPortResolveARP.setManaged(false);
     }
 
     private void setL3() {
@@ -242,27 +255,15 @@ public class PortInfoTabConfig extends BorderPane {
         textFieldTabConfigPortDestinationMAC.setVisible(false);
         textFieldTabConfigPortDestinationMAC.setDisable(true);
         textFieldTabConfigPortDestinationMAC.setManaged(false);
-
-        buttonTabConfigPortResolveARP.setVisible(true);
-        buttonTabConfigPortResolveARP.setDisable(false);
-        buttonTabConfigPortResolveARP.setManaged(true);
     }
 
     private void verifyOwner() {
         boolean iamowner = portManager.isCurrentUserOwner(port.getIndex());
 
         if (!iamowner) {
-            buttonTabConfigPortResolveARP.setVisible(false);
-            buttonTabConfigPortResolveARP.setDisable(true);
-            buttonTabConfigPortResolveARP.setManaged(false);
-
             buttonTabConfigPortApply.setVisible(false);
             buttonTabConfigPortApply.setDisable(true);
             buttonTabConfigPortApply.setManaged(false);
-
-            buttonTabConfigPortReset.setVisible(false);
-            buttonTabConfigPortReset.setDisable(true);
-            buttonTabConfigPortReset.setManaged(false);
 
             buttonTabConfigPortAcquireRelease.setVisible(true);
             buttonTabConfigPortAcquireRelease.setDisable(false);
@@ -282,19 +283,10 @@ public class PortInfoTabConfig extends BorderPane {
             buttonTabConfigPortPing.setDisable(true);
             toggleGroupTabConfigPortL2.setDisable(true);
             toggleGroupTabConfigPortL3.setDisable(true);
-        }
-        else {
-            buttonTabConfigPortResolveARP.setVisible(true);
-            buttonTabConfigPortResolveARP.setDisable(false);
-            buttonTabConfigPortResolveARP.setManaged(true);
-
+        } else {
             buttonTabConfigPortApply.setVisible(true);
             buttonTabConfigPortApply.setDisable(false);
             buttonTabConfigPortApply.setManaged(true);
-
-            buttonTabConfigPortReset.setVisible(true);
-            buttonTabConfigPortReset.setDisable(false);
-            buttonTabConfigPortReset.setManaged(true);
 
             buttonTabConfigPortAcquireRelease.setVisible(false);
             buttonTabConfigPortAcquireRelease.setDisable(true);

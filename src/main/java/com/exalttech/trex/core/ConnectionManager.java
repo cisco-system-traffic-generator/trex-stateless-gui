@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.core;
 
+import com.cisco.trex.stateless.TRexClient;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
@@ -37,7 +38,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.zeromq.ZMQ;
 
@@ -60,6 +60,7 @@ import java.util.zip.DataFormatException;
  */
 public class ConnectionManager {
 
+    private TRexClient trexClient;
     private ScapyServerClient scapyServerClient;
     private static final Logger LOG = Logger.getLogger(ConnectionManager.class.getName());
     private static ConnectionManager instance = null;
@@ -178,8 +179,15 @@ public class ConnectionManager {
         this.clientName = clientName;
         this.isReadOnly = isReadOnly;
 
+        trexClient = new TRexClient("tcp", ip, rpcPort, clientName);
+        trexClient.connect();
+        
         // connect to zmq
         return connectToZMQ();
+    }
+
+    public TRexClient getTrexClient() {
+        return trexClient;
     }
 
     /**
@@ -840,4 +848,10 @@ public class ConnectionManager {
         return apiH;
     }
 
+    public void propagatePortHandler(int portID, String handler) {
+        trexClient.updatePortHandler(portID, handler);
+    }
+    public void invalidatePortHandler(int portID) {
+        trexClient.invalidatePortHandler(portID);
+    }
 }
