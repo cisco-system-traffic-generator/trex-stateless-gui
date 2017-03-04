@@ -20,6 +20,7 @@
  */
 package com.exalttech.trex.ui.views;
 
+import javafx.beans.NamedArg;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -41,7 +42,7 @@ public class StatsInfoView extends AnchorPane {
      *
      * @param title
      */
-    public StatsInfoView(String title) {
+    public StatsInfoView(@NamedArg("title") String title) {
         this(title, false);
     }
 
@@ -50,7 +51,7 @@ public class StatsInfoView extends AnchorPane {
      * @param title
      * @param isColored
      */
-    public StatsInfoView(String title, boolean isColored) {
+    public StatsInfoView(@NamedArg("title") String title, @NamedArg("isColored") boolean isColored) {
         setTopAnchor(this, 0d);
         setLeftAnchor(this, 0d);
         setBottomAnchor(this, 0d);

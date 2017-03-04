@@ -13,7 +13,7 @@
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
     <top>
-        <!-- TODO: Global statistics here -->
+        <fx:include source="DashboardGlobalStatistics.fxml"/>
     </top>
     <center>
         <TabPane styleClass="statRightPaneContent, floating"
