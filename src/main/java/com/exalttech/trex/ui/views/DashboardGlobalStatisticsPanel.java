@@ -6,7 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
-import java.io.IOException;
+import com.exalttech.trex.util.Initialization;
 
 
 public class DashboardGlobalStatisticsPanel extends AnchorPane {
@@ -24,16 +24,7 @@ public class DashboardGlobalStatisticsPanel extends AnchorPane {
     }
 
     public DashboardGlobalStatisticsPanel(@NamedArg("title") String title, @NamedArg("isColored") boolean isColored) {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/fxml/Dashboard/DashboardGlobalStatisticsPanel.fxml")
-        );
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
+        Initialization.initializeFXML(this, "/fxml/Dashboard/DashboardGlobalStatisticsPanel.fxml");
 
         this.isColored = isColored;
         if (isColored) {

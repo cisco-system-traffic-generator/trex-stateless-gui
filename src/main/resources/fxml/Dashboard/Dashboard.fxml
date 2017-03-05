@@ -5,6 +5,8 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 
+<?import com.exalttech.trex.ui.views.DashboardTabPorts?>
+
 
 <BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml"
@@ -19,6 +21,7 @@
         <TabPane styleClass="statRightPaneContent, floating"
                  tabClosingPolicy="UNAVAILABLE">
             <Tab text="Ports">
+                <DashboardTabPorts/>
             </Tab>
             <Tab text="Streams">
             </Tab>

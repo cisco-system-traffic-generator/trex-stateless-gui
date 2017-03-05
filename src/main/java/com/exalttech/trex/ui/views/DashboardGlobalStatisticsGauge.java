@@ -9,8 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import jfxtras.labs.scene.control.gauge.linear.SimpleMetroArcGauge;
 import jfxtras.labs.scene.control.gauge.linear.elements.PercentSegment;
 
-import java.io.IOException;
-
+import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
@@ -21,16 +20,7 @@ public class DashboardGlobalStatisticsGauge extends AnchorPane {
     private Label titleLabel;
 
     public DashboardGlobalStatisticsGauge(@NamedArg("title") String title) {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/fxml/Dashboard/DashboardGlobalStatisticsGauge.fxml")
-        );
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
+        Initialization.initializeFXML(this, "/fxml/Dashboard/DashboardGlobalStatisticsGauge.fxml");
 
         titleLabel.setText(title);
     }

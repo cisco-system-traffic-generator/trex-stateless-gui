@@ -22,6 +22,7 @@ import com.exalttech.trex.ui.views.DashboardGlobalStatisticsGauge;
 import com.exalttech.trex.ui.views.DashboardGlobalStatisticsPanel;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.Constants;
+import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
@@ -63,17 +64,7 @@ public class DashboardGlobalStatistics implements Initializable {
 
         portManager = PortsManager.getInstance();
 
-        // TODO: find another way to adding "WINDOW_CLOSE_REQUEST" event listener
-        // This ugly solution is used because we have no scene and no window here
-        root.sceneProperty().addListener(((observable, oldValue, newValue) -> {
-            if (oldValue == null && newValue != null) {
-                newValue.windowProperty().addListener((observableWindow, oldWindow, newWindow) -> {
-                    if (oldWindow == null && newWindow != null) {
-                        newWindow.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, this::onWindowCloseRequest);
-                    }
-                });
-            }
-        }));
+        Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
     }
 
     private void onRefreshSucceeded(WorkerStateEvent event) {
