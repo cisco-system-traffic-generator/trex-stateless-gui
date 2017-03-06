@@ -26,6 +26,7 @@ package com.exalttech.trex.ui.views.logs;
  */
 public enum LogType {
 
+    PING("Ping  ", "logInfo"),
     /**
      *
      */
