@@ -19,7 +19,6 @@ import com.exalttech.trex.remote.models.AsyncEvent;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,6 +26,8 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
 
 /**
  *
@@ -36,6 +37,7 @@ public class AsyncResponseManager {
 
     private static final Logger LOG = Logger.getLogger(AsyncResponseManager.class.getName());
     private static AsyncResponseManager instance = null;
+    private boolean muteLogger = false;
 
     /**
      *
@@ -146,7 +148,7 @@ public class AsyncResponseManager {
         try {
             AsyncEvent serverEvent = mapper.readValue(event, AsyncEvent.class);
             String eventMessage = serverEvent.toString();
-            if (eventMessage != null) {
+            if (eventMessage != null && !muteLogger) {
                 LogsController.getInstance().appendText(LogType.SERVER_EVENT, eventMessage);
             }
         } catch (IOException ex) {
@@ -165,5 +167,16 @@ public class AsyncResponseManager {
             }
         });
 
+    }
+
+    /**
+     * Mute printing in LogsController
+     */
+    public void muteLogger() {
+        muteLogger = true;
+    }
+
+    public void unmuteLogger() {
+        muteLogger = false;
     }
 }
