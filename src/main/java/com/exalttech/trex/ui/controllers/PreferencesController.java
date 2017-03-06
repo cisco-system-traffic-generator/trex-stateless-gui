@@ -19,10 +19,6 @@ import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.datastore.Preferences;
 import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
-import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import com.exalttech.trex.util.files.FileManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -32,9 +28,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * FXML Controller class
@@ -85,7 +84,7 @@ public class PreferencesController extends DialogView implements Initializable {
     private void savePreferences(Stage current) {
         // update prefernces file
         Preferences pref = new Preferences(loadLocation.getText(), savedLocation.getText(), templatesLocation.getText());
-        pref.setJavaConsoleLogging(checkboxToggleJavaConsoleLog.isSelected());
+        
         PreferencesManager.getInstance().savePreferences(pref);
 
         current.hide();
@@ -101,7 +100,6 @@ public class PreferencesController extends DialogView implements Initializable {
             savedLocation.setText(pref.getSavedLocation());
             templatesLocation.setText(pref.getTemplatesLocation());
             templatesLocation.setPromptText(FileManager.getTemplatesFilePath());
-            checkboxToggleJavaConsoleLog.setSelected(pref.isJavaConsoleLogging());
         }
     }
 

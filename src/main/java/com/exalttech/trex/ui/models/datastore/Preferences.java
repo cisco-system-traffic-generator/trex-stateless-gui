@@ -53,16 +53,6 @@ public class Preferences {
         this.templatesLocation = templatesLocation;
     }
 
-
-    @XmlElement(name = "java_console_logging")
-    public boolean isJavaConsoleLogging() {
-        return javaConsoleLogging;
-    }
-
-    public void setJavaConsoleLogging(boolean javaConsoleLogging) {
-        this.javaConsoleLogging = javaConsoleLogging;
-    }
-
     /**
      * Return load location
      *

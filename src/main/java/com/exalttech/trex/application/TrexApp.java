@@ -33,7 +33,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
@@ -96,10 +95,6 @@ public class TrexApp extends Application {
         stage.setMinWidth(780);
         stage.setMinHeight(700);
         stage.getIcons().add(new Image("/icons/trex.png"));
-
-        if (! PreferencesManager.getInstance().getPreferences().isJavaConsoleLogging()) {
-            LOG.setLevel(Level.OFF);
-        }
 
         packetBuilderAppController = injector.getInstance(AppController.class);
         PreferencesManager.getInstance().setPacketEditorConfigurations(packetBuilderAppController.getConfigurations());
