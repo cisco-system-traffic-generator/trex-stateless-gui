@@ -6,9 +6,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
-import jfxtras.labs.scene.control.gauge.linear.SimpleMetroArcGauge;
-import jfxtras.labs.scene.control.gauge.linear.elements.PercentSegment;
-
 import java.util.Map;
 
 import org.apache.log4j.Logger;
