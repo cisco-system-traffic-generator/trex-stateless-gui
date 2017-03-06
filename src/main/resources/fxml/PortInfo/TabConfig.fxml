@@ -63,7 +63,7 @@
             <Label text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
             <Label fx:id="labelTabConfigPortArpResolution" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
 
-            <Label text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+            <Label fx:id="pingLabel" text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
             <TextField fx:id="textFieldTabConfigPortPingIPv4" text="" promptText="ping IPv4 address"
                        minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2" />
             <Button fx:id="buttonTabConfigPortPing" text="Ping" GridPane.columnIndex="3" GridPane.rowIndex="6">

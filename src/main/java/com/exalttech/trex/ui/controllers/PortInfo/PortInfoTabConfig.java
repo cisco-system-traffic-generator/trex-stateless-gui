@@ -1,14 +1,18 @@
 package com.exalttech.trex.ui.controllers.PortInfo;
 
 import com.cisco.trex.stateless.TRexClient;
+import com.exalttech.trex.core.AsyncResponseManager;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
+import com.exalttech.trex.ui.views.logs.LogType;
+import com.exalttech.trex.ui.views.logs.LogsController;
 import com.google.inject.Injector;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -17,6 +21,15 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
+import org.pcap4j.packet.EthernetPacket;
+import org.pcap4j.packet.IcmpV4CommonPacket;
+import org.pcap4j.packet.IpV4Packet;
+import org.pcap4j.packet.namednumber.IcmpV4Type;
+
+import java.net.UnknownHostException;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PortInfoTabConfig extends BorderPane {
 
@@ -25,6 +38,7 @@ public class PortInfoTabConfig extends BorderPane {
     private Port port;
     private RPCMethods serverRPCMethods;
     private PortsManager portManager;
+    private LogsController logger = LogsController.getInstance();
 
     @FXML private BorderPane rootPortInfoTabConfig;
     @FXML private Text textTabConfigPortNameTitle;
@@ -41,12 +55,13 @@ public class PortInfoTabConfig extends BorderPane {
     @FXML private Button buttonTabConfigPortPing;
     @FXML private Button buttonTabConfigPortApply;
     @FXML private Button buttonTabConfigPortAcquireRelease;
+    @FXML private Label pingLabel;
+
     @FXML private Button buttonTabConfigPortForceAcquire;
 
     private String savedPingIPv4 = "";
-
     private TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
-    
+
     public PortInfoTabConfig(Injector injector, RPCMethods serverRPCMethods, Port port) {
         this.port = port;
         this.serverRPCMethods = serverRPCMethods;
@@ -66,10 +81,7 @@ public class PortInfoTabConfig extends BorderPane {
 
         update(true);
 
-        buttonTabConfigPortPing.setOnAction((e) -> {
-            savedPingIPv4 = textFieldTabConfigPortPingIPv4.getText();
-//            trexClient.pingHost(savedPingIPv4);
-        });
+        buttonTabConfigPortPing.setOnAction(this::runPingCmd);
 
         buttonTabConfigPortApply.setOnAction((e) -> {
             if (toggleGroupTabConfigPortL2.isSelected()) {
@@ -137,6 +149,40 @@ public class PortInfoTabConfig extends BorderPane {
         });
     }
 
+    private void runPingCmd(Event event) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            trexClient.serviceMode(port.getIndex(), true);
+            savedPingIPv4 = textFieldTabConfigPortPingIPv4.getText();
+            logger.appendText(LogType.PING, " Start ping "+ savedPingIPv4+":");
+            AsyncResponseManager.getInstance().muteLogger();
+            try {
+                int icmp_id = new Random().nextInt(100);
+                for(int icmp_sec = 1; icmp_sec < 6; icmp_sec++) {
+                    EthernetPacket reply = trexClient.sendIcmpEcho(port.getIndex(), savedPingIPv4, icmp_id, icmp_sec, 1000);
+                    if (reply != null) {
+                        IpV4Packet ip = reply.get(IpV4Packet.class);
+                        String ttl = String.valueOf(ip.getHeader().getTtlAsInt());
+                        IcmpV4CommonPacket echoReplyPacket = reply.get(IcmpV4CommonPacket.class);
+                        IcmpV4Type replyType = echoReplyPacket.getHeader().getType();
+                        if (IcmpV4Type.ECHO_REPLY.equals(replyType)) {
+                            logger.appendText(LogType.PING, " Reply from " + savedPingIPv4 + " size="+reply.getRawData().length+" ttl="+ttl+" icmp_sec="+icmp_sec);
+                        } else if (IcmpV4Type.DESTINATION_UNREACHABLE.equals(replyType)) {
+                            logger.appendText(LogType.PING, " Destination host unreachable");
+                        }
+                    } else {
+                        logger.appendText(LogType.PING, " Request timeout for icmp_seq " + icmp_sec);
+                    }
+                }
+            } catch (UnknownHostException e) {
+                logger.appendText(LogType.PING, " Unknown host");
+            } finally {
+                trexClient.serviceMode(port.getIndex(), false);
+                AsyncResponseManager.getInstance().unmuteLogger();
+            }
+        });
+    }
+    
     private void updatePortForce(boolean full) {
         Platform.runLater(() -> {
             portManager.updatePortForce();
@@ -239,6 +285,11 @@ public class PortInfoTabConfig extends BorderPane {
         textFieldTabConfigPortDestinationMAC.setVisible(true);
         textFieldTabConfigPortDestinationMAC.setDisable(false);
         textFieldTabConfigPortDestinationMAC.setManaged(true);
+
+        textFieldTabConfigPortPingIPv4.setVisible(false);
+        pingLabel.setVisible(false);
+        buttonTabConfigPortPing.setVisible(false);
+                
     }
 
     private void setL3() {
@@ -255,6 +306,10 @@ public class PortInfoTabConfig extends BorderPane {
         textFieldTabConfigPortDestinationMAC.setVisible(false);
         textFieldTabConfigPortDestinationMAC.setDisable(true);
         textFieldTabConfigPortDestinationMAC.setManaged(false);
+
+        textFieldTabConfigPortPingIPv4.setVisible(true);
+        pingLabel.setVisible(true);
+        buttonTabConfigPortPing.setVisible(true);
     }
 
     private void verifyOwner() {
