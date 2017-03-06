@@ -18,7 +18,7 @@
 
     <groupId>com.exalttech</groupId>
     <artifactId>trex-stateless-gui</artifactId>
-    <version>3.1.1</version>
+    <version>3.1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>TRex Stateless GUI Application</name>
@@ -82,6 +82,11 @@
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-packet-editor</artifactId>
             <version>6f8350d</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cisco-system-traffic-generator</groupId>
+            <artifactId>trex-java-sdk</artifactId>
+            <version>3984816</version>
         </dependency>
         <dependency>
             <groupId>org.pcap4j</groupId>
