@@ -17,8 +17,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Injector;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,8 +32,6 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.annotation.Generated;
 import java.io.IOException;
@@ -69,7 +65,7 @@ public class DashboardTabStreams extends BorderPane {
         this.currentStage = stage;
 
         FXMLLoader fxmlLoader = injector.getInstance(FXMLLoader.class);
-        fxmlLoader.setLocation(getClass().getResource("/fxml/Dashboard/DashboardStreams.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("/fxml/Dashboard/DashboardTabStreams.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 

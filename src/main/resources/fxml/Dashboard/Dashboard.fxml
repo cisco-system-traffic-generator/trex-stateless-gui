@@ -7,6 +7,7 @@
 
 <?import com.exalttech.trex.ui.views.DashboardGlobalStatistics?>
 <?import com.exalttech.trex.ui.views.DashboardTabPorts?>
+<?import com.exalttech.trex.ui.views.DashboardTabStreams?>
 
 
 <BorderPane xmlns="http://javafx.com/javafx/8"
@@ -25,6 +26,7 @@
                 <DashboardTabPorts/>
             </Tab>
             <Tab text="Streams">
+                <DashboardTabStreams/>
             </Tab>
             <Tab text="Latency">
             </Tab>
