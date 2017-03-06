@@ -1,32 +1,27 @@
-package com.exalttech.trex.ui.controllers.Dashboard;
+package com.exalttech.trex.ui.views;
 
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.stage.WindowEvent;
 import javafx.scene.control.ScrollPane;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import jfxtras.labs.scene.control.gauge.linear.SimpleMetroArcGauge;
 import jfxtras.labs.scene.control.gauge.linear.elements.PercentSegment;
 
-import java.net.URL;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.views.services.RefreshingService;
-import com.exalttech.trex.ui.views.DashboardGlobalStatisticsGauge;
-import com.exalttech.trex.ui.views.DashboardGlobalStatisticsPanel;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class DashboardGlobalStatistics implements Initializable {
+public class DashboardGlobalStatistics extends ScrollPane {
     private static final Logger LOG = Logger.getLogger(DashboardGlobalStatistics.class.getName());
 
     @FXML
@@ -55,8 +50,9 @@ public class DashboardGlobalStatistics implements Initializable {
     private RefreshingService refreshingService;
     PortsManager portManager;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public DashboardGlobalStatistics() {
+        Initialization.initializeFXML(this, "/fxml/Dashboard/DashboardGlobalStatistics.fxml");
+
         refreshingService = new RefreshingService();
         refreshingService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
         refreshingService.setOnSucceeded(this::onRefreshSucceeded);
@@ -94,26 +90,6 @@ public class DashboardGlobalStatistics implements Initializable {
         if (refreshingService.isRunning()) {
             refreshingService.cancel();
         }
-    }
-
-    private static void updateGauge(SimpleMetroArcGauge gauge, String data) {
-        if (Util.isNullOrEmpty(data)) {
-            data = "0";
-        }
-        Double value = Double.parseDouble(data);
-
-        gauge.segments().clear();
-
-        gauge.getStyleClass().removeAll("colorscheme-red-to-grey-2", "colorscheme-green-to-grey-2");
-        if (value >= 90) {
-            gauge.getStyleClass().add("colorscheme-red-to-grey-2");
-        } else {
-            gauge.getStyleClass().add("colorscheme-green-to-grey-2");
-        }
-
-        gauge.setValue(value / 100);
-        gauge.segments().add(new PercentSegment(gauge, 0.0, value));
-        gauge.segments().add(new PercentSegment(gauge, value, 100.0));
     }
 
     private static String getQueue(Map<String, String> currentStatsList) {

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 
+<?import com.exalttech.trex.ui.views.DashboardGlobalStatistics?>
 <?import com.exalttech.trex.ui.views.DashboardTabPorts?>
 
 
@@ -15,7 +16,7 @@
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
     <top>
-        <fx:include source="DashboardGlobalStatistics.fxml"/>
+        <DashboardGlobalStatistics/>
     </top>
     <center>
         <TabPane styleClass="statRightPaneContent, floating"

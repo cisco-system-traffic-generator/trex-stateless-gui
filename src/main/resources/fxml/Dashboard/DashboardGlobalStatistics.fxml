@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
 
 <?import com.exalttech.trex.ui.views.DashboardGlobalStatisticsGauge?>
 <?import com.exalttech.trex.ui.views.DashboardGlobalStatisticsPanel?>
 
 
-<ScrollPane xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.exalttech.trex.ui.controllers.Dashboard.DashboardGlobalStatistics"
-            fx:id="root"
-            fitToWidth="true"
-            minHeight="100.0"
-            maxHeight="100.0"
-            vbarPolicy="NEVER">
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.control.ScrollPane"
+         fx:id="root"
+         fitToWidth="true"
+         minHeight="100.0"
+         maxHeight="100.0"
+         vbarPolicy="NEVER">
     <HBox alignment="CENTER"
           minHeight="80.0"
           maxHeight="80.0"
@@ -52,4 +51,4 @@
                                         title="Queue Full"
                                         HBox.hgrow="ALWAYS"/>
     </HBox>
-</ScrollPane>
+</fx:root>
