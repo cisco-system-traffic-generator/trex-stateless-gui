@@ -3,9 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
-<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -34,10 +34,9 @@
             <ColumnConstraints percentWidth="100"/>
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints percentHeight="50"/>
-            <RowConstraints minHeight="30"
-                            maxHeight="30"/>
-            <RowConstraints percentHeight="50"/>
+            <RowConstraints percentHeight="45"/>
+            <RowConstraints percentHeight="10"/>
+            <RowConstraints percentHeight="45"/>
         </rowConstraints>
         <AnchorPane GridPane.columnIndex="0"
                     GridPane.rowIndex="0"
@@ -87,5 +86,19 @@
                      editable="true"
                      prefWidth="120.0"/>
         </HBox>
+        <AnchorPane GridPane.columnIndex="0"
+                    GridPane.rowIndex="2"
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="0.0"
+                    AnchorPane.bottomAnchor="0.0">
+            <ScrollPane AnchorPane.leftAnchor="0.0"
+                        AnchorPane.rightAnchor="0.0"
+                        AnchorPane.topAnchor="0.0"
+                        AnchorPane.bottomAnchor="0.0">
+                <GridPane fx:id="table"
+                          styleClass="statsTable"/>
+            </ScrollPane>
+        </AnchorPane>
     </GridPane>
 </fx:root>

@@ -12,10 +12,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
@@ -24,6 +27,9 @@ import com.exalttech.trex.ui.models.RawFlowStatsData;
 import com.exalttech.trex.ui.models.RawFlowStatsTimeStamp;
 import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
+import com.exalttech.trex.ui.views.statistics.cells.CellType;
+import com.exalttech.trex.ui.views.statistics.cells.HeaderCell;
+import com.exalttech.trex.ui.views.statistics.cells.StatisticLabelCell;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
@@ -35,6 +41,10 @@ public class DashboardTabStreams extends AnchorPane {
         private Integer rxPkts;
         private Integer rxBytes;
         private Double time;
+
+        private static Double round(Double value) {
+            return ((int)(value*100.0))/100.0;
+        }
 
         public void setTxPkts(Integer txPkts) { this.txPkts = txPkts; }
         public Integer getTxPkts() { return txPkts; }
@@ -52,38 +62,38 @@ public class DashboardTabStreams extends AnchorPane {
         public Double getTime() { return time; }
 
         public Double calcTxPps() {
-            return txPkts/time;
+            return round(txPkts/time);
         }
         public Double calcTxPps(FlowStatsData prevData) {
-            return (txPkts - prevData.txPkts)/(time - prevData.time);
+            return round((txPkts - prevData.txPkts)/(time - prevData.time));
         }
 
         public Double calcTxBpsL2() {
-            return txBytes/time;
+            return round(txBytes/time);
         }
         public Double calcTxBpsL2(FlowStatsData prevData) {
-            return (txBytes - prevData.txBytes)/(time - prevData.time);
+            return round((txBytes - prevData.txBytes)/(time - prevData.time));
         }
 
         public Double calcTxBpsL1() {
-            return calcTxBpsL2()/time + calcTxPps()*16;
+            return round(calcTxBpsL2()/time + calcTxPps()*16);
         }
         public Double calcTxBpsL1(FlowStatsData prevData) {
-            return calcTxBpsL2(prevData)/time + calcTxPps(prevData)*16;
+            return round(calcTxBpsL2(prevData)/time + calcTxPps(prevData)*16);
         }
 
         public Double calcRxPps() {
-            return rxPkts/time;
+            return round(rxPkts/time);
         }
         public Double calcRxPps(FlowStatsData prevData) {
-            return (rxPkts - prevData.rxPkts)/(time - prevData.time);
+            return round((rxPkts - prevData.rxPkts)/(time - prevData.time));
         }
 
         public Double calcRxBps() {
-            return rxBytes/time;
+            return round(rxBytes/time);
         }
         public Double calcRxBps(FlowStatsData prevData) {
-            return (rxBytes - prevData.rxBytes)/(time - prevData.time);
+            return round((rxBytes - prevData.rxBytes)/(time - prevData.time));
         }
     }
 
@@ -121,6 +131,8 @@ public class DashboardTabStreams extends AnchorPane {
     private ComboBox streamsCountComboBox;
     @FXML
     private Spinner intervalSpinner;
+    @FXML
+    private GridPane table;
 
     private RefreshingService refreshingService;
     private String selectedStatistics;
@@ -158,6 +170,7 @@ public class DashboardTabStreams extends AnchorPane {
                 maxStreamsCount = Integer.parseInt(newValue);
                 cleanHistory(null);
                 renderChart();
+                renderTable();
             }
         });
         streamsCountComboBox.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -253,6 +266,7 @@ public class DashboardTabStreams extends AnchorPane {
         cleanHistory(visitedStreams);
 
         renderChart(time);
+        renderTable();
     }
 
     private void onWindowCloseRequest(WindowEvent window) {
@@ -353,6 +367,49 @@ public class DashboardTabStreams extends AnchorPane {
                 });
                 break;
         }
+    }
+
+    private void renderTable() {
+        int firstColumnWidth = 99;
+        int secondHeaderWidth = 128;
+
+        table.getChildren().clear();
+
+        table.add(new HeaderCell(firstColumnWidth, "PG ID"), 0, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Tx (pkt/s)"), 1, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Tx (B/s) L2"), 2, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Tx (B/s) L1"), 3, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Rx (pkt/s)"), 4, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Rx (B/s)"), 5, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Tx (pkt)"), 6, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Rx (pkt)"), 7, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Tx (B)"), 8, 0);
+        table.add(new HeaderCell(secondHeaderWidth, "Rx (B)"), 9, 0);
+
+        AtomicInteger rowIndex = new AtomicInteger(1);
+        AtomicBoolean odd = new AtomicBoolean(false);
+
+        streamsHistory.forEach((String stream, List<FlowStatsData> data) -> {
+            if (data.isEmpty()) {
+                return;
+            }
+
+            FlowStatsData last = data.get(data.size() - 1);
+
+            table.add(new StatisticLabelCell(stream, firstColumnWidth, odd.get(), CellType.DEFAULT_CELL, true), 0, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxPps()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 1, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL2()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 2, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL1()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 3, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcRxPps()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 4, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcRxBps()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 5, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.getTxPkts()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 6, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.getRxPkts()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 7, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.getTxBytes()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 8, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.getRxBytes()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 9, rowIndex.get());
+
+            rowIndex.addAndGet(1);
+            odd.getAndSet(!odd.get());
+        });
     }
 
     private static List<XYChart.Data<Number, Number>> getTxPktsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
