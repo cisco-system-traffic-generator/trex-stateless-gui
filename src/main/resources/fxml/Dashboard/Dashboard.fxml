@@ -30,9 +30,11 @@
             <Tab text="Streams">
                 <DashboardTabStreams/>
             </Tab>
-            <Tab text="Latency">
+            <Tab text="Latency"
+                 disable="true">
             </Tab>
-            <Tab text="Capture">
+            <Tab text="Capture"
+                 disable="true">
             </Tab>
         </TabPane>
     </center>
