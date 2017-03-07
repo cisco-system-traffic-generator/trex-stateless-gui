@@ -45,6 +45,7 @@
                     AnchorPane.topAnchor="0.0"
                     AnchorPane.bottomAnchor="0.0">
             <LineChart fx:id="chart"
+                       verticalGridLinesVisible="false"
                        animated="false"
                        createSymbols="false"
                        styleClass="thin-chart"
