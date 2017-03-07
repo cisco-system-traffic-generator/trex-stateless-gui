@@ -391,18 +391,19 @@ public class DashboardTabStreams extends AnchorPane {
         AtomicBoolean odd = new AtomicBoolean(false);
 
         streamsHistory.forEach((String stream, List<FlowStatsData> data) -> {
-            if (data.isEmpty()) {
+            if (data.size() < 2) {
                 return;
             }
 
+            FlowStatsData prev = data.get(data.size() - 2);
             FlowStatsData last = data.get(data.size() - 1);
 
             table.add(new StatisticLabelCell(stream, firstColumnWidth, odd.get(), CellType.DEFAULT_CELL, true), 0, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTxPps()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 1, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL2()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 2, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL1()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 3, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcRxPps()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 4, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcRxBps()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 5, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxPps(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 1, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL2(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 2, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL1(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 3, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcRxPps(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 4, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcRxBps(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 5, rowIndex.get());
             table.add(new StatisticLabelCell(String.valueOf(last.getTxPkts()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 6, rowIndex.get());
             table.add(new StatisticLabelCell(String.valueOf(last.getRxPkts()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 7, rowIndex.get());
             table.add(new StatisticLabelCell(String.valueOf(last.getTxBytes()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 8, rowIndex.get());
