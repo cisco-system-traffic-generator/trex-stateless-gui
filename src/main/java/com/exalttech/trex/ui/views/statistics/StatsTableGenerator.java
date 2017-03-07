@@ -591,14 +591,21 @@ public class StatsTableGenerator {
         gridCellsMap.clear();
         gridCellsMap = null;
 
-        currentStatsList.clear();
-        currentStatsList = null;
+        if (currentStatsList != null) {
+            currentStatsList.clear();
+            currentStatsList = null;
+        }
 
-        prevStatsList.clear();
-        prevStatsList = null;
+        if (prevStatsList != null) {
+            prevStatsList.clear();
+            prevStatsList = null;
+        }
 
-        cachedStatsList.clear();
-        cachedStatsList = null;
+        if (cachedStatsList != null) {
+            cachedStatsList.clear();
+            cachedStatsList = null;
+        }
+
 
         totalValues.clear();
         totalValues = null;

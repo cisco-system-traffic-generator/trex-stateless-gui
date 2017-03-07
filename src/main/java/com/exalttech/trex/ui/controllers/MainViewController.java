@@ -32,10 +32,6 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.components.CustomTreeItem;
 import com.exalttech.trex.ui.components.CustomTreeItem.TreeItemType;
 import com.exalttech.trex.ui.components.NotificationPanel;
-import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabCapture;
-import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabLatency;
-import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabMain;
-import com.exalttech.trex.ui.controllers.Dashboard.DashboardTabStreams;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
@@ -73,12 +69,10 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -1010,50 +1004,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void openStateDialog() {
         try {
             if (DialogManager.getInstance().getNumberOfOpenedDialog() < 4) {
-                DialogWindow statsWindow = new DialogWindow("Dashboard/Dashboard.fxml", "Dashboard",
-                        50, 10, true, TrexApp.getPrimaryStage());
-                statsWindow.setMinSize(400, 420);
-
-                Pane root = statsWindow.getRootPane();
-
-                BorderPane borderPane = (BorderPane) root.getChildren().get(0);
-                borderPane.getStyleClass().addAll("statRightPaneContent", "floating");
-
-                TabPane tabPane = (TabPane) root.getChildren().get(1);
-                tabPane.getStyleClass().addAll("statRightPaneContent", "floating");
-
-                Tab tabMain = new Tab("Main");
-                tabMain.setClosable(false);
-                tabPane.getTabs().add(0, tabMain);
-                DashboardTabMain dashboardTabMain = new DashboardTabMain(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
-                if (dashboardTabMain != null) {
-                    tabMain.setContent(dashboardTabMain);
-                }
-
-                Tab tabStreams = new Tab("Streams");
-                tabStreams.setClosable(false);
-                tabPane.getTabs().add(1, tabStreams);
-                DashboardTabStreams dashboardTabStreams = new DashboardTabStreams(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
-                if (dashboardTabStreams != null) {
-                    tabStreams.setContent(dashboardTabStreams);
-                }
-
-                Tab tabLatency = new Tab("Latency");
-                tabLatency.setClosable(false);
-                tabPane.getTabs().add(2, tabLatency);
-                DashboardTabLatency dashboardTabLatency = new DashboardTabLatency(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
-                if (dashboardTabLatency != null) {
-                    tabLatency.setContent(dashboardTabLatency);
-                }
-
-                Tab tabCapture = new Tab("Capture");
-                tabCapture.setClosable(false);
-                tabPane.getTabs().add(3, tabCapture);
-                DashboardTabCapture dashboardTabCapture = new DashboardTabCapture(TrexApp.injector, serverRPCMethods, statsWindow.getDialogStage());
-                if (dashboardTabCapture != null) {
-                    tabCapture.setContent(dashboardTabCapture);
-                }
-
+                DialogWindow statsWindow = new DialogWindow(
+                        "Dashboard/Dashboard.fxml",
+                        "Dashboard",
+                        50,
+                        10,
+                        true,
+                        TrexApp.getPrimaryStage()
+                );
+                statsWindow.setMinSize(800, 600);
                 statsWindow.show(false);
             }
         } catch (IOException ex) {

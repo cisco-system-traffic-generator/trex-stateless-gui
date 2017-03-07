@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.AnchorPane"
+         minWidth="115.0"
+         styleClass="dashboardStatsContainer">
+    <VBox alignment="CENTER"
+          AnchorPane.leftAnchor="5.0"
+          AnchorPane.topAnchor="5.0"
+          AnchorPane.rightAnchor="5.0"
+          AnchorPane.bottomAnchor="5.0">
+        <HBox alignment="CENTER">
+            <Label fx:id="valueLabel"
+                   styleClass="dashboardStatsValue"/>
+            <Label fx:id="unitLabel"
+                   styleClass="dashboardStatsUnit"/>
+        </HBox>
+        <Label fx:id="titleLabel"
+               styleClass="dashboardStatsTitle"/>
+    </VBox>
+</fx:root>

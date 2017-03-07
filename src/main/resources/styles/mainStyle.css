@@ -1249,3 +1249,7 @@ ToggleSwitch {
     -fx-pref-width: 6em;
     -fx-padding-top: 3px;
 }
+
+.thin-chart .chart-series-line {
+    -fx-stroke-width: 2px;
+}

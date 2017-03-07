@@ -1,30 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.*?>
-<?import java.lang.*?>
-<?import javafx.collections.*?>
-<?import javafx.geometry.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<?import com.exalttech.trex.ui.views.DashboardGlobalStatistics?>
+<?import com.exalttech.trex.ui.views.DashboardTabPorts?>
+<?import com.exalttech.trex.ui.views.DashboardTabStreams?>
 
 
-<AnchorPane id="AnchorPane" fx:id="rootAnchorPaneDashboard" minHeight="765.0" minWidth="800.0" prefHeight="765.0"
-            prefWidth="1020.0" style="-fx-background-color:#f0f0f0;" xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1">
-    <BorderPane fx:id="borderPaneGlobalStats"
-                style="-fx-background-color:#f0f0f0;">
-    </BorderPane>
-    <TabPane id="AnchorPane"
-             fx:id="tabPaneDashboard"
-             minHeight="320.0" minWidth="320.0" prefHeight="725.0" prefWidth="1020.0"
-             style="-fx-background-color:#f0f0f0;"
-             xmlns="http://javafx.com/javafx/8"
-             xmlns:fx="http://javafx.com/fxml/1"
-             AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
-             AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-    </TabPane>
-</AnchorPane>
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml"
+            style="-fx-background-color: #f0f0f0"
+            prefWidth="800"
+            prefHeight="610">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <top>
+        <DashboardGlobalStatistics/>
+    </top>
+    <center>
+        <TabPane styleClass="statRightPaneContent, floating"
+                 tabClosingPolicy="UNAVAILABLE">
+            <Tab text="Ports">
+                <DashboardTabPorts/>
+            </Tab>
+            <Tab text="Streams">
+                <DashboardTabStreams/>
+            </Tab>
+            <Tab text="Latency"
+                 disable="true">
+            </Tab>
+            <Tab text="Capture"
+                 disable="true">
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>

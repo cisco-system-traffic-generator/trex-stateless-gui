@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+
+<?import com.exalttech.trex.ui.views.DashboardGlobalStatisticsGauge?>
+<?import com.exalttech.trex.ui.views.DashboardGlobalStatisticsPanel?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.control.ScrollPane"
+         fx:id="root"
+         fitToWidth="true"
+         minHeight="100.0"
+         maxHeight="100.0"
+         vbarPolicy="NEVER">
+    <HBox alignment="CENTER"
+          minHeight="80.0"
+          maxHeight="80.0"
+          spacing="10.0">
+        <DashboardGlobalStatisticsGauge fx:id="cpuGauge"
+                                        title="CPU"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsGauge fx:id="rxCpuGauge"
+                                        title="Rx CPU"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsPanel fx:id="totalTx"
+                                        title="Total Tx L2"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsPanel fx:id="totalTxL1"
+                                        title="Total Tx L1"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsPanel fx:id="totalRx"
+                                        title="Total Rx"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsPanel fx:id="totalPps"
+                                        title="Total PPS"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsPanel fx:id="totalStream"
+                                        title="Total Stream"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsPanel fx:id="activePort"
+                                        title="Active Ports"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsPanel fx:id="dropRate"
+                                        isColored="true"
+                                        title="Drop Rate"
+                                        HBox.hgrow="ALWAYS"/>
+        <DashboardGlobalStatisticsPanel fx:id="queueFull"
+                                        isColored="true"
+                                        title="Queue Full"
+                                        HBox.hgrow="ALWAYS"/>
+    </HBox>
+</fx:root>

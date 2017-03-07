@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:id="root"
+         type="javafx.scene.layout.AnchorPane">
+    <ScrollPane fx:id="statTableContainer"
+                AnchorPane.bottomAnchor="10.0"
+                AnchorPane.leftAnchor="10.0"
+                AnchorPane.rightAnchor="10.0"
+                AnchorPane.topAnchor="10.0"/>
+</fx:root>
