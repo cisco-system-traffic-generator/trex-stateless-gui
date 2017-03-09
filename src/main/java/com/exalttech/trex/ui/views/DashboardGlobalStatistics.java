@@ -2,7 +2,7 @@ package com.exalttech.trex.ui.views;
 
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
@@ -18,11 +18,11 @@ import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class DashboardGlobalStatistics extends VBox {
+public class DashboardGlobalStatistics extends GridPane {
     private static final Logger LOG = Logger.getLogger(DashboardGlobalStatistics.class.getName());
 
     @FXML
-    private VBox root;
+    private GridPane root;
     @FXML
     private DashboardGlobalStatisticsGauge cpuGauge;
     @FXML
