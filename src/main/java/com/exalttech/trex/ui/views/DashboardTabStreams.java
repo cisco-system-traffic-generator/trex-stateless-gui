@@ -73,10 +73,16 @@ public class DashboardTabStreams extends AnchorPane {
         }
 
         public Double calcTxBpsL1() {
-            return round(calcTxBpsL2()/time + calcTxPps()*16);
+            Double bps = txBytes/time;
+            Double pps = txPkts/time;
+            Double factor = bps*pps;
+            return round(bps*(1 + (20/factor)));
         }
         public Double calcTxBpsL1(FlowStatsData prevData) {
-            return round(calcTxBpsL2(prevData)/time + calcTxPps(prevData)*16);
+            Double bps = (txBytes - prevData.txBytes)/(time - prevData.time);
+            Double pps = (txPkts - prevData.txPkts)/(time - prevData.time);
+            Double factor = bps*pps;
+            return round(bps*(1 + (20/factor)));
         }
 
         public Double calcRxPps() {
