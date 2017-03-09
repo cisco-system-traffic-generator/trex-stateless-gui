@@ -20,9 +20,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
-
-import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.RawFlowStatsData;
 import com.exalttech.trex.ui.models.RawFlowStatsTimeStamp;
 import com.exalttech.trex.ui.views.services.RefreshingService;
@@ -97,7 +94,6 @@ public class DashboardTabStreams extends AnchorPane {
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(MainViewController.class.getName());
     private static final List<String> statisticTypes = new ArrayList<String>() {{
         add("Tx (pkt/s)");
         add("Tx (B/s) L2");
@@ -254,10 +250,10 @@ public class DashboardTabStreams extends AnchorPane {
             }
 
             FlowStatsData data = new FlowStatsData();
-            data.setTxPkts(getTxPktsValue(rawData));
-            data.setTxBytes(getTxBytesValue(rawData));
-            data.setRxPkts(getRxPktsValue(rawData));
-            data.setRxBytes(getRxBytesValue(rawData));
+            data.setTxPkts(calcTotalValue(rawData.getTx_pkts()));
+            data.setTxBytes(calcTotalValue(rawData.getTx_bytes()));
+            data.setRxPkts(calcTotalValue(rawData.getRx_pkts()));
+            data.setRxBytes(calcTotalValue(rawData.getRx_bytes()));
             data.setTime(time);
 
             streamHistory.add(data);
@@ -557,59 +553,14 @@ public class DashboardTabStreams extends AnchorPane {
         return res;
     }
 
-    private static Integer getTxPktsValue(RawFlowStatsData rawData) {
-        Map<Integer, Integer> txPkts = rawData.getTx_pkts();
-        if (txPkts == null) {
+    private static Integer calcTotalValue(Map<Integer, Integer> valuesByPorts) {
+        if (valuesByPorts == null) {
             return 0;
         }
-        if (txPkts.size() != 1) {
-            LOG.error(
-                    String.format("Invalid tx_pkts flow data value: expected 1 port but got %d", txPkts.size())
-            );
-            return 0;
+        Integer total = 0;
+        for (Integer value : valuesByPorts.values()) {
+            total += value;
         }
-        return txPkts.get(0);
-    }
-
-    private static Integer getTxBytesValue(RawFlowStatsData rawData) {
-        Map<Integer, Integer> txBytes = rawData.getTx_bytes();
-        if (txBytes == null) {
-            return 0;
-        }
-        if (txBytes.size() != 1) {
-            LOG.error(
-                    String.format("Invalid tx_bytes flow data value: expected 1 port but got %d", txBytes.size())
-            );
-            return 0;
-        }
-        return txBytes.get(0);
-    }
-
-    private static Integer getRxPktsValue(RawFlowStatsData rawData) {
-        Map<Integer, Integer> rxPkts = rawData.getRx_pkts();
-        if (rxPkts == null) {
-            return 0;
-        }
-        if (rxPkts.size() != 1) {
-            LOG.error(
-                    String.format("Invalid rx_pkts flow data value: expected 1 port but got %d", rxPkts.size())
-            );
-            return 0;
-        }
-        return rxPkts.get(0);
-    }
-
-    private static Integer getRxBytesValue(RawFlowStatsData rawData) {
-        Map<Integer, Integer> rxBytes = rawData.getRx_bytes();
-        if (rxBytes == null) {
-            return 0;
-        }
-        if (rxBytes.size() != 1) {
-            LOG.error(
-                    String.format("Invalid rx_bytes flow data value: expected 1 port but got %d", rxBytes.size())
-            );
-            return 0;
-        }
-        return rxBytes.get(0);
+        return total;
     }
 }
