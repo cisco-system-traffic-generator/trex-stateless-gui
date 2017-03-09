@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.BorderPane?>
 
 <?import com.exalttech.trex.ui.views.DashboardGlobalStatistics?>
+<?import com.exalttech.trex.ui.views.DashboardTabLatency?>
 <?import com.exalttech.trex.ui.views.DashboardTabPorts?>
 <?import com.exalttech.trex.ui.views.DashboardTabStreams?>
 
@@ -30,8 +31,8 @@
             <Tab text="Streams">
                 <DashboardTabStreams/>
             </Tab>
-            <Tab text="Latency"
-                 disable="true">
+            <Tab text="Latency">
+                <DashboardTabLatency/>
             </Tab>
             <Tab text="Capture"
                  disable="true">
