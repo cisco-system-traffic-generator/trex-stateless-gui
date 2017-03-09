@@ -14,7 +14,7 @@
             xmlns:fx="http://javafx.com/fxml"
             style="-fx-background-color: #f0f0f0"
             prefWidth="800"
-            prefHeight="610">
+            prefHeight="680">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
