@@ -471,8 +471,6 @@ public class DashboardTabStreams extends AnchorPane {
         }
 
         FlowStatsData prev = dataList.get(0);
-        res.add(new XYChart.Data<>(prev.getTime(), prev.calcTxPps()));
-
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
@@ -490,8 +488,6 @@ public class DashboardTabStreams extends AnchorPane {
         }
 
         FlowStatsData prev = dataList.get(0);
-        res.add(new XYChart.Data<>(prev.getTime(), prev.calcRxPps()));
-
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
@@ -509,8 +505,6 @@ public class DashboardTabStreams extends AnchorPane {
         }
 
         FlowStatsData prev = dataList.get(0);
-        res.add(new XYChart.Data<>(prev.getTime(), prev.calcTxBpsL1()));
-
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
@@ -528,8 +522,6 @@ public class DashboardTabStreams extends AnchorPane {
         }
 
         FlowStatsData prev = dataList.get(0);
-        res.add(new XYChart.Data<>(prev.getTime(), prev.calcTxBpsL2()));
-
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
@@ -547,8 +539,6 @@ public class DashboardTabStreams extends AnchorPane {
         }
 
         FlowStatsData prev = dataList.get(0);
-        res.add(new XYChart.Data<>(prev.getTime(), prev.calcRxBps()));
-
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
