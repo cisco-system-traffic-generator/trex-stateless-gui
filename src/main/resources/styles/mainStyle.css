@@ -1250,6 +1250,74 @@ ToggleSwitch {
     -fx-padding-top: 3px;
 }
 
-.thin-chart .chart-series-line {
+.statistics-chart .chart-series-line {
     -fx-stroke-width: 2px;
+    -fx-stroke-line-join: round;
+}
+
+.statistics-chart .chart-plot-background {
+    -fx-background-color: #f5f5f5;
+}
+
+.statistics-chart .chart-vertical-grid-lines {
+    -fx-stroke: #dddddd;
+    -fx-stroke-dash-array: none;
+}
+
+.statistics-chart .chart-horizontal-grid-lines {
+    -fx-stroke: #dddddd;
+    -fx-stroke-dash-array: none;
+}
+
+.statistics-chart .chart-alternative-column-fill {
+    -fx-fill: #eeeeee;
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0;
+}
+
+.statistics-chart .chart-alternative-row-fill {
+    -fx-fill: #eeeeee;
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0;
+}
+
+.statistics-chart .chart-vertical-zero-line {
+    -fx-stroke: #999999;
+}
+
+.statistics-chart .chart-horizontal-zero-line {
+    -fx-stroke: #999999;
+}
+
+.statistics-chart .chart-bar {
+    -fx-background-color: linear-gradient(derive(-fx-bar-fill,-30%), derive(-fx-bar-fill,-40%)),
+    linear-gradient(derive(-fx-bar-fill,80%), derive(-fx-bar-fill, 0%)),
+    linear-gradient(derive(-fx-bar-fill,30%), derive(-fx-bar-fill,-10%));
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0;
+}
+
+.statistics-chart .negative.chart-bar {
+    -fx-background-color: linear-gradient(to top, derive(-fx-bar-fill,-30%), derive(-fx-bar-fill,-40%)),
+    linear-gradient(to top, derive(-fx-bar-fill, 80%), derive(-fx-bar-fill,0%)),
+    linear-gradient(to top, derive(-fx-bar-fill,30%), derive(-fx-bar-fill,-10%));
+    -fx-background-radius: 0 0 5 5, 0 0 4 4, 0 0 3 3;
+}
+
+.statistics-chart .bar-chart:horizontal .chart-bar, .stacked-bar-chart:horizontal .chart-bar {
+    -fx-background-color: linear-gradient(to left, derive(-fx-bar-fill,-30%), derive(-fx-bar-fill,-40%)),
+    linear-gradient(to left, derive(-fx-bar-fill,80%), derive(-fx-bar-fill, 0%)),
+    linear-gradient(to left, derive(-fx-bar-fill,30%), derive(-fx-bar-fill,-10%));
+    -fx-background-radius: 0 5 5 0, 0 4 4 0, 0 3 3 0;
+}
+
+.statistics-chart .bar-chart:horizontal .negative.chart-bar, .stacked-bar-chart:horizontal .negative.chart-bar {
+    -fx-background-color: linear-gradient(to right, derive(-fx-bar-fill,-30%), derive(-fx-bar-fill,-40%)),
+    linear-gradient(to right, derive(-fx-bar-fill, 80%), derive(-fx-bar-fill, 0%)),
+    linear-gradient(to right, derive(-fx-bar-fill,30%), derive(-fx-bar-fill,-10%));
+    -fx-background-radius: 5 0 0 5, 4 0 0 4, 3 0 0 3;
+}
+
+.statistics-chart .bar-legend-symbol {
+    -fx-padding: 8px;
 }

@@ -48,7 +48,7 @@
                        verticalGridLinesVisible="false"
                        animated="false"
                        createSymbols="false"
-                       styleClass="thin-chart"
+                       styleClass="statistics-chart"
                        AnchorPane.leftAnchor="0.0"
                        AnchorPane.rightAnchor="0.0"
                        AnchorPane.topAnchor="0.0"
