@@ -8,6 +8,7 @@ import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
+import com.exalttech.trex.ui.models.PortStatus;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.google.inject.Injector;
@@ -38,7 +39,7 @@ public class PortInfoTabConfig extends BorderPane {
     private Port port;
     private RPCMethods serverRPCMethods;
     private PortsManager portManager;
-    private LogsController logger = LogsController.getInstance();
+    private LogsController guiLogger = LogsController.getInstance();
 
     @FXML private BorderPane rootPortInfoTabConfig;
     @FXML private Text textTabConfigPortNameTitle;
@@ -50,7 +51,8 @@ public class PortInfoTabConfig extends BorderPane {
     @FXML private TextField textFieldTabConfigPortSourceIPv4;
     @FXML private TextField textFieldTabConfigPortDestinationMAC;
     @FXML private TextField textFieldTabConfigPortDestinationIPv4;
-    @FXML private Label labelTabConfigPortArpResolution;
+    @FXML private Label arpLabel;
+    @FXML private Label arpStatus;
     @FXML private TextField textFieldTabConfigPortPingIPv4;
     @FXML private Button buttonTabConfigPortPing;
     @FXML private Button buttonTabConfigPortApply;
@@ -83,32 +85,43 @@ public class PortInfoTabConfig extends BorderPane {
 
         buttonTabConfigPortPing.setOnAction(this::runPingCmd);
 
-        buttonTabConfigPortApply.setOnAction((e) -> {
-            if (toggleGroupTabConfigPortL2.isSelected()) {
-                String dstMac = textFieldTabConfigPortDestinationMAC.getText();
-                try {
-                    serverRPCMethods.setSetL2(port.getIndex(), dstMac);
-                    updatePortForce(true);
-                } catch (Exception e1) {
-                    LOG.error("Failed to set L2 mode: " + e1.getMessage());
+        buttonTabConfigPortApply.setOnAction((e) -> {   
+            Executors.newSingleThreadExecutor().submit(() -> {
+                if (toggleGroupTabConfigPortL2.isSelected()) {
+                    String dstMac = textFieldTabConfigPortDestinationMAC.getText();
+                    try {
+                        serverRPCMethods.setSetL2(port.getIndex(), dstMac);
+                        guiLogger.appendText(LogType.INFO, "L2 mode configured for " + port.getIndex());
+                        updatePortForce(true);
+                    } catch (Exception e1) {
+                        LOG.error("Failed to set L2 mode: " + e1.getMessage());
+                    }
+                } else if (toggleGroupTabConfigPortL3.isSelected()) {
+                    try {
+                        AsyncResponseManager.getInstance().muteLogger();
+                        String portSrcIP = textFieldTabConfigPortSourceIPv4.getText();
+                        String portDstIP = textFieldTabConfigPortDestinationIPv4.getText();
+                        trexClient.serviceMode(port.getIndex(), true);
+                        trexClient.setL3Mode(port.getIndex(), null, portSrcIP, portDstIP);
+                        guiLogger.appendText(LogType.INFO, "ARP resolving address " + portDstIP);
+                        String nextHopMac = trexClient.resolveArp(port.getIndex(), portSrcIP, portDstIP);
+                        LogType logType = LogType.INFO;
+                        String arpStatus = "SUCCESS";
+                        if (nextHopMac == null) {
+                            logType = LogType.ERROR;
+                            arpStatus = "FAILED";
+                        }                        
+                        guiLogger.appendText(logType, "ARP resolution status: " + arpStatus);
+                        trexClient.setL3Mode(port.getIndex(), nextHopMac, portSrcIP, portDstIP);
+                        AsyncResponseManager.getInstance().unmuteLogger();
+                        updatePortForce(true);
+                    } catch (Exception e1) {
+                        LOG.error("Failed to set L3 mode: " + e1.getMessage());
+                    } finally {
+                        trexClient.serviceMode(port.getIndex(), false);
+                    }
                 }
-            }
-            else if (toggleGroupTabConfigPortL3.isSelected()) {
-                try {
-                    String portSrcIP = textFieldTabConfigPortSourceIPv4.getText();
-                    String portDstIP = textFieldTabConfigPortDestinationIPv4.getText();
-                    trexClient.serviceMode(port.getIndex(), true);
-                    trexClient.setL3Mode(port.getIndex(), null, portSrcIP, portDstIP);
-                    String nextHopMac = trexClient.resolveArp(port.getIndex(), portSrcIP, portDstIP);
-                    trexClient.setL3Mode(port.getIndex(), nextHopMac, portSrcIP, portDstIP);
-                    
-                    updatePortForce(true);
-                } catch (Exception e1) {
-                    LOG.error("Failed to set L3 mode: " + e1.getMessage());
-                } finally {
-                    trexClient.serviceMode(port.getIndex(), false);
-                }
-            }
+            });
         });
 
         toggleGroupTabConfigPortL2.setOnAction((e) -> {
@@ -154,7 +167,7 @@ public class PortInfoTabConfig extends BorderPane {
         executor.submit(() -> {
             trexClient.serviceMode(port.getIndex(), true);
             savedPingIPv4 = textFieldTabConfigPortPingIPv4.getText();
-            logger.appendText(LogType.PING, " Start ping "+ savedPingIPv4+":");
+            guiLogger.appendText(LogType.PING, " Start ping " + savedPingIPv4 + ":");
             AsyncResponseManager.getInstance().muteLogger();
             try {
                 int icmp_id = new Random().nextInt(100);
@@ -166,16 +179,16 @@ public class PortInfoTabConfig extends BorderPane {
                         IcmpV4CommonPacket echoReplyPacket = reply.get(IcmpV4CommonPacket.class);
                         IcmpV4Type replyType = echoReplyPacket.getHeader().getType();
                         if (IcmpV4Type.ECHO_REPLY.equals(replyType)) {
-                            logger.appendText(LogType.PING, " Reply from " + savedPingIPv4 + " size="+reply.getRawData().length+" ttl="+ttl+" icmp_sec="+icmp_sec);
+                            guiLogger.appendText(LogType.PING, " Reply from " + savedPingIPv4 + " size=" + reply.getRawData().length + " ttl=" + ttl + " icmp_sec=" + icmp_sec);
                         } else if (IcmpV4Type.DESTINATION_UNREACHABLE.equals(replyType)) {
-                            logger.appendText(LogType.PING, " Destination host unreachable");
+                            guiLogger.appendText(LogType.PING, " Destination host unreachable");
                         }
                     } else {
-                        logger.appendText(LogType.PING, " Request timeout for icmp_seq " + icmp_sec);
+                        guiLogger.appendText(LogType.PING, " Request timeout for icmp_seq " + icmp_sec);
                     }
                 }
             } catch (UnknownHostException e) {
-                logger.appendText(LogType.PING, " Unknown host");
+                guiLogger.appendText(LogType.PING, " Unknown host");
             } finally {
                 trexClient.serviceMode(port.getIndex(), false);
                 AsyncResponseManager.getInstance().unmuteLogger();
@@ -193,7 +206,7 @@ public class PortInfoTabConfig extends BorderPane {
     }
 
     public void update(boolean full) {
-
+        
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
 
         String srcIPv4 = port.getSrcIp() != null
@@ -211,11 +224,12 @@ public class PortInfoTabConfig extends BorderPane {
         String dstMAC = port.getDstMac() != null
                 ? port.getDstMac()
                 : null;
-        
+
+        PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg layer_cfg = port.getAttr().getLayer_cfg();
         if (full) {
-            if (port.getAttr().getLayer_cfg().getIpv4().getState().compareToIgnoreCase("none") != 0) {
+            if (layer_cfg.getIpv4().getState().compareToIgnoreCase("none") != 0) {
                 toggleGroupTabConfigPortMode.selectToggle(toggleGroupTabConfigPortL3);
-            } else if (port.getAttr().getLayer_cfg().getEther().getState().compareToIgnoreCase("configured") == 0) {
+            } else if (layer_cfg.getEther().getState().compareToIgnoreCase("configured") == 0) {
                 toggleGroupTabConfigPortMode.selectToggle(toggleGroupTabConfigPortL2);
             } else {
                 toggleGroupTabConfigPortL2.setSelected(false);
@@ -241,6 +255,20 @@ public class PortInfoTabConfig extends BorderPane {
             }
 
             textFieldTabConfigPortPingIPv4.setText(savedPingIPv4);
+            
+            String arpState = layer_cfg.getIpv4().getState().toUpperCase();
+
+            arpStatus.setText(arpState);
+            Paint color = Color.BLACK;
+            switch (arpState) {
+                case "RESOLVED":
+                    color =  Color.GREEN;
+                    break;
+                case "UNRESOLVED":
+                    color =  Color.RED;
+                    break;
+            }
+            arpStatus.setTextFill(color);
         }
         if (srcMAC != null) {
             labelTabConfigPortSourceMAC.setText(srcMAC);
@@ -248,19 +276,6 @@ public class PortInfoTabConfig extends BorderPane {
         else {
             labelTabConfigPortSourceMAC.setText("");
         }
-        String arpState = port.getAttr().getLayer_cfg().getIpv4().getState().toUpperCase();
-        
-        labelTabConfigPortArpResolution.setText(arpState);
-        Paint color = Color.BLACK;
-        switch (arpState) {
-            case "RESOLVED":
-                color =  Color.GREEN;
-                break;
-            case "UNRESOLVED":
-                color =  Color.RED;
-                break;
-        }
-        labelTabConfigPortArpResolution.setTextFill(color);
         if (toggleGroupTabConfigPortL2.isSelected()) {
             setL2();
         }
@@ -286,6 +301,10 @@ public class PortInfoTabConfig extends BorderPane {
         textFieldTabConfigPortDestinationMAC.setDisable(false);
         textFieldTabConfigPortDestinationMAC.setManaged(true);
 
+        
+        arpStatus.setVisible(false);
+        arpLabel.setVisible(false);
+        
         textFieldTabConfigPortPingIPv4.setVisible(false);
         pingLabel.setVisible(false);
         buttonTabConfigPortPing.setVisible(false);
@@ -307,6 +326,9 @@ public class PortInfoTabConfig extends BorderPane {
         textFieldTabConfigPortDestinationMAC.setDisable(true);
         textFieldTabConfigPortDestinationMAC.setManaged(false);
 
+        arpStatus.setVisible(true);
+        arpLabel.setVisible(true);
+        
         textFieldTabConfigPortPingIPv4.setVisible(true);
         pingLabel.setVisible(true);
         buttonTabConfigPortPing.setVisible(true);
