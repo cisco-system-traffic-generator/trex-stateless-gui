@@ -1,9 +1,9 @@
-package com.exalttech.trex.ui.models.json.latencyStats;
+package com.exalttech.trex.ui.models.json.stats.latency;
 
 import java.util.Map;
 
 
-public class JSONLatencyStatsLatency {
+public class JSONStatsLatency {
     Map<String, Integer> histogram;
     double average;
     int jitter;

@@ -1,7 +1,7 @@
-package com.exalttech.trex.ui.models.json.latencyStats;
+package com.exalttech.trex.ui.models.json.stats.latency;
 
 
-public class JSONLatencyStatsErrCntrs {
+public class JSONStatsErrCntrs {
     int out_of_order;
     int seq_too_high;
     int dropped;

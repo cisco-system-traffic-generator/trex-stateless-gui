@@ -13,8 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.exalttech.trex.ui.models.json.latencyStats.JSONLatencyStats;
-import com.exalttech.trex.ui.models.json.latencyStats.JSONLatencyStatsLatency;
+import com.exalttech.trex.ui.models.json.stats.latency.JSONStatsStream;
+import com.exalttech.trex.ui.models.json.stats.latency.JSONStatsLatency;
 import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.Constants;
@@ -46,15 +46,15 @@ public class DashboardTabLatency extends AnchorPane {
         List<XYChart.Series> seriesList = new LinkedList<XYChart.Series>();
 
         latencyStatsByStreams.forEach((String stream, String jsonLatencyStats) -> {
-            JSONLatencyStats latencyStats = (JSONLatencyStats) Util.fromJSONString(
+            JSONStatsStream latencyStats = (JSONStatsStream) Util.fromJSONString(
                     jsonLatencyStats,
-                    JSONLatencyStats.class
+                    JSONStatsStream.class
             );
             if (latencyStats == null) {
                 return;
             }
 
-            JSONLatencyStatsLatency latency = latencyStats.getLatency();
+            JSONStatsLatency latency = latencyStats.getLatency();
             if (latency == null) {
                 return;
             }
