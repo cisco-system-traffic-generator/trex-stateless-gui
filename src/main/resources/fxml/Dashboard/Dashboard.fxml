@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.BorderPane?>
 
 <?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatistics?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.DashboardTabStreams?>
-
-
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.*?>
+<?import java.lang.String?>
 <BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml"
             style="-fx-background-color: #f0f0f0"
             prefWidth="800"
-            prefHeight="700">
+            prefHeight="700"
+            fx:controller="com.exalttech.trex.ui.controllers.DashboardController">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
@@ -23,20 +23,41 @@
         <DashboardGlobalStatistics/>
     </top>
     <center>
-        <TabPane styleClass="statRightPaneContent, floating"
-                 tabClosingPolicy="UNAVAILABLE">
-            <Tab text="Ports">
-                <DashboardTabPorts/>
-            </Tab>
-            <Tab text="Streams">
-                <DashboardTabStreams/>
-            </Tab>
-            <Tab text="Latency">
-                <DashboardTabLatency/>
-            </Tab>
-            <Tab text="Capture"
-                 disable="true">
-            </Tab>
-        </TabPane>
+        <AnchorPane>
+            <TabPane
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="5.0"
+                    AnchorPane.bottomAnchor="0.0"
+                    styleClass="statRightPaneContent, floating"
+                    tabClosingPolicy="UNAVAILABLE">
+                <Tab text="Ports">
+                    <DashboardTabPorts/>
+                </Tab>
+                <Tab text="Streams">
+                    <DashboardTabStreams/>
+                </Tab>
+                <Tab text="Latency">
+                    <DashboardTabLatency/>
+                </Tab>
+                <Tab text="Capture"
+                     disable="true">
+                </Tab>
+            </TabPane>
+            <StackPane AnchorPane.rightAnchor="0.0"
+                       AnchorPane.topAnchor="8.0">
+                <HBox spacing="5" alignment="CENTER">
+                    <Label text="Ports:"/>
+                    <ComboBox fx:id="portFilterSelector" onAction="#handlePortFilterSelection" value="All">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="All" />
+                                <String fx:value="Owned by me" />
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+            </StackPane>
+        </AnchorPane>
     </center>
 </BorderPane>
