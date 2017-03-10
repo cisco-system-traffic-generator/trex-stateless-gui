@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+
+<?import com.exalttech.trex.ui.views.DashboardTabLatencyHistogram?>
 
 
 <fx:root xmlns="http://javafx.com/javafx/8"
@@ -29,24 +28,8 @@
             <RowConstraints percentHeight="50"/>
             <RowConstraints percentHeight="50"/>
         </rowConstraints>
-        <AnchorPane GridPane.columnIndex="0"
-                    GridPane.rowIndex="0">
-            <BarChart fx:id="histogram"
-                      animated="false"
-                      verticalGridLinesVisible="false"
-                      styleClass="statistics-chart"
-                      AnchorPane.leftAnchor="0.0"
-                      AnchorPane.rightAnchor="0.0"
-                      AnchorPane.topAnchor="0.0"
-                      AnchorPane.bottomAnchor="0.0">
-                <xAxis>
-                    <CategoryAxis/>
-                </xAxis>
-                <yAxis>
-                    <NumberAxis/>
-                </yAxis>
-            </BarChart>
-        </AnchorPane>
+        <DashboardTabLatencyHistogram GridPane.columnIndex="0"
+                                      GridPane.rowIndex="0"/>
         <AnchorPane GridPane.columnIndex="0"
                     GridPane.rowIndex="1">
         </AnchorPane>
