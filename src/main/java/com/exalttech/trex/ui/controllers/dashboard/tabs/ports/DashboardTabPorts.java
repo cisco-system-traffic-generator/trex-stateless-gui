@@ -1,4 +1,4 @@
-package com.exalttech.trex.ui.views;
+package com.exalttech.trex.ui.controllers.dashboard.tabs.ports;
 
 import com.exalttech.trex.ui.PortsManager;
 import javafx.beans.value.ChangeListener;
@@ -34,7 +34,7 @@ public class DashboardTabPorts extends AnchorPane {
     Map<String, String> cachedStatsList = new HashMap<>();
 
     public DashboardTabPorts() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/DashboardTabPorts.fxml");
+        Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/ports/DashboardTabPorts.fxml");
 
         statsTableGenerator = new StatsTableGenerator();
         portManager = PortsManager.getInstance();

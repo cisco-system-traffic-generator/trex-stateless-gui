@@ -1,4 +1,4 @@
-package com.exalttech.trex.ui.views;
+package com.exalttech.trex.ui.controllers.dashboard.tabs.latency;
 
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;

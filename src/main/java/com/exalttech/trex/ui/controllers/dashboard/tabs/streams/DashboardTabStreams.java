@@ -1,4 +1,4 @@
-package com.exalttech.trex.ui.views;
+package com.exalttech.trex.ui.controllers.dashboard.tabs.streams;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -144,7 +144,7 @@ public class DashboardTabStreams extends AnchorPane {
     private Double chartRange;
 
     public DashboardTabStreams() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/DashboardTabStreams.fxml");
+        Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/streams/DashboardTabStreams.fxml");
 
         chartInterval = 1;
         chartRange = chartInterval*(historySize - 10)*1.0;

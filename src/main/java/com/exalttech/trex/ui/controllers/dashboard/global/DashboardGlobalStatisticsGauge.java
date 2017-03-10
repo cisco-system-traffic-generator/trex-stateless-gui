@@ -1,8 +1,7 @@
-package com.exalttech.trex.ui.views;
+package com.exalttech.trex.ui.controllers.dashboard.global;
 
 import javafx.beans.NamedArg;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
@@ -20,7 +19,7 @@ public class DashboardGlobalStatisticsGauge extends AnchorPane {
     private Label titleLabel;
 
     public DashboardGlobalStatisticsGauge(@NamedArg("title") String title) {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/DashboardGlobalStatisticsGauge.fxml");
+        Initialization.initializeFXML(this, "/fxml/Dashboard/global/DashboardGlobalStatisticsGauge.fxml");
 
         titleLabel.setText(title);
     }

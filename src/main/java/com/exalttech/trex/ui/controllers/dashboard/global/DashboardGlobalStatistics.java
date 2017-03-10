@@ -1,4 +1,4 @@
-package com.exalttech.trex.ui.views;
+package com.exalttech.trex.ui.controllers.dashboard.global;
 
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -48,7 +48,7 @@ public class DashboardGlobalStatistics extends GridPane {
     PortsManager portManager;
 
     public DashboardGlobalStatistics() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/DashboardGlobalStatistics.fxml");
+        Initialization.initializeFXML(this, "/fxml/Dashboard/global/DashboardGlobalStatistics.fxml");
 
         refreshingService = new RefreshingService();
         refreshingService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));

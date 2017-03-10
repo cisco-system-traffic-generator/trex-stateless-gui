@@ -4,8 +4,8 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<?import com.exalttech.trex.ui.views.DashboardGlobalStatisticsGauge?>
-<?import com.exalttech.trex.ui.views.DashboardGlobalStatisticsPanel?>
+<?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatisticsGauge?>
+<?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatisticsPanel?>
 
 
 <fx:root xmlns="http://javafx.com/javafx/8"

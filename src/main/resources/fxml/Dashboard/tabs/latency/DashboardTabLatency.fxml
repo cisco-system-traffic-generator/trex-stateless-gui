@@ -11,8 +11,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import com.exalttech.trex.ui.views.DashboardTabLatencyChart?>
-<?import com.exalttech.trex.ui.views.DashboardTabLatencyHistogram?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatencyChart?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatencyHistogram?>
 
 
 <fx:root xmlns="http://javafx.com/javafx/8"

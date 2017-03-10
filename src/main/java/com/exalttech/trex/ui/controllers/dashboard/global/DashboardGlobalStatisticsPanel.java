@@ -1,8 +1,7 @@
-package com.exalttech.trex.ui.views;
+package com.exalttech.trex.ui.controllers.dashboard.global;
 
 import javafx.beans.NamedArg;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
@@ -24,7 +23,7 @@ public class DashboardGlobalStatisticsPanel extends AnchorPane {
     }
 
     public DashboardGlobalStatisticsPanel(@NamedArg("title") String title, @NamedArg("isColored") boolean isColored) {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/DashboardGlobalStatisticsPanel.fxml");
+        Initialization.initializeFXML(this, "/fxml/Dashboard/global/DashboardGlobalStatisticsPanel.fxml");
 
         this.isColored = isColored;
         if (isColored) {

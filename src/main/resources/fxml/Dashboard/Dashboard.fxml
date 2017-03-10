@@ -5,10 +5,10 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<?import com.exalttech.trex.ui.views.DashboardGlobalStatistics?>
-<?import com.exalttech.trex.ui.views.DashboardTabLatency?>
-<?import com.exalttech.trex.ui.views.DashboardTabPorts?>
-<?import com.exalttech.trex.ui.views.DashboardTabStreams?>
+<?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatistics?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.DashboardTabStreams?>
 
 
 <BorderPane xmlns="http://javafx.com/javafx/8"
