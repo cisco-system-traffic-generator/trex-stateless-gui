@@ -1,6 +1,16 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.ports;
 
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.ui.PortsManager;
+import com.exalttech.trex.ui.components.GlobalPortFilter;
+import com.exalttech.trex.ui.views.services.RefreshingService;
+import com.exalttech.trex.ui.views.statistics.StatsLoader;
+import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
+import com.exalttech.trex.util.Constants;
+import com.exalttech.trex.util.Initialization;
+import com.exalttech.trex.util.Util;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.WorkerStateEvent;
@@ -13,13 +23,6 @@ import javafx.util.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.exalttech.trex.ui.views.services.RefreshingService;
-import com.exalttech.trex.ui.views.statistics.StatsLoader;
-import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
-import com.exalttech.trex.util.Constants;
-import com.exalttech.trex.util.Initialization;
-import com.exalttech.trex.util.Util;
-
 
 public class DashboardTabPorts extends AnchorPane {
     @FXML
@@ -27,13 +30,21 @@ public class DashboardTabPorts extends AnchorPane {
     @FXML
     private ScrollPane statTableContainer;
 
+    private GlobalPortFilter portFilter;
+    
     StatsTableGenerator statsTableGenerator;
     RefreshingService readingStatService;
     PortsManager portManager;
     Map<String, String> currentStatsList = new HashMap<>();
     Map<String, String> cachedStatsList = new HashMap<>();
+    private BooleanProperty onwnedPortsFilter;
 
     public DashboardTabPorts() {
+        
+        portFilter = TrexApp.injector.getInstance(GlobalPortFilter.class);
+        onwnedPortsFilter = new SimpleBooleanProperty();
+        onwnedPortsFilter.bind(portFilter.onlyOwnedPortsProperty());
+        
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/ports/DashboardTabPorts.fxml");
 
         statsTableGenerator = new StatsTableGenerator();
@@ -81,7 +92,6 @@ public class DashboardTabPorts extends AnchorPane {
         if (colWidth < 130) {
             colWidth = 150;
         }
-
-        statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portManager.getPortList().size(), true, colWidth, false));
+        statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portManager.getPortList().size(), true, colWidth, onwnedPortsFilter.get()));
     }
 }
