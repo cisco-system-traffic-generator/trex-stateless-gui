@@ -1,22 +1,22 @@
-package com.exalttech.trex.ui.models;
+package com.exalttech.trex.ui.models.json.stats.streams;
 
 import java.util.HashMap;
 
 
-public class RawFlowStatsData {
+public class JSONFlowStatsStream {
     HashMap<Integer,Integer> tx_pkts;
     HashMap<Integer,Integer> tx_bytes;
     HashMap<Integer,Integer> rx_pkts;
     HashMap<Integer,Integer> rx_bytes;
 
-    public RawFlowStatsData() {
+    public JSONFlowStatsStream() {
         tx_pkts = new HashMap<>();
         tx_bytes = new HashMap<>();
         rx_pkts = new HashMap<>();
         rx_bytes = new HashMap<>();
     }
 
-    public RawFlowStatsData(
+    public JSONFlowStatsStream(
             HashMap<Integer,Integer> tx_pkts,
             HashMap<Integer,Integer> tx_bytes,
             HashMap<Integer,Integer> rx_pkts,

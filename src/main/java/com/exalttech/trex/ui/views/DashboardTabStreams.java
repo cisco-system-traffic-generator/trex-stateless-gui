@@ -20,8 +20,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.exalttech.trex.ui.models.RawFlowStatsData;
-import com.exalttech.trex.ui.models.RawFlowStatsTimeStamp;
+import com.exalttech.trex.ui.models.json.stats.streams.JSONFlowStatsStream;
+import com.exalttech.trex.ui.models.json.stats.streams.JSONFlowStatsTimeStamp;
 import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.ui.views.statistics.cells.CellType;
@@ -224,9 +224,9 @@ public class DashboardTabStreams extends AnchorPane {
 
     private void onRefreshSucceeded(WorkerStateEvent event) {
         Map<String, String> flowStats = StatsLoader.getInstance().getLoadedFlowStatsMap();
-        RawFlowStatsTimeStamp timeStamp = (RawFlowStatsTimeStamp) Util.fromJSONString(
+        JSONFlowStatsTimeStamp timeStamp = (JSONFlowStatsTimeStamp) Util.fromJSONString(
                 flowStats.get("ts"),
-                RawFlowStatsTimeStamp.class
+                JSONFlowStatsTimeStamp.class
         );
 
         Double time = timeStamp.getValue()*1.0/timeStamp.getFreq();
@@ -239,7 +239,7 @@ public class DashboardTabStreams extends AnchorPane {
                 return;
             }
 
-            RawFlowStatsData rawData = (RawFlowStatsData) Util.fromJSONString(value, RawFlowStatsData.class);
+            JSONFlowStatsStream rawData = (JSONFlowStatsStream) Util.fromJSONString(value, JSONFlowStatsStream.class);
             if (rawData == null) {
                 return;
             }
