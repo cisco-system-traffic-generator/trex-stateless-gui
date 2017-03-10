@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
+<?import com.exalttech.trex.ui.views.DashboardTabLatencyChart?>
 <?import com.exalttech.trex.ui.views.DashboardTabLatencyHistogram?>
 
 
@@ -28,8 +34,26 @@
             <RowConstraints percentHeight="50"/>
             <RowConstraints percentHeight="50"/>
         </rowConstraints>
-        <DashboardTabLatencyHistogram GridPane.columnIndex="0"
-                                      GridPane.rowIndex="0"/>
+        <VBox fillWidth="true"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="0">
+            <StackPane>
+                <DashboardTabLatencyHistogram fx:id="histogram"/>
+                <DashboardTabLatencyChart fx:id="chart"/>
+            </StackPane>
+            <HBox minHeight="30"
+                  maxHeight="30"
+                  alignment="center"
+                  spacing="10.0"
+                  VBox.vgrow="NEVER">
+                <Label text="Chart Type:"/>
+                <ComboBox fx:id="chartTypeComboBox"
+                          prefWidth="120"/>
+                <Label text="Interval:"/>
+                <ComboBox fx:id="intervalComboBox"
+                          prefWidth="120.0"/>
+            </HBox>
+        </VBox>
         <AnchorPane GridPane.columnIndex="0"
                     GridPane.rowIndex="1">
         </AnchorPane>
