@@ -60,8 +60,8 @@
                            minWidth="${16 * s.width}" />
             </HBox>
 
-            <Label text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <Label fx:id="labelTabConfigPortArpResolution" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
+            <Label fx:id="arpLabel" text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <Label fx:id="arpStatus" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
 
             <Label fx:id="pingLabel" text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
             <TextField fx:id="textFieldTabConfigPortPingIPv4" text="" promptText="ping IPv4 address"
