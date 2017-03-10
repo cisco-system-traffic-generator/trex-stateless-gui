@@ -1,5 +1,6 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.streams;
 
+import com.exalttech.trex.util.Constants;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -9,8 +10,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.WindowEvent;
@@ -111,12 +110,18 @@ public class DashboardTabStreams extends AnchorPane {
         add("Tx (B)");
         add("Rx (B)");
     }};
-    private static final Integer historySize = 60;
+    private static final Integer historySize = 300;
     private static final List<String> streamsCountValues = new ArrayList<String>() {{
         add("5");
         add("10");
         add("15");
         add("20");
+    }};
+    private static final List<String> latencyIntervals = new ArrayList<String>() {{
+        add("60");
+        add("90");
+        add("120");
+        add("300");
     }};
 
     @FXML
@@ -132,7 +137,7 @@ public class DashboardTabStreams extends AnchorPane {
     @FXML
     private ComboBox streamsCountComboBox;
     @FXML
-    private Spinner intervalSpinner;
+    private ComboBox intervalComboBox;
     @FXML
     private GridPane table;
 
@@ -140,17 +145,13 @@ public class DashboardTabStreams extends AnchorPane {
     private String selectedStatistics;
     private Map<String, List<FlowStatsData>> streamsHistory;
     private Integer maxStreamsCount;
-    private Integer chartInterval;
-    private Double chartRange;
 
     public DashboardTabStreams() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/streams/DashboardTabStreams.fxml");
 
-        chartInterval = 1;
-        chartRange = chartInterval*(historySize - 10)*1.0;
         streamsHistory = new HashMap<>();
         refreshingService = new RefreshingService();
-        refreshingService.setPeriod(Duration.seconds(chartInterval));
+        refreshingService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
         refreshingService.setOnSucceeded(this::onRefreshSucceeded);
         refreshingService.start();
 
@@ -185,41 +186,19 @@ public class DashboardTabStreams extends AnchorPane {
         });
         streamsCountComboBox.setValue("10");
 
-        xAxis.setLowerBound(-chartRange);
-
-        intervalSpinner.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, chartInterval)
-        );
-        intervalSpinner.getEditor().textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if(!newValue.matches("[0-9]*")){
-                    intervalSpinner.getEditor().setText(oldValue);
-                } else {
-                    Integer value = Integer.parseInt(intervalSpinner.getEditor().getText());
-                    if (value > 100) {
-                        intervalSpinner.getEditor().setText("100");
-                    }
-                }
-                Integer value = Integer.parseInt(intervalSpinner.getEditor().getText());
-                if (!value.equals(chartInterval)) {
-                    chartInterval = value;
-                    chartRange = chartInterval*(historySize - 10)*1.0;
-                    xAxis.setLowerBound(-chartRange);
-                    refreshingService.setPeriod(Duration.seconds(chartInterval));
-                }
-            }
-        });
-        intervalSpinner.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue && intervalSpinner.getEditor().getText().isEmpty()) {
-                    intervalSpinner.getEditor().setText("1");
-                }
-            }
-        });
+        initializeIntervalComboBox();
 
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
+    }
+
+    private void initializeIntervalComboBox() {
+        intervalComboBox.getItems().addAll(FXCollections.observableArrayList(latencyIntervals));
+        intervalComboBox.valueProperty().addListener(new ChangeListener<String>() {
+            public void changed(ObservableValue observable, String oldValue, String newValue) {
+                xAxis.setLowerBound(-Integer.parseInt(newValue));
+            }
+        });
+        intervalComboBox.setValue("60");
     }
 
     private void onRefreshSucceeded(WorkerStateEvent event) {

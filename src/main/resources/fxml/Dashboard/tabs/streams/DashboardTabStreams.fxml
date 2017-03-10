@@ -6,7 +6,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -82,10 +81,9 @@
             <ComboBox fx:id="streamsCountComboBox"
                       editable="true"
                       prefWidth="120.0"/>
-            <Label text="Interval (s):"/>
-            <Spinner fx:id="intervalSpinner"
-                     editable="true"
-                     prefWidth="120.0"/>
+            <Label text="Interval:"/>
+            <ComboBox fx:id="intervalComboBox"
+                      prefWidth="120.0"/>
         </HBox>
         <AnchorPane GridPane.columnIndex="0"
                     GridPane.rowIndex="2"
