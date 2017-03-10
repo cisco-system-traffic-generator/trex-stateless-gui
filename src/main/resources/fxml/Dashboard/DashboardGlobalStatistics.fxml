@@ -12,8 +12,8 @@
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.GridPane"
          fx:id="root"
-         minHeight="170.0"
-         maxHeight="170.0"
+         minHeight="190.0"
+         maxHeight="190.0"
          hgap="10"
          vgap="10">
     <columnConstraints>
@@ -24,8 +24,8 @@
         <ColumnConstraints percentWidth="20"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints prefHeight="80"/>
-        <RowConstraints prefHeight="80"/>
+        <RowConstraints prefHeight="90"/>
+        <RowConstraints prefHeight="90"/>
     </rowConstraints>
     <DashboardGlobalStatisticsGauge fx:id="cpuGauge"
                                     title="CPU"
