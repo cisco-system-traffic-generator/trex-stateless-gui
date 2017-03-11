@@ -7,13 +7,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import com.exalttech.trex.ui.models.json.stats.streams.JSONFlowStatsStream;
-import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.Initialization;
-import com.exalttech.trex.util.Util;
 
 
 public class DashboardTabLatency extends AnchorPane {
@@ -33,6 +31,8 @@ public class DashboardTabLatency extends AnchorPane {
     @FXML
     private DashboardTabLatencyChart chart;
     @FXML
+    private DashboardTabLatencyTable table;
+    @FXML
     private ComboBox chartTypeComboBox;
     @FXML
     private ComboBox intervalComboBox;
@@ -46,6 +46,7 @@ public class DashboardTabLatency extends AnchorPane {
     public void setVisiblePorts(Set<Integer> visiblePorts) {
         histogram.setVisiblePorts(visiblePorts);
         chart.setVisiblePorts(visiblePorts);
+        table.setVisiblePorts(visiblePorts);
     }
 
     private void initializeChartTypeComboBox() {

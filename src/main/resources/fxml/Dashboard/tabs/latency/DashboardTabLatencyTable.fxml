@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.AnchorPane"
+         fx:id="root">
+    <TableView fx:id="table"
+               focusTraversable="false"
+               styleClass="statistics-table-view"
+               AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0"
+               AnchorPane.topAnchor="0.0"
+               AnchorPane.bottomAnchor="0.0">
+        <columns>
+            <TableColumn text="PG ID"
+                         minWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="pgId"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Tx pkts"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="txPkts"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Rx pkts"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="rxPkts"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Max Latency"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="maxLatency"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Avg Latency"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="avgLatency"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Jitter"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="jitter"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Dropped"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="dropped"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Dup"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="dup"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Out Of Order"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="outOfOrder"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Seq To High"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="seqToHigh"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Seq To Low"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="seqToLow"/>
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+</fx:root>

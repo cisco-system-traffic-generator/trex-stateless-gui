@@ -15,6 +15,7 @@
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatencyHistogram?>
 
 
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatencyTable?>
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.AnchorPane"
@@ -54,8 +55,8 @@
                           prefWidth="120.0"/>
             </HBox>
         </VBox>
-        <AnchorPane GridPane.columnIndex="0"
-                    GridPane.rowIndex="1">
-        </AnchorPane>
+        <DashboardTabLatencyTable fx:id="table"
+                                  GridPane.columnIndex="0"
+                                  GridPane.rowIndex="1"/>
     </GridPane>
 </fx:root>

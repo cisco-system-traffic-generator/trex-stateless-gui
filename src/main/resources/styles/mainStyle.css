@@ -512,7 +512,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-background-color: white;
     -fx-border-insets: 0;
 }
-.table-view .table-cell {     
+.table-view .table-cell {
     -fx-border-color:  transparent transparent  #cfcfcf #cfcfcf;
     -fx-border-insets: 0;
     -fx-alignment: CENTER_LEFT;
@@ -534,41 +534,38 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 .table-view .table-row-cell:empty,
 .table-view .table-cell:empty{
     -fx-background-color: #FFFFFF;
-    -fx-border-color: #FFFFFF;
     -fx-border-color: transparent transparent transparent transparent;
 }
 
-/*.table-view *.scroll-bar:vertical *.increment-button,
-.table-view *.scroll-bar:vertical *.decrement-button {
-    -fx-background-color: null;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+/* Code below disables standard table view horizontal scrollbar */
+/*.table-view *.scroll-bar:horizontal *.increment-button,*/
+/*.table-view *.scroll-bar:horizontal *.decrement-button {*/
+    /*-fx-background-color: null;*/
+    /*-fx-background-radius: 0;*/
+    /*-fx-background-insets: 0;*/
+    /*-fx-padding: 0;*/
+/*}*/
+
+/*.table-view *.scroll-bar:horizontal *.increment-arrow,*/
+/*.table-view *.scroll-bar:horizontal *.decrement-arrow {*/
+    /*-fx-background-color: null;*/
+    /*-fx-background-radius: 0;*/
+    /*-fx-background-insets: 0;*/
+    /*-fx-padding: 0;*/
+    /*-fx-shape: null;*/
+/*}*/
+
+.table-view .column-header-background .filler {
+    -fx-background-color: #32b4ea;
+    -fx-border-color:  #cfcfcf;
 }
 
-.table-view *.scroll-bar:vertical *.increment-arrow, 
-.table-view *.scroll-bar:vertical *.decrement-arrow {
-    -fx-background-color: null;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-    -fx-shape: null;
-}*/
-.table-view *.scroll-bar:horizontal *.increment-button,
-.table-view *.scroll-bar:horizontal *.decrement-button {
-    -fx-background-color: null;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+.statistics-table-view .column-header .label{
+    -fx-alignment: center;
 }
 
-.table-view *.scroll-bar:horizontal *.increment-arrow, 
-.table-view *.scroll-bar:horizontal *.decrement-arrow {
-    -fx-background-color: null;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-    -fx-shape: null;
+.statistics-table-view .table-cell {
+    -fx-alignment: center-right;
 }
 
 #alignedColumn{
