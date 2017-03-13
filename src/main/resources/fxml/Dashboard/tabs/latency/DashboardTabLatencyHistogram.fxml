@@ -19,7 +19,7 @@
               AnchorPane.topAnchor="0.0"
               AnchorPane.bottomAnchor="0.0">
         <xAxis>
-            <CategoryAxis/>
+            <CategoryAxis fx:id="xAxis"/>
         </xAxis>
         <yAxis>
             <NumberAxis/>

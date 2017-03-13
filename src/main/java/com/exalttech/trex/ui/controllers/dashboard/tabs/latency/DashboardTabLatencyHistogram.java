@@ -1,17 +1,16 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.latency;
 
+import javafx.collections.FXCollections;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.exalttech.trex.ui.models.json.stats.latency.JSONStatsStream;
 import com.exalttech.trex.ui.models.json.stats.latency.JSONStatsLatency;
@@ -27,6 +26,8 @@ public class DashboardTabLatencyHistogram extends AnchorPane {
     private AnchorPane root;
     @FXML
     private BarChart histogram;
+    @FXML
+    private CategoryAxis xAxis;
 
     private RefreshingService refreshingService;
 
@@ -44,6 +45,7 @@ public class DashboardTabLatencyHistogram extends AnchorPane {
     private void onRefreshSucceeded(WorkerStateEvent event) {
         Map<String, String> latencyStatsByStreams = StatsLoader.getInstance().getLatencyStatsMap();
         List<XYChart.Series> seriesList = new LinkedList<XYChart.Series>();
+        Set<String> categories = new HashSet<String>();
 
         latencyStatsByStreams.forEach((String stream, String jsonLatencyStats) -> {
             JSONStatsStream latencyStats = (JSONStatsStream) Util.fromJSONString(
@@ -62,19 +64,23 @@ public class DashboardTabLatencyHistogram extends AnchorPane {
             XYChart.Series series = new XYChart.Series();
             series.setName(stream);
             latency.getHistogram().forEach((String key, Integer value) -> {
+                categories.add(key);
                 series.getData().add(new XYChart.Data<String, Number>(key, value));
-            });
-            series.getData().sort(new Comparator<XYChart.Data<String, Number>>() {
-                @Override
-                public int compare(XYChart.Data<String, Number> o1, XYChart.Data<String, Number> o2) {
-                    return Integer.parseInt(o1.getXValue()) - Integer.parseInt(o2.getXValue());
-                }
             });
             seriesList.add(series);
         });
 
-        histogram.getData().clear();
-        histogram.getData().addAll(seriesList);
+        histogram.setData(FXCollections.observableArrayList(seriesList));
+
+        List<String> categoriesList = new ArrayList<String>();
+        categoriesList.addAll(categories);
+        categoriesList.sort(new Comparator<String>() {
+            @Override
+            public int compare(String category1, String category2) {
+                return Integer.parseInt(category1) - Integer.parseInt(category2);
+            }
+        });
+        xAxis.setCategories(FXCollections.observableArrayList(categoriesList));
     }
 
     private void onWindowCloseRequest(WindowEvent window) {
