@@ -19,6 +19,7 @@ import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
+import com.exalttech.trex.util.StatsUtils;
 import com.exalttech.trex.util.Util;
 
 
@@ -34,7 +35,9 @@ public class DashboardTabLatencyChart extends AnchorPane {
 
     private Map<String, ArrayHistory<Integer>> latencyHistory;
     private int interval;
+
     private RefreshingService refreshingService;
+    Set<Integer> visiblePorts;
 
     public DashboardTabLatencyChart() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/latency/DashboardTabLatencyChart.fxml");
@@ -53,6 +56,11 @@ public class DashboardTabLatencyChart extends AnchorPane {
     public void setInterval(int interval) {
         this.interval = interval;
         xAxis.setLowerBound(-interval);
+    }
+
+    public void setVisiblePorts(Set<Integer> visiblePorts) {
+        this.visiblePorts = visiblePorts;
+        renderChart();
     }
 
     private void onRefreshSucceeded(WorkerStateEvent event) {
@@ -102,7 +110,11 @@ public class DashboardTabLatencyChart extends AnchorPane {
 
     private void renderChart() {
         List<XYChart.Series> seriesList = new LinkedList<XYChart.Series>();
+        Set<String> visibleStreams = StatsUtils.getVisibleStream(visiblePorts);
         latencyHistory.forEach((String stream, ArrayHistory<Integer> history) -> {
+            if (visibleStreams != null && !visibleStreams.contains(stream)) {
+                return;
+            }
             XYChart.Series series = new XYChart.Series();
             series.setName(stream);
             AtomicInteger x = new AtomicInteger(-Math.min(historySize, history.size()) + 1);

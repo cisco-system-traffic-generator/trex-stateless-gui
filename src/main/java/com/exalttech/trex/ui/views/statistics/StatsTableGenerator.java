@@ -29,10 +29,10 @@ import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import org.apache.log4j.Logger;
 
-import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -88,7 +88,7 @@ public class StatsTableGenerator {
      * @return
      */
     public GridPane getPortStatTable(Map<String, String> cached, int portIndex) {
-        return getPortStatTable(cached, portIndex, false, WIDTH_COL_1, false);
+        return getPortStatTable(cached, portIndex, false, WIDTH_COL_1, null);
     }
 
     /**
@@ -98,10 +98,16 @@ public class StatsTableGenerator {
      * @param portIndex
      * @param columnWidth
      * @param isMultiPort
-     * @param ownerFilter
+     * @param visiblePorts
      * @return
      */
-    public GridPane getPortStatTable(Map<String, String> cached, int portIndex, boolean isMultiPort, double columnWidth, boolean ownerFilter) {
+    public GridPane getPortStatTable(
+            Map<String, String> cached,
+            int portIndex,
+            boolean isMultiPort,
+            double columnWidth,
+            Set<Integer> visiblePorts
+    ) {
         this.currentStatsList = StatsLoader.getInstance().getLoadedStatsList();
         this.prevStatsList = StatsLoader.getInstance().getPreviousStatsList();
         this.prevTotalValues = totalValues;
@@ -126,7 +132,7 @@ public class StatsTableGenerator {
             rowIndex = 0;
             odd = true;
             Port port = PortsManager.getInstance().getPortList().get(i);
-            if (!ownerFilter || (ownerFilter && PortsManager.getInstance().isCurrentUserOwner(port.getIndex()))) {
+            if (visiblePorts == null || visiblePorts.contains(port.getIndex())) {
                 // add owner and port status
                 addPortInfoCells(port, columnWidth, columnIndex);
                 for (StatisticRow key : StatisticConstantsKeys.PORT_STATS_KEY) {

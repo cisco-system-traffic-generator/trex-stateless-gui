@@ -21,6 +21,7 @@ import com.exalttech.trex.ui.views.services.UpdatePortStatusService;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Util;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.util.Duration;
@@ -195,5 +196,21 @@ public class PortsManager {
      */
     public boolean isPortFree(int portIndex) {
         return Util.isNullOrEmpty(portList.get(portIndex).getOwner());
+    }
+
+    /**
+     * Return indexes of the owned ports
+     *
+     * @return
+     */
+    public List<Integer> getOwnedPortIndexes() {
+        List<Integer> ownedPortIndexes = new LinkedList<Integer>();
+        portList.forEach((Port port) -> {
+            int portIndex = port.getIndex();
+            if (isCurrentUserOwner(portIndex)) {
+                ownedPortIndexes.add(portIndex);
+            }
+        });
+        return ownedPortIndexes;
     }
 }

@@ -16,6 +16,14 @@ public class ArrayHistory<T> {
         capacity = 0;
     }
 
+    public T get(int index) {
+        int required = currentLast + index;
+        if (required < capacity) {
+            return (T) history[required];
+        }
+        return (T) history[required - capacity];
+    }
+
     public void add(T item) {
         if (currentLast >= historyLength) {
             currentLast = 0;
@@ -38,4 +46,6 @@ public class ArrayHistory<T> {
     public int size() {
         return capacity;
     }
+
+    public boolean isEmpty() { return capacity == 0; }
 }

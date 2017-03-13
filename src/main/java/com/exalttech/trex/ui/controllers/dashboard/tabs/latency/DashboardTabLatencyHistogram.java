@@ -18,6 +18,7 @@ import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
+import com.exalttech.trex.util.StatsUtils;
 import com.exalttech.trex.util.Util;
 
 
@@ -30,6 +31,7 @@ public class DashboardTabLatencyHistogram extends AnchorPane {
     private CategoryAxis xAxis;
 
     private RefreshingService refreshingService;
+    private Set<Integer> visiblePorts;
 
     public DashboardTabLatencyHistogram() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/latency/DashboardTabLatencyHistogram.fxml");
@@ -42,12 +44,28 @@ public class DashboardTabLatencyHistogram extends AnchorPane {
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
     }
 
+    public void setVisiblePorts(Set<Integer> visiblePorts) {
+        this.visiblePorts = visiblePorts;
+        onRefreshSucceeded(null);
+    }
+
     private void onRefreshSucceeded(WorkerStateEvent event) {
+        histogram.getData().clear();
+
+        Set<String> visibleStreams = StatsUtils.getVisibleStream(visiblePorts);
+        if (visibleStreams != null && visibleStreams.isEmpty()) {
+            return;
+        }
+
         Map<String, String> latencyStatsByStreams = StatsLoader.getInstance().getLatencyStatsMap();
+
         List<XYChart.Series> seriesList = new LinkedList<XYChart.Series>();
         Set<String> categories = new HashSet<String>();
-
         latencyStatsByStreams.forEach((String stream, String jsonLatencyStats) -> {
+            if (visibleStreams != null && !visibleStreams.contains(stream)) {
+                return;
+            }
+
             JSONStatsStream latencyStats = (JSONStatsStream) Util.fromJSONString(
                     jsonLatencyStats,
                     JSONStatsStream.class
@@ -61,17 +79,25 @@ public class DashboardTabLatencyHistogram extends AnchorPane {
                 return;
             }
 
+            Map<String, Integer> histogram = latency.getHistogram();
+            if (histogram == null) {
+                return;
+            }
+
             XYChart.Series series = new XYChart.Series();
             series.setName(stream);
-            latency.getHistogram().forEach((String key, Integer value) -> {
+            histogram.forEach((String key, Integer value) -> {
                 categories.add(key);
                 series.getData().add(new XYChart.Data<String, Number>(key, value));
             });
             seriesList.add(series);
         });
 
-        histogram.setData(FXCollections.observableArrayList(seriesList));
+        if (seriesList.isEmpty()) {
+            return;
+        }
 
+        histogram.getData().addAll(seriesList);
         List<String> categoriesList = new ArrayList<String>();
         categoriesList.addAll(categories);
         categoriesList.sort(new Comparator<String>() {
@@ -81,6 +107,7 @@ public class DashboardTabLatencyHistogram extends AnchorPane {
             }
         });
         xAxis.setCategories(FXCollections.observableArrayList(categoriesList));
+        xAxis.setAutoRanging(true);
     }
 
     private void onWindowCloseRequest(WindowEvent window) {

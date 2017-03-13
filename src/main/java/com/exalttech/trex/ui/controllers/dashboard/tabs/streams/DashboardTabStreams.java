@@ -1,6 +1,7 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.streams;
 
 import com.exalttech.trex.util.Constants;
+import com.exalttech.trex.util.StatsUtils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -18,6 +19,7 @@ import javafx.util.Duration;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.exalttech.trex.ui.models.json.stats.streams.JSONFlowStatsStream;
 import com.exalttech.trex.ui.models.json.stats.streams.JSONFlowStatsTimeStamp;
@@ -32,71 +34,86 @@ import com.exalttech.trex.util.Util;
 
 public class DashboardTabStreams extends AnchorPane {
     private static class FlowStatsData {
-        private Integer txPkts;
-        private Integer txBytes;
-        private Integer rxPkts;
-        private Integer rxBytes;
-        private Double time;
+        private Map<Integer, Long> txPkts;
+        private Map<Integer, Long> txBytes;
+        private Map<Integer, Long> rxPkts;
+        private Map<Integer, Long> rxBytes;
+        private double time;
 
-        private static Double round(Double value) {
-            return ((int)(value*100.0))/100.0;
+        public FlowStatsData(
+                Map<Integer, Long> txPkts,
+                Map<Integer, Long> txBytes,
+                Map<Integer, Long> rxPkts,
+                Map<Integer, Long> rxBytes,
+                double time
+        ) {
+            this.txPkts = txPkts;
+            this.txBytes = txBytes;
+            this.rxPkts = rxPkts;
+            this.rxBytes = rxBytes;
+            this.time = time;
         }
 
-        public void setTxPkts(Integer txPkts) { this.txPkts = txPkts; }
-        public Integer getTxPkts() { return txPkts; }
-
-        public void setTxBytes(Integer txBytes) { this.txBytes = txBytes; }
-        public Integer getTxBytes() { return txBytes; }
-
-        public void setRxPkts(Integer rxPkts) { this.rxPkts = rxPkts; }
-        public Integer getRxPkts() { return rxPkts; }
-
-        public void setRxBytes(Integer rxBytes) { this.rxBytes = rxBytes; }
-        public Integer getRxBytes() { return rxBytes; }
-
-        public void setTime(Double time) { this.time = time; }
-        public Double getTime() { return time; }
-
-        public Double calcTxPps() {
-            return round(txPkts/time);
-        }
-        public Double calcTxPps(FlowStatsData prevData) {
-            return round((txPkts - prevData.txPkts)/(time - prevData.time));
+        public long calcTotalTxPkts(Set<Integer> visiblePorts) {
+            return calcTotal(txPkts, visiblePorts);
         }
 
-        public Double calcTxBpsL2() {
-            return round(txBytes/time);
-        }
-        public Double calcTxBpsL2(FlowStatsData prevData) {
-            return round((txBytes - prevData.txBytes)/(time - prevData.time));
+        public long calcTotalTxBytes(Set<Integer> visiblePorts) {
+            return calcTotal(txBytes, visiblePorts);
         }
 
-        public Double calcTxBpsL1() {
-            Double bps = txBytes/time;
-            Double pps = txPkts/time;
+        public long calcTotalRxPkts(Set<Integer> visiblePorts) {
+            return calcTotal(rxPkts, visiblePorts);
+        }
+
+        public long calcTotalRxBytes(Set<Integer> visiblePorts) {
+            return calcTotal(rxBytes, visiblePorts);
+        }
+
+        public double getTime() { return time; }
+
+        public double calcTxPps(FlowStatsData prev, Set<Integer> visiblePorts) {
+            long totalCurr = calcTotalTxPkts(visiblePorts);
+            long totalPrev = prev.calcTotalTxPkts(visiblePorts);
+            return round((totalCurr - totalPrev)/(time - prev.time));
+        }
+
+        public Double calcTxBpsL2(FlowStatsData prev, Set<Integer> visiblePorts) {
+            long totalCurr = calcTotalTxBytes(visiblePorts);
+            long totalPrev = prev.calcTotalTxBytes(visiblePorts);
+            return round((totalCurr - totalPrev)/(time - prev.time));
+        }
+
+        public Double calcTxBpsL1(FlowStatsData prev, Set<Integer> visiblePorts) {
+            Double bps = calcTxBpsL2(prev, visiblePorts);
+            Double pps = calcTxPps(prev, visiblePorts);
             Double factor = bps*pps;
             return round(bps*(1 + (20/factor)));
         }
-        public Double calcTxBpsL1(FlowStatsData prevData) {
-            Double bps = (txBytes - prevData.txBytes)/(time - prevData.time);
-            Double pps = (txPkts - prevData.txPkts)/(time - prevData.time);
-            Double factor = bps*pps;
-            return round(bps*(1 + (20/factor)));
+
+        public Double calcRxPps(FlowStatsData prev, Set<Integer> visiblePorts) {
+            long totalCurr = calcTotalRxPkts(visiblePorts);
+            long totalPrev = prev.calcTotalRxPkts(visiblePorts);
+            return round((totalCurr - totalPrev)/(time - prev.time));
         }
 
-        public Double calcRxPps() {
-            return round(rxPkts/time);
-        }
-        public Double calcRxPps(FlowStatsData prevData) {
-            return round((rxPkts - prevData.rxPkts)/(time - prevData.time));
+        public Double calcRxBps(FlowStatsData prev, Set<Integer> visiblePorts) {
+            long totalCurr = calcTotalRxBytes(visiblePorts);
+            long totalPrev = prev.calcTotalRxBytes(visiblePorts);
+            return round((totalCurr - totalPrev)/(time - prev.time));
         }
 
-        public Double calcRxBps() {
-            return round(rxBytes/time);
+        private static long calcTotal(Map<Integer, Long> data, Set<Integer> visiblePorts) {
+            AtomicLong total = new AtomicLong(0);
+            data.forEach((Integer port, Long value) -> {
+                if (visiblePorts == null || visiblePorts.contains(port)) {
+                    total.getAndAdd(value);
+                }
+            });
+            return total.get();
         }
-        public Double calcRxBps(FlowStatsData prevData) {
-            return round((rxBytes - prevData.rxBytes)/(time - prevData.time));
-        }
+
+        private static double round(double value) { return ((int)(value*100.0))/100.0; }
     }
 
     private static final List<String> statisticTypes = new ArrayList<String>() {{
@@ -145,6 +162,7 @@ public class DashboardTabStreams extends AnchorPane {
     private String selectedStatistics;
     private Map<String, List<FlowStatsData>> streamsHistory;
     private Integer maxStreamsCount;
+    private Set<Integer> visiblePorts;
 
     public DashboardTabStreams() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/streams/DashboardTabStreams.fxml");
@@ -172,8 +190,7 @@ public class DashboardTabStreams extends AnchorPane {
                 }
                 maxStreamsCount = Integer.parseInt(newValue);
                 cleanHistory(null);
-                renderChart();
-                renderTable();
+                render();
             }
         });
         streamsCountComboBox.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -189,6 +206,11 @@ public class DashboardTabStreams extends AnchorPane {
         initializeIntervalComboBox();
 
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
+    }
+
+    public void setVisiblePorts(Set<Integer> visiblePorts) {
+        this.visiblePorts = visiblePorts;
+        render();
     }
 
     private void initializeIntervalComboBox() {
@@ -230,24 +252,24 @@ public class DashboardTabStreams extends AnchorPane {
                 }
                 streamHistory = new ArrayList<FlowStatsData>();
                 streamsHistory.put(key, streamHistory);
-            } else if (!streamHistory.isEmpty() && streamHistory.get(streamHistory.size() - 1).getTime().equals(time)) {
+            } else if (!streamHistory.isEmpty() && streamHistory.get(streamHistory.size() - 1).getTime() == time) {
                 return;
             }
 
-            FlowStatsData data = new FlowStatsData();
-            data.setTxPkts(calcTotalValue(rawData.getTx_pkts()));
-            data.setTxBytes(calcTotalValue(rawData.getTx_bytes()));
-            data.setRxPkts(calcTotalValue(rawData.getRx_pkts()));
-            data.setRxBytes(calcTotalValue(rawData.getRx_bytes()));
-            data.setTime(time);
+            FlowStatsData data = new FlowStatsData(
+                rawData.getTx_pkts(),
+                rawData.getTx_bytes(),
+                rawData.getRx_pkts(),
+                rawData.getRx_bytes(),
+                time
+            );
 
             streamHistory.add(data);
         });
 
         cleanHistory(visitedStreams);
 
-        renderChart(time);
-        renderTable();
+        render(time);
     }
 
     private void onWindowCloseRequest(WindowEvent window) {
@@ -281,7 +303,13 @@ public class DashboardTabStreams extends AnchorPane {
         }
     }
 
-    private void renderChart() {
+    private void render() {
+        Set<String> visibleStreams = StatsUtils.getVisibleStream(visiblePorts);
+        renderChart(visibleStreams);
+        renderTable(visibleStreams);
+    }
+
+    private void renderChart(Set<String> visibleStreams) {
         String[] streams = new String[streamsHistory.keySet().size()];
         streamsHistory.keySet().toArray();
         Double maxTime = 0.0;
@@ -296,62 +324,95 @@ public class DashboardTabStreams extends AnchorPane {
             }
         }
 
-        renderChart(maxTime);
+        renderChart(visibleStreams, maxTime);
     }
 
-    private void renderChart(Double time) {
+    private void render(Double time) {
+        Set<String> visibleStreams = StatsUtils.getVisibleStream(visiblePorts);
+        renderChart(visibleStreams, time);
+        renderTable(visibleStreams);
+    }
+
+    private void renderChart(Set<String> visibleStreams, Double time) {
         chart.getData().clear();
 
         switch (selectedStatistics) {
             case "Tx (pkt)":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getTxPktsStreamChartDataList(data, time))));
                 });
                 break;
             case "Tx (B)":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getTxBytesStreamChartDataList(data, time))));
                 });
                 break;
             case "Rx (pkt)":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getRxPktsStreamChartDataList(data, time))));
                 });
                 break;
             case "Rx (B)":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getRxBytesStreamChartDataList(data, time))));
                 });
                 break;
             case "Tx (pkt/s)":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getTxPpsStreamChartDataList(data, time))));
                 });
                 break;
             case "Rx (pkt/s)":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getRxPpsStreamChartDataList(data, time))));
                 });
                 break;
             case "Tx (B/s) L1":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getTxBpsL1StreamChartDataList(data, time))));
                 });
                 break;
             case "Tx (B/s) L2":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getTxBpsL2StreamChartDataList(data, time))));
                 });
                 break;
             case "Rx (B/s)":
                 streamsHistory.forEach((String key, List<FlowStatsData> data) -> {
+                    if (visibleStreams != null && !visibleStreams.contains(key)) {
+                        return;
+                    }
                     chart.getData().add(new XYChart.Series<>(key, FXCollections.observableArrayList(getRxBpsStreamChartDataList(data, time))));
                 });
                 break;
         }
     }
 
-    private void renderTable() {
+    private void renderTable(Set<String> visibleStreams) {
         int firstColumnWidth = 99;
         int secondHeaderWidth = 128;
 
@@ -372,7 +433,7 @@ public class DashboardTabStreams extends AnchorPane {
         AtomicBoolean odd = new AtomicBoolean(false);
 
         streamsHistory.forEach((String stream, List<FlowStatsData> data) -> {
-            if (data.size() < 2) {
+            if ((visibleStreams != null && !visibleStreams.contains(stream)) || data.size() < 2) {
                 return;
             }
 
@@ -380,70 +441,70 @@ public class DashboardTabStreams extends AnchorPane {
             FlowStatsData last = data.get(data.size() - 1);
 
             table.add(new StatisticLabelCell(stream, firstColumnWidth, odd.get(), CellType.DEFAULT_CELL, true), 0, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTxPps(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 1, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL2(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 2, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL1(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 3, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcRxPps(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 4, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcRxBps(prev)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 5, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.getTxPkts()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 6, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.getRxPkts()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 7, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.getTxBytes()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 8, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.getRxBytes()), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 9, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxPps(prev, visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 1, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL2(prev, visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 2, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTxBpsL1(prev, visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 3, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcRxPps(prev, visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 4, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcRxBps(prev, visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 5, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxPkts(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 6, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxPkts(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 7, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBytes(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 8, rowIndex.get());
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxBytes(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 9, rowIndex.get());
 
             rowIndex.addAndGet(1);
             odd.getAndSet(!odd.get());
         });
     }
 
-    private static List<XYChart.Data<Number, Number>> getTxPktsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getTxPktsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.isEmpty()) {
             return res;
         }
 
         dataList.forEach((FlowStatsData data) -> {
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.getTxPkts()));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTotalTxPkts(visiblePorts)));
         });
         return res;
     }
 
-    private static List<XYChart.Data<Number, Number>> getTxBytesStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getTxBytesStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.isEmpty()) {
             return res;
         }
 
         dataList.forEach((FlowStatsData data) -> {
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.getTxBytes()));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTotalTxBytes(visiblePorts)));
         });
         return res;
     }
 
-    private static List<XYChart.Data<Number, Number>> getRxPktsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getRxPktsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.isEmpty()) {
             return res;
         }
 
         dataList.forEach((FlowStatsData data) -> {
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.getRxPkts()));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTotalRxPkts(visiblePorts)));
         });
         return res;
     }
 
-    private static List<XYChart.Data<Number, Number>> getRxBytesStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getRxBytesStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.isEmpty()) {
             return res;
         }
 
         dataList.forEach((FlowStatsData data) -> {
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.getRxBytes()));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTotalRxBytes(visiblePorts)));
         });
         return res;
     }
 
-    private static List<XYChart.Data<Number, Number>> getTxPpsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getTxPpsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.size() < 2) {
             return res;
@@ -453,14 +514,14 @@ public class DashboardTabStreams extends AnchorPane {
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTxPps(prev)));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTxPps(prev, visiblePorts)));
             prev = data;
         }
 
         return res;
     }
 
-    private static List<XYChart.Data<Number, Number>> getRxPpsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getRxPpsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.size() < 2) {
             return res;
@@ -470,14 +531,14 @@ public class DashboardTabStreams extends AnchorPane {
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcRxPps(prev)));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcRxPps(prev, visiblePorts)));
             prev = data;
         }
 
         return res;
     }
 
-    private static List<XYChart.Data<Number, Number>> getTxBpsL1StreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getTxBpsL1StreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.size() < 2) {
             return res;
@@ -487,14 +548,14 @@ public class DashboardTabStreams extends AnchorPane {
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTxBpsL1(prev)));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTxBpsL1(prev, visiblePorts)));
             prev = data;
         }
 
         return res;
     }
 
-    private static List<XYChart.Data<Number, Number>> getTxBpsL2StreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getTxBpsL2StreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.size() < 2) {
             return res;
@@ -504,14 +565,14 @@ public class DashboardTabStreams extends AnchorPane {
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTxBpsL2(prev)));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcTxBpsL2(prev, visiblePorts)));
             prev = data;
         }
 
         return res;
     }
 
-    private static List<XYChart.Data<Number, Number>> getRxBpsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
+    private List<XYChart.Data<Number, Number>> getRxBpsStreamChartDataList(List<FlowStatsData> dataList, Double currTime) {
         List<XYChart.Data<Number, Number>> res = new ArrayList<>();
         if (dataList.size() < 2) {
             return res;
@@ -521,21 +582,10 @@ public class DashboardTabStreams extends AnchorPane {
         int size = dataList.size();
         for (int i = 1; i < size; ++i) {
             FlowStatsData data = dataList.get(i);
-            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcRxBps(prev)));
+            res.add(new XYChart.Data<>(data.getTime() - currTime, data.calcRxBps(prev, visiblePorts)));
             prev = data;
         }
 
         return res;
-    }
-
-    private static Integer calcTotalValue(Map<Integer, Integer> valuesByPorts) {
-        if (valuesByPorts == null) {
-            return 0;
-        }
-        Integer total = 0;
-        for (Integer value : valuesByPorts.values()) {
-            total += value;
-        }
-        return total;
     }
 }

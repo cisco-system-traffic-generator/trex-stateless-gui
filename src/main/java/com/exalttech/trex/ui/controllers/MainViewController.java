@@ -529,7 +529,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         statTableContainer.setContent(null);
 
         if (portIndex == -1) {
-            statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portManager.getPortList().size(), true, 150, false));
+            statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portManager.getPortList().size(), true, 150, null));
             return;
         }
         statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portIndex));
