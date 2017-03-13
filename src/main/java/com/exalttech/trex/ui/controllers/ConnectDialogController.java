@@ -19,6 +19,8 @@ import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
+import com.exalttech.trex.ui.views.logs.LogType;
+import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.XMLFileManager;
 import javafx.beans.value.ChangeListener;
@@ -117,9 +119,10 @@ public class ConnectDialogController extends DialogView implements Initializable
      * @param stage
      */
     private void doConnect(Stage stage) {
+        String host = connectionsCB.getEditor().getText();
         try {
             if (validateInput() && isConnectionValid()) {
-                Connection con = new Connection(connectionsCB.getEditor().getText(), rpcPort.getText(), asyncPort.getText(), scapyPort.getText(), nameTF.getText(), fullControlRB.isSelected());
+                Connection con = new Connection(host, rpcPort.getText(), asyncPort.getText(), scapyPort.getText(), nameTF.getText(), fullControlRB.isSelected());
                 // remove it if connection already exists
                 if (connectionMap.get(connectionsCB.getEditor().getText()) != null) {
                     connectionMap.remove(connectionsCB.getEditor().getText());
@@ -133,6 +136,7 @@ public class ConnectDialogController extends DialogView implements Initializable
             }
         } catch (Exception ex) {
             LOG.error("Error durring connection to TRex server", ex);
+            LogsController.getInstance().appendText(LogType.ERROR, "Unable to connect to host: " + host);
         }
     }
 
