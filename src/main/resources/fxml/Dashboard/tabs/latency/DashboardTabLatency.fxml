@@ -31,8 +31,8 @@
             <ColumnConstraints percentWidth="100"/>
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints percentHeight="50"/>
-            <RowConstraints percentHeight="50"/>
+            <RowConstraints percentHeight="60"/>
+            <RowConstraints percentHeight="40"/>
         </rowConstraints>
         <VBox fillWidth="true"
               GridPane.columnIndex="0"

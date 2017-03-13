@@ -33,9 +33,9 @@
             <ColumnConstraints percentWidth="100"/>
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints percentHeight="45"/>
+            <RowConstraints percentHeight="50"/>
             <RowConstraints percentHeight="10"/>
-            <RowConstraints percentHeight="45"/>
+            <RowConstraints percentHeight="40"/>
         </rowConstraints>
         <AnchorPane GridPane.columnIndex="0"
                     GridPane.rowIndex="0"
