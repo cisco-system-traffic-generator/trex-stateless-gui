@@ -311,7 +311,7 @@ public class DashboardTabStreams extends AnchorPane {
 
     private void renderChart(Set<String> visibleStreams) {
         String[] streams = new String[streamsHistory.keySet().size()];
-        streamsHistory.keySet().toArray();
+        streamsHistory.keySet().toArray(streams);
         Double maxTime = 0.0;
         for (String stream : streams) {
             List<FlowStatsData> streamHistory = streamsHistory.get(stream);
