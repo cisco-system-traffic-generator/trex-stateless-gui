@@ -12,215 +12,354 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="mainViewContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="670.0" minWidth="500.0" prefHeight="670.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.MainViewController">
+<AnchorPane fx:id="mainViewContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="670.0" minWidth="500.0"
+            prefHeight="670.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.exalttech.trex.ui.controllers.MainViewController">
     <children>
-        <MenuBar id="headerMenuBar" layoutY="0.0" prefHeight="30.0" prefWidth="1000.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <MenuBar id="headerMenuBar" layoutY="0.0" prefHeight="30.0" prefWidth="1000.0" AnchorPane.leftAnchor="0.0"
+                 AnchorPane.rightAnchor="0.0">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="connectMenuItem" mnemonicParsing="false" onAction="#handleConnectMenuItemClicked" text="  Connect               Ctrl+C" />
-                        <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemClicked" text="  Preferences         Ctrl+P" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleExitMenuItemClick" text="  Exit                      Ctrl+X" />
+                        <MenuItem fx:id="connectMenuItem" mnemonicParsing="false"
+                                  onAction="#handleConnectMenuItemClicked" text="  Connect               Ctrl+C"/>
+                        <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemClicked"
+                                  text="  Preferences         Ctrl+P"/>
+                        <MenuItem mnemonicParsing="false" onAction="#handleExitMenuItemClick"
+                                  text="  Exit                      Ctrl+X"/>
                     </items>
                 </Menu>
                 <Menu fx:id="trafficProfileMenu" mnemonicParsing="false" text="Traffic Profiles">
                     <items>
-                        <MenuItem fx:id="trafficProfileItem" mnemonicParsing="false" onAction="#openTrafficProfile" text="Traffic Profiles" />
+                        <MenuItem fx:id="trafficProfileItem" mnemonicParsing="false" onAction="#openTrafficProfile"
+                                  text="Traffic Profiles"/>
                     </items>
                 </Menu>
                 <Menu fx:id="statsMenuItem" disable="true" mnemonicParsing="false" text="Stats">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleStatMenuItemClicked" text="  Dashboard           Ctrl+S" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleStatMenuItemClicked"
+                                  text="  Dashboard           Ctrl+S"/>
                     </items>
                 </Menu>
-                <Menu disable="true" mnemonicParsing="false" text="Snapshots" visible="false" />
+                <Menu disable="true" mnemonicParsing="false" text="Snapshots" visible="false"/>
                 <Menu mnemonicParsing="false" text="Window" visible="false">
                     <items>
-                        <MenuItem disable="true" mnemonicParsing="false" text="Cascade" />
+                        <MenuItem disable="true" mnemonicParsing="false" text="Cascade"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleAboutTreeItemClicked" text="  About" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleAboutTreeItemClicked" text="  About"/>
                     </items>
                 </Menu>
             </menus>
         </MenuBar>
-        <AnchorPane id="" prefHeight="50.0" prefWidth="1000.0" styleClass="headerBtnContainer" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+        <AnchorPane id="" prefHeight="50.0" prefWidth="1000.0" styleClass="headerBtnContainer"
+                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
             <children>
-                <HBox id="" prefHeight="30.0" prefWidth="410.0" spacing="20.0" styleClass="null" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
+                <HBox id="" prefHeight="30.0" prefWidth="410.0" spacing="20.0" styleClass="null"
+                      AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
                     <children>
-                        <Label id="" fx:id="startStream" disable="true" onMouseClicked="#startTransitBtnCLicked" prefHeight="24.0" prefWidth="24.0" styleClass="playIcon" text="">
+                        <Label id="" fx:id="startStream" disable="true" onMouseClicked="#startTransitBtnCLicked"
+                               prefHeight="24.0" prefWidth="24.0" styleClass="playIcon" text="">
                             <tooltip>
-                                <Tooltip text="Start Transit" />
+                                <Tooltip text="Start Transit"/>
                             </tooltip>
                         </Label>
-                        <Label id="" fx:id="startAllStream" disable="true" onMouseClicked="#startAllTransitBtnCLicked" prefHeight="24.0" prefWidth="24.0" styleClass="startAllIcon" text="">
+                        <Label id="" fx:id="startAllStream" disable="true" onMouseClicked="#startAllTransitBtnCLicked"
+                               prefHeight="24.0" prefWidth="24.0" styleClass="startAllIcon" text="">
                             <tooltip>
-                                <Tooltip text="Start All Transits" />
+                                <Tooltip text="Start All Transits"/>
                             </tooltip>
                         </Label>
-                        <Label id="" fx:id="stopStream" disable="true" onMouseClicked="#stopTransitBtnCLicked" prefHeight="24.0" prefWidth="24.0" styleClass="stopIcon" text="">
+                        <Label id="" fx:id="stopStream" disable="true" onMouseClicked="#stopTransitBtnCLicked"
+                               prefHeight="24.0" prefWidth="24.0" styleClass="stopIcon" text="">
                             <tooltip>
-                                <Tooltip text="Stop Transit" />
+                                <Tooltip text="Stop Transit"/>
                             </tooltip>
                         </Label>
-                        <Label id="" fx:id="stopAllStream" disable="true" onMouseClicked="#stopAllTransitBtnCLicked" prefHeight="24.0" prefWidth="24.0" styleClass="stopAllIcon" text="">
+                        <Label id="" fx:id="stopAllStream" disable="true" onMouseClicked="#stopAllTransitBtnCLicked"
+                               prefHeight="24.0" prefWidth="24.0" styleClass="stopAllIcon" text="">
                             <tooltip>
-                                <Tooltip text="Stop All Transits" />
+                                <Tooltip text="Stop All Transits"/>
                             </tooltip>
                         </Label>
-                        <Label id="" fx:id="pauseStream" disable="true" onMouseClicked="#pauseTransitBtnCLicked" prefHeight="24.0" prefWidth="24.0" styleClass="pauseIcon" text="">
+                        <Label id="" fx:id="pauseStream" disable="true" onMouseClicked="#pauseTransitBtnCLicked"
+                               prefHeight="24.0" prefWidth="24.0" styleClass="pauseIcon" text="">
                             <tooltip>
-                                <Tooltip text="Pause Transit" />
+                                <Tooltip text="Pause Transit"/>
                             </tooltip>
                         </Label>
-                        <Label fx:id="clearCache" disable="true" onMouseClicked="#clearStatCache" prefHeight="24.0" prefWidth="24.0" styleClass="clearAllIcon" text="">
+                        <Label fx:id="clearCache" disable="true" onMouseClicked="#clearStatCache" prefHeight="24.0"
+                               prefWidth="24.0" styleClass="clearAllIcon" text="">
                             <tooltip>
-                                <Tooltip text="Clear All Stats" />
+                                <Tooltip text="Clear All Stats"/>
                             </tooltip>
                         </Label>
-                        <Label fx:id="acquirePort" disable="true" onMouseClicked="#handleAcquireBtnClicked" prefHeight="24.0" prefWidth="24.0" styleClass="acquirePortIcon">
+                        <Label fx:id="acquirePort" disable="true" onMouseClicked="#handleAcquireBtnClicked"
+                               prefHeight="24.0" prefWidth="24.0" styleClass="acquirePortIcon">
                             <tooltip>
-                                <Tooltip text="Acquire Port" />
+                                <Tooltip text="Acquire Port"/>
                             </tooltip>
                         </Label>
-                        <Label fx:id="releasePort" disable="true" onMouseClicked="#handleReleaseBtnClicked" prefHeight="24.0" prefWidth="24.0" styleClass="releasePortIcon">
+                        <Label fx:id="releasePort" disable="true" onMouseClicked="#handleReleaseBtnClicked"
+                               prefHeight="24.0" prefWidth="24.0" styleClass="releasePortIcon">
                             <tooltip>
-                                <Tooltip text="Release Port" />
+                                <Tooltip text="Release Port"/>
                             </tooltip>
                         </Label>
-                        <Label fx:id="connectIcon" onMouseClicked="#handleConnectDisconnectBtnClicked" prefHeight="24.0" prefWidth="24.0" styleClass="connectIcon">
+                        <Label fx:id="connectIcon" onMouseClicked="#handleConnectDisconnectBtnClicked" prefHeight="24.0"
+                               prefWidth="24.0" styleClass="connectIcon">
                             <tooltip>
-                                <Tooltip fx:id="connectDixconnectTooltip" text="Connect to TRex server" />
+                                <Tooltip fx:id="connectDixconnectTooltip" text="Connect to TRex server"/>
                             </tooltip>
                         </Label>
                     </children>
                     <padding>
-                        <Insets bottom="2.0" left="15.0" right="15.0" top="3.0" />
+                        <Insets bottom="2.0" left="15.0" right="15.0" top="3.0"/>
                     </padding>
                 </HBox>
-                <Label fx:id="dashboardIcon" disable="true" onMouseClicked="#handleDashboardBtnClicked" prefHeight="24.0" prefWidth="24.0" styleClass="dashboardIcon" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0">
+                <Label fx:id="dashboardIcon" disable="true" onMouseClicked="#handleDashboardBtnClicked"
+                       prefHeight="24.0" prefWidth="24.0" styleClass="dashboardIcon" AnchorPane.rightAnchor="15.0"
+                       AnchorPane.topAnchor="10.0">
                     <tooltip>
-                        <Tooltip text="Dashboard" />
+                        <Tooltip text="Dashboard"/>
                     </tooltip>
                 </Label>
             </children>
         </AnchorPane>
-        <AnchorPane prefHeight="200.0" prefWidth="1100.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
+        <AnchorPane prefHeight="200.0" prefWidth="1100.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
             <children>
-                <SplitPane dividerPositions="0.725" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane dividerPositions="0.725" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0"
+                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                           AnchorPane.topAnchor="0.0">
                     <items>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-: ;">
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                             <children>
-                        <SplitPane fx:id="mainViewSplitPanel" dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <items>
-                                      <AnchorPane id="" maxWidth="235.0" minWidth="20.0" prefHeight="409.0" prefWidth="235.0" style="-fx-background-color: #FCFCFC;" SplitPane.resizableWithParent="false">
-                                 <children>
-                                    <ScrollPane fitToHeight="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FCFCFC;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-                                      <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="230.0">
-                                             <children>
-                                                <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                   <children>
-                                                                <TreeView fx:id="devicesTree" onMouseClicked="#handleTreeClicked" prefHeight="267.0" prefWidth="250.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                   </children>
-                                                </AnchorPane>
-                                             </children>
-                                          </AnchorPane>
-                                      </content>
-                                    </ScrollPane>
-                                    <ImageView fx:id="devicesTreeArrowContainer" fitHeight="12.0" fitWidth="12.0" onMouseClicked="#handleDevicesTreeArrowClicked" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                                 </children>
-                                      </AnchorPane>
-                                      <AnchorPane id="" minWidth="500.0" prefHeight="409.0" prefWidth="698.9999000000025" style="-fx-background-color:#FFFFFF;" visible="true">
-                                          <children>
-                                    <ScrollPane fitToHeight="true" fitToWidth="true" minWidth="500.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-										<content>
-											
-   												<AnchorPane id="" prefHeight="360.0" style="-fx-background-color:#FFFFFF;" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <children>
-                                           <AnchorPane id="statTableContainer" fx:id="statTableWrapper" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
-                                               <children>
-                                                   <ScrollPane fx:id="statTableContainer" content="$null" maxWidth="-1.0" minWidth="-1.0" prefHeight="369.0" prefWidth="779.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                               </children>
-                                           </AnchorPane>
-                                           <AnchorPane fx:id="profileContainer" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                                               <children>
-                                                   <Label fx:id="profileDetailLabel" prefHeight="25.0" prefWidth="100.0" styleClass="profileItemTitle" text="Profile details" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
-                                                   <ComboBox fx:id="profileListBox" maxHeight="22.0" prefHeight="20.0" prefWidth="250.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="10.0">
-                                                       <items>
-                                                           <FXCollections fx:factory="observableArrayList">
-                                                               <String fx:value="Item 1" />
-                                                               <String fx:value="Item 2" />
-                                                               <String fx:value="Item 3" />
-                                                           </FXCollections>
-                                                       </items>
-                                                   </ComboBox>
-                                                   <Button fx:id="newProfileBtn" mnemonicParsing="false" onAction="#handleAddNewProfile" prefWidth="112.0" styleClass="addNewProfile" text="New Profile" AnchorPane.leftAnchor="383.0" AnchorPane.topAnchor="10.0" />
-                                                   <Separator id="separator" maxWidth="1.0" minWidth="1.0" orientation="VERTICAL" prefHeight="25.0" prefWidth="1.0" AnchorPane.leftAnchor="505.0" AnchorPane.topAnchor="10.0" />
-                                                   <Label fx:id="countdownValue" prefHeight="20.0" prefWidth="50.0" styleClass="countdownLabel" AnchorPane.leftAnchor="715.0" AnchorPane.topAnchor="14.0" />
-                                                   <Button id="applyBtn" fx:id="updateBtn" disable="true" mnemonicParsing="false" onAction="#handleUpdateBtnClicked" prefWidth="90.0" styleClass="updateProfileBtn" text="Update" AnchorPane.leftAnchor="515.0" AnchorPane.topAnchor="10.0" />
-                                                   <Button fx:id="stopUpdateBtn" mnemonicParsing="false" onAction="#hanldeStopBtnClicked" prefWidth="90.0" styleClass="stopUpdateBtn" text="Cancel" visible="false" AnchorPane.leftAnchor="615.0" AnchorPane.topAnchor="10.0" />
-                                                   <Label fx:id="disableProfileNote" prefHeight="17.0" prefWidth="336.0" styleClass="disableProfileNote" text="Note: You need to acquire the port in order to assign profile " AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="50.0" />
-                                                   <AnchorPane fx:id="profileDetailContainer" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="45.0">
-                                                       <children>
-                                                           <HBox alignment="CENTER" prefHeight="130.0" prefWidth="200.0" spacing="10.0" styleClass="profileSelectionContainer" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="8.0">
-                                                               <children>
-                                                                   <AnchorPane fx:id="multiplierOptionContainer" minWidth="330.0" prefHeight="130.0" prefWidth="691.0" visible="true" />
-                                                               </children>
-                                                           </HBox>
-                                                           <AnchorPane fx:id="profileTableViewContainer" prefHeight="200.0" prefWidth="200.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="145.0" />
-                                             <Pane fx:id="notificationPanelHolder" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="20.0" />
-                                                       </children>
-                                                   </AnchorPane>
-                                               </children>
-                                           </AnchorPane>
-                                       </children>
-                                   </AnchorPane>
-										</content>
-									</ScrollPane>
-                                          </children>
-                                      </AnchorPane>
-                           </items>
-                        </SplitPane>
-                            </children>
-                        </AnchorPane>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="149.0" prefWidth="1098.0" style="-fx-background-color: null;">
-                            <children>
-                                <AnchorPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color:#FFFFFF;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                    <children>
-                                        <AnchorPane prefHeight="32.0" prefWidth="200.0" style="" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <SplitPane fx:id="mainViewSplitPanel" dividerPositions="0.5" prefHeight="160.0"
+                                           prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <items>
+                                        <AnchorPane id="" maxWidth="235.0" minWidth="20.0" prefHeight="409.0"
+                                                    prefWidth="235.0" style="-fx-background-color: #FCFCFC;"
+                                                    SplitPane.resizableWithParent="false">
                                             <children>
-                                                <TabPane fx:id="logsContainer" disable="true" prefHeight="200.0" prefWidth="200.0" styleClass="logTabPane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                    <tabs>
-                                                        <Tab fx:id="logTab" text="Log View">
-                                                            <content>
-                                                                <AnchorPane fx:id="logContainer" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                                            </content>
-                                                        </Tab>
-                                                        <Tab fx:id="consoleLogTab" text="Console Log View">
-                                                            <content>
-                                                                <AnchorPane fx:id="consoleLogContainer" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                                            </content>
-                                                        </Tab>
-                                                    </tabs>
-                                                </TabPane>
-                                                <Button fx:id="copyToClipboardBtn" disable="true" mnemonicParsing="false" onAction="#copyToClipboard" styleClass="normalButton" text="Copy to clipboard" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="2.0" />
+                                                <ScrollPane fitToHeight="true" hbarPolicy="NEVER" prefHeight="200.0"
+                                                            prefWidth="200.0" style="-fx-background-color: #FCFCFC;"
+                                                            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                                            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+                                                    <content>
+                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="230.0">
+                                                            <children>
+                                                                <AnchorPane prefHeight="200.0" prefWidth="200.0"
+                                                                            AnchorPane.bottomAnchor="0.0"
+                                                                            AnchorPane.leftAnchor="5.0"
+                                                                            AnchorPane.rightAnchor="0.0"
+                                                                            AnchorPane.topAnchor="0.0">
+                                                                    <children>
+                                                                        <TreeView fx:id="devicesTree"
+                                                                                  onMouseClicked="#handleTreeClicked"
+                                                                                  prefHeight="267.0" prefWidth="250.0"
+                                                                                  AnchorPane.bottomAnchor="0.0"
+                                                                                  AnchorPane.leftAnchor="0.0"
+                                                                                  AnchorPane.rightAnchor="0.0"
+                                                                                  AnchorPane.topAnchor="0.0"/>
+                                                                    </children>
+                                                                </AnchorPane>
+                                                            </children>
+                                                        </AnchorPane>
+                                                    </content>
+                                                </ScrollPane>
+                                                <ImageView fx:id="devicesTreeArrowContainer" fitHeight="12.0"
+                                                           fitWidth="12.0"
+                                                           onMouseClicked="#handleDevicesTreeArrowClicked"
+                                                           pickOnBounds="true" preserveRatio="true"
+                                                           style="-fx-cursor: hand;" AnchorPane.rightAnchor="5.0"
+                                                           AnchorPane.topAnchor="5.0"/>
                                             </children>
                                         </AnchorPane>
-                                    </children>
-                                </AnchorPane>
+                                        <AnchorPane id="" minWidth="500.0"
+                                                    style="-fx-background-color:#FFFFFF;"
+                                                    visible="true">
+                                            <children>
+                                                <ScrollPane fitToHeight="true" fitToWidth="true" minWidth="500.0"
+                                                            AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
+                                                            AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                                    <AnchorPane id="" prefHeight="360.0"
+                                                                style="-fx-background-color:#FFFFFF;" visible="true"
+                                                                AnchorPane.bottomAnchor="0.0"
+                                                                AnchorPane.leftAnchor="0.0"
+                                                                AnchorPane.rightAnchor="0.0"
+                                                                AnchorPane.topAnchor="0.0">
+                                                        <AnchorPane id="statTableContainer" fx:id="statTableWrapper"
+                                                                    prefHeight="200.0" prefWidth="200.0" visible="false"
+                                                                    AnchorPane.bottomAnchor="0.0"
+                                                                    AnchorPane.leftAnchor="10.0"
+                                                                    AnchorPane.rightAnchor="0.0"
+                                                                    AnchorPane.topAnchor="3.0">
+                                                            <ScrollPane fx:id="statTableContainer" content="$null"
+                                                                        maxWidth="-1.0" minWidth="-1.0"
+                                                                        prefHeight="369.0" prefWidth="779.0"
+                                                                        visible="true" AnchorPane.bottomAnchor="0.0"
+                                                                        AnchorPane.leftAnchor="0.0"
+                                                                        AnchorPane.rightAnchor="0.0"
+                                                                        AnchorPane.topAnchor="0.0"/>
+                                                            <fx:include source="ports/PortInfo.fxml"/>
+                                                        </AnchorPane>
+                                                        <AnchorPane fx:id="profileContainer" prefHeight="200.0"
+                                                                    prefWidth="200.0" visible="false"
+                                                                    AnchorPane.bottomAnchor="10.0"
+                                                                    AnchorPane.leftAnchor="10.0"
+                                                                    AnchorPane.rightAnchor="10.0"
+                                                                    AnchorPane.topAnchor="10.0">
+                                                            <Label fx:id="profileDetailLabel" prefHeight="25.0"
+                                                                   prefWidth="100.0" styleClass="profileItemTitle"
+                                                                   text="Profile details" AnchorPane.leftAnchor="0.0"
+                                                                   AnchorPane.topAnchor="10.0"/>
+                                                            <ComboBox fx:id="profileListBox" maxHeight="22.0"
+                                                                      prefHeight="20.0" prefWidth="250.0"
+                                                                      AnchorPane.leftAnchor="120.0"
+                                                                      AnchorPane.topAnchor="10.0">
+                                                                <items>
+                                                                    <FXCollections
+                                                                            fx:factory="observableArrayList">
+                                                                        <String fx:value="Item 1"/>
+                                                                        <String fx:value="Item 2"/>
+                                                                        <String fx:value="Item 3"/>
+                                                                    </FXCollections>
+                                                                </items>
+                                                            </ComboBox>
+                                                            <Button fx:id="newProfileBtn" mnemonicParsing="false"
+                                                                    onAction="#handleAddNewProfile" prefWidth="112.0"
+                                                                    styleClass="addNewProfile" text="New Profile"
+                                                                    AnchorPane.leftAnchor="383.0"
+                                                                    AnchorPane.topAnchor="10.0"/>
+                                                            <Separator id="separator" maxWidth="1.0"
+                                                                       minWidth="1.0" orientation="VERTICAL"
+                                                                       prefHeight="25.0" prefWidth="1.0"
+                                                                       AnchorPane.leftAnchor="505.0"
+                                                                       AnchorPane.topAnchor="10.0"/>
+                                                            <Label fx:id="countdownValue" prefHeight="20.0"
+                                                                   prefWidth="50.0"
+                                                                   styleClass="countdownLabel"
+                                                                   AnchorPane.leftAnchor="715.0"
+                                                                   AnchorPane.topAnchor="14.0"/>
+                                                            <Button id="applyBtn" fx:id="updateBtn"
+                                                                    disable="true" mnemonicParsing="false"
+                                                                    onAction="#handleUpdateBtnClicked"
+                                                                    prefWidth="90.0"
+                                                                    styleClass="updateProfileBtn"
+                                                                    text="Update"
+                                                                    AnchorPane.leftAnchor="515.0"
+                                                                    AnchorPane.topAnchor="10.0"/>
+                                                            <Button fx:id="stopUpdateBtn"
+                                                                    mnemonicParsing="false"
+                                                                    onAction="#hanldeStopBtnClicked"
+                                                                    prefWidth="90.0"
+                                                                    styleClass="stopUpdateBtn" text="Cancel"
+                                                                    visible="false"
+                                                                    AnchorPane.leftAnchor="615.0"
+                                                                    AnchorPane.topAnchor="10.0"/>
+                                                            <Label fx:id="disableProfileNote"
+                                                                   prefHeight="17.0" prefWidth="336.0"
+                                                                   styleClass="disableProfileNote"
+                                                                   text="Note: You need to acquire the port in order to assign profile "
+                                                                   AnchorPane.leftAnchor="120.0"
+                                                                   AnchorPane.rightAnchor="30.0"
+                                                                   AnchorPane.topAnchor="50.0"/>
+                                                            <AnchorPane fx:id="profileDetailContainer"
+                                                                        prefHeight="200.0" prefWidth="200.0"
+                                                                        visible="false"
+                                                                        AnchorPane.bottomAnchor="0.0"
+                                                                        AnchorPane.leftAnchor="0.0"
+                                                                        AnchorPane.rightAnchor="5.0"
+                                                                        AnchorPane.topAnchor="45.0">
+                                                                <HBox alignment="CENTER"
+                                                                      prefHeight="130.0"
+                                                                      prefWidth="200.0" spacing="10.0"
+                                                                      styleClass="profileSelectionContainer"
+                                                                      AnchorPane.leftAnchor="0.0"
+                                                                      AnchorPane.rightAnchor="5.0"
+                                                                      AnchorPane.topAnchor="8.0">
+                                                                    <AnchorPane
+                                                                            fx:id="multiplierOptionContainer"
+                                                                            minWidth="330.0"
+                                                                            prefHeight="130.0"
+                                                                            prefWidth="691.0"
+                                                                            visible="true"/>
+                                                                </HBox>
+                                                                <AnchorPane
+                                                                        fx:id="profileTableViewContainer"
+                                                                        prefHeight="200.0"
+                                                                        prefWidth="200.0" visible="true"
+                                                                        AnchorPane.bottomAnchor="0.0"
+                                                                        AnchorPane.leftAnchor="0.0"
+                                                                        AnchorPane.rightAnchor="5.0"
+                                                                        AnchorPane.topAnchor="145.0"/>
+                                                                <Pane fx:id="notificationPanelHolder"
+                                                                      nodeOrientation="LEFT_TO_RIGHT"
+                                                                      AnchorPane.rightAnchor="15.0"
+                                                                      AnchorPane.topAnchor="20.0"/>
+                                                            </AnchorPane>
+                                                        </AnchorPane>
+                                                    </AnchorPane>
+                                                </ScrollPane>
+                                            </children>
+                                        </AnchorPane>
+                                    </items>
+                                </SplitPane>
                             </children>
+                        </AnchorPane>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="149.0" prefWidth="1098.0"
+                                    style="-fx-background-color: null;">
+                            <AnchorPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color:#FFFFFF;"
+                                        AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <AnchorPane prefHeight="32.0" prefWidth="200.0" style=""
+                                            AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <TabPane fx:id="logsContainer" disable="true" prefHeight="200.0"
+                                             prefWidth="200.0" styleClass="logTabPane"
+                                             tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0"
+                                             AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                             AnchorPane.topAnchor="0.0">
+                                        <tabs>
+                                            <Tab fx:id="logTab" text="Log View">
+                                                <content>
+                                                    <AnchorPane fx:id="logContainer" minHeight="0.0"
+                                                                minWidth="0.0" prefHeight="180.0"
+                                                                prefWidth="200.0"/>
+                                                </content>
+                                            </Tab>
+                                            <Tab fx:id="consoleLogTab" text="Console Log View">
+                                                <content>
+                                                    <AnchorPane fx:id="consoleLogContainer" minHeight="0.0"
+                                                                minWidth="0.0" prefHeight="180.0"
+                                                                prefWidth="200.0"/>
+                                                </content>
+                                            </Tab>
+                                        </tabs>
+                                    </TabPane>
+                                    <Button fx:id="copyToClipboardBtn" disable="true"
+                                            mnemonicParsing="false" onAction="#copyToClipboard"
+                                            styleClass="normalButton" text="Copy to clipboard"
+                                            AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="2.0"/>
+                                </AnchorPane>
+                            </AnchorPane>
                         </AnchorPane>
                     </items>
                 </SplitPane>
             </children>
         </AnchorPane>
-        <AnchorPane id="" prefHeight="25.0" prefWidth="1100.0" styleClass="bottomRow" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <AnchorPane id="" prefHeight="25.0" prefWidth="1100.0" styleClass="bottomRow" AnchorPane.bottomAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <children>
-                <Label fx:id="serverStatusLabel" styleClass="serverStatusLabel" text="Disconnected" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="4.0" />
-                <ImageView fx:id="serverStatusIcon" fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="6.0" />
+                <Label fx:id="serverStatusLabel" styleClass="serverStatusLabel" text="Disconnected"
+                       AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="4.0"/>
+                <ImageView fx:id="serverStatusIcon" fitHeight="12.0" fitWidth="12.0" pickOnBounds="true"
+                           preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="12.0"
+                           AnchorPane.topAnchor="6.0"/>
             </children>
         </AnchorPane>
     </children>
