@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
+
+<fx:root fx:id="root"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.BorderPane">
+    <top>
+        <HBox visible="false" managed="false" alignment="bottom_center">
+            <padding>
+                <Insets top="0" right="0" bottom="0" left="0"/>
+            </padding>
+            <Text fx:id="textTabConfigPortNameTitle" text="Port ">
+                <font>
+                    <Font name="Tahoma" size="20.0"/>
+                </font>
+            </Text>
+        </HBox>
+    </top>
+    <center>
+        <AnchorPane id="statXTableContainer"
+                    fx:id="statXTableWrapper"
+                    prefHeight="200.0" prefWidth="200.0"
+                    visible="true">
+            <padding>
+                <Insets top="10" right="10" bottom="0" left="10"/>
+            </padding>
+            <children>
+                <VBox alignment="CENTER" spacing="0.0"
+                      AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+                      AnchorPane.leftAnchor="0.0">
+                    <children>
+                        <HBox spacing="10.0" alignment="CENTER_LEFT"
+                              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <padding>
+                                <Insets left="10"/>
+                            </padding>
+                            <children>
+                                <CheckBox fx:id="statXTableNotEmpty" text="Not empty" selected="true">
+                                </CheckBox>
+                                <Label text="Filter:">
+                                </Label>
+                                <CustomTextField fx:id="statXTableFilter" promptText="Counter name" prefWidth="130">
+                                    <padding>
+                                        <Insets top="3"/>
+                                    </padding>
+                                </CustomTextField>
+                            </children>
+                        </HBox>
+                        <HBox style="-fx-font-size: 75%;">
+                            <padding>
+                                <Insets left="10" top="10"/>
+                            </padding>
+                            <Label text="Click "/>
+                            <Label text="&#x271a;" style="-fx-text-fill: green;"/>
+                            <Label text="/"/>
+                            <Label text="&#x2716;" style="-fx-text-fill: red;"/>
+                            <Label text=" to pin/un-pin the counter"/>
+                        </HBox>
+                        <ScrollPane fx:id="statXTableContainer" content="$null"
+                                    maxWidth="-1.0" minWidth="-1.0" prefWidth="779.0"
+                                    visible="true"
+                                    VBox.vgrow="ALWAYS"/>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+    </center>
+    <bottom>
+        <HBox alignment="top_center">
+            <padding>
+                <Insets top="1" right="10" bottom="10" left="10"/>
+            </padding>
+        </HBox>
+    </bottom>
+</fx:root>
