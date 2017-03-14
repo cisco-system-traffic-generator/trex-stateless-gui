@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import org.controlsfx.control.ToggleSwitch?>
+
+<fx:root xmlns:fx="http://javafx.com/fxml"
+         fx:id="root"
+         type="javafx.scene.layout.BorderPane">
+    <top>
+        <HBox alignment="bottom_center">
+            <padding>
+                <Insets top="10" right="10" bottom="1" left="10"/>
+            </padding>
+            <Text fx:id="textTabMainPortNameTitle" text="Port ">
+                <font>
+                    <Font name="Tahoma" size="20.0"/>
+                </font>
+            </Text>
+        </HBox>
+    </top>
+    <center>
+        <GridPane fx:id="gridPanePortInfoTabMain"
+                  alignment="top_center"
+                  hgap="10" vgap="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label fx:id="labelTabMainPortName" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Index:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label fx:id="labelTabMainPortIndex" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Driver:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <Label fx:id="labelTabMainPortDriver" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Rx filter mode:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <Label fx:id="labelTabMainPortRxFilterMode" text="" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <ToggleSwitch fx:id="buttonTabMainPortMulticast" alignment="center" GridPane.columnIndex="1"
+                          GridPane.rowIndex="5"></ToggleSwitch>
+
+            <Label text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+            <ToggleSwitch fx:id="buttonTabMainPortPromiscuous" alignment="center" GridPane.columnIndex="1"
+                          GridPane.rowIndex="6"></ToggleSwitch>
+
+
+            <Label text="Owner:" GridPane.columnIndex="5" GridPane.rowIndex="1"/>
+            <Label fx:id="labelTabMainPortOwner" text="" GridPane.columnIndex="6" GridPane.rowIndex="1"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Speed:" GridPane.columnIndex="5" GridPane.rowIndex="2"/>
+            <Label fx:id="labelTabMainPortSpeed" text="" GridPane.columnIndex="6" GridPane.rowIndex="2"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Status:" GridPane.columnIndex="5" GridPane.rowIndex="3"/>
+            <Label fx:id="labelTabMainPortStatus" text="" GridPane.columnIndex="6" GridPane.rowIndex="3"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Capturing:" GridPane.columnIndex="5" GridPane.rowIndex="4"/>
+            <Label fx:id="labelTabMainPortCaptureStatus" text="None / Tx / Rx / Tx+Rx" GridPane.columnIndex="6"
+                   GridPane.rowIndex="4" GridPane.columnSpan="2"/>
+
+            <Label text="Link:" GridPane.columnIndex="5" GridPane.rowIndex="5"/>
+            <ToggleSwitch fx:id="buttonTabMainPortLink" alignment="center" GridPane.columnIndex="6"
+                          GridPane.rowIndex="5"></ToggleSwitch>
+
+            <Label text="LED:" GridPane.columnIndex="5" GridPane.rowIndex="6"/>
+            <ToggleSwitch fx:id="buttonTabMainPortLED" alignment="center" GridPane.columnIndex="6"
+                          GridPane.rowIndex="6"></ToggleSwitch>
+
+
+            <Label text="NUMA node:" GridPane.columnIndex="9" GridPane.rowIndex="1"/>
+            <Label fx:id="labelTabMainPortNUMA" text="-1" GridPane.columnIndex="10" GridPane.rowIndex="1"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="PCI address:" GridPane.columnIndex="9" GridPane.rowIndex="2"/>
+            <Label fx:id="labelTabMainPortPCI" text="" GridPane.columnIndex="10" GridPane.rowIndex="2"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="RX Queueing:" GridPane.columnIndex="9" GridPane.rowIndex="3"/>
+            <Label fx:id="labelTabMainPortRxQueueing" text="" GridPane.columnIndex="10" GridPane.rowIndex="3"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Grat ARP:" GridPane.columnIndex="9" GridPane.rowIndex="4"/>
+            <Label fx:id="labelTabMainPortGratARP" text="" GridPane.columnIndex="10" GridPane.rowIndex="4"
+                   GridPane.columnSpan="2"/>
+
+            <Label text="Flow control:" GridPane.columnIndex="9" GridPane.rowIndex="5"/>
+            <ChoiceBox fx:id="choiceTabMainPortFlowControl"
+                       prefWidth="127"
+                       GridPane.columnIndex="10" GridPane.rowIndex="5" GridPane.columnSpan="2">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rx"/>
+                        <String fx:value="Tx"/>
+                        <String fx:value="Full"/>
+                        <String fx:value="None"/>
+                    </FXCollections>
+                </items>
+            </ChoiceBox>
+        </GridPane>
+    </center>
+    <bottom>
+        <HBox alignment="top_center">
+            <padding>
+                <Insets top="1" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button fx:id="buttonTabMainPortAcquireRelease" text="Acquire">
+                <styleClass>
+                    <String fx:value="normalButton"/>
+                </styleClass>
+            </Button>
+            <Label text="    "/>
+            <Button fx:id="buttonTabMainPortForceAcquire" text="Force Acquire">
+                <styleClass>
+                    <String fx:value="normalButton"/>
+                </styleClass>
+            </Button>
+        </HBox>
+    </bottom>
+</fx:root>
