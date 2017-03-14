@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+
+<?import com.exalttech.trex.ui.controllers.ports.tabs.PortAttributes?>
+<?import com.exalttech.trex.ui.controllers.ports.tabs.PortLayerConfiguration?>
+<?import com.exalttech.trex.ui.controllers.ports.tabs.PortHardwareCounters?>
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.control.TabPane"
+         fx:id="root"
+         styleClass="statRightPaneContent, floating"
+         
+        >
+        <Tab text="Main" closable="false">
+            <PortAttributes fx:id="attributesTab"/>
+        </Tab>
+        <Tab text="Layer configuration" closable="false">
+            <PortLayerConfiguration fx:id="layerConfigTab"/>
+        </Tab>
+        <Tab text="Hardware counters" closable="false">
+            <PortHardwareCounters fx:id="hardwareCounters"/>
+        </Tab>
+</fx:root>

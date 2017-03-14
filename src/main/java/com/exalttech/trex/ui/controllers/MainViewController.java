@@ -32,6 +32,7 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.components.CustomTreeItem;
 import com.exalttech.trex.ui.components.CustomTreeItem.TreeItemType;
 import com.exalttech.trex.ui.components.NotificationPanel;
+import com.exalttech.trex.ui.controllers.ports.PortController;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
@@ -186,6 +187,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     @FXML
     SplitPane mainViewSplitPanel;
 
+    @FXML
+    PortController portController;
+    
     private ContextMenu rightClickPortMenu;
     private ContextMenu rightClickProfileMenu;
     private ContextMenu rightClickGlobalMenu;
@@ -666,12 +670,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Build port detail table
      */
     private void buildPortInfoTable() {
-        Port port = portManager.getPortList().get(getSelectedPortIndex());
-
-        TabPane node = (TabPane) rightPaneContent.generatePortInfoPane(serverRPCMethods, port);
-        statTableContainer.setFitToHeight(true);
-        statTableContainer.setFitToWidth(true);
-        statTableContainer.setContent(node);
     }
 
     /**
@@ -680,7 +678,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @param showStatTable
      */
     private void hideShowStatTable(boolean showStatTable) {
-        statTableContainer.setVisible(false);
+        statTableContainer.setVisible(true);
         statTableWrapper.setVisible(showStatTable);
         profileContainer.setVisible(!showStatTable);
     }
