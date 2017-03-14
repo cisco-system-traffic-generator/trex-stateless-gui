@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import java.lang.String?>
+<?import javafx.scene.shape.Rectangle?>
+
+<fx:root fx:id="rootPortInfoTabConfig"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.BorderPane">
+    <top>
+        <HBox alignment="bottom_center">
+            <padding><Insets top="10" right="10" bottom="1" left="10"/></padding>
+            <Text fx:id="textTabConfigPortNameTitle" text="Port ">
+                <font>
+                    <Font name="Tahoma" size="20.0" />
+                </font>
+            </Text>
+        </HBox>
+    </top>
+    <center>
+        <GridPane fx:id="gridPanePortInfoTabConfig"
+                  alignment="top_center"
+                  hgap="10" vgap="10" >
+            <fx:define>
+                <Rectangle fx:id="s" width="12" height="12"/>
+            </fx:define>
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+            <Label text="Mode:"   GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="2" >
+                <RadioButton fx:id="l2ModeRadio" selected="false" text="L2">
+                    <padding><Insets right="10"/></padding>
+                    <toggleGroup>
+                        <ToggleGroup fx:id="layerMode" />
+                    </toggleGroup>
+                </RadioButton>
+                <RadioButton fx:id="l3ModeRadio" selected="false" text="L3" toggleGroup="$layerMode" />
+            </HBox>
+
+            <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <HBox GridPane.rowSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                <TextField fx:id="sourceField" text="" minWidth="${16 * s.width}" />
+            </HBox>
+
+            <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2">
+                <TextField fx:id="dstField" text="" minWidth="${16 * s.width}" />
+            </HBox>
+            <Label fx:id="arpLabel" text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <Label fx:id="arpStatus" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
+
+            <Label fx:id="pingLabel" text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+            <TextField fx:id="textFieldTabConfigPortPingIPv4" text="" promptText="Destination address"
+                       minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2" />
+            <Button fx:id="pingCommandBtn" text="Ping" GridPane.columnIndex="3" GridPane.rowIndex="6">
+            </Button>
+        </GridPane>
+    </center>
+    <bottom>
+        <HBox alignment="top_center">
+            <padding><Insets top="1" right="10" bottom="10" left="10"/></padding>
+            <Button fx:id="buttonTabConfigPortAcquireRelease" text="Acquire port">
+                <styleClass>
+                    <String fx:value="normalButton" />
+                </styleClass>
+            </Button>
+            <Label text="    " />
+            <Button fx:id="buttonTabConfigPortForceAcquire" text="Force Acquire">
+                <styleClass>
+                    <String fx:value="normalButton" />
+                </styleClass>
+            </Button>
+            <Label text="    " />
+            <Button fx:id="buttonTabConfigPortApply" text="Save" >
+                <styleClass>
+                    <String fx:value="normalButton" />
+                </styleClass>
+            </Button>
+        </HBox>
+    </bottom>
+</fx:root>
