@@ -680,6 +680,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @param showStatTable
      */
     private void hideShowStatTable(boolean showStatTable) {
+        statTableContainer.setVisible(false);
         statTableWrapper.setVisible(showStatTable);
         profileContainer.setVisible(!showStatTable);
     }
