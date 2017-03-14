@@ -50,12 +50,11 @@
 
             <Label text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
             <ToggleSwitch fx:id="buttonTabMainPortMulticast" alignment="center" GridPane.columnIndex="1"
-                          GridPane.rowIndex="5"></ToggleSwitch>
+                          GridPane.rowIndex="5"/>
 
             <Label text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
             <ToggleSwitch fx:id="buttonTabMainPortPromiscuous" alignment="center" GridPane.columnIndex="1"
-                          GridPane.rowIndex="6"></ToggleSwitch>
-
+                          GridPane.rowIndex="6"/>
 
             <Label text="Owner:" GridPane.columnIndex="5" GridPane.rowIndex="1"/>
             <Label fx:id="labelTabMainPortOwner" text="" GridPane.columnIndex="6" GridPane.rowIndex="1"
@@ -75,11 +74,11 @@
 
             <Label text="Link:" GridPane.columnIndex="5" GridPane.rowIndex="5"/>
             <ToggleSwitch fx:id="buttonTabMainPortLink" alignment="center" GridPane.columnIndex="6"
-                          GridPane.rowIndex="5"></ToggleSwitch>
+                          GridPane.rowIndex="5"/>
 
             <Label text="LED:" GridPane.columnIndex="5" GridPane.rowIndex="6"/>
             <ToggleSwitch fx:id="buttonTabMainPortLED" alignment="center" GridPane.columnIndex="6"
-                          GridPane.rowIndex="6"></ToggleSwitch>
+                          GridPane.rowIndex="6"/>
 
 
             <Label text="NUMA node:" GridPane.columnIndex="9" GridPane.rowIndex="1"/>
