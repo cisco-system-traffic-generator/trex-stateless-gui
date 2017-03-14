@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<?import com.exalttech.trex.ui.controllers.ports.tabs.PortAttributes?>
+<?import com.exalttech.trex.ui.controllers.ports.tabs.PortLayerConfiguration?>
+<?import com.exalttech.trex.ui.controllers.ports.tabs.PortHardwareCounters?>
+
+<TabPane
+        AnchorPane.topAnchor="0.0"
+        AnchorPane.bottomAnchor="0.0"
+        AnchorPane.leftAnchor="0.0"
+        AnchorPane.rightAnchor="0.0"
+        styleClass="statRightPaneContent, floating">
+    <Tab text="Main"
+         closable="false">
+        <PortAttributes/>
+    </Tab>
+    <Tab text="Layer configuration"
+         closable="false">
+        <PortLayerConfiguration/>
+    </Tab>
+    <Tab text="Hardware counters"
+         closable="false">
+        <PortHardwareCounters/>
+    </Tab>
+</TabPane>
