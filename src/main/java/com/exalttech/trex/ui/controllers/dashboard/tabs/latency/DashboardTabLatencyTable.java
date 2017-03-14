@@ -44,6 +44,7 @@ public class DashboardTabLatencyTable extends AnchorPane {
 
     public void setVisiblePorts(Set<Integer> visiblePorts) {
         this.visiblePorts = visiblePorts;
+        onRefreshSucceeded(null);
     }
 
     private void onRefreshSucceeded(WorkerStateEvent event) {
