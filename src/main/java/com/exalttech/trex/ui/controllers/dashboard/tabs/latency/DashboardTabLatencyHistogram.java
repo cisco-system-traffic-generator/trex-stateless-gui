@@ -62,6 +62,10 @@ public class DashboardTabLatencyHistogram extends AnchorPane {
         List<XYChart.Series> seriesList = new LinkedList<XYChart.Series>();
         Set<String> categories = new HashSet<String>();
         latencyStatsByStreams.forEach((String stream, String jsonLatencyStats) -> {
+            if (jsonLatencyStats.contains("bad_hdr")) {
+                return;
+            }
+
             if (visibleStreams != null && !visibleStreams.contains(stream)) {
                 return;
             }

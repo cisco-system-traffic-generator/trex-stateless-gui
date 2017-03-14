@@ -70,6 +70,10 @@ public class DashboardTabLatencyChart extends AnchorPane {
         latencyStatsByStreams.forEach((String stream, String jsonLatencyStats) -> {
             unvisitedStreams.remove(stream);
 
+            if (jsonLatencyStats.contains("bad_hdr")) {
+                return;
+            }
+
             JSONStatsStream latencyStats = (JSONStatsStream) Util.fromJSONString(
                     jsonLatencyStats,
                     JSONStatsStream.class
