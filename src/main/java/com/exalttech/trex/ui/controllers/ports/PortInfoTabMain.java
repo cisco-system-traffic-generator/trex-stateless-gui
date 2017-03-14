@@ -58,7 +58,7 @@ public class PortInfoTabMain extends BorderPane {
 
         FXMLLoader fxmlLoader = injector.getInstance(FXMLLoader.class);
 
-        fxmlLoader.setLocation(getClass().getResource("/fxml/PortInfo/TabMain.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("/fxml/ports/TabMain.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
