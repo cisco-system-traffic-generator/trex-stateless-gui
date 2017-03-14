@@ -1,28 +1,23 @@
-package com.exalttech.trex.ui.controllers.PortInfo;
+package com.exalttech.trex.ui.controllers.ports;
 
 import com.exalttech.trex.core.RPCMethods;
-import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
-import com.exalttech.trex.util.Util;
 import com.google.inject.Injector;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class PortInfoTabXstats extends BorderPane {

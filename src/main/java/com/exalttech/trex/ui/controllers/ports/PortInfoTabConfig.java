@@ -1,4 +1,4 @@
-package com.exalttech.trex.ui.controllers.PortInfo;
+package com.exalttech.trex.ui.controllers.ports;
 
 import com.cisco.trex.stateless.TRexClient;
 import com.exalttech.trex.core.AsyncResponseManager;

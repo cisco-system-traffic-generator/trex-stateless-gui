@@ -1,4 +1,4 @@
-package com.exalttech.trex.ui.controllers.PortInfo;
+package com.exalttech.trex.ui.controllers.ports;
 
 import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
