@@ -2,8 +2,8 @@ package com.exalttech.trex.ui.models.json.stats.streams;
 
 
 public class JSONFlowStatsTimeStamp {
-    long freq;
-    long value;
+    private long freq;
+    private long value;
 
     public long getFreq() { return freq; }
     public void setFreq(long freq) { this.freq = freq; }
