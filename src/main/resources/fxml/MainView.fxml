@@ -12,7 +12,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<?import com.exalttech.trex.ui.controllers.ports.PortController?>
+<?import com.exalttech.trex.ui.controllers.ports.PortView?>
 
 <AnchorPane fx:id="mainViewContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="670.0" minWidth="500.0"
             prefHeight="670.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
@@ -207,7 +207,7 @@
                                                                         AnchorPane.leftAnchor="0.0"
                                                                         AnchorPane.rightAnchor="0.0"
                                                                         AnchorPane.topAnchor="0.0"/>
-                                                            <PortController fx:id="portController"
+                                                            <PortView fx:id="portView"
                                                                             AnchorPane.topAnchor="0.0"
                                                                             AnchorPane.bottomAnchor="0.0"
                                                                             AnchorPane.leftAnchor="0.0"

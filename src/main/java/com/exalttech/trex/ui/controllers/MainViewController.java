@@ -32,7 +32,7 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.components.CustomTreeItem;
 import com.exalttech.trex.ui.components.CustomTreeItem.TreeItemType;
 import com.exalttech.trex.ui.components.NotificationPanel;
-import com.exalttech.trex.ui.controllers.ports.PortController;
+import com.exalttech.trex.ui.controllers.ports.PortView;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
@@ -188,7 +188,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     SplitPane mainViewSplitPanel;
 
     @FXML
-    PortController portController;
+    PortView portView;
     
     private ContextMenu rightClickPortMenu;
     private ContextMenu rightClickProfileMenu;
