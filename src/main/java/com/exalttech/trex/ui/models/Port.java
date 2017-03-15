@@ -252,8 +252,33 @@ public class Port {
         this.xstatsPinned = xstatsPinned;
     }
 
-    public CaptureStatus[] getCaptureStatus() {
-        return captureStatus;
+    public String getCaptureStatus() {
+        String status = "None";
+        if (captureStatus != null && captureStatus.length > 0) {
+            int port_index_mask = 1 << getIndex();
+            boolean tx = false;
+            boolean rx = false;
+
+            for (int i = 0; i < captureStatus.length; i++) {
+                if ((port_index_mask & captureStatus[i].getFilter().getRx()) != 0) {
+                    rx = true;
+                }
+                if ((port_index_mask & captureStatus[i].getFilter().getTx()) != 0) {
+                    tx = true;
+                }
+            }
+
+            if (rx && tx) {
+                status = "Rx + Tx";
+            }
+            else if (rx) {
+                status = "Rx";
+            }
+            else if (tx) {
+                status = "Tx";
+            }
+        }
+        return status;
     }
 
     public void setCaptureStatus(CaptureStatus[] captureStatus) {
@@ -368,6 +393,22 @@ public class Port {
     @Override
     public String toString() {
         return new Gson().toJson(this);
+    }
+
+    public FlowControl getFlowControl() {
+        FlowControl mode = FlowControl.NONE;
+        switch(getAttr().getFc().getMode()) {
+            case 1:
+                mode = FlowControl.TX;
+                break;
+            case 2:
+                mode = FlowControl.RX;
+                break;
+            case 3:
+                mode = FlowControl.FULL;
+                
+        }
+        return mode;
     }
 
     /**

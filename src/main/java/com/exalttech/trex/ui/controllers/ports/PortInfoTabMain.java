@@ -5,7 +5,6 @@ import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.controllers.MainViewController;
 import com.exalttech.trex.ui.models.Port;
-import com.exalttech.trex.ui.models.datastore.CaptureStatus;
 import com.google.inject.Injector;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -299,33 +298,7 @@ public class PortInfoTabMain extends BorderPane {
             buttonTabMainPortMulticast.setDisable(false);
         }
 
-        CaptureStatus[] capture = port.getCaptureStatus();
-        String status = "None";
-        if (capture != null && capture.length > 0) {
-            int port_index_mask = 1 << port.getIndex();
-            boolean tx = false;
-            boolean rx = false;
-
-            for (int i = 0; i < capture.length; i++) {
-                if ((port_index_mask & capture[i].getFilter().getRx()) != 0) {
-                    rx = rx || true;
-                }
-                if ((port_index_mask & capture[i].getFilter().getTx()) != 0) {
-                    tx = tx || true;
-                }
-            }
-
-            if (rx && tx) {
-                status = "Rx + Tx";
-            }
-            else if (rx) {
-                status = "Rx";
-            }
-            else if (tx) {
-                status = "Tx";
-            }
-        }
-        labelTabMainPortCaptureStatus.setText(status);
+        labelTabMainPortCaptureStatus.setText(port.getCaptureStatus());
     }
 
 }
