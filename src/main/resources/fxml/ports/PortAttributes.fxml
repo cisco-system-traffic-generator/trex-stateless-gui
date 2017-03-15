@@ -41,52 +41,52 @@
                    GridPane.columnSpan="2"/>
 
             <Label text="Driver:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <Label fx:id="labelTabMainPortDriver" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"
+            <Label fx:id="driver" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"
                    GridPane.columnSpan="2"/>
 
             <Label text="Rx filter mode:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-            <Label fx:id="labelTabMainPortRxFilterMode" text="" GridPane.columnIndex="1" GridPane.rowIndex="4"
+            <Label fx:id="rxFilterMode" text="" GridPane.columnIndex="1" GridPane.rowIndex="4"
                    GridPane.columnSpan="2"/>
 
             <Label text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-            <ToggleSwitch fx:id="buttonTabMainPortMulticast" alignment="center" GridPane.columnIndex="1"
+            <ToggleSwitch fx:id="multicast" alignment="center" GridPane.columnIndex="1"
                           GridPane.rowIndex="5"/>
 
             <Label text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-            <ToggleSwitch fx:id="buttonTabMainPortPromiscuous" alignment="center" GridPane.columnIndex="1"
+            <ToggleSwitch fx:id="promiscuousMode" alignment="center" GridPane.columnIndex="1"
                           GridPane.rowIndex="6"/>
 
             <Label text="Owner:" GridPane.columnIndex="5" GridPane.rowIndex="1"/>
-            <Label fx:id="labelTabMainPortOwner" text="" GridPane.columnIndex="6" GridPane.rowIndex="1"
+            <Label fx:id="owner" text="" GridPane.columnIndex="6" GridPane.rowIndex="1"
                    GridPane.columnSpan="2"/>
 
             <Label text="Speed:" GridPane.columnIndex="5" GridPane.rowIndex="2"/>
-            <Label fx:id="labelTabMainPortSpeed" text="" GridPane.columnIndex="6" GridPane.rowIndex="2"
+            <Label fx:id="speed" text="" GridPane.columnIndex="6" GridPane.rowIndex="2"
                    GridPane.columnSpan="2"/>
 
             <Label text="Status:" GridPane.columnIndex="5" GridPane.rowIndex="3"/>
-            <Label fx:id="labelTabMainPortStatus" text="" GridPane.columnIndex="6" GridPane.rowIndex="3"
+            <Label fx:id="status" text="" GridPane.columnIndex="6" GridPane.rowIndex="3"
                    GridPane.columnSpan="2"/>
 
             <Label text="Capturing:" GridPane.columnIndex="5" GridPane.rowIndex="4"/>
-            <Label fx:id="labelTabMainPortCaptureStatus" text="None / Tx / Rx / Tx+Rx" GridPane.columnIndex="6"
+            <Label fx:id="captureStatus" text="None / Tx / Rx / Tx+Rx" GridPane.columnIndex="6"
                    GridPane.rowIndex="4" GridPane.columnSpan="2"/>
 
             <Label text="Link:" GridPane.columnIndex="5" GridPane.rowIndex="5"/>
-            <ToggleSwitch fx:id="buttonTabMainPortLink" alignment="center" GridPane.columnIndex="6"
+            <ToggleSwitch fx:id="link" alignment="center" GridPane.columnIndex="6"
                           GridPane.rowIndex="5"/>
 
             <Label text="LED:" GridPane.columnIndex="5" GridPane.rowIndex="6"/>
-            <ToggleSwitch fx:id="buttonTabMainPortLED" alignment="center" GridPane.columnIndex="6"
+            <ToggleSwitch fx:id="led" alignment="center" GridPane.columnIndex="6"
                           GridPane.rowIndex="6"/>
 
 
             <Label text="NUMA node:" GridPane.columnIndex="9" GridPane.rowIndex="1"/>
-            <Label fx:id="labelTabMainPortNUMA" text="-1" GridPane.columnIndex="10" GridPane.rowIndex="1"
+            <Label fx:id="numaMode" text="-1" GridPane.columnIndex="10" GridPane.rowIndex="1"
                    GridPane.columnSpan="2"/>
 
             <Label text="PCI address:" GridPane.columnIndex="9" GridPane.rowIndex="2"/>
-            <Label fx:id="labelTabMainPortPCI" text="" GridPane.columnIndex="10" GridPane.rowIndex="2"
+            <Label fx:id="pciAddress" text="" GridPane.columnIndex="10" GridPane.rowIndex="2"
                    GridPane.columnSpan="2"/>
 
             <Label text="RX Queueing:" GridPane.columnIndex="9" GridPane.rowIndex="3"/>
@@ -94,7 +94,7 @@
                    GridPane.columnSpan="2"/>
 
             <Label text="Grat ARP:" GridPane.columnIndex="9" GridPane.rowIndex="4"/>
-            <Label fx:id="labelTabMainPortGratARP" text="" GridPane.columnIndex="10" GridPane.rowIndex="4"
+            <Label fx:id="gratArp" text="" GridPane.columnIndex="10" GridPane.rowIndex="4"
                    GridPane.columnSpan="2"/>
 
             <Label text="Flow control:" GridPane.columnIndex="9" GridPane.rowIndex="5"/>
