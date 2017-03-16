@@ -15,7 +15,7 @@
          
         >
         <Tab text="Main" closable="false">
-            <PortAttributes fx:id="attributesTab"/>
+            <PortAttributes fx:id="portAttributes"/>
         </Tab>
         <Tab text="Layer configuration" closable="false">
             <PortLayerConfiguration fx:id="layerConfig"/>
