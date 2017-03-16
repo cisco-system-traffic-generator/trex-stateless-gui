@@ -20,11 +20,12 @@ import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.services.UpdatePortStatusService;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Util;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.util.Duration;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.util.Duration;
 
 /**
  * Port Manager class implementation
@@ -100,25 +101,24 @@ public class PortsManager {
         this.portManagerHandler = portManagerHandler;
     }
 
-    /**
-     * Start scheduler to update port state every 15sec
-     */
-    public void startPortStatusScheduler() {
+    private void initUpdatePortStatusService() {
         updatePortStatusService = new UpdatePortStatusService(portList);
         updatePortStatusService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
         updatePortStatusService.setRestartOnFailure(false);
         updatePortStatusService.setOnSucceeded((WorkerStateEvent event) -> {
             portList = (List<Port>) event.getSource().getValue();
-            boolean successfulyUpdate = portList != null && !portList.isEmpty();
-            portManagerHandler.onPortListUpdated(successfulyUpdate);
+            boolean successfullyUpdate = portList != null && !portList.isEmpty();
+            portManagerHandler.onPortListUpdated(successfullyUpdate);
         });
-        updatePortStatusService.start();
     }
 
     /**
      * Force request to update port state
      */
     public void updatePortForce() {
+        if (updatePortStatusService == null) {
+            initUpdatePortStatusService();
+        }
         portList = updatePortStatusService.getUpdatedPortList();
         portManagerHandler.onPortListUpdated(true);
     }
