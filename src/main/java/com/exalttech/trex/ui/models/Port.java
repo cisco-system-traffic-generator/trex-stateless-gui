@@ -411,6 +411,14 @@ public class Port {
         return mode;
     }
 
+    public boolean getLink() {
+        return getAttr().getLink() != null && getAttr().getLink().getUp();
+    }
+
+    public boolean getLed() {
+        return getAttr().getLed() != null && getAttr().getLed().getOn();
+    }
+
     /**
      * Port parameters model
      */
