@@ -36,6 +36,7 @@ import com.exalttech.trex.ui.controllers.ports.PortView;
 import com.exalttech.trex.ui.dialog.DialogManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.Port;
+import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
@@ -190,6 +191,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     @FXML
     PortView portView;
     
+    BooleanProperty portViewVisibilityProperty = new SimpleBooleanProperty(false);
+    BooleanProperty systemInfoVisibilityProperty = new SimpleBooleanProperty(true);
+    
     private ContextMenu rightClickPortMenu;
     private ContextMenu rightClickProfileMenu;
     private ContextMenu rightClickGlobalMenu;
@@ -242,6 +246,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         initializeInlineComponent();
         logsContainer.setDisable(false);
         eventBus = TrexApp.injector.getInstance(EventBus.class);
+        portView.visibleProperty().bind(portViewVisibilityProperty);
+        statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
     }
 
     /**
@@ -439,8 +445,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 updateAcquireReleaseBtnState(true);
                 // show table container by default
                 hideShowStatTable(true);
+                portViewVisibilityProperty.setValue(false);
+                systemInfoVisibilityProperty.setValue(false);
                 switch (selected.getTreeItemType()) {
                     case DEVICES:
+                        systemInfoVisibilityProperty.setValue(true);
                         buildSystemInfoTable();
                         break;
                     case GLOBAL_STAT:
@@ -448,7 +457,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         break;
                     case PORT:
                         updateAcquireReleaseBtnState(false);
-                        buildPortInfoTable();
+                        loadPortModel();
+                        portViewVisibilityProperty.setValue(true);
                         break;
                     case PORT_PROFILE:
                         viewProfile();
@@ -669,12 +679,16 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     /**
      * Build port detail table
      */
-    private void buildPortInfoTable() {
+    private void loadPortModel() {
+        PortModel model = PortModel.createModelFrom(portManager.getPortList().get(getSelectedPortIndex()));
+        portView.loadModel(model);
     }
 
     /**
      * Hide and show stat table
      *
+     * @TODO need to get rid off this method
+     * 
      * @param showStatTable
      */
     private void hideShowStatTable(boolean showStatTable) {
@@ -1504,7 +1518,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.getTreeItemType() == TreeItemType.PORT) {
                 updateAcquireReleaseBtnState(false);
-                buildPortInfoTable();
+                loadPortModel();
             } else if (selected != null && selected.getTreeItemType() == TreeItemType.PORT_PROFILE
                     && !portManager.isCurrentUserOwner(getSelectedPortIndex())) {
                 viewProfile();
