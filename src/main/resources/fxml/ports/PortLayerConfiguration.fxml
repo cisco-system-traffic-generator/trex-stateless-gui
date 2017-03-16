@@ -32,13 +32,13 @@
 
             <Label text="Mode:"   GridPane.columnIndex="0" GridPane.rowIndex="1" />
             <HBox GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="2" >
-                <RadioButton fx:id="l2ModeRadio" selected="false" text="L2">
+                <RadioButton fx:id="l2Mode" selected="false" text="L2">
                     <padding><Insets right="10"/></padding>
                     <toggleGroup>
-                        <ToggleGroup fx:id="mode" />
+                        <ToggleGroup fx:id="layerMode" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton fx:id="l3ModeRadio" selected="false" text="L3" toggleGroup="$layerMode" />
+                <RadioButton fx:id="l3Mode" selected="false" text="L3" toggleGroup="$layerMode" />
             </HBox>
 
             <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
