@@ -363,14 +363,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         if (devicesTree.getRoot() == null) {
             TreeItem root = new CustomTreeItem("TRex-" + ConnectionManager.getInstance().getIPAddress(), TreeItemType.DEVICES, rightClickGlobalMenu);
             root.setExpanded(true);
-            root.getChildren().add(new CustomTreeItem("Global Stats", TreeItemType.GLOBAL_STAT));
-            root.getChildren().add(new CustomTreeItem("Port Statistics", TreeItemType.TUI));
-            portManager.getPortList().stream().forEach(new Consumer<Port>() {
-                @Override
-                public void accept(Port port) {
-                    // build port tree item
-                    root.getChildren().add(createPortItem(port));
-                }
+            portManager.getPortList().stream().forEach(port -> {
+                // build port tree item
+                root.getChildren().add(createPortItem(port));
             });
             devicesTree.setRoot(root);
             devicesTree.getSelectionModel().select(0);
@@ -403,9 +398,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         profileItem.setMenu(rightClickProfileMenu);
         profileItem.setReturnedValue(String.valueOf(port.getIndex()));
         root.getChildren().add(profileItem);
-        CustomTreeItem portStatItem = new CustomTreeItem("Port stats", TreeItemType.PORT_STATS);
-        portStatItem.setReturnedValue(String.valueOf(port.getIndex()));
-        root.getChildren().add(portStatItem);
         return root;
     }
 
@@ -452,9 +444,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         systemInfoVisibilityProperty.setValue(true);
                         buildSystemInfoTable();
                         break;
-                    case GLOBAL_STAT:
-                        viewGlobalStatsTable();
-                        break;
                     case PORT:
                         updateAcquireReleaseBtnState(false);
                         loadPortModel();
@@ -462,12 +451,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         break;
                     case PORT_PROFILE:
                         viewProfile();
-                        break;
-                    case PORT_STATS:
-                        getPortStats();
-                        break;
-                    case TUI:
-                        viewTUITable();
                         break;
                     default:
                         break;
