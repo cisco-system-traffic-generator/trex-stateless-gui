@@ -224,9 +224,12 @@ public class ConnectDialogController extends DialogView implements Initializable
      * Save and update the connections list in external connection file
      */
     private void updateConnectionsList() {
-        ConnectionsWrapper connections = new ConnectionsWrapper();
-        connections.setConnectionList(new ArrayList<>(connectionMap.values()));
-        XMLFileManager.saveXML("connections.xml", connections, ConnectionsWrapper.class);
+        try {
+            ConnectionsWrapper connections = new ConnectionsWrapper();
+            connections.setConnectionList(new ArrayList<>(connectionMap.values()));
+            XMLFileManager.saveXML("connections.xml", connections, ConnectionsWrapper.class);
+        } catch (Exception ignored) {
+        }
     }
 
     /**
