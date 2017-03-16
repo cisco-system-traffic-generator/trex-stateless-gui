@@ -207,13 +207,13 @@
                                                                         AnchorPane.leftAnchor="0.0"
                                                                         AnchorPane.rightAnchor="0.0"
                                                                         AnchorPane.topAnchor="0.0"/>
-                                                            <PortView fx:id="portView"
-                                                                            AnchorPane.topAnchor="0.0"
-                                                                            AnchorPane.bottomAnchor="0.0"
-                                                                            AnchorPane.leftAnchor="0.0"
-                                                                            AnchorPane.rightAnchor="0.0"
-                                                                            visible="false"/>
                                                         </AnchorPane>
+                                                        <PortView fx:id="portView"
+                                                                  AnchorPane.topAnchor="0.0"
+                                                                  AnchorPane.bottomAnchor="0.0"
+                                                                  AnchorPane.leftAnchor="0.0"
+                                                                  AnchorPane.rightAnchor="0.0"
+                                                                  visible="false"/>
                                                         <AnchorPane fx:id="profileContainer" prefHeight="200.0"
                                                                     prefWidth="200.0" visible="false"
                                                                     AnchorPane.bottomAnchor="10.0"
