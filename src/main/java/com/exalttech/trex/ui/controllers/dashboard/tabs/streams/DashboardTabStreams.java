@@ -55,18 +55,30 @@ public class DashboardTabStreams extends AnchorPane {
         }
 
         public long calcTotalTxPkts(Set<Integer> visiblePorts) {
+            if (txPkts == null) {
+                return 0;
+            }
             return calcTotal(txPkts, visiblePorts);
         }
 
         public long calcTotalTxBytes(Set<Integer> visiblePorts) {
+            if (txBytes == null) {
+                return 0;
+            }
             return calcTotal(txBytes, visiblePorts);
         }
 
         public long calcTotalRxPkts(Set<Integer> visiblePorts) {
+            if (rxPkts == null) {
+                return 0;
+            }
             return calcTotal(rxPkts, visiblePorts);
         }
 
         public long calcTotalRxBytes(Set<Integer> visiblePorts) {
+            if (rxBytes == null) {
+                return 0;
+            }
             return calcTotal(rxBytes, visiblePorts);
         }
 
