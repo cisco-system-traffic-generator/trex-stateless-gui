@@ -23,9 +23,6 @@ package com.exalttech.trex.ui.views.services;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.PortStatus;
-import com.exalttech.trex.ui.models.datastore.CaptureStatus;
-import com.exalttech.trex.util.Constants;
-import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -33,7 +30,6 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -84,26 +80,26 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
                 port.setAttr(portStatus.getResult().getAttr());
                 port.setRx_info(portStatus.getResult().getRx_info());
 
-                String response1 = ConnectionManager.getInstance().sendRequest(Constants.CAPTURE_METHOD,
-                        "\"command\":\"status\"");
-                CaptureStatus[] capture = Util.getCaptureStatusFromJSONString(response1);
-                port.setCaptureStatus(null);
-                for (int i = 0; i < capture.length; i++) {
-                    int port_index_mask = 1 << port.getIndex();
-                    if ((capture[i].getFilter().getRx() & port_index_mask) != 0) {
-                        port.setCaptureStatus(capture);
-                        break;
-                    }
-                    if ((capture[i].getFilter().getTx() & port_index_mask) != 0) {
-                        port.setCaptureStatus(capture);
-                        break;
-                    }
-                }
-
-                String response2 = ConnectionManager.getInstance().sendPortXStatsNamesRequest(port);
-                String response3 = ConnectionManager.getInstance().sendPortXStatsValuesRequest(port);
-                Map<String, Long> loadedXStatsList = Util.getXStatsFromJSONString(response2, response3);
-                port.setXstats(loadedXStatsList);
+//                String response1 = ConnectionManager.getInstance().sendRequest(Constants.CAPTURE_METHOD,
+//                        "\"command\":\"status\"");
+//                CaptureStatus[] capture = Util.getCaptureStatusFromJSONString(response1);
+//                port.setCaptureStatus(null);
+//                for (int i = 0; i < capture.length; i++) {
+//                    int port_index_mask = 1 << port.getIndex();
+//                    if ((capture[i].getFilter().getRx() & port_index_mask) != 0) {
+//                        port.setCaptureStatus(capture);
+//                        break;
+//                    }
+//                    if ((capture[i].getFilter().getTx() & port_index_mask) != 0) {
+//                        port.setCaptureStatus(capture);
+//                        break;
+//                    }
+//                }
+//
+//                String response2 = ConnectionManager.getInstance().sendPortXStatsNamesRequest(port);
+//                String response3 = ConnectionManager.getInstance().sendPortXStatsValuesRequest(port);
+//                Map<String, Long> loadedXStatsList = Util.getXStatsFromJSONString(response2, response3);
+//                port.setXstats(loadedXStatsList);
 
                 // Is it right ?
                 port.setSpeed(port.getAttr().getSpeed());
