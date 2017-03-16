@@ -3,11 +3,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import java.lang.String?>
-<?import javafx.scene.shape.Rectangle?>
-
 <fx:root fx:id="rootPortInfoTabConfig"
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.BorderPane">
@@ -43,12 +42,14 @@
 
             <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
             <HBox GridPane.rowSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
-                <TextField fx:id="source" text="" minWidth="${16 * s.width}" />
+                <TextField fx:id="l2Source" disable="true" minWidth="${16 * s.width}" />
+                <TextField fx:id="l3Source" minWidth="${16 * s.width}" />
             </HBox>
 
             <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
             <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2">
-                <TextField fx:id="destination" text="" minWidth="${16 * s.width}" />
+                <TextField fx:id="l2Destination" text="" minWidth="${16 * s.width}" />
+                <TextField fx:id="l3Destination" text="" minWidth="${16 * s.width}" />
             </HBox>
             <Label fx:id="arpLabel" text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
             <Label fx:id="arpStatus" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
@@ -75,7 +76,7 @@
                 </styleClass>
             </Button>
             <Label text="    " />
-            <Button fx:id="buttonTabConfigPortApply" text="Save" >
+            <Button fx:id="saveBtn" text="Save" disable="true">
                 <styleClass>
                     <String fx:value="normalButton" />
                 </styleClass>
