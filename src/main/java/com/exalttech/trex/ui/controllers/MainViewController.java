@@ -509,86 +509,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     }
 
     /**
-     * View TUI stats table
-     */
-    private void viewTUITable() {
-        getAsyncStatList(AsyncStatsType.TUI);
-    }
-
-    /**
-     * View Global stats table
-     */
-    private void viewGlobalStatsTable() {
-        getAsyncStatList(AsyncStatsType.GLOBAL);
-    }
-
-    /**
-     * Build port stats table
-     *
-     * @param portIndex
-     */
-    private void buildPortStatTable(int portIndex) {
-        statTableContainer.setContent(null);
-
-        if (portIndex == -1) {
-            statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portManager.getPortList().size(), true, 150, null));
-            return;
-        }
-        statTableContainer.setContent(statsTableGenerator.getPortStatTable(cachedStatsList, portIndex));
-    }
-
-    /**
-     * Build global statistic table
-     */
-    private void buildGlobalStat() {
-        statTableContainer.setContent(statsTableGenerator.generateGlobalStatPane());
-    }
-
-    /**
-     * Request and return portStats
-     *
-     */
-    private void getPortStats() {
-        getAsyncStatList(AsyncStatsType.PORT, getSelectedPortIndex());
-    }
-
-    /**
-     * Return async stats list
-     *
-     * @param type
-     */
-    private void getAsyncStatList(AsyncStatsType type) {
-        getAsyncStatList(type, 0);
-    }
-
-    /**
-     * Return async stats list
-     *
-     * @param type
-     * @param addData
-     */
-    private void getAsyncStatList(final AsyncStatsType type, final int addData) {
-        refreshStatsService = new RefreshingService();
-        refreshStatsService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
-        refreshStatsService.setOnSucceeded((WorkerStateEvent event) -> {
-            switch (type) {
-                case GLOBAL:
-                    buildGlobalStat();
-                    break;
-                case PORT:
-                    buildPortStatTable(addData);
-                    break;
-                case TUI:
-                    buildPortStatTable(-1);
-                    break;
-                default:
-                    break;
-            }
-        });
-        refreshStatsService.start();
-    }
-
-    /**
      * Reset the application to initial state
      */
     private void resetApplication(boolean didServerCrash) {
@@ -645,18 +565,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         }
         
         portViewVisibilityProperty.setValue(false);
-    }
-
-    /**
-     * Restart application
-     */
-    private void restartApplication() {
-        try {
-            new ProcessBuilder(Util.getApplicationPath()).start();
-            TrexApp.getPrimaryStage().fireEvent(new WindowEvent(TrexApp.getPrimaryStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
-        } catch (IOException ex) {
-            LOG.error("Error restarting application", ex);
-        }
     }
 
     /**
@@ -960,12 +868,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void addMenuItem(ContextMenu menu, String text, ContextMenuClickType type, boolean isDisable) {
         MenuItem item = new MenuItem(text);
         item.setDisable(isDisable);
-        item.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                handleContextMenuItemCLicked(type);
-            }
-        });
+        item.setOnAction(event -> handleContextMenuItemCLicked(type));
         menu.getItems().add(item);
     }
 
@@ -1658,15 +1561,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             devicesTreeArrowContainer.setImage(leftArrow);
         }
         treeviewOpened = !treeviewOpened;
-    }
-
-    /**
-     * Enumerator that present async stats data type
-     */
-    private enum AsyncStatsType {
-        PORT,
-        TUI,
-        GLOBAL
     }
 
     /**
