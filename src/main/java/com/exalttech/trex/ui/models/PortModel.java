@@ -32,8 +32,8 @@ public class PortModel {
         model.portSpeed.setValue(String.valueOf(port.getSpeed()));
         model.portStatus.setValue(port.getStatus());
         model.capturingMode.setValue(port.getCaptureStatus());
-        model.linkStatus.setValue(port.getAttr().getLink().getUp());
-        model.ledStatus.setValue(port.getAttr().getLed().getOn());
+        model.linkStatus.setValue(port.getLink());
+        model.ledStatus.setValue(port.getLed());
         model.numaMode.set(String.valueOf(port.getNuma()));
         model.pciAddress.setValue(port.getPci_addr());
         model.rxQueueing.setValue(port.getRx_info().getQueue().isIs_active() ? "On" : "Off");
