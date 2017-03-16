@@ -248,6 +248,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         eventBus = TrexApp.injector.getInstance(EventBus.class);
         portView.visibleProperty().bind(portViewVisibilityProperty);
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
+
+        // Handle update port state event
+        AsyncResponseManager.getInstance().asyncEventProperty().addListener((observable, oldValue, newValue) -> {
+            // Update port view if current selected port updated.
+        });
     }
 
     /**
@@ -315,6 +320,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 cachedStatsList = new HashMap<>();
                 serverRPCMethods.serverApiSync();
                 loadSystemInfo();
+                portManager.updatePortForce();
             }
         } catch (IOException ex) {
             LOG.error("Error while Connecting", ex);
@@ -331,7 +337,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         systemInfoReq.setIp(ConnectionManager.getInstance().getIPAddress());
         systemInfoReq.setPort(ConnectionManager.getInstance().getRpcPort());
         portManager.setPortList(systemInfoReq.getResult().getPorts());
-        portManager.startPortStatusScheduler();
 
         String versionResponse = ConnectionManager.getInstance().sendRequest("get_version", "");
         Gson gson = new Gson();
