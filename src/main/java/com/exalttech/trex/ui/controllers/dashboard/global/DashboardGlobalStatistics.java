@@ -62,7 +62,6 @@ public class DashboardGlobalStatistics extends GridPane {
 
     private void onRefreshSucceeded(WorkerStateEvent event) {
         Map<String, String> currentStatsList = StatsLoader.getInstance().getLoadedStatsList();
-        Map<String, String> currentFlowStatsMap = StatsLoader.getInstance().getLoadedFlowStatsMap();
 
         cpuGauge.setData(currentStatsList.get("m_cpu_util"));
         rxCpuGauge.setData(currentStatsList.get("m_rx_cpu_util"));
@@ -77,10 +76,12 @@ public class DashboardGlobalStatistics extends GridPane {
         totalTxL1.setValue(Util.getFormatted(String.valueOf(l1_tx_bps), true, "b/sec"));
         totalRx.setValue(Util.getFormatted(currentStatsList.get("m_rx_bps"), true, "b/sec"));
         totalPps.setValue(Util.getFormatted(String.valueOf(m_tx_pps), true, "pkt/sec"));
-        totalStream.setValue(String.valueOf(currentFlowStatsMap.keySet().size() - 1));
         activePort.setValue(portManager.getActivePort());
         dropRate.setValue(Util.getFormatted(currentStatsList.get("m_rx_drop_bps"), true, "b/sec"));
         queueFull.setValue(Util.getFormatted(queue, true, "pkts"));
+
+        final int streamsCount = StatsLoader.getInstance().getFlowStatsHistoryMap().keySet().size();
+        totalStream.setValue(String.valueOf(streamsCount));
     }
 
     private void onWindowCloseRequest(WindowEvent window) {

@@ -1306,3 +1306,46 @@ ToggleSwitch {
 .statistics-chart .bar-legend-symbol {
     -fx-padding: 8px;
 }
+
+.layoutIcon1{
+    -fx-background-image: url("/icons/layout_1.png");
+    -fx-background-size: 24 24;
+    -fx-cursor: hand;
+}
+.layoutIcon1:hover{
+    -fx-background-image: url("/icons/layout_1_hovered.png");
+}
+
+.layoutIcon2{
+    -fx-background-image: url("/icons/layout_2.png");
+    -fx-background-size: 24 24;
+    -fx-cursor: hand;
+}
+.layoutIcon2:hover{
+    -fx-background-image: url("/icons/layout_2_hovered.png");
+}
+
+.layoutIcon4{
+    -fx-background-image: url("/icons/layout_4.png");
+    -fx-background-size: 24 24;
+    -fx-cursor: hand;
+}
+.layoutIcon4:hover{
+    -fx-background-image: url("/icons/layout_4_hovered.png");
+}
+
+.dashboardChartContainer {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #32b4ea;
+    -fx-cursor: hand;
+}
+
+.dashboardChartContainer:hover {
+    -fx-effect: dropshadow( three-pass-box, rgba(50, 180, 234, 0.6), 10, 0.0, 0, 0);
+}
+
+.selectCharTypeGroup {
+    -fx-border-color: #d7d7d7;
+    -fx-border: 1px;
+    -fx-background-color: #ffffff;
+}

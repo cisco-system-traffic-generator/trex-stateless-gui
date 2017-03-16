@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 
 
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
-         fx:id="root"
          type="javafx.scene.layout.AnchorPane"
          AnchorPane.leftAnchor="0.0"
          AnchorPane.rightAnchor="0.0"
@@ -24,80 +16,11 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-    <GridPane vgap="10.0"
-              AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0"
-              AnchorPane.bottomAnchor="0.0">
-        <columnConstraints>
-            <ColumnConstraints percentWidth="100"/>
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints percentHeight="50"/>
-            <RowConstraints percentHeight="10"/>
-            <RowConstraints percentHeight="40"/>
-        </rowConstraints>
-        <AnchorPane GridPane.columnIndex="0"
-                    GridPane.rowIndex="0"
-                    AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0"
-                    AnchorPane.topAnchor="0.0"
-                    AnchorPane.bottomAnchor="0.0">
-            <LineChart fx:id="chart"
-                       verticalGridLinesVisible="false"
-                       animated="false"
-                       createSymbols="false"
-                       styleClass="statistics-chart"
-                       AnchorPane.leftAnchor="0.0"
-                       AnchorPane.rightAnchor="0.0"
-                       AnchorPane.topAnchor="0.0"
-                       AnchorPane.bottomAnchor="0.0">
-                <xAxis>
-                    <NumberAxis fx:id="xAxis"
-                                label="Time (s)"
-                                forceZeroInRange="false"
-                                autoRanging="false"
-                                upperBound="0.0"
-                                minorTickVisible="false"/>
-                </xAxis>
-                <yAxis>
-                    <NumberAxis fx:id="yAxis"
-                                forceZeroInRange="false"
-                                side="RIGHT"
-                                minorTickVisible="false"/>
-                </yAxis>
-            </LineChart>
-        </AnchorPane>
-        <HBox alignment="center"
-              spacing="10.0"
-              GridPane.columnIndex="0"
-              GridPane.rowIndex="1">
-            <Label text="Statistic:"/>
-            <ComboBox fx:id="statisticsComboBox"
-                      prefWidth="120.0"
-                      editable="false"/>
-
-            <Label text="Count:"/>
-            <ComboBox fx:id="streamsCountComboBox"
-                      editable="true"
-                      prefWidth="120.0"/>
-            <Label text="Interval:"/>
-            <ComboBox fx:id="intervalComboBox"
-                      prefWidth="120.0"/>
-        </HBox>
-        <AnchorPane GridPane.columnIndex="0"
-                    GridPane.rowIndex="2"
-                    AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0"
-                    AnchorPane.topAnchor="0.0"
-                    AnchorPane.bottomAnchor="0.0">
-            <ScrollPane AnchorPane.leftAnchor="0.0"
-                        AnchorPane.rightAnchor="0.0"
-                        AnchorPane.topAnchor="0.0"
-                        AnchorPane.bottomAnchor="0.0">
-                <GridPane fx:id="table"
-                          styleClass="statsTable"/>
-            </ScrollPane>
-        </AnchorPane>
-    </GridPane>
+    <ScrollPane AnchorPane.leftAnchor="0.0"
+                AnchorPane.rightAnchor="0.0"
+                AnchorPane.topAnchor="0.0"
+                AnchorPane.bottomAnchor="0.0">
+        <GridPane fx:id="table"
+                  styleClass="statsTable"/>
+    </ScrollPane>
 </fx:root>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:id="root"
+         type="javafx.scene.layout.AnchorPane"
+         styleClass="dashboardChartContainer"
+         onMouseClicked="#handleClicked">
+    <padding>
+        <Insets top="10" bottom="10"/>
+    </padding>
+</fx:root>

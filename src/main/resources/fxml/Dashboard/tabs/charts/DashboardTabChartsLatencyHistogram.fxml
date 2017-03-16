@@ -14,15 +14,18 @@
               animated="false"
               verticalGridLinesVisible="false"
               styleClass="statistics-chart"
+              legendVisible="false"
               AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0"
               AnchorPane.topAnchor="0.0"
               AnchorPane.bottomAnchor="0.0">
         <xAxis>
-            <CategoryAxis fx:id="xAxis"/>
+            <CategoryAxis fx:id="xAxis"
+                          label="Latency (ms)"/>
         </xAxis>
         <yAxis>
-            <NumberAxis/>
+            <NumberAxis label="Count"
+                        side="RIGHT"/>
         </yAxis>
     </BarChart>
 </fx:root>

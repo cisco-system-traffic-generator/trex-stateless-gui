@@ -1,77 +1,124 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.latency;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
+import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStream;
+import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStreamErrCntrs;
+import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStreamLatency;
+import com.exalttech.trex.ui.models.stats.latency.StatsLatencyTableRow;
+import com.exalttech.trex.ui.views.statistics.StatsLoader;
+import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Initialization;
 
 
 public class DashboardTabLatency extends AnchorPane {
-    private static final List<String> chartTypes = new ArrayList<String>() {{
-        add("Histogram");
-        add("Chart");
-    }};
-    private static final List<String> latencyIntervals = new ArrayList<String>() {{
-        add("60");
-        add("90");
-        add("120");
-        add("300");
-    }};
-
     @FXML
-    private DashboardTabLatencyHistogram histogram;
-    @FXML
-    private DashboardTabLatencyChart chart;
-    @FXML
-    private DashboardTabLatencyTable table;
-    @FXML
-    private ComboBox chartTypeComboBox;
-    @FXML
-    private ComboBox intervalComboBox;
+    private TableView table;
 
     public DashboardTabLatency() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/latency/DashboardTabLatency.fxml");
-        initializeChartTypeComboBox();
-        initializeIntervalComboBox();
     }
 
-    public void setVisiblePorts(Set<Integer> visiblePorts) {
-        histogram.setVisiblePorts(visiblePorts);
-        chart.setVisiblePorts(visiblePorts);
-        table.setVisiblePorts(visiblePorts);
-    }
+    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams) {
+        if (visibleStreams != null && visibleStreams.isEmpty()) {
+            table.getItems().clear();
+            return;
+        }
 
-    private void initializeChartTypeComboBox() {
-        chartTypeComboBox.getItems().addAll(FXCollections.observableArrayList(chartTypes));
-        chartTypeComboBox.valueProperty().addListener(new ChangeListener<String>() {
-            public void changed(ObservableValue observable, String oldValue, String newValue) {
-                histogram.setVisible(newValue.equals("Histogram"));
-                setChartVisibility(newValue.equals("Chart"));
+        StatsLatencyTableRow selectedRow = ((StatsLatencyTableRow) table.getSelectionModel().getSelectedItem());
+        String selectedStream = selectedRow != null ? selectedRow.getPgId() : null;
+
+        Map<String, StatsLatencyStream> latencyStatsByStreams = StatsLoader.getInstance().getLatencyStatsMap();
+        Map<String, ArrayHistory<StatsFlowStream>> flowStatsMap = StatsLoader.getInstance().getFlowStatsHistoryMap();
+
+        Map<String, Integer> streamIndexes = buildStreamsIndexesMap();
+        Set<String> visitedStreams = new HashSet<>();
+        latencyStatsByStreams.forEach((String stream, StatsLatencyStream latencyStats) -> {
+            visitedStreams.add(stream);
+
+            if (visibleStreams != null && !visibleStreams.contains(stream)) {
+                return;
+            }
+
+            if (latencyStats == null) {
+                return;
+            }
+
+            StatsLatencyStreamLatency latency = latencyStats.getLatency();
+            if (latency == null) {
+                return;
+            }
+
+            StatsLatencyStreamErrCntrs errCntrs = latencyStats.getErrCntrs();
+            if (errCntrs == null) {
+                return;
+            }
+
+            ArrayHistory<StatsFlowStream> flowStreamHistory = flowStatsMap.get(stream);
+            if (flowStreamHistory == null || flowStreamHistory.isEmpty()) {
+                return;
+            }
+
+            StatsFlowStream flowStats = flowStreamHistory.last();
+            if (flowStats == null) {
+                return;
+            }
+
+            StatsLatencyTableRow row = new StatsLatencyTableRow();
+            row.setPgId(stream);
+            row.setTxPkts(flowStats.calcTotalTxPkts(visiblePorts));
+            row.setRxPkts(flowStats.calcTotalRxPkts(visiblePorts));
+            row.setMaxLatency(latency.getTotalMax());
+            row.setAvgLatency(((int)(latency.getAverage()*100.0))/100.0);
+            row.setJitter(latency.getJitter());
+            row.setDup(errCntrs.getDup());
+            row.setDropped(errCntrs.getDropped());
+            row.setOutOfOrder(errCntrs.getOutOfOrder());
+            row.setSeqToHigh(errCntrs.getSeqTooHigh());
+            row.setSeqToLow(errCntrs.getSeqTooLow());
+
+            Integer streamIndex = streamIndexes.get(stream);
+            if (streamIndex == null) {
+                table.getItems().add(row);
+            } else {
+                table.getItems().set(streamIndex, row);
             }
         });
-        chartTypeComboBox.setValue("Histogram");
+
+        table.getItems().removeIf((Object row) -> !visitedStreams.contains(((StatsLatencyTableRow) row).getPgId()));
+
+        selectStream(selectedStream);
     }
 
-    private void setChartVisibility(boolean isVisible) {
-        chart.setVisible(isVisible);
-        intervalComboBox.setDisable(!isVisible);
+    private Map<String, Integer> buildStreamsIndexesMap() {
+        Map<String, Integer> streamIndexes = new HashMap<>();
+        int rowsCount = table.getItems().size();
+        for (int i = 0; i < rowsCount; ++i) {
+            StatsLatencyTableRow row = (StatsLatencyTableRow) table.getItems().get(i);
+            streamIndexes.put(row.getPgId(), i);
+        }
+        return streamIndexes;
     }
 
-    private void initializeIntervalComboBox() {
-        intervalComboBox.getItems().addAll(FXCollections.observableArrayList(latencyIntervals));
-        intervalComboBox.valueProperty().addListener(new ChangeListener<String>() {
-            public void changed(ObservableValue observable, String oldValue, String newValue) {
-                chart.setInterval(Integer.parseInt(newValue));
+    private void selectStream(String stream) {
+        if (stream == null) {
+            return;
+        }
+        int rowsCount = table.getItems().size();
+        for (int i = 0; i < rowsCount; ++i) {
+            StatsLatencyTableRow row = (StatsLatencyTableRow) table.getItems().get(i);
+            if (row.getPgId().equals(stream)) {
+                table.getSelectionModel().select(i);
+                break;
             }
-        });
-        intervalComboBox.setValue("60");
+        }
     }
 }

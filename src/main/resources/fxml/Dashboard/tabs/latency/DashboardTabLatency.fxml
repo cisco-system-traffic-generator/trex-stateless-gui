@@ -1,62 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatencyChart?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatencyHistogram?>
 
 
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatencyTable?>
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
-         type="javafx.scene.layout.AnchorPane"
-         fx:id="root">
+         type="javafx.scene.layout.AnchorPane">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-    <GridPane vgap="10.0"
-              AnchorPane.leftAnchor="0.0"
-              AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0"
-              AnchorPane.bottomAnchor="0.0">
-        <columnConstraints>
-            <ColumnConstraints percentWidth="100"/>
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints percentHeight="60"/>
-            <RowConstraints percentHeight="40"/>
-        </rowConstraints>
-        <VBox fillWidth="true"
-              GridPane.columnIndex="0"
-              GridPane.rowIndex="0">
-            <StackPane>
-                <DashboardTabLatencyHistogram fx:id="histogram"/>
-                <DashboardTabLatencyChart fx:id="chart"/>
-            </StackPane>
-            <HBox minHeight="30"
-                  maxHeight="30"
-                  alignment="center"
-                  spacing="10.0"
-                  VBox.vgrow="NEVER">
-                <Label text="Chart Type:"/>
-                <ComboBox fx:id="chartTypeComboBox"
-                          prefWidth="120"/>
-                <Label text="Interval:"/>
-                <ComboBox fx:id="intervalComboBox"
-                          prefWidth="120.0"/>
-            </HBox>
-        </VBox>
-        <DashboardTabLatencyTable fx:id="table"
-                                  GridPane.columnIndex="0"
-                                  GridPane.rowIndex="1"/>
-    </GridPane>
+    <TableView fx:id="table"
+               focusTraversable="false"
+               styleClass="statistics-table-view"
+               AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0"
+               AnchorPane.topAnchor="0.0"
+               AnchorPane.bottomAnchor="0.0">
+        <columns>
+            <TableColumn text="PG ID"
+                         minWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="pgId"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Tx pkts"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="txPkts"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Rx pkts"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="rxPkts"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Max Latency"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="maxLatency"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Avg Latency"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="avgLatency"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Jitter"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="jitter"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Dropped"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="dropped"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Dup"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="dup"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Out Of Order"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="outOfOrder"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Seq To High"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="seqToHigh"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Seq To Low"
+                         minWidth="120">
+                <cellValueFactory>
+                    <PropertyValueFactory property="seqToLow"/>
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
 </fx:root>

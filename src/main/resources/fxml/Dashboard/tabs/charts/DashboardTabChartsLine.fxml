@@ -14,23 +14,24 @@
                animated="false"
                createSymbols="false"
                styleClass="statistics-chart"
+               legendVisible="false"
                AnchorPane.leftAnchor="0.0"
                AnchorPane.rightAnchor="0.0"
                AnchorPane.topAnchor="0.0"
                AnchorPane.bottomAnchor="0.0">
         <xAxis>
             <NumberAxis fx:id="xAxis"
+                        label="Time (s)"
                         forceZeroInRange="false"
-                        upperBound="0.0"
-                        minorTickVisible="false"
                         autoRanging="false"
-                        label="Time (s)"/>
+                        upperBound="0.0"
+                        minorTickVisible="false"/>
         </xAxis>
         <yAxis>
-            <NumberAxis forceZeroInRange="false"
+            <NumberAxis fx:id="yAxis"
+                        forceZeroInRange="false"
                         side="RIGHT"
-                        minorTickVisible="false"
-                        label="Latency (μs)"/>
+                        minorTickVisible="false"/>
         </yAxis>
     </LineChart>
 </fx:root>

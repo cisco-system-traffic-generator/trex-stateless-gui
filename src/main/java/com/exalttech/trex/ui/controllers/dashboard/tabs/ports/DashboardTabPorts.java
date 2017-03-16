@@ -2,48 +2,35 @@ package com.exalttech.trex.ui.controllers.dashboard.tabs.ports;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.WindowEvent;
-import javafx.util.Duration;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
 import com.exalttech.trex.ui.PortsManager;
-import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
 public class DashboardTabPorts extends AnchorPane {
     @FXML
-    private AnchorPane root;
-    @FXML
     private ScrollPane statTableContainer;
 
     StatsTableGenerator statsTableGenerator;
-    RefreshingService readingStatService;
     PortsManager portManager;
     Map<String, String> currentStatsList = new HashMap<>();
     Map<String, String> cachedStatsList = new HashMap<>();
-    private Set<Integer> visiblePorts;
+    private Set<Integer> lastVisiblePorts;
 
     public DashboardTabPorts() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/ports/DashboardTabPorts.fxml");
 
         statsTableGenerator = new StatsTableGenerator();
         portManager = PortsManager.getInstance();
-        readingStatService = new RefreshingService();
-        readingStatService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
-        readingStatService.setOnSucceeded(this::onRefreshSucceeded);
-        readingStatService.start();
 
         statTableContainer.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -57,16 +44,10 @@ public class DashboardTabPorts extends AnchorPane {
                 buildPortStatTable();
             }
         });
-
-        Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
     }
 
-    public void setVisiblePorts(Set<Integer> visiblePorts) {
-        this.visiblePorts = visiblePorts;
-        buildPortStatTable();
-    }
-
-    private void onRefreshSucceeded(WorkerStateEvent event) {
+    public void update(Set<Integer> visiblePorts) {
+        this.lastVisiblePorts = visiblePorts;
         currentStatsList = StatsLoader.getInstance().getLoadedStatsList();
         String data = currentStatsList.get("m_cpu_util");
         if (Util.isNullOrEmpty(data)) {
@@ -76,10 +57,7 @@ public class DashboardTabPorts extends AnchorPane {
         buildPortStatTable();
     }
 
-    private void onWindowCloseRequest(WindowEvent window) {
-        if (readingStatService.isRunning()) {
-            readingStatService.cancel();
-        }
+    public void reset() {
         statsTableGenerator.reset();
     }
 
@@ -91,7 +69,7 @@ public class DashboardTabPorts extends AnchorPane {
                         portManager.getPortList().size(),
                         true,
                         colWidth,
-                        visiblePorts
+                        lastVisiblePorts
                 )
         );
     }

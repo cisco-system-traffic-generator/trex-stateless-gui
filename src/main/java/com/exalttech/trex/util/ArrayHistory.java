@@ -48,4 +48,8 @@ public class ArrayHistory<T> {
     }
 
     public boolean isEmpty() { return capacity == 0; }
+
+    public T last() {
+        return !isEmpty() ? get(size() - 1) : null;
+    }
 }

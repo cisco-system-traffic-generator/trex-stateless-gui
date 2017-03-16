@@ -8,6 +8,7 @@
 <?import java.lang.String?>
 
 <?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatistics?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.DashboardTabStreams?>
@@ -18,7 +19,8 @@
             style="-fx-background-color: #f0f0f0"
             prefWidth="800"
             prefHeight="700"
-            fx:controller="com.exalttech.trex.ui.controllers.dashboard.Dashboard">
+            fx:controller="com.exalttech.trex.ui.controllers.dashboard.Dashboard"
+            fx:id="root">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
@@ -43,6 +45,9 @@
                 <Tab text="Latency">
                     <DashboardTabLatency fx:id="latency"/>
                 </Tab>
+                <Tab text="Charts">
+                    <DashboardTabCharts fx:id="charts"/>
+                </Tab>
                 <Tab text="Capture"
                      disable="true">
                 </Tab>
@@ -51,7 +56,7 @@
                        AnchorPane.topAnchor="8.0">
                 <HBox spacing="5" alignment="CENTER">
                     <Label text="Ports:"/>
-                    <ComboBox fx:id="portFilterSelector" onAction="#handlePortFilterSelection" value="All">
+                    <ComboBox fx:id="portFilterSelector" onAction="#handleUpdate" value="All">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="All" />
