@@ -20,6 +20,11 @@ public class PortModel {
     private StringProperty gratARP = new SimpleStringProperty();
     private ObjectProperty<FlowControl> flowControl = new SimpleObjectProperty<>(FlowControl.NONE);
     
+    private ObjectProperty<ConfigurationMode> layerConfigurationType = new SimpleObjectProperty<>();
+    
+    private PortLayerConfigurationModel l2Configuration;
+    private PortLayerConfigurationModel l3Configuration;
+    
     private PortModel() {}
     
     public static PortModel createModelFrom(Port port) {
@@ -39,6 +44,20 @@ public class PortModel {
         model.rxQueueing.setValue(port.getRx_info().getQueue().isIs_active() ? "On" : "Off");
         model.gratARP.setValue(port.getRx_info().getGrat_arp().isIs_active() ? "On" : "Off");
         model.flowControl.setValue(port.getFlowControl());
+
+        PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg layerConfiguration = port.getAttr().getLayer_cfg();
+        
+        PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg.PortStatusResultAttrLayerCfgEther l2 = layerConfiguration.getEther();
+        model.l2Configuration = new PortLayerConfigurationModel(ConfigurationMode.L2, l2.getSrc(), l2.getDst(), l2.getState());
+
+        PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg.PortStatusResultAttrLayerCfgIPv4 l3 = layerConfiguration.getIpv4();
+        model.l3Configuration = new PortLayerConfigurationModel(ConfigurationMode.L3, l3.getSrc(), l3.getDst(), l3.getState());
+
+        if (l3.getSrc() == null && l3.getDst() == null) {
+            model.layerConfigurationType.setValue(ConfigurationMode.L2);
+        } else {
+            model.layerConfigurationType.setValue(ConfigurationMode.L3);
+        }
         return model;
     }
 
@@ -160,5 +179,16 @@ public class PortModel {
 
     public ObjectProperty<FlowControl> flowControlProperty() {
         return flowControl;
+    }
+    
+    public void setLayerMode(ConfigurationMode mode) {
+        layerConfigurationType.setValue(mode);
+    }
+    
+    public ObjectProperty<ConfigurationMode> layerConfigurationTypeProperty() {
+        return layerConfigurationType;
+    }
+    public PortLayerConfigurationModel getLayerConfiguration() {
+        return ConfigurationMode.L2.equals(layerConfigurationType.get()) ? l2Configuration : l3Configuration;
     }
 }
