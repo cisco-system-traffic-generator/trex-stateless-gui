@@ -26,5 +26,6 @@ public class PortView extends TabPane {
 
     public void loadModel(PortModel model) {
         portAttributes.bindModel(model);
+        layerConfig.bindModel(model);
     }
 }
