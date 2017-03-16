@@ -35,7 +35,7 @@
                 <RadioButton fx:id="l2ModeRadio" selected="false" text="L2">
                     <padding><Insets right="10"/></padding>
                     <toggleGroup>
-                        <ToggleGroup fx:id="layerMode" />
+                        <ToggleGroup fx:id="mode" />
                     </toggleGroup>
                 </RadioButton>
                 <RadioButton fx:id="l3ModeRadio" selected="false" text="L3" toggleGroup="$layerMode" />
@@ -43,18 +43,18 @@
 
             <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
             <HBox GridPane.rowSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
-                <TextField fx:id="sourceField" text="" minWidth="${16 * s.width}" />
+                <TextField fx:id="source" text="" minWidth="${16 * s.width}" />
             </HBox>
 
             <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
             <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2">
-                <TextField fx:id="dstField" text="" minWidth="${16 * s.width}" />
+                <TextField fx:id="destination" text="" minWidth="${16 * s.width}" />
             </HBox>
             <Label fx:id="arpLabel" text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
             <Label fx:id="arpStatus" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
 
             <Label fx:id="pingLabel" text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-            <TextField fx:id="textFieldTabConfigPortPingIPv4" text="" promptText="Destination address"
+            <TextField fx:id="pingDestination" text="" promptText="Destination address"
                        minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2" />
             <Button fx:id="pingCommandBtn" text="Ping" GridPane.columnIndex="3" GridPane.rowIndex="6">
             </Button>
