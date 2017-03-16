@@ -106,8 +106,6 @@ public class ConnectionManager {
             InetAddress ip = InetAddress.getLocalHost();
             String hostname = ip.getHostName();
             String username = System.getProperty("user.name");
-            /*System.out.println("Your current IP address : " + ip);
-            System.out.println("Your current Hostname : " + hostname);*/
             setClientName(username + "@" + hostname);
         } catch (UnknownHostException e) {
             e.printStackTrace();
