@@ -54,12 +54,21 @@ public class AsyncResponseManager {
     private StringProperty trexLatencyProperty = new SimpleStringProperty();
     private StringProperty trexFlowStatsProperty = new SimpleStringProperty();
     private BooleanProperty trexEventProperty = new SimpleBooleanProperty();
+    private StringProperty asyncEventProperty = new SimpleStringProperty();
 
     /**
      * Constructor
      */
     protected AsyncResponseManager() {
         initializeDataBinding();
+    }
+
+    public void setAsyncEvent(String asyncEvent) {
+        this.asyncEventProperty.set(asyncEvent);
+    }
+
+    public StringProperty asyncEventProperty() {
+        return asyncEventProperty;
     }
 
     /**
@@ -139,6 +148,7 @@ public class AsyncResponseManager {
      * @param event
      */
     public void handleAsyncEvent(String event) {
+        setAsyncEvent(event);
         if (!event.contains("trex-event")) {
             return;
         }
