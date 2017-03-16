@@ -185,10 +185,19 @@ public class PortModel {
         layerConfigurationType.setValue(mode);
     }
     
+    public ConfigurationMode getLayerMode() {
+        return layerConfigurationType.get();
+    }
+    
     public ObjectProperty<ConfigurationMode> layerConfigurationTypeProperty() {
         return layerConfigurationType;
     }
-    public PortLayerConfigurationModel getLayerConfiguration() {
-        return ConfigurationMode.L2.equals(layerConfigurationType.get()) ? l2Configuration : l3Configuration;
+    
+    public PortLayerConfigurationModel getL2LayerConfiguration() {
+        return l2Configuration;
+    }
+    
+    public PortLayerConfigurationModel getL3LayerConfiguration() {
+        return l3Configuration;
     }
 }
