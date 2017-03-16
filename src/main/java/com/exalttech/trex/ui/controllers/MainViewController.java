@@ -643,6 +643,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         if (didServerCrash) {
             openConnectDialog();
         }
+        
+        portViewVisibilityProperty.setValue(false);
     }
 
     /**
