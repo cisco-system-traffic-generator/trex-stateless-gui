@@ -505,6 +505,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 }
 .table-view, .table-view:focused {
     -fx-background-color: transparent,transparent,transparent;
+    -fx-background-color: #ffffff;
     -fx-background-insets: -1.4, 0, 1;
 
 }
