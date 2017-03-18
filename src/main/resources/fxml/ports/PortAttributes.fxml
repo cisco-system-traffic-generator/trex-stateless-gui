@@ -61,8 +61,10 @@
                    GridPane.columnSpan="2"/>
 
             <Label text="Speed:" GridPane.columnIndex="5" GridPane.rowIndex="2"/>
-            <Label fx:id="speed" text="" GridPane.columnIndex="6" GridPane.rowIndex="2"
-                   GridPane.columnSpan="2"/>
+            <HBox spacing="5" GridPane.columnIndex="6" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                <Label fx:id="speed"/>
+                <Label text="Gb/s" />
+            </HBox>
 
             <Label text="Status:" GridPane.columnIndex="5" GridPane.rowIndex="3"/>
             <Label fx:id="status" text="" GridPane.columnIndex="6" GridPane.rowIndex="3"

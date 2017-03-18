@@ -65,7 +65,7 @@ public class PortAttributes extends BorderPane {
         multicast.selectedProperty().bindBidirectional(model.multicastProperty());
         promiscuousMode.selectedProperty().bindBidirectional(model.promiscuousModeProperty());
         owner.textProperty().bind(model.ownerProperty());
-        speed.textProperty().bind(model.ownerProperty());
+        speed.textProperty().bind(model.portSpeedProperty());
         status.textProperty().bind(model.portStatusProperty());
         captureStatus.textProperty().bind(model.capturingModeProperty());
         link.selectedProperty().bindBidirectional(model.linkStatusProperty());
