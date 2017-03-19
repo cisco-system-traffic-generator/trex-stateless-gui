@@ -100,7 +100,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         MultiplierOptionChangeHandler, PortManagerEventHandler, PacketTableUpdatedHandler {
 
     private static final Logger LOG = Logger.getLogger(MainViewController.class.getName());
-    private final RPCMethods serverRPCMethods = new RPCMethods();
+    private final RPCMethods serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
     private static final String DISABLED_MULTIPLIER_MSG = "Multiplier is disabled because all streams have latency enabled";
 
     @FXML
