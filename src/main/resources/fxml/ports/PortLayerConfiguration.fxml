@@ -55,32 +55,20 @@
             <Label fx:id="arpStatus" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
 
             <Label fx:id="pingLabel" text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-            <TextField fx:id="pingDestination" text="" promptText="Destination address"
-                       minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2" />
-            <Button fx:id="pingCommandBtn" text="Ping" GridPane.columnIndex="3" GridPane.rowIndex="6">
-            </Button>
+            <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                <TextField fx:id="pingDestination" text="" promptText="Destination address" minWidth="${16 * s.width}" />
+                <Button fx:id="pingCommandBtn" text="Ping" />
+            </HBox>
         </GridPane>
     </center>
     <bottom>
-        <HBox alignment="top_center">
-            <padding><Insets top="1" right="10" bottom="10" left="10"/></padding>
-            <Button fx:id="buttonTabConfigPortAcquireRelease" text="Acquire port">
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
-            <Label text="    " />
-            <Button fx:id="buttonTabConfigPortForceAcquire" text="Force Acquire">
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
-            <Label text="    " />
-            <Button fx:id="saveBtn" text="Save" disable="true">
-                <styleClass>
-                    <String fx:value="normalButton" />
-                </styleClass>
-            </Button>
-        </HBox>
+        <BorderPane>
+            <center>
+                <Button fx:id="saveBtn" text="Save" styleClass="normalButton" />
+            </center>
+            <padding>
+                <Insets bottom="10" />
+            </padding>
+        </BorderPane>
     </bottom>
 </fx:root>
