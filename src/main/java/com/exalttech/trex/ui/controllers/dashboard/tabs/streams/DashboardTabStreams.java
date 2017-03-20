@@ -54,11 +54,11 @@ public class DashboardTabStreams extends AnchorPane {
 
             StatsFlowStream last = history.last();
             table.add(new HeaderCell(secondHeaderWidth, stream), rowIndex.get(), 0);
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxPps(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 1);
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBpsL2(visiblePorts)), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 2);
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBpsL1(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 3);
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxPps(visiblePorts)), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 4);
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxBps(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 5);
+            table.add(new StatisticLabelCell(String.valueOf(round(last.calcTotalTxPps(visiblePorts))), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 1);
+            table.add(new StatisticLabelCell(String.valueOf(round(last.calcTotalTxBpsL2(visiblePorts))), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 2);
+            table.add(new StatisticLabelCell(String.valueOf(round(last.calcTotalTxBpsL1(visiblePorts))), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 3);
+            table.add(new StatisticLabelCell(String.valueOf(round(last.calcTotalRxPps(visiblePorts))), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 4);
+            table.add(new StatisticLabelCell(String.valueOf(round(last.calcTotalRxBps(visiblePorts))), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 5);
             table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxPkts(visiblePorts)), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 6);
             table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxPkts(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 7);
             table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBytes(visiblePorts)), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 8);
@@ -66,5 +66,9 @@ public class DashboardTabStreams extends AnchorPane {
 
             rowIndex.addAndGet(1);
         });
+    }
+
+    static double round(double value) {
+        return ((int)(value*100))/100.0;
     }
 }
