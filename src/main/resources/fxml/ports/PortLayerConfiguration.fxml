@@ -10,16 +10,6 @@
 <fx:root fx:id="rootPortInfoTabConfig"
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.BorderPane">
-    <top>
-        <HBox alignment="bottom_center">
-            <padding><Insets top="10" right="10" bottom="1" left="10"/></padding>
-            <Text fx:id="textTabConfigPortNameTitle" text="Port ">
-                <font>
-                    <Font name="Tahoma" size="20.0" />
-                </font>
-            </Text>
-        </HBox>
-    </top>
     <center>
         <GridPane fx:id="gridPanePortInfoTabConfig"
                   alignment="top_center"

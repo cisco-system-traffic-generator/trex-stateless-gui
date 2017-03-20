@@ -8,6 +8,7 @@ import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.util.Initialization;
 import com.google.common.base.Strings;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -15,6 +16,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import org.apache.log4j.Logger;
 import org.controlsfx.control.ToggleSwitch;
+
+import java.util.Arrays;
 
 public class PortAttributes extends BorderPane {
 
@@ -82,11 +85,13 @@ public class PortAttributes extends BorderPane {
                 forceAcquireBtn.setDisable(true);
                 if (acquireReleaseBtn.getText().equalsIgnoreCase("Acquire")) {
                     trexClient.acquireServerPort(port.getIndex(), false);
+                    port.setIsOwned(true);
                     acquireReleaseBtn.setText("Release");
                 } else {
                     trexClient.releasePort(port.getIndex(), true);
                     acquireReleaseBtn.setText("Acquire");
                     forceAcquireBtn.setDisable(false);
+                    port.setIsOwned(false);
                 }
                 acquireReleaseBtn.setDisable(false);
                 
@@ -108,6 +113,7 @@ public class PortAttributes extends BorderPane {
                 trexClient.acquireServerPort(port.getIndex(), true);
                 acquireReleaseBtn.setDisable(false);
                 acquireReleaseBtn.setText("Release");
+                port.setIsOwned(true);
             } catch (Exception e) {
                 acquireReleaseBtn.setDisable(false);
                 forceAcquireBtn.setDisable(false);
@@ -137,6 +143,7 @@ public class PortAttributes extends BorderPane {
             acquireReleaseBtn.setDisable(!Strings.isNullOrEmpty(this.port.getOwner()));
         }
         
+        
         driver.textProperty().bind(model.portDriverProperty());
         rxFilterMode.textProperty().bind(model.rxFilterModeProperty());
         multicast.selectedProperty().bindBidirectional(model.multicastProperty());
@@ -146,10 +153,26 @@ public class PortAttributes extends BorderPane {
         status.textProperty().bind(model.portStatusProperty());
         captureStatus.textProperty().bind(model.capturingModeProperty());
         link.selectedProperty().bindBidirectional(model.linkStatusProperty());
-        led.selectedProperty().bindBidirectional(model.ledStatusProperty());
+        led.selectedProperty().bindBidirectional(model.ledControlSupportProperty());
         numaMode.textProperty().bind(model.numaModeProperty());
         pciAddress.textProperty().bind(model.numaModeProperty());
         gratArp.textProperty().bind(model.gratARPProperty());
+
+        Arrays.asList(
+                link,
+                led,
+                promiscuousMode,
+                multicast,
+                flowControl
+        ).forEach(control -> {
+            control.setDisable(port.isOwnedProperty().get());
+            control.disableProperty().bind(
+                    Bindings.and(
+                        port.isOwnedProperty(),
+                        port.getSupport(control.getId())
+                    ).not()
+            );
+        });
     }
 
     private void unbindPrevious() {
@@ -167,5 +190,13 @@ public class PortAttributes extends BorderPane {
         pciAddress.textProperty().unbind();
         gratArp.textProperty().unbind();
         port = null;
+
+        Arrays.asList(
+            link,
+            led,
+            promiscuousMode,
+            multicast,
+            flowControl
+        ).forEach(control -> control.disableProperty().unbind());
     }
 }

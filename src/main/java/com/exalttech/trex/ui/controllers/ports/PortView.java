@@ -11,10 +11,10 @@ import javafx.scene.control.TabPane;
 public class PortView extends TabPane {
     
     @FXML
-    PortAttributes portAttributes;
+    private PortAttributes portAttributes;
     
     @FXML
-    PortLayerConfiguration layerConfig;
+    private PortLayerConfiguration layerConfig;
     
     @FXML
     PortHardwareCounters hardwareCounters;
@@ -27,5 +27,15 @@ public class PortView extends TabPane {
     public void loadModel(PortModel model) {
         portAttributes.bindModel(model);
         layerConfig.bindModel(model);
+
+        layerConfig.disableProperty().unbind();
+        layerConfig.setDisable(model.isOwnedProperty().get());
+        layerConfig.disableProperty().bind(model.isOwnedProperty().not());
+
+        hardwareCounters.disableProperty().unbind();
+        hardwareCounters.setDisable(model.isOwnedProperty().get());
+        hardwareCounters.disableProperty().bind(model.isOwnedProperty().not());
+        
+        
     }
 }

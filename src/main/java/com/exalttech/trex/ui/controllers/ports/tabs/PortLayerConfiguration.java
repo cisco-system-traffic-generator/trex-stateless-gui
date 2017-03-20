@@ -94,11 +94,24 @@ public class PortLayerConfiguration extends BorderPane {
         l2Mode.setOnAction(event -> model.setLayerMode(ConfigurationMode.L2));
         
         l3Mode.setOnAction(event -> model.setLayerMode(ConfigurationMode.L3));
+
     }
 
     public void bindModel(PortModel model) {
         unbindAll();
         this.model = model;
+
+        Arrays.asList(
+                l2Source,
+                l2Destination,
+                l3Source,
+                l3Destination,
+                pingDestination,
+                pingCommandBtn,
+                saveBtn,
+                l2Mode,
+                l3Mode
+        ).forEach(control -> control.disableProperty().bind(this.model.isOwnedProperty().not()));
         
         l2Destination.textProperty().bindBidirectional(this.model.getL2LayerConfiguration().dstProperty());
         l2Source.textProperty().bindBidirectional(this.model.getL2LayerConfiguration().srcProperty());
@@ -115,6 +128,19 @@ public class PortLayerConfiguration extends BorderPane {
         if(model == null) {
             return;
         }
+
+        Arrays.asList(
+                l2Source,
+                l2Destination,
+                l3Source,
+                l3Destination,
+                pingDestination,
+                pingCommandBtn,
+                saveBtn,
+                l2Mode,
+                l3Mode
+        ).forEach(textField -> textField.disableProperty().unbind());
+        
         l2Destination.textProperty().unbind();
         l2Source.textProperty().unbind();
         l3Destination.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().dstProperty());

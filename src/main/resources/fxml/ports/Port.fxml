@@ -11,16 +11,14 @@
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.control.TabPane"
          fx:id="root"
-         styleClass="statRightPaneContent, floating"
-         
-        >
-        <Tab text="Main" closable="false">
+         styleClass="statRightPaneContent, floating">
+        <Tab text="Control" closable="false" fx:id="controlTab">
             <PortAttributes fx:id="portAttributes"/>
         </Tab>
-        <Tab text="Layer configuration" closable="false">
+        <Tab text="Configuration" closable="false" fx:id="configTab">
             <PortLayerConfiguration fx:id="layerConfig"/>
         </Tab>
-        <Tab text="Hardware counters" closable="false">
+        <Tab text="Hardware counters" closable="false" fx:id="hardwareCountersTab">
             <PortHardwareCounters fx:id="hardwareCounters"/>
         </Tab>
 </fx:root>

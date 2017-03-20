@@ -2,24 +2,41 @@ package com.exalttech.trex.ui.models;
 
 import javafx.beans.property.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PortModel {
 
     private IntegerProperty index = new SimpleIntegerProperty();
     private StringProperty portDriver = new SimpleStringProperty();
     private StringProperty rxFilterMode = new SimpleStringProperty();
-    private BooleanProperty multicast = new SimpleBooleanProperty();
-    private BooleanProperty promiscuousMode = new SimpleBooleanProperty();
-    private StringProperty owner = new SimpleStringProperty();
     private StringProperty portSpeed = new SimpleStringProperty();
     private StringProperty portStatus = new SimpleStringProperty();
     private StringProperty capturingMode = new SimpleStringProperty();
+    
     private BooleanProperty linkStatus = new SimpleBooleanProperty();
-    private BooleanProperty ledStatus = new SimpleBooleanProperty();
+    private BooleanProperty linkControlSupport = new SimpleBooleanProperty();
+
+    private BooleanProperty multicast = new SimpleBooleanProperty();
+    private BooleanProperty multicastSupport = new SimpleBooleanProperty();
+    
+    private BooleanProperty promiscuousMode = new SimpleBooleanProperty();
+    private BooleanProperty promiscuousSupport = new SimpleBooleanProperty();
+    
+    private BooleanProperty ledControlSupport = new SimpleBooleanProperty();
+    private BooleanProperty ledSupport = new SimpleBooleanProperty();
+    
+    private ObjectProperty<FlowControl> flowControl = new SimpleObjectProperty<>(FlowControl.NONE);
+    private BooleanProperty flowControlSupport = new SimpleBooleanProperty();
+    
+    Map<String, BooleanProperty> supportCapabilities = new HashMap<>(4);
+    
+    private StringProperty owner = new SimpleStringProperty();
+    
     private StringProperty numaMode = new SimpleStringProperty();
     private StringProperty pciAddress = new SimpleStringProperty();
     private StringProperty rxQueueing = new SimpleStringProperty();
     private StringProperty gratARP = new SimpleStringProperty();
-    private ObjectProperty<FlowControl> flowControl = new SimpleObjectProperty<>(FlowControl.NONE);
     
     private ObjectProperty<ConfigurationMode> layerConfigurationType = new SimpleObjectProperty<>();
     
@@ -28,7 +45,12 @@ public class PortModel {
     
     private BooleanProperty isOwnedProperty = new SimpleBooleanProperty(false);
     
-    private PortModel() {}
+    private PortModel() {
+        supportCapabilities.put("link", linkControlSupport);
+        supportCapabilities.put("led", ledControlSupport);
+        supportCapabilities.put("flowControl", flowControlSupport);
+        supportCapabilities.put("multicast", multicastSupport);
+    }
     
     public static PortModel createModelFrom(Port port) {
         PortModel model = new PortModel();
@@ -42,7 +64,7 @@ public class PortModel {
         model.portStatus.setValue(port.getStatus());
         model.capturingMode.setValue(port.getCaptureStatus());
         model.linkStatus.setValue(port.getLink());
-        model.ledStatus.setValue(port.getLed());
+        model.ledControlSupport.setValue(port.getLed());
         model.numaMode.set(String.valueOf(port.getNuma()));
         model.pciAddress.setValue(port.getPci_addr());
         model.rxQueueing.setValue(port.getRx_info().getQueue().isIs_active() ? "On" : "Off");
@@ -62,7 +84,37 @@ public class PortModel {
         } else {
             model.layerConfigurationType.setValue(ConfigurationMode.L3);
         }
+        model.linkControlSupportProperty().set(port.is_link_supported);
+        model.ledControlSupportProperty().set(port.is_led_supported);
+        model.flowControlSupportProperty().set(port.is_fc_supported);
+        model.multicastSupportProperty().set(port.getAttr().getMulticast().getEnabled());
+        model.promiscuousSupportProperty().set(port.getAttr().getPromiscuous().getEnabled());
         return model;
+    }
+
+    public BooleanProperty getSupport(String capId) {
+        BooleanProperty cap = supportCapabilities.get(capId); 
+        return cap != null ? cap : new SimpleBooleanProperty(false);
+    }
+    
+    public BooleanProperty linkControlSupportProperty() {
+        return linkControlSupport;
+    }
+
+    public BooleanProperty multicastSupportProperty() {
+        return multicastSupport;
+    }
+
+    public BooleanProperty promiscuousSupportProperty() {
+        return promiscuousSupport;
+    }
+
+    public BooleanProperty ledSupportProperty() {
+        return ledSupport;
+    }
+
+    public BooleanProperty flowControlSupportProperty() {
+        return flowControlSupport;
     }
 
     public int getIndex() {
@@ -153,12 +205,12 @@ public class PortModel {
         return linkStatus;
     }
 
-    public boolean getLedStatus() {
-        return ledStatus.get();
+    public boolean getLedControlSupport() {
+        return ledControlSupport.get();
     }
 
-    public BooleanProperty ledStatusProperty() {
-        return ledStatus;
+    public BooleanProperty ledControlSupportProperty() {
+        return ledControlSupport;
     }
 
     public String getNumaMode() {
