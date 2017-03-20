@@ -29,24 +29,23 @@ public class DashboardTabStreams extends AnchorPane {
         StatsLoader statsLoader = StatsLoader.getInstance();
         Map<String, ArrayHistory<StatsFlowStream>> streams = statsLoader.getFlowStatsHistoryMap();
 
-        int firstColumnWidth = 99;
-        int secondHeaderWidth = 128;
+        int firstColumnWidth = 120;
+        int secondHeaderWidth = 150;
 
         table.getChildren().clear();
 
         table.add(new HeaderCell(firstColumnWidth, "PG ID"), 0, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Tx (pkt/s)"), 1, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Tx (B/s) L2"), 2, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Tx (B/s) L1"), 3, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Rx (pkt/s)"), 4, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Rx (B/s)"), 5, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Tx (pkt)"), 6, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Rx (pkt)"), 7, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Tx (B)"), 8, 0);
-        table.add(new HeaderCell(secondHeaderWidth, "Rx (B)"), 9, 0);
+        table.add(new StatisticLabelCell("Tx (pkt/s)", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 1);
+        table.add(new StatisticLabelCell("Tx (B/s) L2", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 2);
+        table.add(new StatisticLabelCell("Tx (B/s) L1", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 3);
+        table.add(new StatisticLabelCell("Rx (pkt/s)", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 4);
+        table.add(new StatisticLabelCell("Rx (B/s)", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 5);
+        table.add(new StatisticLabelCell("Tx (pkt)", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 6);
+        table.add(new StatisticLabelCell("Rx (pkt)", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 7);
+        table.add(new StatisticLabelCell("Tx (B)", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 8);
+        table.add(new StatisticLabelCell("Rx (B)", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 9);
 
         AtomicInteger rowIndex = new AtomicInteger(1);
-        AtomicBoolean odd = new AtomicBoolean(false);
 
         streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
             if ((visibleStreams != null && !visibleStreams.contains(stream)) || history.isEmpty()) {
@@ -54,19 +53,18 @@ public class DashboardTabStreams extends AnchorPane {
             }
 
             StatsFlowStream last = history.last();
-            table.add(new StatisticLabelCell(stream, firstColumnWidth, odd.get(), CellType.DEFAULT_CELL, true), 0, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxPps(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 1, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBpsL2(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 2, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBpsL1(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 3, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxPps(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 4, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxBps(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 5, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxPkts(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 6, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxPkts(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 7, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBytes(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 8, rowIndex.get());
-            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxBytes(visiblePorts)), secondHeaderWidth, odd.get(), CellType.DEFAULT_CELL, true), 9, rowIndex.get());
+            table.add(new HeaderCell(secondHeaderWidth, stream), rowIndex.get(), 0);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxPps(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 1);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBpsL2(visiblePorts)), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 2);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBpsL1(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 3);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxPps(visiblePorts)), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 4);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxBps(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 5);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxPkts(visiblePorts)), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 6);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxPkts(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 7);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalTxBytes(visiblePorts)), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 8);
+            table.add(new StatisticLabelCell(String.valueOf(last.calcTotalRxBytes(visiblePorts)), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 9);
 
             rowIndex.addAndGet(1);
-            odd.getAndSet(!odd.get());
         });
     }
 }
