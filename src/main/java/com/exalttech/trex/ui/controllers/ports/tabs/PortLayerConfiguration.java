@@ -3,7 +3,6 @@ package com.exalttech.trex.ui.controllers.ports.tabs;
 import com.exalttech.trex.ui.models.ConfigurationMode;
 import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.util.Initialization;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -54,8 +53,6 @@ public class PortLayerConfiguration extends BorderPane {
     RadioButton l3Mode;
     private PortModel model;
 
-    private SimpleBooleanProperty configurationChanged = new SimpleBooleanProperty(false);
-
     private ChangeListener<ConfigurationMode> configurationModeChangeListener = (observable, prevMode, mode) -> updateControlsState();
 
     private void updateControlsState() {
@@ -97,8 +94,6 @@ public class PortLayerConfiguration extends BorderPane {
         l2Mode.setOnAction(event -> model.setLayerMode(ConfigurationMode.L2));
         
         l3Mode.setOnAction(event -> model.setLayerMode(ConfigurationMode.L3));
-        
-        saveBtn.disableProperty().bind(configurationChanged.not());
     }
 
     public void bindModel(PortModel model) {
@@ -114,10 +109,6 @@ public class PortLayerConfiguration extends BorderPane {
         updateControlsState();
         
         this.model.layerConfigurationTypeProperty().addListener(configurationModeChangeListener);
-    }
-
-    public SimpleBooleanProperty configurationChangedProperty() {
-        return configurationChanged;
     }
 
     private void unbindAll() {
