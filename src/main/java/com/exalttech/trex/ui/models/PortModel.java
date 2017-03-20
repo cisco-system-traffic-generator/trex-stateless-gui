@@ -4,6 +4,7 @@ import javafx.beans.property.*;
 
 public class PortModel {
 
+    private IntegerProperty index = new SimpleIntegerProperty();
     private StringProperty portDriver = new SimpleStringProperty();
     private StringProperty rxFilterMode = new SimpleStringProperty();
     private BooleanProperty multicast = new SimpleBooleanProperty();
@@ -25,10 +26,13 @@ public class PortModel {
     private PortLayerConfigurationModel l2Configuration;
     private PortLayerConfigurationModel l3Configuration;
     
+    private BooleanProperty isOwnedProperty = new SimpleBooleanProperty(false);
+    
     private PortModel() {}
     
     public static PortModel createModelFrom(Port port) {
         PortModel model = new PortModel();
+        model.index.setValue(port.getIndex());
         model.portDriver.setValue(port.getDriver());
         model.rxFilterMode.setValue(port.getAttr().getRx_filter_mode());
         model.multicast.setValue(port.getAttr().getMulticast().getEnabled());
@@ -59,6 +63,22 @@ public class PortModel {
             model.layerConfigurationType.setValue(ConfigurationMode.L3);
         }
         return model;
+    }
+
+    public int getIndex() {
+        return index.get();
+    }
+
+    public IntegerProperty indexProperty() {
+        return index;
+    }
+    
+    public BooleanProperty isOwnedProperty() {
+        return isOwnedProperty;
+    }
+    
+    public void setIsOwned(boolean isOwned) {
+        isOwnedProperty.set(isOwned);
     }
 
     public String getPortDriver() {

@@ -87,6 +87,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -579,6 +580,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void loadPortModel() {
         PortModel model = PortModel.createModelFrom(portManager.getPortList().get(getSelectedPortIndex()));
+        Optional<Integer> optional = portManager.getOwnedPortIndexes().stream().filter(idx -> idx.equals(getSelectedPortIndex())).findFirst();
+        optional.ifPresent(val -> model.setIsOwned(true));
         portView.loadModel(model);
     }
 
@@ -1411,7 +1414,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.getTreeItemType() == TreeItemType.PORT) {
                 updateAcquireReleaseBtnState(false);
-                loadPortModel();
+//                loadPortModel();
             } else if (selected != null && selected.getTreeItemType() == TreeItemType.PORT_PROFILE
                     && !portManager.isCurrentUserOwner(getSelectedPortIndex())) {
                 viewProfile();
