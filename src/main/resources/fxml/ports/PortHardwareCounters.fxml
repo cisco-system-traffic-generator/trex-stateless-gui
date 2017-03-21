@@ -36,6 +36,7 @@
                                         <Insets top="3"/>
                                     </padding>
                                 </CustomTextField>
+                                <Button fx:id="resetCounters" text="Reset Counters" styleClass="normalButton"/>
                             </children>
                         </HBox>
                         <HBox style="-fx-font-size: 75%;">

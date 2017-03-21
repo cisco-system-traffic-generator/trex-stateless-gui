@@ -100,7 +100,7 @@ public class PortInfoTabXstats extends BorderPane {
         }
 
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
-        Pane pane = statsTableGenerator.generateXStatPane(full, port, statXTableNotEmpty.isSelected(), statXTableFilter.getText());
+        Pane pane = statsTableGenerator.generateXStatPane(full, port, statXTableNotEmpty.isSelected(), statXTableFilter.getText(), false);
 
         statXTableContainer.setContent(pane);
         statXTableContainer.setVisible(true);

@@ -9,6 +9,7 @@ import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
@@ -29,6 +30,10 @@ public class PortHardwareCounters extends BorderPane {
     CheckBox statXTableNotEmpty;
     @FXML
     CustomTextField statXTableFilter;
+    @FXML
+    Button resetCounters;
+    
+    private boolean resetCountersRequested = false;
     
     private RefreshingService refreshingService;
 
@@ -46,6 +51,8 @@ public class PortHardwareCounters extends BorderPane {
         refreshingService = new RefreshingService();
         refreshingService.setPeriod(Duration.seconds(2));
         refreshingService.setOnSucceeded(e -> update());
+        
+        resetCounters.setOnAction(e -> resetCountersRequested = true);
     }
     
     
@@ -66,9 +73,12 @@ public class PortHardwareCounters extends BorderPane {
             String xStatsValues = ConnectionManager.getInstance().sendPortXStatsValuesRequest(port);
             Map<String, Long> loadedXStatsList = Util.getXStatsFromJSONString(xStatsNames, xStatsValues);
             port.setXstats(loadedXStatsList);
-            Pane pane = statsTableGenerator.generateXStatPane(true, port, statXTableNotEmpty.isSelected(), statXTableFilter.getText());
+            Pane pane = statsTableGenerator.generateXStatPane(true, port, statXTableNotEmpty.isSelected(), statXTableFilter.getText(), resetCountersRequested);
             statXTableContainer.setContent(pane);
             statXTableContainer.setVisible(true);
+            if (resetCountersRequested) {
+                resetCountersRequested = false;
+            }
         } catch (Exception ignored) {
         }
     }

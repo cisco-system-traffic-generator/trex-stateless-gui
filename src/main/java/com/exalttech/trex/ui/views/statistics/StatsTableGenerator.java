@@ -66,6 +66,8 @@ public class StatsTableGenerator {
     private static final int WIDTH_COL_1 = 150;
     private static final int WIDTH_COL_PIN = 48;
 
+    private Map<Integer, Map<String, Long>> hardwareShadowCounters = new HashMap<>();
+    
     /**
      * Constructor
      */
@@ -760,7 +762,7 @@ public class StatsTableGenerator {
         return statTable;
     }
 
-    public GridPane generateXStatPane(boolean full, Port port, boolean notempty, String filter) {
+    public GridPane generateXStatPane(boolean full, Port port, boolean notempty, String filter, boolean resetCounters) {
         if (full) {
             statXTable.getChildren().clear();
             Util.optimizeMemory();
@@ -780,32 +782,34 @@ public class StatsTableGenerator {
         odd = true;
         xstatsListPinned.forEach( (k,v) -> {
             if (v != null) {
+                if(resetCounters) {
+                    fixCounter(port.getIndex(), k, v);
+                }
                 Node check = new Label(pinnedChar);
                 GridPane.setHalignment(check, HPos.CENTER);
                 addXstatRow(statXTable,
-                        (event) -> {
-                            xstatsListPinned.remove(k, v);
-                        },
+                        (event) -> xstatsListPinned.remove(k, v),
                         "xstat-red", "xstat-green",
                         new Tooltip("Click '" + pinnedChar + "' to un-pin the counter."),
                         "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
-                        "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1,
+                        "xstats-val-1-" + rowIndex, String.valueOf(v - getShadowCounter(port.getIndex(), k)), WIDTH_COL_1, 1,
                         "xstats-val-2-" + rowIndex, pinnedChar, WIDTH_COL_PIN, 2);
             }
         });
         xstatsList.forEach( (k,v) -> {
-            if (v != null && (!notempty || (notempty && v != 0)) && xstatsListPinned.get(k) == null) {
+            if (v != null && (!notempty || (notempty && (v - getShadowCounter(port.getIndex(), k) != 0))) && xstatsListPinned.get(k) == null) {
                 if ((filter == null || filter.trim().length() == 0) || k.contains(filter)) {
+                    if(resetCounters) {
+                        fixCounter(port.getIndex(), k, v);
+                    }
                     Node check = new Label(notPinnedChar);
                     GridPane.setHalignment(check, HPos.CENTER);
                     addXstatRow(statXTable,
-                            (event) -> {
-                                xstatsListPinned.put(k, v);
-                            },
+                            (event) -> xstatsListPinned.put(k, v),
                             "xstat-green", "xstat-red",
                             new Tooltip("Click '" + notPinnedChar + "' to pin the counter.\nPinned counter is always visible."),
                             "xstats-val-0-" + rowIndex, k, WIDTH_COL_0 * 1.5, 0,
-                            "xstats-val-1-" + rowIndex, v.toString(), WIDTH_COL_1, 1,
+                            "xstats-val-1-" + rowIndex, String.valueOf(v - getShadowCounter(port.getIndex(), k)), WIDTH_COL_1, 1,
                             "xstats-val-2-" + rowIndex, notPinnedChar, WIDTH_COL_PIN, 2);
                 }
             }
@@ -816,5 +820,25 @@ public class StatsTableGenerator {
         gp.add(statXTable, 1, 1, 1, 2);
 
         return gp;
+    }
+    
+    private void fixCounter(Integer portIndex, String counterName , Long value) {
+        Map<String, Long> portCounters = hardwareShadowCounters.get(portIndex);
+        if (portCounters == null) {
+            portCounters = new HashMap<>();
+            hardwareShadowCounters.put(portIndex, portCounters);
+        }
+        portCounters.put(counterName, value);
+    }
+    
+    private Long getShadowCounter(Integer portIndex, String counterName) {
+        Map<String, Long> portCounters = hardwareShadowCounters.get(portIndex);
+        if (portCounters == null) {
+            return 0l;
+        }
+        
+        Long counter = portCounters.get(counterName);
+        
+        return counter == null? 0l : counter;
     }
 }
