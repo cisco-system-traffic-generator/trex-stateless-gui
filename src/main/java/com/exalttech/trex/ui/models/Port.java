@@ -77,6 +77,16 @@ public class Port {
 
     CaptureStatus[] captureStatus;
 
+    boolean service;
+
+    public boolean getServiceMode() {
+        return service;
+    }
+
+    public void setService(boolean service) {
+        this.service = service;
+    }
+    
     /**
      * Return index
      *

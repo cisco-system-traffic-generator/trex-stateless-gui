@@ -79,6 +79,7 @@ public class UpdatePortStatusService extends ScheduledService<List<Port>> {
                 port.setStatus(portStatus.getResult().getState());
                 port.setAttr(portStatus.getResult().getAttr());
                 port.setRx_info(portStatus.getResult().getRx_info());
+                port.setService(portStatus.getResult().getService());
 
 //                String response1 = ConnectionManager.getInstance().sendRequest(Constants.CAPTURE_METHOD,
 //                        "\"command\":\"status\"");

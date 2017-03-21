@@ -6,7 +6,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.ToggleSwitch?>
-<?import java.lang.String?>
 <fx:root xmlns:fx="http://javafx.com/fxml"
          fx:id="root"
          type="javafx.scene.layout.BorderPane">
@@ -18,29 +17,26 @@
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
 
-            <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <Label fx:id="labelTabMainPortName" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"
+            <Label text="Index:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label fx:id="labelTabMainPortIndex" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"
                    GridPane.columnSpan="2"/>
 
-            <Label text="Index:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <Label fx:id="labelTabMainPortIndex" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"
+            <Label text="Driver:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label fx:id="driver" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"
                    GridPane.columnSpan="2"/>
 
-            <Label text="Driver:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <Label fx:id="driver" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"
+            <Label text="Rx filter mode:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <Label fx:id="rxFilterMode" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"
                    GridPane.columnSpan="2"/>
 
-            <Label text="Rx filter mode:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-            <Label fx:id="rxFilterMode" text="" GridPane.columnIndex="1" GridPane.rowIndex="4"
-                   GridPane.columnSpan="2"/>
+            <Label text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <ToggleSwitch fx:id="multicast" alignment="center" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-            <Label text="Multicast:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-            <ToggleSwitch fx:id="multicast" alignment="center" GridPane.columnIndex="1"
-                          GridPane.rowIndex="5"/>
+            <Label text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <ToggleSwitch fx:id="promiscuousMode" alignment="center" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-            <Label text="Promiscuous:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-            <ToggleSwitch fx:id="promiscuousMode" alignment="center" GridPane.columnIndex="1"
-                          GridPane.rowIndex="6"/>
+            <Label text="Service:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+            <ToggleSwitch fx:id="serviceMode" alignment="center" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
             <Label text="Owner:" GridPane.columnIndex="5" GridPane.rowIndex="1"/>
             <Label fx:id="owner" text="" GridPane.columnIndex="6" GridPane.rowIndex="1"

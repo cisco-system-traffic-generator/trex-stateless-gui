@@ -120,6 +120,9 @@ public class PortStatus {
         @JsonProperty("owner")
         private String owner;
 
+        @JsonProperty("service")
+        private Boolean service;
+
         @JsonProperty("rx_info")
         private PortStatusResultRxInfo rx_info;
 
@@ -162,6 +165,23 @@ public class PortStatus {
         @JsonProperty("owner")
         public void setOwner(String owner) {
             this.owner = owner;
+        }
+        /**
+         *
+         * @return
+         */
+        @JsonProperty("service")
+        public boolean getService() {
+            return service;
+        }
+
+        /**
+         *
+         * @param owner
+         */
+        @JsonProperty("service")
+        public void setService(boolean service) {
+            this.service = service;
         }
 
         /**

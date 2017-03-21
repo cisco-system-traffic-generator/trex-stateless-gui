@@ -44,6 +44,9 @@ public class PortAttributes extends BorderPane {
     private ToggleSwitch promiscuousMode;
 
     @FXML
+    private ToggleSwitch serviceMode;
+
+    @FXML
     private Label owner;
 
     @FXML
@@ -135,6 +138,7 @@ public class PortAttributes extends BorderPane {
         flowControl.getSelectionModel().selectedItemProperty().addListener((observable , oldVal, newVal) -> port.flowControlProperty().setValue(newVal));
         multicast.selectedProperty().addListener((observable , oldVal, newVal) -> port.multicastProperty().setValue(newVal));
         promiscuousMode.selectedProperty().addListener((observable, oldVal, newVal) -> port.promiscuousModeProperty().setValue(newVal));
+        serviceMode.selectedProperty().addListener((observable, oldVal, newVal) -> port.serviceModeProperty().setValue(newVal));
         link.selectedProperty().addListener((observable , oldVal, newVal) -> port.linkStatusProperty().setValue(newVal));
         led.selectedProperty().addListener((observable , oldVal, newVal) -> port.ledControlProperty().setValue(newVal));
     }
@@ -171,13 +175,15 @@ public class PortAttributes extends BorderPane {
         promiscuousMode.selectedProperty().set(model.getPromiscuousMode());
         link.selectedProperty().set(model.getLinkStatus());
         led.selectedProperty().set(model.getLedControl());
+        serviceMode.selectedProperty().set(model.getServiceMode());
         
         Arrays.asList(
                 link,
                 led,
                 promiscuousMode,
                 multicast,
-                flowControl
+                flowControl,
+                serviceMode
         ).forEach(control -> {
             
             if (!port.isOwnedProperty().get()) {
@@ -187,8 +193,8 @@ public class PortAttributes extends BorderPane {
             }
             
             control.disableProperty().bind(Bindings.or(
-                port.isOwnedProperty().not(),
-                port.getSupport(control.getId()).not()
+                    port.isOwnedProperty().not(),
+                    port.getSupport(control.getId()).not()
             ));
         });
 
@@ -213,8 +219,10 @@ public class PortAttributes extends BorderPane {
             link,
             led,
             promiscuousMode,
+            serviceMode,
             multicast,
-            flowControl
+            flowControl,
+            serviceMode
         ).forEach(control -> control.disableProperty().unbind());
     }
 }

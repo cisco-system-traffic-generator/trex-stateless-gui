@@ -1,6 +1,8 @@
 package com.exalttech.trex.ui.models;
 
+import com.cisco.trex.stateless.TRexClient;
 import com.exalttech.trex.application.TrexApp;
+import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
@@ -47,18 +49,23 @@ public class PortModel {
     private PortLayerConfigurationModel l2Configuration;
     private PortLayerConfigurationModel l3Configuration;
     
+    private BooleanProperty serviceModeProperty = new SimpleBooleanProperty(false);
+    
     private BooleanProperty isOwnedProperty = new SimpleBooleanProperty(false);
     private RPCMethods serverRPCMethods;
+    private TRexClient trexClient;
     private LogsController guiLogger;
 
     private PortModel() {
         guiLogger = LogsController.getInstance();
         serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
+        trexClient = ConnectionManager.getInstance().getTrexClient();
         supportCapabilities.put("link", linkControlSupport);
         supportCapabilities.put("led", ledControlSupport);
         supportCapabilities.put("flowControl", flowControlSupport);
         supportCapabilities.put("multicast", multicastSupport);
         supportCapabilities.put("promiscuousMode", multicastSupport);
+        supportCapabilities.put("serviceMode", new SimpleBooleanProperty(true));
     }
     
     public static PortModel createModelFrom(Port port) {
@@ -79,6 +86,7 @@ public class PortModel {
         model.rxQueueing.setValue(port.getRx_info().getQueue().isIs_active() ? "On" : "Off");
         model.gratARP.setValue(port.getRx_info().getGrat_arp().isIs_active() ? "On" : "Off");
         model.flowControl.setValue(port.getFlowControl());
+        model.serviceModeProperty.setValue(port.service);
 
         model.initHandlers(port);
         
@@ -147,6 +155,22 @@ public class PortModel {
                 guiLogger.appendText(LogType.ERROR, "Filed to set attributes for port " + portIndex);
             }
         });
+
+        serviceModeProperty.addListener((observable, oldValue, newValue) -> {
+            com.cisco.trex.stateless.model.PortStatus status = trexClient.serviceMode(portIndex, newValue);
+            if (!newValue.equals(status.service)) {
+                guiLogger.appendText(LogType.ERROR, "Filed to set service mode for port " + portIndex);
+            }
+            port.setService(status.service);
+        });
+    }
+
+    public boolean getServiceMode() {
+        return serviceModeProperty.get();
+    }
+
+    public BooleanProperty serviceModeProperty() {
+        return serviceModeProperty;
     }
 
     public BooleanProperty getSupport(String capId) {
