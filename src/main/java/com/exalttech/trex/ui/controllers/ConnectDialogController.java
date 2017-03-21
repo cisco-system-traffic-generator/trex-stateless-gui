@@ -210,14 +210,8 @@ public class ConnectDialogController extends DialogView implements Initializable
         if (connection != null && connection.getConnectionList() != null) {
             fillConnectionItem(connection.getConnectionList());
         }
-        try {
-            InetAddress ip = InetAddress.getLocalHost();
-            String hostname = ip.getHostName();
-            String username = System.getProperty("user.name");
-            nameTF.setText(username + "@" + ip.getHostAddress());
-        } catch (UnknownHostException e) {
-            ;
-        }
+        String username = System.getProperty("user.name");
+        nameTF.setText(username);
     }
 
     /**
