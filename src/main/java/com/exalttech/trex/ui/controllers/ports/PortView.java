@@ -21,21 +21,23 @@ public class PortView extends TabPane {
     
     public PortView() {
         Initialization.initializeFXML(this, "/fxml/ports/Port.fxml");
-        
+        getSelectionModel().selectedItemProperty().addListener((observable, prevTab, currentTab) -> {
+            if (currentTab.getId().equals("hardwareCountersTab")) {
+                hardwareCounters.startPolling();
+            } else {
+                hardwareCounters.stopPolling();
+            }
+        });
     }
 
     public void loadModel(PortModel model) {
         portAttributes.bindModel(model);
         layerConfig.bindModel(model);
+        boolean runPolling = getSelectionModel().selectedItemProperty().get().getId().equals("hardwareCountersTab");
+        hardwareCounters.bindModel(model, runPolling);
 
         layerConfig.disableProperty().unbind();
         layerConfig.setDisable(model.isOwnedProperty().get());
         layerConfig.disableProperty().bind(model.isOwnedProperty().not());
-
-        hardwareCounters.disableProperty().unbind();
-        hardwareCounters.setDisable(model.isOwnedProperty().get());
-        hardwareCounters.disableProperty().bind(model.isOwnedProperty().not());
-        
-        
     }
 }
