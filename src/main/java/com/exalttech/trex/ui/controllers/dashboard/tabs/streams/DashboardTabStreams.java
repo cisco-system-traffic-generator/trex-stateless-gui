@@ -25,7 +25,7 @@ public class DashboardTabStreams extends AnchorPane {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/streams/DashboardTabStreams.fxml");
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams) {
+    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
         StatsLoader statsLoader = StatsLoader.getInstance();
         Map<String, ArrayHistory<StatsFlowStream>> streams = statsLoader.getFlowStatsHistoryMap();
 
@@ -48,7 +48,7 @@ public class DashboardTabStreams extends AnchorPane {
         AtomicInteger rowIndex = new AtomicInteger(1);
 
         streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
-            if ((visibleStreams != null && !visibleStreams.contains(stream)) || history.isEmpty()) {
+            if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream)) || history.isEmpty()) {
                 return;
             }
 

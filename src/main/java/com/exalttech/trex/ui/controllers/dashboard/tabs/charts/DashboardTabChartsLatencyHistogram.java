@@ -8,6 +8,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStream;
 import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStreamLatency;
@@ -25,7 +26,7 @@ public class DashboardTabChartsLatencyHistogram extends AnchorPane implements Da
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/DashboardTabChartsLatencyHistogram.fxml");
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams) {
+    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
         histogram.getData().clear();
         xAxis.setAutoRanging(true);
 
@@ -37,8 +38,9 @@ public class DashboardTabChartsLatencyHistogram extends AnchorPane implements Da
 
         List<XYChart.Series<String, Number>> seriesList = new LinkedList<>();
         Set<String> categories = new HashSet<>();
+        AtomicInteger streamIndex = new AtomicInteger(0);
         latencyStatsByStreams.forEach((String stream, StatsLatencyStream latencyStats) -> {
-            if (visibleStreams != null && !visibleStreams.contains(stream)) {
+            if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
                 return;
             }
 
@@ -63,6 +65,8 @@ public class DashboardTabChartsLatencyHistogram extends AnchorPane implements Da
                 series.getData().add(new XYChart.Data<>(key, value));
             });
             seriesList.add(series);
+
+            streamIndex.getAndAdd(1);
         });
 
         if (seriesList.isEmpty()) {

@@ -13,36 +13,53 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.util.Initialization;
 
 
-public class DashboardPortsFilter extends VBox {
+public class DashboardFilters extends VBox {
     @FXML
     private ComboBox<String> portFilterSelector;
     @FXML
     private VBox portCheckBoxListContainer;
+    @FXML
+    private ComboBox<Integer> streamsCountSelector;
 
-    private EventHandler<Event> onSelectedPortIndexesChanged;
+    private EventHandler<Event> onFiltersChanged;
     private Set<Integer> selectedPortIndexes = new HashSet<>();
 
-    public DashboardPortsFilter() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/filters/DashboardPortsFilter.fxml");
+    public DashboardFilters() {
+        Initialization.initializeFXML(this, "/fxml/Dashboard/filters/DashboardFilters.fxml");
 
         buildPortsList();
     }
 
-    public EventHandler<Event> getOnSelectedPortIndexesChanged() {
-        return onSelectedPortIndexesChanged;
+    public EventHandler<Event> getOnFiltersChanged() {
+        return onFiltersChanged;
     }
 
-    public void setOnSelectedPortIndexesChanged(EventHandler<Event> onSelectedPortIndexesChanged) {
-        this.onSelectedPortIndexesChanged = onSelectedPortIndexesChanged;
+    public void setOnFiltersChanged(EventHandler<Event> onFiltersChanged) {
+        this.onFiltersChanged = onFiltersChanged;
     }
 
     public Set<Integer> getSelectedPortIndexes() {
         return selectedPortIndexes;
     }
 
+    public int getStreamsCount() {
+        return streamsCountSelector.getValue();
+    }
+
     @FXML
     public void handlePortFilterSelectorUpdated(Event event) {
         buildPortsList();
+    }
+
+    @FXML
+    public void handleStreamsCountSelectorUpdated(Event event) {
+        handleFiltersUpdated();
+    }
+
+    private void handleFiltersUpdated() {
+        if (onFiltersChanged != null) {
+            onFiltersChanged.handle(new Event(this, null, null));
+        }
     }
 
     private void buildPortsList() {
@@ -59,9 +76,7 @@ public class DashboardPortsFilter extends VBox {
             portCheckBoxListContainer.getChildren().add(portCheckbox);
         });
 
-        if (onSelectedPortIndexesChanged != null) {
-            onSelectedPortIndexesChanged.handle(new Event(this, null, null));
-        }
+        handleFiltersUpdated();
     }
 
     private void handlePortSelectionChanged(Event event) {
@@ -72,9 +87,7 @@ public class DashboardPortsFilter extends VBox {
             selectedPortIndexes.remove(checkBox.getPortNumber());
         }
 
-        if (onSelectedPortIndexesChanged != null) {
-            onSelectedPortIndexesChanged.handle(new Event(this, null, null));
-        }
+        handleFiltersUpdated();
     }
 
     private Set<Integer> getPortIndexes() {

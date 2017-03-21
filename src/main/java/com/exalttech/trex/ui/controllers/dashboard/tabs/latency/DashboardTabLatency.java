@@ -27,7 +27,7 @@ public class DashboardTabLatency extends AnchorPane {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/latency/DashboardTabLatency.fxml");
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams) {
+    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
         int firstColumnWidth = 120;
         int secondHeaderWidth = 150;
 
@@ -50,7 +50,7 @@ public class DashboardTabLatency extends AnchorPane {
 
         AtomicInteger rowIndex = new AtomicInteger(1);
         latencyStatsByStreams.forEach((String stream, StatsLatencyStream latencyStream) -> {
-            if (visibleStreams != null && !visibleStreams.contains(stream)) {
+            if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
                 return;
             }
 

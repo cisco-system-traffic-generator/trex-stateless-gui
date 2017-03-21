@@ -4,5 +4,5 @@ import java.util.Set;
 
 
 public interface DashboardTabChartsUpdatable {
-    void update(Set<Integer> visiblePorts, Set<String> visibleStreams);
+    void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount);
 }

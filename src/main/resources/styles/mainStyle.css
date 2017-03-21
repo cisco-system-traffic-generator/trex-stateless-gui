@@ -1358,3 +1358,7 @@ ToggleSwitch {
 .dashboardFilterPanelHeader {
     -fx-border-color: transparent transparent #bfbfbf transparent;
 }
+
+.dashboardFilterPanelFooter {
+    -fx-border-color: #bfbfbf transparent transparent transparent;
+}

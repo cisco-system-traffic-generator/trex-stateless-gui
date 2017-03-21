@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsFilter?>
+<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardFilters?>
 <?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatistics?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency?>
@@ -29,12 +29,12 @@
     </top>
     <left>
         <AnchorPane>
-            <DashboardPortsFilter fx:id="portsFilter"
-                                  onSelectedPortIndexesChanged="#handleUpdate"
-                                  AnchorPane.leftAnchor="0.0"
-                                  AnchorPane.rightAnchor="10.0"
-                                  AnchorPane.topAnchor="11.0"
-                                  AnchorPane.bottomAnchor="1.0"/>
+            <DashboardFilters fx:id="portsFilter"
+                              onFiltersChanged="#handleUpdate"
+                              AnchorPane.leftAnchor="0.0"
+                              AnchorPane.rightAnchor="10.0"
+                              AnchorPane.topAnchor="11.0"
+                              AnchorPane.bottomAnchor="1.0"/>
         </AnchorPane>
     </left>
     <center>

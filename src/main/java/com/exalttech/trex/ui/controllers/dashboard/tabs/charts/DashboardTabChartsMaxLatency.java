@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.exalttech.trex.ui.models.stats.latency.MaxLatencyPoint;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
@@ -19,7 +20,7 @@ public class DashboardTabChartsMaxLatency extends DashboardTabChartsLine {
         getYAxis().setLabel("Max Latency (ms)");
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams) {
+    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
         getChart().getData().clear();
 
         if (visibleStreams != null && visibleStreams.isEmpty()) {
@@ -30,8 +31,9 @@ public class DashboardTabChartsMaxLatency extends DashboardTabChartsLine {
         Map<String, ArrayHistory<MaxLatencyPoint>> streams = statsLoader.getMaxLatencyHistory();
         final double maxLatencyLastTime = statsLoader.getMaxLatencyLastTime();
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
+        AtomicInteger streamIndex = new AtomicInteger(0);
         streams.forEach((String stream, ArrayHistory<MaxLatencyPoint> history) -> {
-            if (visibleStreams != null && !visibleStreams.contains(stream)) {
+            if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
                 return;
             }
 
@@ -42,6 +44,8 @@ public class DashboardTabChartsMaxLatency extends DashboardTabChartsLine {
             });
 
             seriesList.add(series);
+
+            streamIndex.getAndAdd(1);
         });
         getChart().getData().clear();
         getChart().getData().addAll(seriesList);

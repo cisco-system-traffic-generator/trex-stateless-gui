@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
@@ -19,7 +20,7 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         getYAxis().setLabel(getName());
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams) {
+    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
         getChart().getData().clear();
 
         if (visibleStreams != null && visibleStreams.isEmpty()) {
@@ -30,8 +31,9 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         Map<String, ArrayHistory<StatsFlowStream>> streams = statsLoader.getFlowStatsHistoryMap();
         double time = statsLoader.getFlowStatsLastTime();
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
+        AtomicInteger streamIndex = new AtomicInteger(0);
         streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
-            if (visibleStreams != null && !visibleStreams.contains(stream)) {
+            if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
                 return;
             }
 
@@ -41,6 +43,8 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
             });
 
             seriesList.add(series);
+
+            streamIndex.getAndAdd(1);
         });
         getChart().getData().addAll(seriesList);
     }

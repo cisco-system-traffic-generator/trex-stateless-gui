@@ -33,6 +33,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
     private IntegerProperty interval;
     private Set<Integer> lastVisiblePorts;
     private Set<String> lastVisibleStreams;
+    private int lastStreamsCount;
 
     public DashboardTabChartsContainer(String selectedType, IntegerProperty interval) {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/DashboardTabChartsContainer.fxml");
@@ -61,10 +62,11 @@ public class DashboardTabChartsContainer extends AnchorPane {
         );
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams) {
-        chart.update(visiblePorts, visibleStreams);
+    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
+        chart.update(visiblePorts, visibleStreams, streamsCount);
         lastVisiblePorts = visiblePorts;
         lastVisibleStreams = visibleStreams;
+        lastStreamsCount = streamsCount;
     }
 
     private MenuItem createContextMenuItem(String chartType) {
@@ -89,7 +91,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
         AnchorPane.setRightAnchor((Node) chart, 0.0);
         AnchorPane.setBottomAnchor((Node) chart, 0.0);
         AnchorPane.setLeftAnchor((Node) chart, 0.0);
-        chart.update(lastVisiblePorts, lastVisibleStreams);
+        chart.update(lastVisiblePorts, lastVisibleStreams, lastStreamsCount);
 
         root.getChildren().clear();
         root.getChildren().add((Node) chart);

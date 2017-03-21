@@ -62,11 +62,11 @@ public class DashboardTabCharts extends BorderPane {
         handleLayoutChanged(4);
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams) {
+    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
         LayoutConfiguration layoutConfiguration = layoutConfigurations[selectedConfigurationIndex];
         int size = layoutConfiguration.getColumnsCount()*layoutConfiguration.getRowsCount();
         for (int i = 0; i < size; ++i) {
-            charts[i].update(visiblePorts, visibleStreams);
+            charts[i].update(visiblePorts, visibleStreams, streamsCount);
         }
     }
 
