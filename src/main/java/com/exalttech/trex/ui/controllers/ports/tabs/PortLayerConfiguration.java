@@ -123,6 +123,11 @@ public class PortLayerConfiguration extends BorderPane {
 
     private void saveConfiguration(Event event) {
         
+        if (model.getPortStatus().equalsIgnoreCase("tx")) {
+            guiLogger.appendText(LogType.ERROR, "Port " + model.getIndex() + " is in TX mode. Please stop traffic first.");
+            return;
+        }
+        
         if (l2Mode.isSelected()) {
             if (Strings.isNullOrEmpty(l2Destination.getText())) {
                 guiLogger.appendText(LogType.ERROR, "Destination MAC is empty. ");
@@ -209,6 +214,11 @@ public class PortLayerConfiguration extends BorderPane {
     }
     
     private void runPingCmd(Event event) {
+        if (model.getPortStatus().equalsIgnoreCase("tx")) {
+            guiLogger.appendText(LogType.ERROR, "Port " + model.getIndex() + " is in TX mode. Please stop traffic first.");
+            return;
+        }
+        
         if (Strings.isNullOrEmpty(pingDestination.getText())) {
             guiLogger.appendText(LogType.ERROR, "Empty ping destination address.");
             return;
