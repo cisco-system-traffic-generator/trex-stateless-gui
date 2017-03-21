@@ -338,6 +338,9 @@ public class StatsLoader {
             final long freq = tsJSON.getLong("freq");
             final long value = tsJSON.getLong("value");
             final double time = (value*1.0)/freq;
+            if (time == flowStatsLastTime) {
+                return;
+            }
             flowStatsLastTime = time;
 
             final Set<String> unvisitedStreams = new HashSet<>(flowStatsHistoryMap.keySet());
