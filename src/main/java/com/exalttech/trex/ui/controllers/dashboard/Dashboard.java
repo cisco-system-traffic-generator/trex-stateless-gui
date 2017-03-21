@@ -3,7 +3,6 @@ package com.exalttech.trex.ui.controllers.dashboard;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -15,15 +14,15 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsFilter;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts;
-import com.exalttech.trex.ui.controllers.dashboard.tabs .latency.DashboardTabLatency;
+import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.DashboardTabStreams;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
-import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
@@ -33,7 +32,7 @@ public class Dashboard extends DialogView implements Initializable {
     @FXML
     private BorderPane root;
     @FXML
-    private ComboBox<String> portFilterSelector;
+    private DashboardPortsFilter portsFilter;
     @FXML
     private DashboardTabPorts ports;
     @FXML
@@ -59,8 +58,9 @@ public class Dashboard extends DialogView implements Initializable {
         // Nothing to do
     }
 
+    @FXML
     public void handleUpdate(Event event) {
-        Set<Integer> visiblePorts = getVisiblePorts();
+        Set<Integer> visiblePorts = portsFilter.getSelectedPortIndexes();
         Set<String> visibleStreams = getVisibleStream(visiblePorts);
         ports.update(visiblePorts);
         streams.update(visiblePorts, visibleStreams);
@@ -73,14 +73,6 @@ public class Dashboard extends DialogView implements Initializable {
             refreshingService.cancel();
         }
         ports.reset();
-    }
-
-    private Set<Integer> getVisiblePorts() {
-        String val = portFilterSelector.getSelectionModel().getSelectedItem();
-        if (val.equals("All")) {
-            return null;
-        }
-        return new HashSet<Integer>(PortsManager.getInstance().getOwnedPortIndexes());
     }
 
     private static Set<String> getVisibleStream(Set<Integer> visiblePorts) {

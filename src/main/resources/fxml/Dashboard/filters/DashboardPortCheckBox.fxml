@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.HBox"
+         alignment="CENTER_LEFT"
+         spacing="5.0">
+    <CheckBox fx:id="checkBox"
+              selected="true"
+              onAction="#handleCheckBoxAction"/>
+    <Label fx:id="label"/>
+</fx:root>

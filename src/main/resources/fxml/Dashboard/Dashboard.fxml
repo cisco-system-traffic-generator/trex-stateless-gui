@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
 
-<?import java.lang.String?>
-
+<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsFilter?>
 <?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatistics?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency?>
@@ -23,7 +17,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml"
             style="-fx-background-color: #f0f0f0"
-            prefWidth="800"
+            prefWidth="1000"
             prefHeight="700"
             fx:controller="com.exalttech.trex.ui.controllers.dashboard.Dashboard"
             fx:id="root">
@@ -33,6 +27,16 @@
     <top>
         <DashboardGlobalStatistics/>
     </top>
+    <left>
+        <AnchorPane>
+            <DashboardPortsFilter fx:id="portsFilter"
+                                  onSelectedPortIndexesChanged="#handleUpdate"
+                                  AnchorPane.leftAnchor="0.0"
+                                  AnchorPane.rightAnchor="10.0"
+                                  AnchorPane.topAnchor="11.0"
+                                  AnchorPane.bottomAnchor="1.0"/>
+        </AnchorPane>
+    </left>
     <center>
         <AnchorPane>
             <TabPane styleClass="statRightPaneContent, floating"
@@ -57,22 +61,6 @@
                      disable="true">
                 </Tab>
             </TabPane>
-            <StackPane AnchorPane.rightAnchor="0.0"
-                       AnchorPane.topAnchor="8.0">
-                <HBox spacing="5" alignment="CENTER">
-                    <Label text="Ports:"/>
-                    <ComboBox fx:id="portFilterSelector"
-                              onAction="#handleUpdate"
-                              value="All">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="All" />
-                                <String fx:value="Owned by me" />
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
-                </HBox>
-            </StackPane>
         </AnchorPane>
     </center>
 </BorderPane>

@@ -199,6 +199,19 @@ public class PortsManager {
     }
 
     /**
+     * Return indexes of the ports
+     *
+     * @return
+     */
+    public List<Integer> getPortIndexes() {
+        List<Integer> portIndexes = new LinkedList<Integer>();
+        portList.forEach((Port port) -> {
+            portIndexes.add(port.getIndex());
+        });
+        return portIndexes;
+    }
+
+    /**
      * Return indexes of the owned ports
      *
      * @return
