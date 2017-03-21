@@ -38,6 +38,7 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
             }
 
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            series.setName(stream);
             history.forEach((StatsFlowStream point) -> {
                 series.getData().add(new XYChart.Data<>(point.getTime() - time, calcValue(visiblePorts, point)));
             });

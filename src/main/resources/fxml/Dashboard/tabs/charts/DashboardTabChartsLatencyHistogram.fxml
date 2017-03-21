@@ -14,7 +14,6 @@
               animated="false"
               verticalGridLinesVisible="false"
               styleClass="statistics-chart"
-              legendVisible="false"
               AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0"
               AnchorPane.topAnchor="0.0"
