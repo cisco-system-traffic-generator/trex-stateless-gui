@@ -1,5 +1,9 @@
 package com.exalttech.trex.ui.models;
 
+import com.exalttech.trex.application.TrexApp;
+import com.exalttech.trex.core.RPCMethods;
+import com.exalttech.trex.ui.views.logs.LogType;
+import com.exalttech.trex.ui.views.logs.LogsController;
 import javafx.beans.property.*;
 
 import java.util.HashMap;
@@ -18,13 +22,13 @@ public class PortModel {
     private BooleanProperty linkControlSupport = new SimpleBooleanProperty();
 
     private BooleanProperty multicast = new SimpleBooleanProperty();
-    private BooleanProperty multicastSupport = new SimpleBooleanProperty();
+    private BooleanProperty multicastSupport = new SimpleBooleanProperty(true);
     
     private BooleanProperty promiscuousMode = new SimpleBooleanProperty();
-    private BooleanProperty promiscuousSupport = new SimpleBooleanProperty();
+    private BooleanProperty promiscuousSupport = new SimpleBooleanProperty(true);
     
+    private BooleanProperty ledControl = new SimpleBooleanProperty();
     private BooleanProperty ledControlSupport = new SimpleBooleanProperty();
-    private BooleanProperty ledSupport = new SimpleBooleanProperty();
     
     private ObjectProperty<FlowControl> flowControl = new SimpleObjectProperty<>(FlowControl.NONE);
     private BooleanProperty flowControlSupport = new SimpleBooleanProperty();
@@ -44,12 +48,17 @@ public class PortModel {
     private PortLayerConfigurationModel l3Configuration;
     
     private BooleanProperty isOwnedProperty = new SimpleBooleanProperty(false);
-    
+    private RPCMethods serverRPCMethods;
+    private LogsController guiLogger;
+
     private PortModel() {
+        guiLogger = LogsController.getInstance();
+        serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
         supportCapabilities.put("link", linkControlSupport);
         supportCapabilities.put("led", ledControlSupport);
         supportCapabilities.put("flowControl", flowControlSupport);
         supportCapabilities.put("multicast", multicastSupport);
+        supportCapabilities.put("promiscuousMode", multicastSupport);
     }
     
     public static PortModel createModelFrom(Port port) {
@@ -64,13 +73,15 @@ public class PortModel {
         model.portStatus.setValue(port.getStatus());
         model.capturingMode.setValue(port.getCaptureStatus());
         model.linkStatus.setValue(port.getLink());
-        model.ledControlSupport.setValue(port.getLed());
+        model.ledControl.setValue(port.getLed());
         model.numaMode.set(String.valueOf(port.getNuma()));
         model.pciAddress.setValue(port.getPci_addr());
         model.rxQueueing.setValue(port.getRx_info().getQueue().isIs_active() ? "On" : "Off");
         model.gratARP.setValue(port.getRx_info().getGrat_arp().isIs_active() ? "On" : "Off");
         model.flowControl.setValue(port.getFlowControl());
 
+        model.initHandlers(port);
+        
         PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg layerConfiguration = port.getAttr().getLayer_cfg();
         
         PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg.PortStatusResultAttrLayerCfgEther l2 = layerConfiguration.getEther();
@@ -85,11 +96,57 @@ public class PortModel {
             model.layerConfigurationType.setValue(ConfigurationMode.L3);
         }
         model.linkControlSupportProperty().set(port.is_link_supported);
-        model.ledControlSupportProperty().set(port.is_led_supported);
+        model.ledControlProperty().set(port.is_led_supported);
         model.flowControlSupportProperty().set(port.is_fc_supported);
-        model.multicastSupportProperty().set(port.getAttr().getMulticast().getEnabled());
-        model.promiscuousSupportProperty().set(port.getAttr().getPromiscuous().getEnabled());
         return model;
+    }
+
+    private void initHandlers(Port port) {
+        int portIndex = index.get();
+        linkStatus.addListener((observable, oldValue, newValue) -> {
+            try {
+                serverRPCMethods.setPortAttribute(portIndex, newValue, null, null, null, null);
+                port.getAttr().getLink().setUp(newValue);
+            } catch (Exception e) {
+                guiLogger.appendText(LogType.ERROR, "Filed to set attributes for port " + portIndex);
+            }
+        });
+
+        ledControl.addListener((observable, oldValue, newValue) -> {
+            try {
+                serverRPCMethods.setPortAttribute(portIndex, null, null, newValue, null, null);
+                port.getAttr().getLed().setOn(newValue);
+            } catch (Exception e) {
+                guiLogger.appendText(LogType.ERROR, "Filed to set attributes for port " + portIndex);
+            }
+        });
+
+        multicast.addListener((observable, oldValue, newValue) -> {
+            try {
+                serverRPCMethods.setPortAttribute(portIndex, null, null, null, null, newValue);
+                port.getAttr().getMulticast().setEnabled(newValue);
+            } catch (Exception e) {
+                guiLogger.appendText(LogType.ERROR, "Filed to set attributes for port " + portIndex);
+            }
+        });
+
+        promiscuousMode.addListener((observable, oldValue, newValue) -> {
+            try {
+                serverRPCMethods.setPortAttribute(portIndex, null, newValue, null, null, null);
+                port.getAttr().getPromiscuous().setEnabled(newValue);
+            } catch (Exception e) {
+                guiLogger.appendText(LogType.ERROR, "Filed to set attributes for port " + portIndex);
+            }
+        });
+
+        flowControl.addListener((observable, oldValue, newValue) -> {
+            try {
+                serverRPCMethods.setPortAttribute(portIndex, null, null, null, newValue.getVal(), null);
+                port.getAttr().getFc().setMode(newValue.getVal());
+            } catch (Exception e) {
+                guiLogger.appendText(LogType.ERROR, "Filed to set attributes for port " + portIndex);
+            }
+        });
     }
 
     public BooleanProperty getSupport(String capId) {
@@ -109,8 +166,8 @@ public class PortModel {
         return promiscuousSupport;
     }
 
-    public BooleanProperty ledSupportProperty() {
-        return ledSupport;
+    public BooleanProperty ledControlSupportProperty() {
+        return ledControlSupport;
     }
 
     public BooleanProperty flowControlSupportProperty() {
@@ -205,12 +262,12 @@ public class PortModel {
         return linkStatus;
     }
 
-    public boolean getLedControlSupport() {
-        return ledControlSupport.get();
+    public boolean getLedControl() {
+        return ledControl.get();
     }
 
-    public BooleanProperty ledControlSupportProperty() {
-        return ledControlSupport;
+    public BooleanProperty ledControlProperty() {
+        return ledControl;
     }
 
     public String getNumaMode() {

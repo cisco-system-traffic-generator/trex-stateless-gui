@@ -23,7 +23,11 @@ public class PortAttributes extends BorderPane {
 
     private static final Logger logger = Logger.getLogger(PortAttributes.class);
 
+    private LogsController guiLogger = LogsController.getInstance();
+    
     private final RPCMethods trexClient = TrexApp.injector.getInstance(RPCMethods.class);
+
+    private RPCMethods serverRPCMethods;
     
     private PortModel port;
     
@@ -77,6 +81,9 @@ public class PortAttributes extends BorderPane {
     
     
     public PortAttributes() {
+        
+        serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
+        
         Initialization.initializeFXML(this, "/fxml/ports/PortAttributes.fxml");
 
         acquireReleaseBtn.setOnAction(event -> {
@@ -124,6 +131,12 @@ public class PortAttributes extends BorderPane {
 
             }
         });
+
+        flowControl.getSelectionModel().selectedItemProperty().addListener((observable , oldVal, newVal) -> port.flowControlProperty().setValue(newVal));
+        multicast.selectedProperty().addListener((observable , oldVal, newVal) -> port.multicastProperty().setValue(newVal));
+        promiscuousMode.selectedProperty().addListener((observable, oldVal, newVal) -> port.promiscuousModeProperty().setValue(newVal));
+        link.selectedProperty().addListener((observable , oldVal, newVal) -> port.linkStatusProperty().setValue(newVal));
+        led.selectedProperty().addListener((observable , oldVal, newVal) -> port.ledControlProperty().setValue(newVal));
     }
 
     public void bindModel(PortModel model) {
@@ -142,22 +155,23 @@ public class PortAttributes extends BorderPane {
             acquireReleaseBtn.setText("Acquire");
             acquireReleaseBtn.setDisable(!Strings.isNullOrEmpty(this.port.getOwner()));
         }
-        
-        
+
+
         driver.textProperty().bind(model.portDriverProperty());
         rxFilterMode.textProperty().bind(model.rxFilterModeProperty());
-        multicast.selectedProperty().bindBidirectional(model.multicastProperty());
-        promiscuousMode.selectedProperty().bindBidirectional(model.promiscuousModeProperty());
         owner.textProperty().bind(model.ownerProperty());
         speed.textProperty().bind(model.portSpeedProperty());
         status.textProperty().bind(model.portStatusProperty());
         captureStatus.textProperty().bind(model.capturingModeProperty());
-        link.selectedProperty().bindBidirectional(model.linkStatusProperty());
-        led.selectedProperty().bindBidirectional(model.ledControlSupportProperty());
         numaMode.textProperty().bind(model.numaModeProperty());
         pciAddress.textProperty().bind(model.numaModeProperty());
         gratArp.textProperty().bind(model.gratARPProperty());
 
+        multicast.selectedProperty().set(model.getMulticast());
+        promiscuousMode.selectedProperty().set(model.getPromiscuousMode());
+        link.selectedProperty().set(model.getLinkStatus());
+        led.selectedProperty().set(model.getLedControl());
+        
         Arrays.asList(
                 link,
                 led,
@@ -165,30 +179,34 @@ public class PortAttributes extends BorderPane {
                 multicast,
                 flowControl
         ).forEach(control -> {
-            control.setDisable(port.isOwnedProperty().get());
-            control.disableProperty().bind(
-                    Bindings.and(
-                        port.isOwnedProperty(),
-                        port.getSupport(control.getId())
-                    ).not()
-            );
+            
+            if (!port.isOwnedProperty().get()) {
+                control.setDisable(true);
+            } else {
+                control.setDisable(!port.getSupport(control.getId()).get());
+            }
+            
+            control.disableProperty().bind(Bindings.or(
+                port.isOwnedProperty().not(),
+                port.getSupport(control.getId()).not()
+            ));
         });
+
     }
 
     private void unbindPrevious() {
-        driver.textProperty().unbind();
-        rxFilterMode.textProperty().unbind();
-        multicast.selectedProperty().unbind();
-        promiscuousMode.selectedProperty().unbind();
-        owner.textProperty().unbind();
-        speed.textProperty().unbind();
-        status.textProperty().unbind();
-        captureStatus.textProperty().unbind();
-        link.selectedProperty().unbind();
-        led.selectedProperty().unbind();
-        numaMode.textProperty().unbind();
-        pciAddress.textProperty().unbind();
-        gratArp.textProperty().unbind();
+        Arrays.asList(
+            driver,
+            rxFilterMode,
+            owner,
+            speed,
+            status,
+            captureStatus,
+            numaMode,
+            pciAddress,
+            gratArp
+        ).forEach(label -> label.textProperty().unbind());
+        
         port = null;
 
         Arrays.asList(

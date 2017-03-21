@@ -388,6 +388,9 @@ public class RPCMethods {
 
     }
 
+    /**
+     * @TODO reimplement this. 
+     */
     public boolean setPortAttribute(int portID, Boolean link_status, Boolean promiscuous, Boolean led_status, Integer flow_ctrl_mode, Boolean multicast) throws Exception {
         String logstr = "Set attributes on port(s) [" + portID + "]:";
         LOG.trace(logstr);

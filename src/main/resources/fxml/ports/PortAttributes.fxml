@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.exalttech.trex.ui.models.FlowControl?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 <?import org.controlsfx.control.ToggleSwitch?>
-
+<?import java.lang.String?>
 <fx:root xmlns:fx="http://javafx.com/fxml"
          fx:id="root"
          type="javafx.scene.layout.BorderPane">
@@ -91,10 +91,10 @@
                        GridPane.columnIndex="10" GridPane.rowIndex="5" GridPane.columnSpan="2">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Rx"/>
-                        <String fx:value="Tx"/>
-                        <String fx:value="Full"/>
-                        <String fx:value="None"/>
+                        <FlowControl fx:constant="NONE"/>
+                        <FlowControl fx:constant="TX"/>
+                        <FlowControl fx:constant="RX"/>
+                        <FlowControl fx:constant="FULL"/>
                     </FXCollections>
                 </items>
             </ChoiceBox>
