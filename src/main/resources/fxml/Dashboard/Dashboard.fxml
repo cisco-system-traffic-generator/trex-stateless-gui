@@ -39,22 +39,27 @@
     </left>
     <center>
         <AnchorPane>
-            <TabPane styleClass="statRightPaneContent, floating"
+            <TabPane fx:id="tabPane"
+                     styleClass="statRightPaneContent, floating"
                      tabClosingPolicy="UNAVAILABLE"
                      AnchorPane.leftAnchor="0.0"
                      AnchorPane.rightAnchor="0.0"
                      AnchorPane.topAnchor="5.0"
                      AnchorPane.bottomAnchor="0.0">
-                <Tab text="Ports">
+                <Tab text="Ports"
+                     onSelectionChanged="#handleUpdate">
                     <DashboardTabPorts fx:id="ports"/>
                 </Tab>
-                <Tab text="Streams">
+                <Tab text="Streams"
+                     onSelectionChanged="#handleUpdate">
                     <DashboardTabStreams fx:id="streams"/>
                 </Tab>
-                <Tab text="Latency">
+                <Tab text="Latency"
+                     onSelectionChanged="#handleUpdate">
                     <DashboardTabLatency fx:id="latency"/>
                 </Tab>
-                <Tab text="Charts">
+                <Tab text="Charts"
+                     onSelectionChanged="#handleUpdate">
                     <DashboardTabCharts fx:id="charts"/>
                 </Tab>
                 <Tab text="Capture"

@@ -3,6 +3,7 @@ package com.exalttech.trex.ui.controllers.dashboard;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -34,6 +35,8 @@ public class Dashboard extends DialogView implements Initializable {
     @FXML
     private DashboardFilters portsFilter;
     @FXML
+    private TabPane tabPane;
+    @FXML
     private DashboardTabPorts ports;
     @FXML
     private DashboardTabStreams streams;
@@ -60,13 +63,24 @@ public class Dashboard extends DialogView implements Initializable {
 
     @FXML
     public void handleUpdate(Event event) {
+        String selectedTab = tabPane.getSelectionModel().getSelectedItem().getText();
         Set<Integer> visiblePorts = portsFilter.getSelectedPortIndexes();
+        if (selectedTab.equals("Ports")) {
+            ports.update(visiblePorts);
+        }
         int streamsCount = portsFilter.getStreamsCount();
         Set<String> visibleStreams = getVisibleStream(visiblePorts);
-        ports.update(visiblePorts);
-        streams.update(visiblePorts, visibleStreams, streamsCount);
-        latency.update(visiblePorts, visibleStreams, streamsCount);
-        charts.update(visiblePorts, visibleStreams, streamsCount);
+        switch (selectedTab) {
+            case "Streams":
+                streams.update(visiblePorts, visibleStreams, streamsCount);
+                break;
+            case "Latency":
+                latency.update(visiblePorts, visibleStreams, streamsCount);
+                break;
+            case "Charts":
+                charts.update(visiblePorts, visibleStreams, streamsCount);
+                break;
+        }
     }
 
     private void onWindowCloseRequest(WindowEvent window) {
