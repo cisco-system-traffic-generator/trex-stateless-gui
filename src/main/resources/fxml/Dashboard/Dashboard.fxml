@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.collections.*?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 
 <?import java.lang.String?>
 
@@ -29,13 +35,12 @@
     </top>
     <center>
         <AnchorPane>
-            <TabPane
-                    AnchorPane.leftAnchor="0.0"
-                    AnchorPane.rightAnchor="0.0"
-                    AnchorPane.topAnchor="5.0"
-                    AnchorPane.bottomAnchor="0.0"
-                    styleClass="statRightPaneContent, floating"
-                    tabClosingPolicy="UNAVAILABLE">
+            <TabPane styleClass="statRightPaneContent, floating"
+                     tabClosingPolicy="UNAVAILABLE"
+                     AnchorPane.leftAnchor="0.0"
+                     AnchorPane.rightAnchor="0.0"
+                     AnchorPane.topAnchor="5.0"
+                     AnchorPane.bottomAnchor="0.0">
                 <Tab text="Ports">
                     <DashboardTabPorts fx:id="ports"/>
                 </Tab>
@@ -56,7 +61,9 @@
                        AnchorPane.topAnchor="8.0">
                 <HBox spacing="5" alignment="CENTER">
                     <Label text="Ports:"/>
-                    <ComboBox fx:id="portFilterSelector" onAction="#handleUpdate" value="All">
+                    <ComboBox fx:id="portFilterSelector"
+                              onAction="#handleUpdate"
+                              value="All">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="All" />
