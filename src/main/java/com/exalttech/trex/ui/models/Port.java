@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -234,7 +235,7 @@ public class Port {
     }
 
     public Map<String, Long> getXstats() {
-        return xstats;
+        return xstats == null ? Collections.emptyMap() : xstats;
     }
 
     public void setXstats(Map<String, Long> xstats) {
