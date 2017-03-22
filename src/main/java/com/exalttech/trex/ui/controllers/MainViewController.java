@@ -918,7 +918,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         true,
                         TrexApp.getPrimaryStage()
                 );
-                statsWindow.setMinSize(1010, 740);
+                statsWindow.setMinSize(1210, 740);
                 statsWindow.show(false);
             }
         } catch (IOException ex) {
