@@ -60,7 +60,7 @@ public class StatsFlowStream {
                 txBpsL1.put(port, 0.0);
                 return;
             }
-            txBpsL1.put(port, bpsL2*(1 + (20/(bpsL2*pps))));
+            txBpsL1.put(port, bpsL2*(1 + (20/(bpsL2/pps))));
         });
 
         rxBytes.keySet().forEach((Integer port) -> {
