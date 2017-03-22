@@ -71,15 +71,17 @@ public class TrafficProfileDialogController extends DialogView implements Initia
     HBox profileTableOperationContainer;
     @FXML
     AnchorPane profileViewWrapper;
-    @FXML
-    Button loadProfileBtn;
-    @FXML
-    Button exportProfileBtn;
 
     @FXML
     Button createProfileBtn;
     @FXML
+    Button deleteProfileBtn;
+    @FXML
+    Button exportProfileBtn;
+    @FXML
     Button exportToYamlBtn;
+    @FXML
+    Button loadProfileBtn;
 
     PacketTableView tableView;
     private Profile[] currentLoadedProfilesList;
@@ -126,11 +128,14 @@ public class TrafficProfileDialogController extends DialogView implements Initia
      * Initialize profile buttons
      */
     private void initializeProfileBtn() {
-        loadProfileBtn.setGraphic(new ImageView(new Image("/icons/load_profile.png")));
-        exportProfileBtn.setGraphic(new ImageView(new Image("/icons/export_profile_icon.png")));
-
         createProfileBtn.setGraphic(new ImageView(new Image("/icons/add.png")));
+        deleteProfileBtn.setGraphic(new ImageView(new Image("/icons/delete.png")));
+
+        exportProfileBtn.setGraphic(new ImageView(new Image("/icons/export_profile_icon.png")));
         exportToYamlBtn.setGraphic(new ImageView(new Image("/icons/export_profile_icon.png")));
+
+        loadProfileBtn.setGraphic(new ImageView(new Image("/icons/load_profile.png")));
+
         trafficProfile = new TrafficProfile();
     }
 
@@ -220,6 +225,11 @@ public class TrafficProfileDialogController extends DialogView implements Initia
         }
     }
 
+    @FXML
+    public void handleDeleteProfileBtnClick(MouseEvent event) {
+        handleDeleteProfile();
+    }
+
     /**
      * Handle delete profile button clicked
      */
@@ -247,7 +257,6 @@ public class TrafficProfileDialogController extends DialogView implements Initia
     /**
      * View stream in table
      *
-     * @param fileToLoad
      */
     private void loadStreamTable() {
         try {
@@ -268,6 +277,7 @@ public class TrafficProfileDialogController extends DialogView implements Initia
      * @param enable
      */
     private void disableProfileFunctionBtn(boolean enable) {
+        deleteProfileBtn.setDisable(enable);
         exportProfileBtn.setDisable(enable);
         exportToYamlBtn.setDisable(enable);
     }
@@ -276,7 +286,6 @@ public class TrafficProfileDialogController extends DialogView implements Initia
      * Handle invalid loaded file
      *
      * @param fileName
-     * @param oldSelection
      */
     private void handleInvalidLoadedFile(String fileName) {
         Alert errAlert = Util.getAlert(AlertType.ERROR);
