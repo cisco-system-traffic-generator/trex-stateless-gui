@@ -44,7 +44,7 @@ public class AsyncEventData {
     @JsonProperty("port_id")
     private Integer portId;
     @JsonProperty("session_id")
-    private Integer sessionId;
+    private Long sessionId;
     @JsonProperty("who")
     private String who;
     @JsonProperty("force")
@@ -75,7 +75,7 @@ public class AsyncEventData {
      * @return The sessionId
      */
     @JsonProperty("session_id")
-    public Integer getSessionId() {
+    public Long getSessionId() {
         return sessionId;
     }
 
@@ -84,7 +84,7 @@ public class AsyncEventData {
      * @param sessionId The session_id
      */
     @JsonProperty("session_id")
-    public void setSessionId(Integer sessionId) {
+    public void setSessionId(Long sessionId) {
         this.sessionId = sessionId;
     }
 
