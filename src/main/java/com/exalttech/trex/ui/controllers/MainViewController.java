@@ -202,7 +202,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private SystemInfoReq systemInfoReq = null;
     private PacketTableView tableView;
     private RefreshingService refreshStatsService = new RefreshingService();
-    private Map<String, String> cachedStatsList = new HashMap<>();
     private final Map<Integer, CustomTreeItem> portTreeItemMap = new HashMap<>();
     private final BooleanProperty updateProfileListProperty = new SimpleBooleanProperty();
     private final Map<Integer, AssignedProfile> assignedPortProfileMap = new HashMap<>();
@@ -318,7 +317,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 logsContainer.setDisable(false);
                 copyToClipboardBtn.setDisable(false);
                 dashboardIcon.setDisable(false);
-                cachedStatsList = new HashMap<>();
                 serverRPCMethods.serverApiSync();
                 loadSystemInfo();
                 portManager.updatePortForce();
@@ -524,7 +522,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         // shutdown running services
         shutdownRunningServices();
 
-        cachedStatsList = new HashMap<>();
         connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
         statsMenuItem.setDisable(true);
         dashboardIcon.setDisable(true);
@@ -882,7 +879,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void clearStatCache(MouseEvent event) {
-        cachedStatsList = StatsLoader.getInstance().getLoadedStatsList();
+        // TODO: fill shadow counters
     }
 
     /**
