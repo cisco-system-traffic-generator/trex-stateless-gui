@@ -54,11 +54,6 @@ public class StatsTableGenerator {
     Map<String, StatisticCell> gridCellsMap = new HashMap<>();
     StringBuilder keyBuffer = new StringBuilder(30);
 
-
-    private static DataFormat dragDataFormat = new DataFormat("drag-n-drop-format");
-    private static String dragTargetStyle = "-fx-border-style: solid inside; -fx-border-width: 2;" +
-            "-fx-border-insets: 2; -fx-border-radius: 1; -fx-border-color: green;";
-
     private boolean odd;
     private int rowIndex;
 
@@ -81,16 +76,6 @@ public class StatsTableGenerator {
         statXTable.setCache(false);
         statXTable.getStyleClass().add("statsTable");
         statXTable.setGridLinesVisible(false);
-    }
-
-    /**
-     *
-     * @param cached
-     * @param portIndex
-     * @return
-     */
-    public GridPane getPortStatTable(Map<String, String> cached, int portIndex) {
-        return getPortStatTable(cached, portIndex, false, WIDTH_COL_1, null);
     }
 
     /**
@@ -219,24 +204,6 @@ public class StatsTableGenerator {
     }
 
     /**
-     * Add counter column
-     *
-     * @param attrList
-     */
-    private void addAttrColumn(List<String> attrList) {
-        addAttrColumn(statTable, attrList, "port-attrs", "Port attrs");
-    }
-
-    private void addAttrColumn(GridPane table, List<String> attrList, String key, String header) {
-        double firstColWidth = WIDTH_COL_0;
-        addHeaderCell(table, key, header, 0, firstColWidth, rowIndex++);
-        odd = true;
-        for (String label : attrList) {
-            addDefaultCell(table, label, label, firstColWidth, 0);
-        }
-    }
-
-    /**
      * Add Port info(port/status/owner) cells
      *
      * @param port
@@ -335,10 +302,6 @@ public class StatsTableGenerator {
 
     private void addHeaderCell(GridPane table, String key, String title, int columnIndex, double columnWidth) {
         addHeaderCell(table, key, title, columnIndex, columnWidth, 0);
-    }
-
-    private void addHeaderCell(String key, String title, int columnIndex, double columnWidth, int rowIndex) {
-        addHeaderCell(statTable, key, title, columnIndex, columnWidth, rowIndex);
     }
 
     private void addHeaderCell(GridPane table, String key, String title, int columnIndex, double columnWidth, int rowIndex) {
@@ -463,65 +426,6 @@ public class StatsTableGenerator {
         return cell;
     }
 
-    /**
-     * Add cell of type default
-     *
-     * @param key
-     * @param value
-     * @param columnWidth
-     * @param columnIndex
-     */
-    private void addAttrCell(String key, String value, double columnWidth, int columnIndex) {
-        addAttrCell(statTable, key, value, columnWidth, columnIndex);
-    }
-
-    private void addAttrCell(GridPane table
-            , String key, String value, double columnWidth, int columnIndex)
-    {
-        StatisticRow row = new StatisticRow(key, key, CellType.ATTR_CELL, false, "");
-        row.setRightPosition(false);
-        StatisticCell cell = getGridCell(row, columnWidth, key);
-        cell.updateItem("", value);
-        table.getChildren().remove(cell);
-        table.add((Node) cell, columnIndex, rowIndex++);
-    }
-
-    private void addAttrCell2(GridPane table
-            , String key0, String value0, double columnWidth0, int columnIndex0
-            , String key1, String value1, double columnWidth1, int columnIndex1)
-    {
-        addAttrCell2(table, null
-                , key0, value0, columnWidth0, columnIndex0
-                , key1, value1, columnWidth1, columnIndex1);
-    }
-
-    private void addAttrCell2(GridPane table, CheckBox checkbox
-            , String key0, String value0, double columnWidth0, int columnIndex0
-            , String key1, String value1, double columnWidth1, int columnIndex1)
-    {
-        boolean odd2 = odd;
-        StatisticRow row0 = new StatisticRow(key0, key0, CellType.ATTR_CELL, false, "");
-        row0.setRightPosition(false);
-        StatisticCell cell0 = getGridCell(row0, columnWidth0, key0);
-        cell0.updateItem("", value0);
-        table.getChildren().remove(cell0);
-        table.add((Node) cell0, columnIndex0, rowIndex);
-
-        odd = odd2;
-        StatisticRow row1 = new StatisticRow(key1, key1, CellType.ATTR_CELL, false, "");
-        row1.setRightPosition(false);
-        StatisticCell cell1 = getGridCell(row1, columnWidth1, key1);
-        cell1.updateItem("", value1);
-
-        table.getChildren().remove(cell1);
-        table.add((Node) cell1, columnIndex1, rowIndex);
-        if (checkbox != null) {
-            table.add((Node) checkbox, columnIndex1, rowIndex);
-        }
-
-        rowIndex++;
-    }
-
     private void addXstatRow(GridPane table
             , Consumer<MouseEvent> col2MouseHandler, String col2AddStyleClass, String col2RemoveStyleClass, Tooltip tooltip
             , String key0, String value0, double columnWidth0, int columnIndex0
@@ -605,15 +509,6 @@ public class StatsTableGenerator {
      */
     private StatisticCell addEmptyCell(String key, int columnIndex, double columnWidth) {
         return addDefaultCell(key, "", columnWidth, columnIndex++);
-    }
-    private void addEmptyColumn(int rowindex, int columnindex, int count) {
-        int rowIndexSaved  = rowIndex;
-        rowIndex = rowindex;
-        for (int i = 0; i < count; i++) {
-            odd = true;
-            StatisticCell cell = addEmptyCell("empy-col-" + columnindex + "-" + rowIndex, columnindex, WIDTH_COL_0 / 3);
-        }
-        rowIndex = rowIndexSaved;
     }
 
     /**
@@ -701,64 +596,6 @@ public class StatsTableGenerator {
         addDefaultCell("info-up-time", systemInfoReq.getResult().getUptime(), columnWidth, 1);
         addDefaultCell("info-api-version", systemInfoReq.getResult().getApiVersion(), columnWidth, 1);
 
-        return statTable;
-    }
-
-    /**
-     * Build port info pane
-     *
-     * @param port
-     * @return
-     */
-    public GridPane generatePortInfoPane(Port port) {
-        statTable.getChildren().clear();
-        Util.optimizeMemory();
-
-        double columnWidth = WIDTH_COL_1;
-        addHeaderCell("Value", 1, columnWidth);
-        addCounterColumn(StatisticConstantsKeys.PORT_ROW_NAME);
-        rowIndex = 1;
-        odd = true;
-        addDefaultCell("port-name", "Port " + port.getIndex(), columnWidth, 1);
-        addDefaultCell("port-driver", port.getDriver(), columnWidth, 1);
-        addDefaultCell("port-index", String.valueOf(port.getIndex()), columnWidth, 1);
-        addDefaultCell("port-owner", port.getOwner(), columnWidth, 1);
-        addDefaultCell("port-speed", String.valueOf(port.getSpeed()), columnWidth, 1);
-        addDefaultCell("port-status", port.getStatus(), columnWidth, 1);
-
-        return statTable;
-    }
-
-    /**
-     * Build global statistic pane
-     *
-     * @return
-     */
-    public GridPane generateGlobalStatPane() {
-        Map<String, String> statsList = StatsLoader.getInstance().getLoadedStatsList();
-        statTable.getChildren().clear();
-        Util.optimizeMemory();
-
-        double columnWidth = 150;
-        addHeaderCell("Value", 1, columnWidth);
-        addCounterColumn(StatisticConstantsKeys.GLOBAL_STATS_ROW_NAME);
-        rowIndex = 1;
-        odd = true;
-        for (StatisticRow row : StatisticConstantsKeys.GLOBAL_STATS_KEY) {
-            StatisticCell cell = getGridCell(row, columnWidth, row.getKey());
-            ((StatisticLabelCell) cell).setLeftPosition();
-            if (row.getAttributeName().equals("active-port")) {
-                cell.updateItem("", PortsManager.getInstance().getActivePort());
-            } else {
-                String value = statsList.get(row.getAttributeName());
-                if (row.isFormatted()) {
-                    value = Util.getFormatted(value, true, row.getUnit());
-                }
-                cell.updateItem("", value);
-            }
-            statTable.getChildren().remove(cell);
-            statTable.add((Node) cell, 1, rowIndex++);
-        }
         return statTable;
     }
 
