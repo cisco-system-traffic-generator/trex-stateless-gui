@@ -352,6 +352,10 @@ public class StatsLoader {
                 unvisitedStreams.remove(key);
 
                 final JSONObject streamJSON = dataJSON.getJSONObject(key);
+                if (streamJSON.keySet().isEmpty()) {
+                    return;
+                }
+
                 final Map<Integer, Long> txPkts = getFlowStatsStreamParam(streamJSON, "tx_pkts");
                 final Map<Integer, Long> txBytes = getFlowStatsStreamParam(streamJSON, "tx_bytes");
                 final Map<Integer, Long> rxPkts = getFlowStatsStreamParam(streamJSON, "rx_pkts");
