@@ -54,6 +54,6 @@ public class DashboardTabChartsMaxLatency extends DashboardTabChartsLine {
     }
 
     protected String getYChartLabel() {
-        return "Max Latency (ms)";
+        return "Max Latency (\u00B5s)";
     }
 }
