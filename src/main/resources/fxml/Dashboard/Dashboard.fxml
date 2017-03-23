@@ -62,9 +62,6 @@
                      onSelectionChanged="#handleUpdate">
                     <DashboardTabCharts fx:id="charts"/>
                 </Tab>
-                <Tab text="Capture"
-                     disable="true">
-                </Tab>
             </TabPane>
         </AnchorPane>
     </center>
