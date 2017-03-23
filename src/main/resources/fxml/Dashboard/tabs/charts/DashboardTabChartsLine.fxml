@@ -20,7 +20,6 @@
                AnchorPane.bottomAnchor="0.0">
         <xAxis>
             <NumberAxis fx:id="xAxis"
-                        label="Time (s)"
                         forceZeroInRange="false"
                         autoRanging="false"
                         upperBound="0.0"

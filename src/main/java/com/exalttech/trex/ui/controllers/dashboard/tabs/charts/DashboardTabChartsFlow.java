@@ -17,7 +17,6 @@ import com.exalttech.trex.util.ArrayHistory;
 public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
     public DashboardTabChartsFlow(IntegerProperty interval) {
         super(interval);
-        getYAxis().setLabel(getName());
     }
 
     public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
@@ -50,7 +49,9 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         getChart().getData().addAll(seriesList);
     }
 
-    protected abstract String getName();
-
     protected abstract Number calcValue(Set<Integer> visiblePorts, StatsFlowStream point);
+
+    protected String getXChartLabel() {
+        return "Time (s)";
+    }
 }

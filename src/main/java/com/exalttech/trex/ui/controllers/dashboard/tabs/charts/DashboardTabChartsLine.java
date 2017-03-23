@@ -20,13 +20,15 @@ public abstract class DashboardTabChartsLine extends AnchorPane implements Dashb
     public DashboardTabChartsLine(IntegerProperty interval) {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/DashboardTabChartsLine.fxml");
         xAxis.lowerBoundProperty().bind(interval.negate());
+        xAxis.setLabel(getXChartLabel());
+        yAxis.setLabel(getYChartLabel());
     }
 
     protected LineChart getChart() {
         return chart;
     }
 
-    protected NumberAxis getYAxis() {
-        return yAxis;
-    }
+    protected abstract String getXChartLabel();
+
+    protected abstract String getYChartLabel();
 }

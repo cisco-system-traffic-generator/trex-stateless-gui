@@ -12,7 +12,7 @@ public class DashboardTabChartsRxBps extends DashboardTabChartsFlow {
         super(interval);
     }
 
-    protected String getName() {
+    protected String getYChartLabel() {
         return "Rx (B/s)";
     }
 

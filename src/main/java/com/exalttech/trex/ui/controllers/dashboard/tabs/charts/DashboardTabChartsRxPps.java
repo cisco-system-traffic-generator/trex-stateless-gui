@@ -12,7 +12,7 @@ public class DashboardTabChartsRxPps extends DashboardTabChartsFlow {
         super(interval);
     }
 
-    protected String getName() {
+    protected String getYChartLabel() {
         return "Rx (pkt/s)";
     }
 

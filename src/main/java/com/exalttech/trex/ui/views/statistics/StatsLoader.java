@@ -29,7 +29,6 @@ import org.json.JSONObject;
 
 import com.exalttech.trex.core.AsyncResponseManager;
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
-import com.exalttech.trex.ui.models.stats.latency.MaxLatencyPoint;
 import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStream;
 import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStreamErrCntrs;
 import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStreamLatency;
@@ -45,6 +44,7 @@ public class StatsLoader {
 
     private static StatsLoader instance;
     private static final int historySize = 1000;
+    private static final int maxLatencyHistorySize = 301;
 
     /**
      * Create and return instance
@@ -62,8 +62,7 @@ public class StatsLoader {
     private Map<String, String> previousStatsList = new HashMap<>();
 
     private Map<String, StatsLatencyStream> latencyStatsMap = new HashMap<>();
-    private Map<String, ArrayHistory<MaxLatencyPoint>> maxLatencyHistory = new HashMap<>();
-    private double maxLatencyLastTime = 0.0;
+    private Map<String, ArrayHistory<Integer>> maxLatencyHistory = new HashMap<>();
 
     private Map<String, ArrayHistory<StatsFlowStream>> flowStatsHistoryMap = new HashMap<>();
     private double flowStatsLastTime = 0.0;
@@ -111,17 +110,8 @@ public class StatsLoader {
      *
      * @return
      */
-    public Map<String, ArrayHistory<MaxLatencyPoint>> getMaxLatencyHistory() {
+    public Map<String, ArrayHistory<Integer>> getMaxLatencyHistory() {
         return maxLatencyHistory;
-    }
-
-    /**
-     * Return last updating time of max latency stats
-     *
-     * @return
-     */
-    public double getMaxLatencyLastTime() {
-        return maxLatencyLastTime;
     }
 
     /**
@@ -183,7 +173,6 @@ public class StatsLoader {
             final JSONObject dataJSON = latencyStatsJSON.getJSONObject("data");
 
             final Set<String> unvisitedStreams = new HashSet<>(maxLatencyHistory.keySet());
-            final double time = System.currentTimeMillis()/1000.0;
             dataJSON.keySet().forEach((String stream) -> {
                 unvisitedStreams.remove(stream);
 
@@ -194,20 +183,18 @@ public class StatsLoader {
 
                 latencyStatsMap.put(stream, latencyStream);
 
-                ArrayHistory<MaxLatencyPoint> history = maxLatencyHistory.get(stream);
+                ArrayHistory<Integer> history = maxLatencyHistory.get(stream);
                 if (history == null) {
-                    history = new ArrayHistory<>(historySize);
+                    history = new ArrayHistory<>(maxLatencyHistorySize);
                     maxLatencyHistory.put(stream, history);
                 }
 
-                history.add(new MaxLatencyPoint(latencyStream.getLatency().getLastMax(), time));
+                history.add(latencyStream.getLatency().getLastMax());
             });
 
             unvisitedStreams.forEach((String stream) -> {
                 maxLatencyHistory.remove(stream);
             });
-
-            maxLatencyLastTime = time;
         } catch (JSONException exc) {
             // TODO: logging
         }

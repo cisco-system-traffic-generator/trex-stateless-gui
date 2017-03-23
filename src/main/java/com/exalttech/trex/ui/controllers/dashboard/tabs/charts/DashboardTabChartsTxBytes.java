@@ -12,7 +12,7 @@ public class DashboardTabChartsTxBytes extends DashboardTabChartsFlow {
         super(interval);
     }
 
-    protected String getName() {
+    protected String getYChartLabel() {
         return "Tx (B)";
     }
 
