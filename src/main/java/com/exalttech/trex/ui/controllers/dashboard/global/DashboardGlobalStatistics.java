@@ -82,12 +82,12 @@ public class DashboardGlobalStatistics extends GridPane {
         double l1_tx_bps = m_tx_bps + m_tx_pps * 20.0 * 8.0;
         String queue = getQueue(currentStatsList);
 
-        totalTx.setValue(Util.getFormatted(String.valueOf(m_tx_bps), true, "b/sec"));
-        totalTxL1.setValue(Util.getFormatted(String.valueOf(l1_tx_bps), true, "b/sec"));
-        totalRx.setValue(Util.getFormatted(currentStatsList.get("m_rx_bps"), true, "b/sec"));
-        totalPps.setValue(Util.getFormatted(String.valueOf(m_tx_pps), true, "pkt/sec"));
+        totalTx.setValue(Util.getFormatted(String.valueOf(m_tx_bps), true, "b/s"));
+        totalTxL1.setValue(Util.getFormatted(String.valueOf(l1_tx_bps), true, "b/s"));
+        totalRx.setValue(Util.getFormatted(currentStatsList.get("m_rx_bps"), true, "b/s"));
+        totalPps.setValue(Util.getFormatted(String.valueOf(m_tx_pps), true, "pkt/s"));
         activePort.setValue(portManager.getActivePort());
-        dropRate.setValue(Util.getFormatted(currentStatsList.get("m_rx_drop_bps"), true, "b/sec"));
+        dropRate.setValue(Util.getFormatted(currentStatsList.get("m_rx_drop_bps"), true, "b/s"));
         queueFull.setValue(Util.getFormatted(queue, true, "pkts"));
 
         final int streamsCount = StatsLoader.getInstance().getFlowStatsHistoryMap().keySet().size();

@@ -11,8 +11,8 @@
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.GridPane"
          fx:id="root"
-         minHeight="190.0"
-         maxHeight="190.0"
+         minHeight="130.0"
+         maxHeight="130.0"
          hgap="10"
          vgap="10">
     <columnConstraints>
@@ -23,8 +23,8 @@
         <ColumnConstraints percentWidth="20"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints prefHeight="90"/>
-        <RowConstraints prefHeight="90"/>
+        <RowConstraints prefHeight="60"/>
+        <RowConstraints prefHeight="60"/>
     </rowConstraints>
     <DashboardGlobalStatisticsPanel fx:id="cpu"
                                     threshold="85.0"
