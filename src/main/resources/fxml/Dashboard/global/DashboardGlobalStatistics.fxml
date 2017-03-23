@@ -54,7 +54,7 @@
                                     GridPane.columnIndex="0"
                                     GridPane.rowIndex="1"/>
     <DashboardGlobalStatisticsPanel fx:id="totalRx"
-                                    title="Total Rx"
+                                    title="Total Rx L2"
                                     GridPane.columnIndex="1"
                                     GridPane.rowIndex="1"/>
     <DashboardGlobalStatisticsPanel fx:id="totalStream"

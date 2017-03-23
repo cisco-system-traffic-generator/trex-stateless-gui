@@ -13,7 +13,7 @@ public class DashboardTabChartsRxBytes extends DashboardTabChartsFlow {
     }
 
     protected String getYChartLabel() {
-        return "Rx (B)";
+        return "Rx bytes (B)";
     }
 
     protected Number calcValue(Set<Integer> visiblePorts, StatsFlowStream point) {

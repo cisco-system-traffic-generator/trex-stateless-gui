@@ -39,7 +39,7 @@ public class DashboardTabStreams extends AnchorPane {
         table.add(new StatisticLabelCell("Tx Bps L2", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 2);
         table.add(new StatisticLabelCell("Tx Bps L1", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 3);
         table.add(new StatisticLabelCell("Rx pps", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 4);
-        table.add(new StatisticLabelCell("Rx bps", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 5);
+        table.add(new StatisticLabelCell("Rx Bps L2", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 5);
         table.add(new StatisticLabelCell("Tx pkts", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 6);
         table.add(new StatisticLabelCell("Rx pkts", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 7);
         table.add(new StatisticLabelCell("Tx bytes", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 8);

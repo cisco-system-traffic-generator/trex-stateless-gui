@@ -13,7 +13,7 @@ public class DashboardTabChartsTxPps extends DashboardTabChartsFlow {
     }
 
     protected String getYChartLabel() {
-        return "Tx (pkt/s)";
+        return "Tx pps (pkt/s)";
     }
 
     protected Number calcValue(Set<Integer> visiblePorts, StatsFlowStream point) {

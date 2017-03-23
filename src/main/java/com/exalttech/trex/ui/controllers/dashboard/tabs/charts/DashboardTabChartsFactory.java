@@ -5,16 +5,16 @@ import javafx.beans.property.IntegerProperty;
 
 public class DashboardTabChartsFactory {
     public static class ChartTypes {
-        public static final String TX_PKTS = "Tx (pkt)";
-        public static final String RX_PKTS = "Rx (pkt)";
-        public static final String TX_BYTES = "Tx (B)";
-        public static final String RX_BYTES = "Rx (B)";
-        public static final String TX_PKTS_PER_SECOND = "Tx (pkt/s)";
-        public static final String RX_PKTS_PER_SECOND = "Rx (pkt/s)";
-        public static final String TX_BYTES_PER_SECOND_L1 = "Tx L1 (B/s)";
-        public static final String TX_BYTES_PER_SECOND_L2 = "Tx L2 (B/s)";
-        public static final String RX_BYTES_PER_SECOND = "Rx (B/s)";
-        public static final String MAX_LATENCY = "Max Latency (ms)";
+        public static final String TX_PKTS = "Tx pkts";
+        public static final String RX_PKTS = "Rx pkts";
+        public static final String TX_BYTES = "Tx bytes";
+        public static final String RX_BYTES = "Rx bytes";
+        public static final String TX_PPS = "Tx pps";
+        public static final String RX_PPS = "Rx pps";
+        public static final String TX_BPS_L1 = "Tx Bps L1";
+        public static final String TX_BPS_L2 = "Tx Bps L2";
+        public static final String RX_BPS_L2 = "Rx Bps L2";
+        public static final String MAX_LATENCY = "Max Latency";
         public static final String LATENCY_HISTOGRAM = "Latency Histogram";
     }
 
@@ -28,15 +28,15 @@ public class DashboardTabChartsFactory {
                 return new DashboardTabChartsTxBytes(interval);
             case ChartTypes.RX_BYTES:
                 return new DashboardTabChartsRxBytes(interval);
-            case ChartTypes.TX_PKTS_PER_SECOND:
+            case ChartTypes.TX_PPS:
                 return new DashboardTabChartsTxPps(interval);
-            case ChartTypes.RX_PKTS_PER_SECOND:
+            case ChartTypes.RX_PPS:
                 return new DashboardTabChartsRxPps(interval);
-            case ChartTypes.TX_BYTES_PER_SECOND_L1:
+            case ChartTypes.TX_BPS_L1:
                 return new DashboardTabChartsTxBpsL1(interval);
-            case ChartTypes.TX_BYTES_PER_SECOND_L2:
+            case ChartTypes.TX_BPS_L2:
                 return new DashboardTabChartsTxBpsL2(interval);
-            case ChartTypes.RX_BYTES_PER_SECOND:
+            case ChartTypes.RX_BPS_L2:
                 return new DashboardTabChartsRxBps(interval);
             case ChartTypes.MAX_LATENCY:
                 return new DashboardTabChartsMaxLatency(interval);

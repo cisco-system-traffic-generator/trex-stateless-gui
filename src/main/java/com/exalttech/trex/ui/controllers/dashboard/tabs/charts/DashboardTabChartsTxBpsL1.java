@@ -13,7 +13,7 @@ public class DashboardTabChartsTxBpsL1 extends DashboardTabChartsFlow {
     }
 
     protected String getYChartLabel() {
-        return "Tx (B/s) L1";
+        return "Tx Bps L1 (B/s)";
     }
 
     protected Number calcValue(Set<Integer> visiblePorts, StatsFlowStream point) {
