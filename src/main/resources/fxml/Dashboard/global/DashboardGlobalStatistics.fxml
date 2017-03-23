@@ -4,7 +4,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatisticsGauge?>
 <?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatisticsPanel?>
 
 
@@ -27,7 +26,8 @@
         <RowConstraints prefHeight="90"/>
         <RowConstraints prefHeight="90"/>
     </rowConstraints>
-    <DashboardGlobalStatisticsGauge fx:id="cpuGauge"
+    <DashboardGlobalStatisticsPanel fx:id="cpu"
+                                    threshold="85.0"
                                     title="CPU"
                                     GridPane.columnIndex="0"
                                     GridPane.rowIndex="0"/>
@@ -44,11 +44,12 @@
                                     GridPane.columnIndex="3"
                                     GridPane.rowIndex="0"/>
     <DashboardGlobalStatisticsPanel fx:id="dropRate"
-                                    isColored="true"
+                                    threshold="0.0"
                                     title="Drop Rate"
                                     GridPane.columnIndex="4"
                                     GridPane.rowIndex="0"/>
-    <DashboardGlobalStatisticsGauge fx:id="rxCpuGauge"
+    <DashboardGlobalStatisticsPanel fx:id="rxCpu"
+                                    threshold="85.0"
                                     title="Rx CPU"
                                     GridPane.columnIndex="0"
                                     GridPane.rowIndex="1"/>
@@ -65,7 +66,7 @@
                                     GridPane.columnIndex="3"
                                     GridPane.rowIndex="1"/>
     <DashboardGlobalStatisticsPanel fx:id="queueFull"
-                                    isColored="true"
+                                    threshold="0.0"
                                     title="Queue Full"
                                     GridPane.columnIndex="4"
                                     GridPane.rowIndex="1"/>

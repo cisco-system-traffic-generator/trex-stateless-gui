@@ -6,6 +6,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -24,9 +25,9 @@ public class DashboardGlobalStatistics extends GridPane {
     @FXML
     private GridPane root;
     @FXML
-    private DashboardGlobalStatisticsGauge cpuGauge;
+    private DashboardGlobalStatisticsPanel cpu;
     @FXML
-    private DashboardGlobalStatisticsGauge rxCpuGauge;
+    private DashboardGlobalStatisticsPanel rxCpu;
     @FXML
     private DashboardGlobalStatisticsPanel totalTx;
     @FXML
@@ -63,8 +64,17 @@ public class DashboardGlobalStatistics extends GridPane {
     private void onRefreshSucceeded(WorkerStateEvent event) {
         Map<String, String> currentStatsList = StatsLoader.getInstance().getLoadedStatsList();
 
-        cpuGauge.setData(currentStatsList.get("m_cpu_util"));
-        rxCpuGauge.setData(currentStatsList.get("m_rx_cpu_util"));
+        String cpuData = currentStatsList.get("m_cpu_util");
+        if (Util.isNullOrEmpty(cpuData)) {
+            cpuData = "0";
+        }
+        cpu.setValue(String.format(Locale.US, "%.2f %%", Double.parseDouble(cpuData)));
+
+        String rxCpuData = currentStatsList.get("m_rx_cpu_util");
+        if (Util.isNullOrEmpty(rxCpuData)) {
+            rxCpuData = "0";
+        }
+        rxCpu.setValue(String.format(Locale.US, "%.2f %%", Double.parseDouble(rxCpuData)));
 
         double m_tx_bps = Double.parseDouble(currentStatsList.get("m_tx_bps"));
         double m_tx_pps = Double.parseDouble(currentStatsList.get("m_tx_pps"));
@@ -98,5 +108,9 @@ public class DashboardGlobalStatistics extends GridPane {
             LOG.error("Error calculating queue full value", e);
             return "0";
         }
+    }
+
+    static double round(double value) {
+        return ((int)(value*100))/100.0;
     }
 }

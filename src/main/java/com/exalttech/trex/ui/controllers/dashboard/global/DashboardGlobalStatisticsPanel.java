@@ -16,17 +16,17 @@ public class DashboardGlobalStatisticsPanel extends AnchorPane {
     @FXML
     private Label titleLabel;
 
-    private boolean isColored;
+    private Double threshold;
 
     public DashboardGlobalStatisticsPanel(@NamedArg("title") String title) {
-        this(title, false);
+        this(title, null);
     }
 
-    public DashboardGlobalStatisticsPanel(@NamedArg("title") String title, @NamedArg("isColored") boolean isColored) {
+    public DashboardGlobalStatisticsPanel(@NamedArg("title") String title, @NamedArg("threshold") Double threshold) {
         Initialization.initializeFXML(this, "/fxml/Dashboard/global/DashboardGlobalStatisticsPanel.fxml");
 
-        this.isColored = isColored;
-        if (isColored) {
+        this.threshold = threshold;
+        if (this.threshold != null) {
             valueLabel.getStyleClass().add("statsTableGreenValue");
         }
         titleLabel.setText(title);
@@ -39,7 +39,7 @@ public class DashboardGlobalStatisticsPanel extends AnchorPane {
             String data = splitValue[0];
             valueLabel.setText(data);
             unitLabel.setText(splitValue[1]);
-            if (isColored && Double.parseDouble(data) > 0) {
+            if (threshold != null && Double.parseDouble(data) > threshold) {
                 valueLabel.getStyleClass().add("statsTableRedValue");
             }
         } else {
