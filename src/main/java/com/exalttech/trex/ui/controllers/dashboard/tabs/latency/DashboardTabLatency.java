@@ -1,10 +1,10 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.latency;
 
-import com.exalttech.trex.util.Util;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,6 +17,7 @@ import com.exalttech.trex.ui.views.statistics.cells.StatisticLabelCell;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Initialization;
+import com.exalttech.trex.util.Util;
 
 
 public class DashboardTabLatency extends AnchorPane {
@@ -68,7 +69,7 @@ public class DashboardTabLatency extends AnchorPane {
             table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalTxPkts(visiblePorts)), true, "pkts"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 1);
             table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalRxPkts(visiblePorts)), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 2);
             table.add(new StatisticLabelCell(String.format("%d \u00B5s", latencyStream.getLatency().getTotalMax()), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 3);
-            table.add(new StatisticLabelCell(String.format("%f \u00B5s", round(latencyStream.getLatency().getAverage())), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 4);
+            table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(latencyStream.getLatency().getAverage())), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 4);
             table.add(new StatisticLabelCell(String.format("%d \u00B5s", latencyStream.getLatency().getJitter()), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 5);
             table.add(new StatisticLabelCell(String.valueOf(latencyStream.getErrCntrs().getDropped()), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 6);
             table.add(new StatisticLabelCell(String.valueOf(latencyStream.getErrCntrs().getDup()), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 7);
