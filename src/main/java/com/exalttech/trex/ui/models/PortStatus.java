@@ -784,6 +784,19 @@ public class PortStatus {
             })
             public class PortStatusResultRxInfoGratArp {
 
+                @JsonProperty("interval_sec")
+                private int interval_sec;
+
+                @JsonProperty("interval_sec")
+                public void setInterval_sec(int interval_sec) {
+                    this.interval_sec = interval_sec;
+                }
+
+                @JsonProperty("interval_sec")
+                public int getInterval_sec() {
+                    return interval_sec;
+                }
+
                 @JsonProperty("is_active")
                 private boolean is_active;
 

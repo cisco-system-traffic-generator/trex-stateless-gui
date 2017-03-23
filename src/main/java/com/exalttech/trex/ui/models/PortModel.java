@@ -84,7 +84,14 @@ public class PortModel {
         model.numaMode.set(String.valueOf(port.getNuma()));
         model.pciAddress.setValue(port.getPci_addr());
         model.rxQueueing.setValue(port.getRx_info().getQueue().isIs_active() ? "On" : "Off");
-        model.gratARP.setValue(port.getRx_info().getGrat_arp().isIs_active() ? "On" : "Off");
+        PortStatus.PortStatusResult.PortStatusResultRxInfo.PortStatusResultRxInfoGratArp grat_arp = port.getRx_info().getGrat_arp();
+        if (grat_arp.isIs_active()) {
+            String interval = String.valueOf(grat_arp.getInterval_sec());
+            model.gratARP.setValue( interval + " second(s)");
+        } else {
+            model.gratARP.setValue("Off");
+        }
+        
         model.flowControl.setValue(port.getFlowControl());
         model.serviceModeProperty.setValue(port.service);
 

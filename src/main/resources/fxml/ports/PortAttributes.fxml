@@ -74,7 +74,7 @@
                    GridPane.columnSpan="2"/>
 
             <Label text="RX Queueing:" GridPane.columnIndex="9" GridPane.rowIndex="3"/>
-            <Label fx:id="labelTabMainPortRxQueueing" text="" GridPane.columnIndex="10" GridPane.rowIndex="3"
+            <Label fx:id="rxQueueing" GridPane.columnIndex="10" GridPane.rowIndex="3"
                    GridPane.columnSpan="2"/>
 
             <Label text="Grat ARP:" GridPane.columnIndex="9" GridPane.rowIndex="4"/>

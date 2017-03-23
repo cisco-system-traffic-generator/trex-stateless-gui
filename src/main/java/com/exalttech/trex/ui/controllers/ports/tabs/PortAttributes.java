@@ -74,6 +74,9 @@ public class PortAttributes extends BorderPane {
     private Label gratArp;
 
     @FXML
+    private Label rxQueueing;
+
+    @FXML
     private ChoiceBox<FlowControl> flowControl;
     
     @FXML
@@ -168,9 +171,9 @@ public class PortAttributes extends BorderPane {
         status.textProperty().bind(model.portStatusProperty());
         captureStatus.textProperty().bind(model.capturingModeProperty());
         numaMode.textProperty().bind(model.numaModeProperty());
-        pciAddress.textProperty().bind(model.numaModeProperty());
+        pciAddress.textProperty().bind(model.pciAddressProperty());
         gratArp.textProperty().bind(model.gratARPProperty());
-
+        rxQueueing.textProperty().bind(model.rxQueueingProperty());
         multicast.selectedProperty().set(model.getMulticast());
         promiscuousMode.selectedProperty().set(model.getPromiscuousMode());
         link.selectedProperty().set(model.getLinkStatus());
@@ -210,7 +213,8 @@ public class PortAttributes extends BorderPane {
             captureStatus,
             numaMode,
             pciAddress,
-            gratArp
+            gratArp,
+            rxQueueing
         ).forEach(label -> label.textProperty().unbind());
         
         port = null;
