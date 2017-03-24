@@ -27,6 +27,9 @@ public abstract class DashboardTabChartsLine extends AnchorPane implements Dashb
     protected LineChart getChart() {
         return chart;
     }
+    protected NumberAxis getYAxis() {
+        return yAxis;
+    }
 
     protected abstract String getXChartLabel();
 

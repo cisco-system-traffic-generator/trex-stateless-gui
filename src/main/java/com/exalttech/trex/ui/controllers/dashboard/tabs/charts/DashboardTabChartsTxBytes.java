@@ -12,8 +12,12 @@ public class DashboardTabChartsTxBytes extends DashboardTabChartsFlow {
         super(interval);
     }
 
-    protected String getYChartLabel() {
-        return "Tx bytes (B)";
+    protected String getYChartName() {
+        return "Tx bytes";
+    }
+
+    protected String getYChartUnits() {
+        return "B";
     }
 
     protected Number calcValue(Set<Integer> visiblePorts, StatsFlowStream point) {

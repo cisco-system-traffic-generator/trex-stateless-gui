@@ -12,8 +12,12 @@ public class DashboardTabChartsRxBytes extends DashboardTabChartsFlow {
         super(interval);
     }
 
-    protected String getYChartLabel() {
-        return "Rx bytes (B)";
+    protected String getYChartName() {
+        return "Rx bytes";
+    }
+
+    protected String getYChartUnits() {
+        return "B";
     }
 
     protected Number calcValue(Set<Integer> visiblePorts, StatsFlowStream point) {

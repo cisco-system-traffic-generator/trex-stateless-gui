@@ -12,8 +12,12 @@ public class DashboardTabChartsRxPkts extends DashboardTabChartsFlow {
         super(interval);
     }
 
-    protected String getYChartLabel() {
-        return "Rx pkts (pkt)";
+    protected String getYChartName() {
+        return "Rx pkts";
+    }
+
+    protected String getYChartUnits() {
+        return "pkt";
     }
 
     protected Number calcValue(Set<Integer> visiblePorts, StatsFlowStream point) {
