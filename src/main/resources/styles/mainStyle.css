@@ -587,7 +587,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-background-color: #A2A2A2;
     -fx-border-color: #BFBFBF;
     -fx-border-style: solid;
-    -fx-border-width: 1px; 
+    -fx-border-width: 1px;
     -fx-text-alignment:center;
     -fx-text-fill: #FFFFFF;
 }
@@ -595,6 +595,30 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 .togleButtonDisable{
     -fx-background-color: #F2F2F2;
     -fx-text-fill: #7F7F86;
+}
+
+.toggle-button {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #32b4ea;
+    -fx-border-width: 1px;
+    -fx-text-fill: #000000;
+    -fx-cursor: hand;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #32b4ea;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-insets: 1px;
+}
+
+.custom-toggle-button-left {
+    -fx-background-radius: 20px 0 0 20px;
+    -fx-border-radius: 20px 0 0 20px;
+}
+
+.custom-toggle-button-right {
+    -fx-background-radius: 0 20px 20px 0;
+    -fx-border-radius: 0 20px 20px 0;
 }
 
 /**************************

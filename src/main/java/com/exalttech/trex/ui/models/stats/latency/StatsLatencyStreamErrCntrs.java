@@ -42,4 +42,8 @@ public class StatsLatencyStreamErrCntrs {
     public void setDup(int dup) {
         this.dup = dup;
     }
+
+    public int getTotal() {
+        return outOfOrder + seqTooHigh + dropped + seqTooLow + dup;
+    }
 }

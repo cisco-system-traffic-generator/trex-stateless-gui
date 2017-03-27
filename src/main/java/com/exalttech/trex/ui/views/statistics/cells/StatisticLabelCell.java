@@ -31,7 +31,7 @@ public class StatisticLabelCell extends Label implements StatisticCell {
 
     public StatisticLabelCell(String value, double width, boolean odd, CellType type, boolean isRightPosition) {
         this(width, odd, type, isRightPosition);
-        setText(value);
+        updateItem(null, value);
     }
 
     public StatisticLabelCell(double width, boolean odd, CellType type, boolean isRightPosition) {

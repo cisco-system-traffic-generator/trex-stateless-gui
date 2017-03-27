@@ -2,8 +2,12 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
 
 <fx:root xmlns="http://javafx.com/javafx/8"
@@ -12,11 +16,29 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-    <ScrollPane AnchorPane.leftAnchor="0.0"
-                AnchorPane.rightAnchor="0.0"
-                AnchorPane.topAnchor="0.0"
-                AnchorPane.bottomAnchor="0.0">
-        <GridPane fx:id="table"
-                  styleClass="statsTable"/>
-    </ScrollPane>
+    <VBox fillWidth="true"
+          spacing="10.0"
+          AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0"
+          AnchorPane.topAnchor="0.0"
+          AnchorPane.bottomAnchor="0.0">
+        <HBox alignment="CENTER">
+            <fx:define>
+                <ToggleGroup fx:id="toggleGroupMode"/>
+            </fx:define>
+            <ToggleButton selected="true"
+                          text="Window"
+                          toggleGroup="$toggleGroupMode"
+                          styleClass="custom-toggle-button-left"
+                          prefWidth="120"/>
+            <ToggleButton text="Histogram"
+                          toggleGroup="$toggleGroupMode"
+                          styleClass="custom-toggle-button-right"
+                          prefWidth="120"/>
+        </HBox>
+        <ScrollPane VBox.vgrow="ALWAYS">
+            <GridPane fx:id="table"
+                      styleClass="statsTable"/>
+        </ScrollPane>
+    </VBox>
 </fx:root>
