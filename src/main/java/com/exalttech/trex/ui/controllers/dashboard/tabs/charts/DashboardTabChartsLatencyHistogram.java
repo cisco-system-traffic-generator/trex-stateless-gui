@@ -17,6 +17,8 @@ import com.exalttech.trex.util.Initialization;
 
 
 public class DashboardTabChartsLatencyHistogram extends AnchorPane implements DashboardTabChartsUpdatable {
+    private static final int HISTOGRAM_SIZE = 11;
+
     @FXML
     private BarChart<String, Number> histogram;
     @FXML
@@ -35,6 +37,22 @@ public class DashboardTabChartsLatencyHistogram extends AnchorPane implements Da
         }
 
         Map<String, StatsLatencyStream> latencyStatsByStreams = StatsLoader.getInstance().getLatencyStatsMap();
+
+        final TreeSet<Integer> keys = new TreeSet<>();
+        final AtomicInteger statsIndex = new AtomicInteger(0);
+        latencyStatsByStreams.forEach((final String stream, final StatsLatencyStream statslatencyStream) -> {
+            if (statsIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                return;
+            }
+            statslatencyStream.getLatency().getHistogram().keySet().forEach((final String key) -> {
+                keys.add(Integer.parseInt(key));
+            });
+        });
+        final int histogramSize = Math.min(keys.size(), HISTOGRAM_SIZE);
+        final String[] keysOrder = new String[histogramSize];
+        for (int i = 0; i < histogramSize; ++i) {
+            keysOrder[i] = String.valueOf(keys.pollLast());
+        }
 
         List<XYChart.Series<String, Number>> seriesList = new LinkedList<>();
         Set<String> categories = new HashSet<>();
@@ -60,10 +78,14 @@ public class DashboardTabChartsLatencyHistogram extends AnchorPane implements Da
 
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName(stream);
-            histogram.forEach((String key, Integer value) -> {
+            for (final String key : keysOrder) {
+                Integer value = histogram.get(String.valueOf(key));
+                if (value == null) {
+                    value = 0;
+                }
                 categories.add(key);
                 series.getData().add(new XYChart.Data<>(key, value));
-            });
+            }
             seriesList.add(series);
 
             streamIndex.getAndAdd(1);

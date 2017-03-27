@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStream;
+import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStreamLatency;
 import com.exalttech.trex.ui.views.statistics.cells.CellType;
 import com.exalttech.trex.ui.views.statistics.cells.HeaderCell;
 import com.exalttech.trex.ui.views.statistics.cells.StatisticLabelCell;
@@ -174,10 +175,20 @@ public class DashboardTabLatency extends AnchorPane {
                 return;
             }
 
+            final StatsLatencyStreamLatency latency = latencyStream.getLatency();
+            if (latency == null) {
+                return;
+            }
+
+            final Map<String, Integer> histogram = latency.getHistogram();
+            if (histogram == null || histogram.isEmpty()) {
+                return;
+            }
+
             int col = 0;
             table.add(new HeaderCell(COLUMN_WIDTH, stream), rowIndex.get(), col++);
             for (final String key : keysOrder) {
-                Integer value = latencyStream.getLatency().getHistogram().get(String.valueOf(key));
+                Integer value = histogram.get(String.valueOf(key));
                 if (value == null) {
                     value = 0;
                 }
