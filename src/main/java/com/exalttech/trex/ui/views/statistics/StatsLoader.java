@@ -136,9 +136,22 @@ public class StatsLoader {
      * Start listening on stats changes for updating
      */
     public void start() {
+        reset();
+
         AsyncResponseManager.getInstance().getTrexGlobalProperty().addListener(this::handleGlobalPropertyChanged);
         AsyncResponseManager.getInstance().getTrexLatencyProperty().addListener(this::handleLatencyPropertyChanged);
         AsyncResponseManager.getInstance().getTrexFlowStatsProperty().addListener(this::handleFlowStatsPropertyChanged);
+    }
+
+    private void reset() {
+        loadedStatsList.clear();
+        previousStatsList.clear();
+
+        latencyStatsMap.clear();
+        maxLatencyHistory.clear();
+
+        flowStatsHistoryMap.clear();
+        flowStatsLastTime = 0.0;
     }
 
     private void handleGlobalPropertyChanged(
