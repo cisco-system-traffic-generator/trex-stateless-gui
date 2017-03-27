@@ -1,8 +1,10 @@
 package com.exalttech.trex.ui.controllers.dashboard;
 
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -44,6 +46,8 @@ public class Dashboard extends DialogView implements Initializable {
     private DashboardTabLatency latency;
     @FXML
     private DashboardTabCharts charts;
+    @FXML
+    private Button clearButton;
 
     RefreshingService refreshingService;
 
@@ -53,6 +57,7 @@ public class Dashboard extends DialogView implements Initializable {
         refreshingService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
         refreshingService.setOnSucceeded(this::handleUpdate);
         refreshingService.start();
+
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
     }
 
@@ -81,6 +86,12 @@ public class Dashboard extends DialogView implements Initializable {
                 charts.update(visiblePorts, visibleStreams, streamsCount);
                 break;
         }
+    }
+
+    @FXML
+    public void handleClearCacheButtonClicked(ActionEvent event) {
+        StatsLoader.getInstance().reset();
+        handleUpdate(event);
     }
 
     private void onWindowCloseRequest(WindowEvent window) {

@@ -25,6 +25,26 @@ public class StatsFlowStream {
     }
 
     public StatsFlowStream(
+            double time
+    ) {
+        this.time = time;
+    }
+
+    public StatsFlowStream(
+            Map<Integer, Long> txPkts,
+            Map<Integer, Long> rxPkts,
+            Map<Integer, Long> txBytes,
+            Map<Integer, Long> rxBytes,
+            double time
+    ) {
+        this.txPkts = txPkts;
+        this.rxPkts = rxPkts;
+        this.txBytes = txBytes;
+        this.rxBytes = rxBytes;
+        this.time = time;
+    }
+
+    public StatsFlowStream(
             StatsFlowStream prev,
             Map<Integer, Long> txPkts,
             Map<Integer, Long> rxPkts,
@@ -142,6 +162,33 @@ public class StatsFlowStream {
 
     public double calcTotalRxBps(Set<Integer> visiblePorts) {
         return calcTotalDouble(rxBps, visiblePorts);
+    }
+
+    public StatsFlowStream getZeroCopy() {
+        final StatsFlowStream copy = new StatsFlowStream();
+        copy.txPkts = new HashMap<>(txPkts);
+        copy.txPkts.keySet().forEach((Integer key) -> {
+            copy.txPkts.put(key, 0L);
+        });
+        copy.rxPkts = new HashMap<>(rxPkts);
+        copy.rxPkts.keySet().forEach((Integer key) -> {
+            copy.rxPkts.put(key, 0L);
+        });
+        copy.txBytes = new HashMap<>(txBytes);
+        copy.txBytes.keySet().forEach((Integer key) -> {
+            copy.txBytes.put(key, 0L);
+        });
+        copy.rxBytes = new HashMap<>(rxBytes);
+        copy.rxBytes.keySet().forEach((Integer key) -> {
+            copy.rxBytes.put(key, 0L);
+        });
+        copy.txPps = txPps;
+        copy.rxPps = rxPps;
+        copy.txBpsL1 = txBpsL1;
+        copy.txBpsL2 = txBpsL2;
+        copy.rxBps = rxBps;
+        copy.time = time;
+        return copy;
     }
 
     private static double calcPerSecond(Long prevValue, long currValue, double timeDelta) {

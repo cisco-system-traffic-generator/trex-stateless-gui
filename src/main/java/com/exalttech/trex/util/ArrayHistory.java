@@ -52,4 +52,9 @@ public class ArrayHistory<T> {
     public T last() {
         return !isEmpty() ? get(size() - 1) : null;
     }
+
+    public void clear() {
+        currentLast = 0;
+        capacity = 0;
+    }
 }

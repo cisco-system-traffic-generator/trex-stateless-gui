@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -63,6 +64,13 @@
                     <DashboardTabCharts fx:id="charts"/>
                 </Tab>
             </TabPane>
+            <Button fx:id="clearButton"
+                    mnemonicParsing="false"
+                    styleClass="normalButton"
+                    text="Clear"
+                    onAction="#handleClearCacheButtonClicked"
+                    AnchorPane.topAnchor="6.0"
+                    AnchorPane.rightAnchor="0.0"/>
         </AnchorPane>
     </center>
 </BorderPane>

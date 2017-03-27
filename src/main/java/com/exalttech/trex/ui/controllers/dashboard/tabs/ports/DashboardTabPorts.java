@@ -23,7 +23,6 @@ public class DashboardTabPorts extends AnchorPane {
     StatsTableGenerator statsTableGenerator;
     PortsManager portManager;
     Map<String, String> currentStatsList = new HashMap<>();
-    Map<String, String> cachedStatsList = new HashMap<>();
     private Set<Integer> lastVisiblePorts;
 
     public DashboardTabPorts() {
@@ -68,7 +67,7 @@ public class DashboardTabPorts extends AnchorPane {
         }
         statTableContainer.setContent(
                 statsTableGenerator.getPortStatTable(
-                        cachedStatsList,
+                        StatsLoader.getInstance().getShadowStatsList(),
                         portManager.getPortList().size(),
                         true,
                         colWidth,
