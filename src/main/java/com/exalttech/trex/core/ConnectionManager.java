@@ -178,7 +178,11 @@ public class ConnectionManager {
         this.isReadOnly = isReadOnly;
 
         trexClient = new TRexClient("tcp", ip, rpcPort, clientName);
-        trexClient.connect();
+        try {
+            trexClient.connect();
+        } catch (Exception ex) {
+            return false;
+        }
         
         // connect to zmq
         return connectToZMQ();
