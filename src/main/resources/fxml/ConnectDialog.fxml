@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -12,6 +13,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
@@ -26,14 +28,17 @@
             prefHeight="195.0"
             maxHeight="600.0"
             styleClass="connectDialogWrapper">
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
     <AnchorPane prefWidth="371.0"
                 minHeight="-1.0"
                 prefHeight="-1.0"
                 styleClass="connectContent"
-                AnchorPane.topAnchor="15.0"
-                AnchorPane.rightAnchor="15.0"
-                AnchorPane.bottomAnchor="58.0"
-                AnchorPane.leftAnchor="15.0">
+                AnchorPane.topAnchor="0.0"
+                AnchorPane.rightAnchor="0.0"
+                AnchorPane.bottomAnchor="43.0"
+                AnchorPane.leftAnchor="0.0">
         <Label text="Connections"
                AnchorPane.topAnchor="15.0"
                AnchorPane.leftAnchor="30.0"/>
@@ -150,22 +155,23 @@
             </tooltip>
         </Label>
     </AnchorPane>
-    <Button fx:id="connectButton"
-            prefWidth="90.0"
-            prefHeight="22.0"
-            mnemonicParsing="false"
-            styleClass="normalButton"
-            text="Connect"
-            onAction="#handleConnectButton"
-            AnchorPane.bottomAnchor="14.0"
-            AnchorPane.leftAnchor="240.0"/>
-    <Button fx:id="dialogCancelButton"
-            prefWidth="90.0"
-            prefHeight="22.0"
-            mnemonicParsing="false"
-            styleClass="cancelButton"
-            text="Cancel"
-            onMouseClicked="#handleCloseDialog"
-            AnchorPane.bottomAnchor="14.0"
-            AnchorPane.leftAnchor="345.0"/>
+    <HBox alignment="CENTER_RIGHT"
+          spacing="10.0"
+          AnchorPane.rightAnchor="0.0"
+          AnchorPane.bottomAnchor="0.0">
+        <Button fx:id="connectButton"
+                prefWidth="90.0"
+                prefHeight="22.0"
+                mnemonicParsing="false"
+                styleClass="normalButton"
+                text="Connect"
+                onAction="#handleConnectButton"/>
+        <Button fx:id="dialogCancelButton"
+                prefWidth="90.0"
+                prefHeight="22.0"
+                mnemonicParsing="false"
+                styleClass="cancelButton"
+                text="Cancel"
+                onMouseClicked="#handleCloseDialog"/>
+    </HBox>
 </AnchorPane>
