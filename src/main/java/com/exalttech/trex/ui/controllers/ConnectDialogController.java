@@ -15,30 +15,42 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.core.ConnectionManager;
-import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.models.datastore.Connection;
-import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
-import com.exalttech.trex.ui.views.logs.LogType;
-import com.exalttech.trex.ui.views.logs.LogsController;
-import com.exalttech.trex.util.Util;
-import com.exalttech.trex.util.files.XMLFileManager;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import com.exalttech.trex.core.ConnectionManager;
+import com.exalttech.trex.ui.dialog.DialogView;
+import com.exalttech.trex.ui.models.datastore.Connection;
+import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
+import com.exalttech.trex.ui.views.logs.LogType;
+import com.exalttech.trex.ui.views.logs.LogsController;
+import com.exalttech.trex.util.files.XMLFileManager;
+import com.exalttech.trex.util.Util;
 
 /**
  * FXML Controller class for connect dialog
