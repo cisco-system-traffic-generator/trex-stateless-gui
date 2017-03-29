@@ -64,6 +64,7 @@ public class StatsLoader {
 
     private Map<String, StatsLatencyStream> latencyStatsMap = new HashMap<>();
     private Map<String, ArrayHistory<Integer>> latencyWindowHistory = new HashMap<>();
+    private Map<String, ArrayHistory<Integer>> maxLatencyHistory = new HashMap<>();
 
     private Map<String, ArrayHistory<StatsFlowStream>> flowStatsHistoryMap = new HashMap<>();
     private Map<String, StatsFlowStream> shadowFlowStatsMap = new HashMap<>();
@@ -121,6 +122,15 @@ public class StatsLoader {
     }
 
     /**
+     * Return max latency history map
+     *
+     * @return
+     */
+    public Map<String, ArrayHistory<Integer>> getMaxLatencyHistory() {
+        return maxLatencyHistory;
+    }
+
+    /**
      * Return flow stats history map
      *
      * @return
@@ -162,6 +172,7 @@ public class StatsLoader {
         shadowStatsList = loadedStatsList;
 
         latencyWindowHistory.clear();
+        maxLatencyHistory.clear();
 
         flowStatsHistoryMap.forEach((String stream, ArrayHistory<StatsFlowStream> statsFlowStreamHistory) -> {
             final StatsFlowStream last = statsFlowStreamHistory.last();
@@ -257,13 +268,19 @@ public class StatsLoader {
 
                 latencyStatsMap.put(stream, latencyStream);
 
-                ArrayHistory<Integer> history = latencyWindowHistory.get(stream);
-                if (history == null) {
-                    history = new ArrayHistory<>(latencyHistorySize);
-                    latencyWindowHistory.put(stream, history);
+                ArrayHistory<Integer> windowHistory = latencyWindowHistory.get(stream);
+                if (windowHistory == null) {
+                    windowHistory = new ArrayHistory<>(latencyHistorySize);
+                    latencyWindowHistory.put(stream, windowHistory);
                 }
+                windowHistory.add(latencyStream.getLatency().getLastMax());
 
-                history.add(latencyStream.getLatency().getLastMax());
+                ArrayHistory<Integer> maxHistory = maxLatencyHistory.get(stream);
+                if (maxHistory == null) {
+                    maxHistory = new ArrayHistory<>(latencyHistorySize);
+                    maxLatencyHistory.put(stream, maxHistory);
+                }
+                maxHistory.add(latencyStream.getLatency().getTotalMax());
             });
 
             unvisitedStreams.forEach((String stream) -> {

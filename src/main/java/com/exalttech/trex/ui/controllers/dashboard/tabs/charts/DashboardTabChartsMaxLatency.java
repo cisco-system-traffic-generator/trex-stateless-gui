@@ -1,5 +1,7 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.charts;
 
+import com.exalttech.trex.ui.views.statistics.StatsLoader;
+import com.exalttech.trex.util.ArrayHistory;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.chart.XYChart;
 
@@ -9,20 +11,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.exalttech.trex.ui.views.statistics.StatsLoader;
-import com.exalttech.trex.util.ArrayHistory;
 
-
-public class DashboardTabChartsLatencyWindow extends DashboardTabChartsLatencyLine {
-    public DashboardTabChartsLatencyWindow(IntegerProperty interval) {
+public class DashboardTabChartsMaxLatency extends DashboardTabChartsLatencyLine {
+    public DashboardTabChartsMaxLatency(IntegerProperty interval) {
         super(interval);
     }
 
     protected String getYChartLabel() {
-        return "Latency Window (\u00B5s)";
+        return "Max Latency (\u00B5s)";
     }
 
     protected Map<String, ArrayHistory<Integer>> getHistory() {
-        return StatsLoader.getInstance().getLatencyWindowHistory();
+        return StatsLoader.getInstance().getMaxLatencyHistory();
     }
 }
