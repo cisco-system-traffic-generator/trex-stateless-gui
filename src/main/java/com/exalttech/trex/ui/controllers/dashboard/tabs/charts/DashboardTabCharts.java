@@ -18,10 +18,10 @@ import com.exalttech.trex.util.Initialization;
 
 public class DashboardTabCharts extends BorderPane {
     private static String[] defaultChartTypes = new String[]{
-            DashboardTabChartsFactory.ChartTypes.TX_PKTS,
-            DashboardTabChartsFactory.ChartTypes.RX_PKTS,
-            DashboardTabChartsFactory.ChartTypes.TX_BYTES,
-            DashboardTabChartsFactory.ChartTypes.RX_BYTES
+            DashboardTabChartsFactory.ChartTypes.TX_PPS,
+            DashboardTabChartsFactory.ChartTypes.RX_PPS,
+            DashboardTabChartsFactory.ChartTypes.TX_BPS_L2,
+            DashboardTabChartsFactory.ChartTypes.RX_BPS_L2
     };
 
     @FXML

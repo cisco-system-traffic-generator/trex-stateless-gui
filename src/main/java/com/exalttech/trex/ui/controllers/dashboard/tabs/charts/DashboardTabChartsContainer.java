@@ -46,11 +46,6 @@ public class DashboardTabChartsContainer extends AnchorPane {
 
         contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.TX_PKTS),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.RX_PKTS),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.TX_BYTES),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.RX_BYTES),
-                new SeparatorMenuItem(),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.TX_PPS),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.RX_PPS),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.TX_BPS_L1),
