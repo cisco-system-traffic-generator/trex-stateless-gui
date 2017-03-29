@@ -44,7 +44,7 @@ public class StatsLoader {
 
     private static StatsLoader instance;
     private static final int historySize = 1000;
-    private static final int maxLatencyHistorySize = 301;
+    private static final int latencyHistorySize = 301;
 
     /**
      * Create and return instance
@@ -63,7 +63,7 @@ public class StatsLoader {
     private Map<String, String> shadowStatsList = null;
 
     private Map<String, StatsLatencyStream> latencyStatsMap = new HashMap<>();
-    private Map<String, ArrayHistory<Integer>> maxLatencyHistory = new HashMap<>();
+    private Map<String, ArrayHistory<Integer>> latencyWindowHistory = new HashMap<>();
 
     private Map<String, ArrayHistory<StatsFlowStream>> flowStatsHistoryMap = new HashMap<>();
     private Map<String, StatsFlowStream> shadowFlowStatsMap = new HashMap<>();
@@ -112,12 +112,12 @@ public class StatsLoader {
     }
 
     /**
-     * Return max latency history map
+     * Return latency window history map
      *
      * @return
      */
-    public Map<String, ArrayHistory<Integer>> getMaxLatencyHistory() {
-        return maxLatencyHistory;
+    public Map<String, ArrayHistory<Integer>> getLatencyWindowHistory() {
+        return latencyWindowHistory;
     }
 
     /**
@@ -147,7 +147,7 @@ public class StatsLoader {
         shadowStatsList = null;
 
         latencyStatsMap.clear();
-        maxLatencyHistory.clear();
+        latencyWindowHistory.clear();
 
         flowStatsHistoryMap.clear();
         shadowFlowStatsMap.clear();
@@ -161,7 +161,7 @@ public class StatsLoader {
     public void reset() {
         shadowStatsList = loadedStatsList;
 
-        maxLatencyHistory.clear();
+        latencyWindowHistory.clear();
 
         flowStatsHistoryMap.forEach((String stream, ArrayHistory<StatsFlowStream> statsFlowStreamHistory) -> {
             final StatsFlowStream last = statsFlowStreamHistory.last();
@@ -246,7 +246,7 @@ public class StatsLoader {
             final JSONObject latencyStatsJSON = new JSONObject(newValue);
             final JSONObject dataJSON = latencyStatsJSON.getJSONObject("data");
 
-            final Set<String> unvisitedStreams = new HashSet<>(maxLatencyHistory.keySet());
+            final Set<String> unvisitedStreams = new HashSet<>(latencyWindowHistory.keySet());
             dataJSON.keySet().forEach((String stream) -> {
                 unvisitedStreams.remove(stream);
 
@@ -257,17 +257,17 @@ public class StatsLoader {
 
                 latencyStatsMap.put(stream, latencyStream);
 
-                ArrayHistory<Integer> history = maxLatencyHistory.get(stream);
+                ArrayHistory<Integer> history = latencyWindowHistory.get(stream);
                 if (history == null) {
-                    history = new ArrayHistory<>(maxLatencyHistorySize);
-                    maxLatencyHistory.put(stream, history);
+                    history = new ArrayHistory<>(latencyHistorySize);
+                    latencyWindowHistory.put(stream, history);
                 }
 
                 history.add(latencyStream.getLatency().getLastMax());
             });
 
             unvisitedStreams.forEach((String stream) -> {
-                maxLatencyHistory.remove(stream);
+                latencyWindowHistory.remove(stream);
             });
         } catch (JSONException exc) {
             // TODO: logging

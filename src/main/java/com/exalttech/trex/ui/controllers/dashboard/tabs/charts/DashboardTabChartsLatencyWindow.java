@@ -13,8 +13,8 @@ import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.ArrayHistory;
 
 
-public class DashboardTabChartsMaxLatency extends DashboardTabChartsLine {
-    public DashboardTabChartsMaxLatency(IntegerProperty interval) {
+public class DashboardTabChartsLatencyWindow extends DashboardTabChartsLine {
+    public DashboardTabChartsLatencyWindow(IntegerProperty interval) {
         super(interval);
     }
 
@@ -26,7 +26,7 @@ public class DashboardTabChartsMaxLatency extends DashboardTabChartsLine {
         }
 
         StatsLoader statsLoader = StatsLoader.getInstance();
-        Map<String, ArrayHistory<Integer>> streams = statsLoader.getMaxLatencyHistory();
+        Map<String, ArrayHistory<Integer>> streams = statsLoader.getLatencyWindowHistory();
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
         AtomicInteger streamIndex = new AtomicInteger(0);
         streams.forEach((String stream, ArrayHistory<Integer> history) -> {
@@ -54,6 +54,6 @@ public class DashboardTabChartsMaxLatency extends DashboardTabChartsLine {
     }
 
     protected String getYChartLabel() {
-        return "Max Latency (\u00B5s)";
+        return "Latency Window (\u00B5s)";
     }
 }

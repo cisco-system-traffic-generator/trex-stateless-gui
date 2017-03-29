@@ -10,7 +10,7 @@ public class DashboardTabChartsFactory {
         public static final String TX_BPS_L1 = "Tx bps L1";
         public static final String TX_BPS_L2 = "Tx bps L2";
         public static final String RX_BPS_L2 = "Rx bps L2";
-        public static final String MAX_LATENCY = "Max Latency";
+        public static final String LATENCY_WINDOW = "Latency Window";
         public static final String LATENCY_HISTOGRAM = "Latency Histogram";
     }
 
@@ -26,8 +26,8 @@ public class DashboardTabChartsFactory {
                 return new DashboardTabChartsTxBpsL2(interval);
             case ChartTypes.RX_BPS_L2:
                 return new DashboardTabChartsRxBps(interval);
-            case ChartTypes.MAX_LATENCY:
-                return new DashboardTabChartsMaxLatency(interval);
+            case ChartTypes.LATENCY_WINDOW:
+                return new DashboardTabChartsLatencyWindow(interval);
             case ChartTypes.LATENCY_HISTOGRAM:
                 return new DashboardTabChartsLatencyHistogram();
         }
