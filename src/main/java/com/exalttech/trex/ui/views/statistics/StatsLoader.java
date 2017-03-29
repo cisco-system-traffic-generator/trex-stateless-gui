@@ -66,6 +66,7 @@ public class StatsLoader {
     private Map<String, ArrayHistory<Number>> latencyWindowHistory = new HashMap<>();
     private Map<String, ArrayHistory<Number>> maxLatencyHistory = new HashMap<>();
     private Map<String, ArrayHistory<Number>> avgLatencyHistory = new HashMap<>();
+    private Map<String, ArrayHistory<Number>> jitterLatencyHistory = new HashMap<>();
 
     private Map<String, ArrayHistory<StatsFlowStream>> flowStatsHistoryMap = new HashMap<>();
     private Map<String, StatsFlowStream> shadowFlowStatsMap = new HashMap<>();
@@ -132,7 +133,16 @@ public class StatsLoader {
     }
 
     /**
-     * Return max latency history map
+     * Return jitter history map
+     *
+     * @return
+     */
+    public Map<String, ArrayHistory<Number>> getJitterLatencyHistory() {
+        return jitterLatencyHistory;
+    }
+
+    /**
+     * Return avg latency history map
      *
      * @return
      */
@@ -168,6 +178,9 @@ public class StatsLoader {
 
         latencyStatsMap.clear();
         latencyWindowHistory.clear();
+        maxLatencyHistory.clear();
+        avgLatencyHistory.clear();
+        jitterLatencyHistory.clear();
 
         flowStatsHistoryMap.clear();
         shadowFlowStatsMap.clear();
@@ -184,6 +197,7 @@ public class StatsLoader {
         latencyWindowHistory.clear();
         maxLatencyHistory.clear();
         avgLatencyHistory.clear();
+        jitterLatencyHistory.clear();
 
         flowStatsHistoryMap.forEach((String stream, ArrayHistory<StatsFlowStream> statsFlowStreamHistory) -> {
             final StatsFlowStream last = statsFlowStreamHistory.last();
@@ -299,6 +313,13 @@ public class StatsLoader {
                     avgLatencyHistory.put(stream, avgHistory);
                 }
                 avgHistory.add(latencyStream.getLatency().getAverage());
+
+                ArrayHistory<Number> jitterHistory = jitterLatencyHistory.get(stream);
+                if (jitterHistory == null) {
+                    jitterHistory = new ArrayHistory<>(latencyHistorySize);
+                    jitterLatencyHistory.put(stream, jitterHistory);
+                }
+                jitterHistory.add(latencyStream.getLatency().getJitter());
             });
 
             unvisitedStreams.forEach((String stream) -> {

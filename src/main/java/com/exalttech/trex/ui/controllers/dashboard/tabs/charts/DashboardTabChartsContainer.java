@@ -54,6 +54,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
                 new SeparatorMenuItem(),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.MAX_LATENCY),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.AVG_LATENCY),
+                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.JITTER_LATENCY),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.LATENCY_WINDOW),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.LATENCY_HISTOGRAM)
         );
