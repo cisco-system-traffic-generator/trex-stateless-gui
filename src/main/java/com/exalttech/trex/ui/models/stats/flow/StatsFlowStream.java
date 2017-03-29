@@ -69,7 +69,7 @@ public class StatsFlowStream {
         });
 
         txBytes.keySet().forEach((Integer port) -> {
-            final double bpsL2 = calcPerSecond(prev.getTxBytes().get(port), this.txBytes.get(port), timeDelta);
+            final double bpsL2 = calcPerSecond(prev.getTxBytes().get(port), this.txBytes.get(port), timeDelta) * 8;
             txBpsL2.put(port, bpsL2);
             if (bpsL2 == 0.0) {
                 txBpsL1.put(port, 0.0);
@@ -80,11 +80,11 @@ public class StatsFlowStream {
                 txBpsL1.put(port, 0.0);
                 return;
             }
-            txBpsL1.put(port, bpsL2*(1 + (20/(bpsL2/pps))));
+            txBpsL1.put(port, bpsL2 + 20 * pps * 8);
         });
 
         rxBytes.keySet().forEach((Integer port) -> {
-            this.rxBps.put(port, calcPerSecond(prev.getRxBytes().get(port), this.rxBytes.get(port), timeDelta));
+            this.rxBps.put(port, calcPerSecond(prev.getRxBytes().get(port), this.rxBytes.get(port), timeDelta) * 8);
         });
     }
 

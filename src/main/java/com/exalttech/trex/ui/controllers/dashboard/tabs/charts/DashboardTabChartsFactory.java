@@ -7,9 +7,9 @@ public class DashboardTabChartsFactory {
     public static class ChartTypes {
         public static final String TX_PPS = "Tx pps";
         public static final String RX_PPS = "Rx pps";
-        public static final String TX_BPS_L1 = "Tx Bps L1";
-        public static final String TX_BPS_L2 = "Tx Bps L2";
-        public static final String RX_BPS_L2 = "Rx Bps L2";
+        public static final String TX_BPS_L1 = "Tx bps L1";
+        public static final String TX_BPS_L2 = "Tx bps L2";
+        public static final String RX_BPS_L2 = "Rx bps L2";
         public static final String MAX_LATENCY = "Max Latency";
         public static final String LATENCY_HISTOGRAM = "Latency Histogram";
     }
