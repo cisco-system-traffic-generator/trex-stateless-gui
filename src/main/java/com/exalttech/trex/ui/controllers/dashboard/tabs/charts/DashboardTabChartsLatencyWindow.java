@@ -22,7 +22,7 @@ public class DashboardTabChartsLatencyWindow extends DashboardTabChartsLatencyLi
         return "Latency Window (\u00B5s)";
     }
 
-    protected Map<String, ArrayHistory<Integer>> getHistory() {
+    protected Map<String, ArrayHistory<Number>> getHistory() {
         return StatsLoader.getInstance().getLatencyWindowHistory();
     }
 }

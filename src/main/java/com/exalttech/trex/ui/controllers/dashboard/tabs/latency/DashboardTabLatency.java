@@ -83,7 +83,7 @@ public class DashboardTabLatency extends AnchorPane {
         table.add(new StatisticLabelCell("Errors", FIRST_COLUMN_WIDTH, hCol%2 == 0, CellType.DEFAULT_CELL, false), 0, hCol);
 
         final Map<String, StatsLatencyStream> latencyStatsByStreams = StatsLoader.getInstance().getLatencyStatsMap();
-        final Map<String, ArrayHistory<Integer>> maxLatencyByStreams = StatsLoader.getInstance().getLatencyWindowHistory();
+        final Map<String, ArrayHistory<Number>> maxLatencyByStreams = StatsLoader.getInstance().getLatencyWindowHistory();
         final Map<String, ArrayHistory<StatsFlowStream>> flowStatsMap = StatsLoader.getInstance().getFlowStatsHistoryMap();
 
         final AtomicInteger rowIndex = new AtomicInteger(1);
@@ -102,11 +102,11 @@ public class DashboardTabLatency extends AnchorPane {
                 return;
             }
 
-            int[] window = new int[WINDOW_SIZE];
+            Number[] window = new Number[WINDOW_SIZE];
             for (int i = 0; i < WINDOW_SIZE; ++i) {
                 window[i] = 0;
             }
-            final ArrayHistory<Integer> maxLatencyHistory = maxLatencyByStreams.get(stream);
+            final ArrayHistory<Number> maxLatencyHistory = maxLatencyByStreams.get(stream);
             if (maxLatencyHistory != null) {
                 final int historySize = maxLatencyHistory.size();
                 final int size = Math.min(historySize, WINDOW_SIZE);

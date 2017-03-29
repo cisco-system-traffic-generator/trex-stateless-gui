@@ -21,7 +21,7 @@ public class DashboardTabChartsMaxLatency extends DashboardTabChartsLatencyLine 
         return "Max Latency (\u00B5s)";
     }
 
-    protected Map<String, ArrayHistory<Integer>> getHistory() {
+    protected Map<String, ArrayHistory<Number>> getHistory() {
         return StatsLoader.getInstance().getMaxLatencyHistory();
     }
 }

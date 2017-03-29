@@ -63,8 +63,9 @@ public class StatsLoader {
     private Map<String, String> shadowStatsList = null;
 
     private Map<String, StatsLatencyStream> latencyStatsMap = new HashMap<>();
-    private Map<String, ArrayHistory<Integer>> latencyWindowHistory = new HashMap<>();
-    private Map<String, ArrayHistory<Integer>> maxLatencyHistory = new HashMap<>();
+    private Map<String, ArrayHistory<Number>> latencyWindowHistory = new HashMap<>();
+    private Map<String, ArrayHistory<Number>> maxLatencyHistory = new HashMap<>();
+    private Map<String, ArrayHistory<Number>> avgLatencyHistory = new HashMap<>();
 
     private Map<String, ArrayHistory<StatsFlowStream>> flowStatsHistoryMap = new HashMap<>();
     private Map<String, StatsFlowStream> shadowFlowStatsMap = new HashMap<>();
@@ -117,7 +118,7 @@ public class StatsLoader {
      *
      * @return
      */
-    public Map<String, ArrayHistory<Integer>> getLatencyWindowHistory() {
+    public Map<String, ArrayHistory<Number>> getLatencyWindowHistory() {
         return latencyWindowHistory;
     }
 
@@ -126,7 +127,16 @@ public class StatsLoader {
      *
      * @return
      */
-    public Map<String, ArrayHistory<Integer>> getMaxLatencyHistory() {
+    public Map<String, ArrayHistory<Number>> getAvgLatencyHistory() {
+        return avgLatencyHistory;
+    }
+
+    /**
+     * Return max latency history map
+     *
+     * @return
+     */
+    public Map<String, ArrayHistory<Number>> getMaxLatencyHistory() {
         return maxLatencyHistory;
     }
 
@@ -173,6 +183,7 @@ public class StatsLoader {
 
         latencyWindowHistory.clear();
         maxLatencyHistory.clear();
+        avgLatencyHistory.clear();
 
         flowStatsHistoryMap.forEach((String stream, ArrayHistory<StatsFlowStream> statsFlowStreamHistory) -> {
             final StatsFlowStream last = statsFlowStreamHistory.last();
@@ -268,19 +279,26 @@ public class StatsLoader {
 
                 latencyStatsMap.put(stream, latencyStream);
 
-                ArrayHistory<Integer> windowHistory = latencyWindowHistory.get(stream);
+                ArrayHistory<Number> windowHistory = latencyWindowHistory.get(stream);
                 if (windowHistory == null) {
                     windowHistory = new ArrayHistory<>(latencyHistorySize);
                     latencyWindowHistory.put(stream, windowHistory);
                 }
                 windowHistory.add(latencyStream.getLatency().getLastMax());
 
-                ArrayHistory<Integer> maxHistory = maxLatencyHistory.get(stream);
+                ArrayHistory<Number> maxHistory = maxLatencyHistory.get(stream);
                 if (maxHistory == null) {
                     maxHistory = new ArrayHistory<>(latencyHistorySize);
                     maxLatencyHistory.put(stream, maxHistory);
                 }
                 maxHistory.add(latencyStream.getLatency().getTotalMax());
+
+                ArrayHistory<Number> avgHistory = avgLatencyHistory.get(stream);
+                if (avgHistory == null) {
+                    avgHistory = new ArrayHistory<>(latencyHistorySize);
+                    avgLatencyHistory.put(stream, avgHistory);
+                }
+                avgHistory.add(latencyStream.getLatency().getAverage());
             });
 
             unvisitedStreams.forEach((String stream) -> {

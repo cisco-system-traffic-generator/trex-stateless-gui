@@ -24,10 +24,10 @@ public abstract class DashboardTabChartsLatencyLine extends DashboardTabChartsLi
             return;
         }
 
-        Map<String, ArrayHistory<Integer>> streams = getHistory();
+        Map<String, ArrayHistory<Number>> streams = getHistory();
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
         AtomicInteger streamIndex = new AtomicInteger(0);
-        streams.forEach((String stream, ArrayHistory<Integer> history) -> {
+        streams.forEach((String stream, ArrayHistory<Number> history) -> {
             if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
                 return;
             }
@@ -51,5 +51,5 @@ public abstract class DashboardTabChartsLatencyLine extends DashboardTabChartsLi
         return "";
     }
 
-    protected abstract Map<String, ArrayHistory<Integer>> getHistory();
+    protected abstract Map<String, ArrayHistory<Number>> getHistory();
 }

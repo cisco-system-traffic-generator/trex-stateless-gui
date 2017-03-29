@@ -53,6 +53,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.RX_BPS_L2),
                 new SeparatorMenuItem(),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.MAX_LATENCY),
+                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.AVG_LATENCY),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.LATENCY_WINDOW),
                 createContextMenuItem(DashboardTabChartsFactory.ChartTypes.LATENCY_HISTOGRAM)
         );
