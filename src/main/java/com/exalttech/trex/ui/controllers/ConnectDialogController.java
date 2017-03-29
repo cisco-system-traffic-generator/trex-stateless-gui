@@ -15,23 +15,27 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import javafx.stage.WindowEvent;
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
@@ -42,13 +46,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
-import com.exalttech.trex.ui.views.logs.LogType;
-import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.util.files.XMLFileManager;
 import com.exalttech.trex.util.Util;
 
@@ -58,34 +61,72 @@ import com.exalttech.trex.util.Util;
  * @author Georgekh
  */
 public class ConnectDialogController extends DialogView implements Initializable, ChangeListener<String> {
+    private static class ValidateConnectionTask extends Task<Void> {
+        private final String ip;
+        private final String rpcPort;
+        private final String asyncPort;
+        private final String scapyPort;
+        private final String name;
+        private final boolean isReadOnly;
+        private final Consumer<String> callback;
+
+        ValidateConnectionTask(
+                final String ip,
+                final String rpcPort,
+                final String asyncPort,
+                final String scapyPort,
+                final String name,
+                final boolean isReadOnly,
+                final Consumer<String> callback
+        ) {
+            this.ip = ip;
+            this.rpcPort = rpcPort;
+            this.asyncPort = asyncPort;
+            this.scapyPort = scapyPort;
+            this.name = name;
+            this.isReadOnly = isReadOnly;
+            this.callback = callback;
+        }
+
+        public Void call() {
+            final ConnectionManager connectionManager = ConnectionManager.getInstance();
+            String error = null;
+            if (!connectionManager.initializeConnection(ip, rpcPort, asyncPort, scapyPort, name, isReadOnly)) {
+                error = "TRex Hostname or IP address are not valid";
+            } else if (!connectionManager.testConnection(false) || !connectionManager.testConnection(true)) {
+                error = "Failed to connect to TRex - make sure the server is up";
+            }
+            acceptCallback(error);
+            return null;
+        }
+
+        private void acceptCallback(final String error) {
+            Platform.runLater(() -> callback.accept(error));
+        }
+    }
 
     private static final Logger LOG = Logger.getLogger(ConnectDialogController.class.getName());
 
     @FXML
-    Label closeDialog;
+    private TextField rpcPortTextField;
     @FXML
-    Button dialogCancelButton;
+    private TextField asyncPortTextField;
     @FXML
-    Button connectButton;
+    private TextField scapyPortTextField;
     @FXML
-    TextField rpcPort;
+    private TextField nameTextField;
     @FXML
-    TextField asyncPort;
+    private ComboBox connectionsCB;
     @FXML
-    TextField scapyPort;
+    private TitledPane advanceTitledPan;
     @FXML
-    TextField nameTF;
+    private AnchorPane mainViewContainer;
     @FXML
-    ComboBox connectionsCB;
-    @FXML
-    TitledPane advanceTitledPan;
-    @FXML
-    AnchorPane mainViewContainer;
-    @FXML
-    RadioButton fullControlRB;
+    private RadioButton fullControlRB;
 
-    Map<String, Connection> connectionMap = new HashMap<>();
+    private Map<String, Connection> connectionMap = new HashMap<>();
     private Connection selectedConnection;
+    private BooleanProperty isConnectionInProgress;
 
     /**
      * Initializes the controller class.
@@ -96,6 +137,26 @@ public class ConnectDialogController extends DialogView implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initializeConnections();
+
+        isConnectionInProgress = new SimpleBooleanProperty(false);
+        isConnectionInProgress.addListener(
+                (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                    if (newValue != null) {
+                        mainViewContainer.setDisable(newValue);
+                        mainViewContainer.getScene().setCursor(newValue ? Cursor.WAIT : Cursor.DEFAULT);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void setupStage(final Stage stage) {
+        super.setupStage(stage);
+        stage.setOnCloseRequest((WindowEvent event) -> {
+            if (isConnectionInProgress.get()) {
+                event.consume();
+            }
+        });
     }
 
     /**
@@ -105,12 +166,10 @@ public class ConnectDialogController extends DialogView implements Initializable
      */
     @FXML
     public void handleCloseDialog(final MouseEvent event) {
-        if (event.getSource() == closeDialog || event.getSource() == dialogCancelButton) {
-            ConnectionManager.getInstance().setConnected(false);
-            Node node = (Node) event.getSource();
-            Stage stage = (Stage) node.getScene().getWindow();
-            stage.hide();
-        }
+        ConnectionManager.getInstance().setConnected(false);
+        Node node = (Node) event.getSource();
+        Stage stage = (Stage) node.getScene().getWindow();
+        stage.hide();
     }
 
     /**
@@ -130,48 +189,48 @@ public class ConnectDialogController extends DialogView implements Initializable
      *
      * @param stage
      */
-    private void doConnect(Stage stage) {
-        String host = connectionsCB.getEditor().getText();
-        try {
-            if (validateInput() && isConnectionValid()) {
-                Connection con = new Connection(host, rpcPort.getText(), asyncPort.getText(), scapyPort.getText(), nameTF.getText(), fullControlRB.isSelected());
-                // remove it if connection already exists
-                if (connectionMap.get(connectionsCB.getEditor().getText()) != null) {
-                    connectionMap.remove(connectionsCB.getEditor().getText());
-                }
-                con.setLastUsed(true);
-                connectionMap.put(connectionsCB.getEditor().getText(), con);
-                updateConnectionsList();
-                ConnectionManager.getInstance().setConnected(true);
-
-                stage.hide();
-            }
-        } catch (Exception ex) {
-            LOG.error("Error durring connection to TRex server", ex);
-            LogsController.getInstance().appendText(LogType.ERROR, "Unable to connect to host: " + host);
+    private void doConnect(final Stage stage) {
+        if (isConnectionInProgress.get() || !validateInput()) {
+            return;
         }
+
+        isConnectionInProgress.set(true);
+        final ValidateConnectionTask validateConnectionTask = new ValidateConnectionTask(
+                connectionsCB.getEditor().getText(),
+                rpcPortTextField.getText(),
+                asyncPortTextField.getText(),
+                scapyPortTextField.getText(),
+                nameTextField.getText(),
+                !fullControlRB.isSelected(),
+                (String error) -> connectionValidationFinished(stage, error)
+        );
+        new Thread(validateConnectionTask).start();
     }
 
-    /**
-     * Validate connection
-     *
-     * @return
-     */
-    private boolean isConnectionValid() {
-        Alert errMsg = Util.getAlert(Alert.AlertType.ERROR);
-        boolean isValid = true;
-        if (!ConnectionManager.getInstance().initializeConnection(connectionsCB.getEditor().getText(), rpcPort.getText(), asyncPort.getText(), scapyPort.getText(), nameTF.getText(), !fullControlRB.isSelected())) {
-            errMsg.setContentText("TRex Hostname or IP address are not valid");
-            isValid = false;
-        } else if (!ConnectionManager.getInstance().testConnection(false) || !ConnectionManager.getInstance().testConnection(true)) {
-            errMsg.setContentText("Failed to connect to TRex - make sure the server is up");
-            isValid = false;
-        }
-        if (!isValid) {
+    private void connectionValidationFinished(final Stage stage, final String error) {
+        if (error != null) {
+            final Alert errMsg = Util.getAlert(Alert.AlertType.ERROR);
+            errMsg.setContentText(error);
             errMsg.show();
-        }
-        return isValid;
+        } else {
+            final String ip = connectionsCB.getEditor().getText();
 
+            Connection con = new Connection(
+                    ip,
+                    rpcPortTextField.getText(),
+                    asyncPortTextField.getText(),
+                    scapyPortTextField.getText(),
+                    nameTextField.getText(),
+                    fullControlRB.isSelected()
+            );
+            con.setLastUsed(true);
+            connectionMap.put(ip, con);
+            updateConnectionsList();
+            ConnectionManager.getInstance().setConnected(true);
+
+            stage.hide();
+        }
+        isConnectionInProgress.set(false);
     }
 
     /**
@@ -185,21 +244,21 @@ public class ConnectDialogController extends DialogView implements Initializable
         if (connectionsCB.getEditor().getText() == null || !Util.isValidAddress(connectionsCB.getEditor().getText())) {
             errMsg.setContentText("Invalid TRex Host Name or IP address");
             isValid = false;
-        } else if (!Util.isValidPort(rpcPort.getText())) {
-            errMsg.setContentText("Invalid TRex Sync Port Number(" + rpcPort.getText() + ")");
+        } else if (!Util.isValidPort(rpcPortTextField.getText())) {
+            errMsg.setContentText("Invalid TRex Sync Port Number(" + rpcPortTextField.getText() + ")");
             isValid = false;
-        } else if (!Util.isValidPort(asyncPort.getText())) {
-            errMsg.setContentText("Invalid Async Port Number(" + asyncPort.getText() + ")");
+        } else if (!Util.isValidPort(asyncPortTextField.getText())) {
+            errMsg.setContentText("Invalid Async Port Number(" + asyncPortTextField.getText() + ")");
             isValid = false;
-        } else if (!Util.isValidPort(scapyPort.getText())) {
-            errMsg.setContentText("Invalid Scapy Port Number(" + scapyPort.getText() + ")");
+        } else if (!Util.isValidPort(scapyPortTextField.getText())) {
+            errMsg.setContentText("Invalid Scapy Port Number(" + scapyPortTextField.getText() + ")");
             isValid = false;
-        } else if (Util.isNullOrEmpty(nameTF.getText())) {
+        } else if (Util.isNullOrEmpty(nameTextField.getText())) {
             try {
                 InetAddress ip = InetAddress.getLocalHost();
                 String hostname = ip.getHostName();
                 String username = System.getProperty("user.name");
-                nameTF.setText(username + "@" + ip.getHostAddress());
+                nameTextField.setText(username + "@" + ip.getHostAddress());
             } catch (UnknownHostException e) {
                 errMsg.setContentText("Name should not be empty");
                 isValid = false;
@@ -223,7 +282,7 @@ public class ConnectDialogController extends DialogView implements Initializable
             fillConnectionItem(connection.getConnectionList());
         }
         String username = System.getProperty("user.name");
-        nameTF.setText(username);
+        nameTextField.setText(username);
     }
 
     /**
@@ -249,10 +308,10 @@ public class ConnectDialogController extends DialogView implements Initializable
     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
         if (!Util.isNullOrEmpty(newValue) && connectionMap.get(newValue) != null) {
             selectedConnection = connectionMap.get(newValue);
-            rpcPort.setText(selectedConnection.getRpcPort());
-            asyncPort.setText(selectedConnection.getAsyncPort());
-            scapyPort.setText(Util.isNullOrEmpty(selectedConnection.getScapyPort()) ? "4507" : selectedConnection.getScapyPort());
-            nameTF.setText(selectedConnection.getUser());
+            rpcPortTextField.setText(selectedConnection.getRpcPort());
+            asyncPortTextField.setText(selectedConnection.getAsyncPort());
+            scapyPortTextField.setText(Util.isNullOrEmpty(selectedConnection.getScapyPort()) ? "4507" : selectedConnection.getScapyPort());
+            nameTextField.setText(selectedConnection.getUser());
             fullControlRB.setSelected(selectedConnection.isFullControl());
         }
     }
