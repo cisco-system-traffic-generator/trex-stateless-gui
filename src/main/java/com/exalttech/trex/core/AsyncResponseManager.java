@@ -19,10 +19,9 @@ import com.exalttech.trex.remote.models.AsyncEvent;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.apache.log4j.Logger;
@@ -38,6 +37,7 @@ public class AsyncResponseManager {
     private static final Logger LOG = Logger.getLogger(AsyncResponseManager.class.getName());
     private static AsyncResponseManager instance = null;
     private boolean muteLogger = false;
+    private Gson gson = new Gson();
 
     /**
      *
@@ -55,6 +55,7 @@ public class AsyncResponseManager {
     private StringProperty trexFlowStatsProperty = new SimpleStringProperty();
     private BooleanProperty trexEventProperty = new SimpleBooleanProperty();
     private StringProperty asyncEventProperty = new SimpleStringProperty();
+    private ObjectProperty<TrexEvent> asyncEventObjectProperty = new SimpleObjectProperty<>();
 
     /**
      * Constructor
@@ -65,6 +66,21 @@ public class AsyncResponseManager {
 
     public void setAsyncEvent(String asyncEvent) {
         this.asyncEventProperty.set(asyncEvent);
+        
+        asyncEventObjectProperty.setValue(parseTrexEvent(asyncEvent));
+    }
+
+    private TrexEvent parseTrexEvent(String asyncEventJSON) {
+        JsonObject eventJson = gson.fromJson(asyncEventJSON, JsonObject.class);
+        return new TrexEvent(
+                eventJson.get("type").getAsInt(),
+                eventJson.get("name").getAsString(),
+                eventJson.getAsJsonObject("data")
+        );
+    }
+
+    public ObjectProperty<TrexEvent> asyncEventObjectProperty() {
+        return asyncEventObjectProperty;
     }
 
     public StringProperty asyncEventProperty() {
