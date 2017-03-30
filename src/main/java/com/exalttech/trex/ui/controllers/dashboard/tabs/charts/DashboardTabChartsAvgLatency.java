@@ -1,10 +1,11 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.charts;
 
-import com.exalttech.trex.ui.views.statistics.StatsLoader;
-import com.exalttech.trex.util.ArrayHistory;
 import javafx.beans.property.IntegerProperty;
 
 import java.util.Map;
+
+import com.exalttech.trex.ui.views.statistics.LatencyStatsLoader;
+import com.exalttech.trex.util.ArrayHistory;
 
 
 public class DashboardTabChartsAvgLatency extends DashboardTabChartsLatencyLine {
@@ -17,6 +18,6 @@ public class DashboardTabChartsAvgLatency extends DashboardTabChartsLatencyLine 
     }
 
     protected Map<String, ArrayHistory<Number>> getHistory() {
-        return StatsLoader.getInstance().getAvgLatencyHistory();
+        return LatencyStatsLoader.getInstance().getAvgLatencyHistoryMap();
     }
 }

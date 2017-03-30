@@ -25,6 +25,7 @@ import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.DashboardTabStre
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import com.exalttech.trex.ui.views.services.RefreshingService;
+import com.exalttech.trex.ui.views.statistics.LatencyStatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Constants;
@@ -91,6 +92,7 @@ public class Dashboard extends DialogView implements Initializable {
     @FXML
     public void handleClearCacheButtonClicked(ActionEvent event) {
         StatsLoader.getInstance().reset();
+        LatencyStatsLoader.getInstance().reset();
         handleUpdate(event);
     }
 

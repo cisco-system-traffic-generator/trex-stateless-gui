@@ -45,6 +45,7 @@ import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.ui.views.models.ProfileMultiplier;
 import com.exalttech.trex.ui.views.services.CountdownService;
 import com.exalttech.trex.ui.views.services.RefreshingService;
+import com.exalttech.trex.ui.views.statistics.LatencyStatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
 import com.exalttech.trex.util.Constants;
@@ -322,6 +323,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             connectWindow.show(true);
             if (ConnectionManager.getInstance().isConnected()) {
                 StatsLoader.getInstance().start();
+                LatencyStatsLoader.getInstance().start();
                 serverStatusLabel.setText("Connected");
                 serverStatusIcon.setImage(new Image("/icons/connectedIcon.gif"));
                 connectIcon.getStyleClass().add("disconnectIcon");

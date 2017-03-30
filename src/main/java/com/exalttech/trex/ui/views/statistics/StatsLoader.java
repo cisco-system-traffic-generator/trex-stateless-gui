@@ -29,9 +29,6 @@ import org.json.JSONObject;
 
 import com.exalttech.trex.core.AsyncResponseManager;
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
-import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStream;
-import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStreamErrCntrs;
-import com.exalttech.trex.ui.models.stats.latency.StatsLatencyStreamLatency;
 import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Util;
 
@@ -61,12 +58,6 @@ public class StatsLoader {
     private Map<String, String> loadedStatsList = new HashMap<>();
     private Map<String, String> previousStatsList = new HashMap<>();
     private Map<String, String> shadowStatsList = null;
-
-    private Map<String, StatsLatencyStream> latencyStatsMap = new HashMap<>();
-    private Map<String, ArrayHistory<Number>> latencyWindowHistory = new HashMap<>();
-    private Map<String, ArrayHistory<Number>> maxLatencyHistory = new HashMap<>();
-    private Map<String, ArrayHistory<Number>> avgLatencyHistory = new HashMap<>();
-    private Map<String, ArrayHistory<Number>> jitterLatencyHistory = new HashMap<>();
 
     private Map<String, ArrayHistory<StatsFlowStream>> flowStatsHistoryMap = new HashMap<>();
     private Map<String, StatsFlowStream> shadowFlowStatsMap = new HashMap<>();
@@ -106,51 +97,6 @@ public class StatsLoader {
     }
 
     /**
-     * Return latency stats map
-     *
-     * @return
-     */
-    public Map<String, StatsLatencyStream> getLatencyStatsMap() {
-        return latencyStatsMap;
-    }
-
-    /**
-     * Return latency window history map
-     *
-     * @return
-     */
-    public Map<String, ArrayHistory<Number>> getLatencyWindowHistory() {
-        return latencyWindowHistory;
-    }
-
-    /**
-     * Return max latency history map
-     *
-     * @return
-     */
-    public Map<String, ArrayHistory<Number>> getAvgLatencyHistory() {
-        return avgLatencyHistory;
-    }
-
-    /**
-     * Return jitter history map
-     *
-     * @return
-     */
-    public Map<String, ArrayHistory<Number>> getJitterLatencyHistory() {
-        return jitterLatencyHistory;
-    }
-
-    /**
-     * Return avg latency history map
-     *
-     * @return
-     */
-    public Map<String, ArrayHistory<Number>> getMaxLatencyHistory() {
-        return maxLatencyHistory;
-    }
-
-    /**
      * Return flow stats history map
      *
      * @return
@@ -176,28 +122,16 @@ public class StatsLoader {
         previousStatsList.clear();
         shadowStatsList = null;
 
-        latencyStatsMap.clear();
-        latencyWindowHistory.clear();
-        maxLatencyHistory.clear();
-        avgLatencyHistory.clear();
-        jitterLatencyHistory.clear();
-
         flowStatsHistoryMap.clear();
         shadowFlowStatsMap.clear();
         flowStatsLastTime = 0.0;
 
         AsyncResponseManager.getInstance().getTrexGlobalProperty().addListener(this::handleGlobalPropertyChanged);
-        AsyncResponseManager.getInstance().getTrexLatencyProperty().addListener(this::handleLatencyPropertyChanged);
         AsyncResponseManager.getInstance().getTrexFlowStatsProperty().addListener(this::handleFlowStatsPropertyChanged);
     }
 
     public void reset() {
         shadowStatsList = loadedStatsList;
-
-        latencyWindowHistory.clear();
-        maxLatencyHistory.clear();
-        avgLatencyHistory.clear();
-        jitterLatencyHistory.clear();
 
         flowStatsHistoryMap.forEach((String stream, ArrayHistory<StatsFlowStream> statsFlowStreamHistory) -> {
             final StatsFlowStream last = statsFlowStreamHistory.last();
@@ -267,175 +201,6 @@ public class StatsLoader {
         if (shadowStatsList == null) {
             shadowStatsList = loadedStatsList;
         }
-    }
-
-    private void handleLatencyPropertyChanged(
-            ObservableValue<? extends String> observable,
-            String oldValue,
-            String newValue
-    ) {
-        if (newValue == null) {
-            return;
-        }
-
-        try {
-            final JSONObject latencyStatsJSON = new JSONObject(newValue);
-            final JSONObject dataJSON = latencyStatsJSON.getJSONObject("data");
-
-            final Set<String> unvisitedStreams = new HashSet<>(latencyWindowHistory.keySet());
-            dataJSON.keySet().forEach((String stream) -> {
-                unvisitedStreams.remove(stream);
-
-                final JSONObject latencyStreamJSON = dataJSON.getJSONObject(stream);
-                final StatsLatencyStreamLatency latency = getLatency(latencyStreamJSON);
-                final StatsLatencyStreamErrCntrs errCntrs = getLatencyErrCntrs(latencyStreamJSON);
-                final StatsLatencyStream latencyStream = new StatsLatencyStream(latency, errCntrs);
-
-                latencyStatsMap.put(stream, latencyStream);
-
-                ArrayHistory<Number> windowHistory = latencyWindowHistory.get(stream);
-                if (windowHistory == null) {
-                    windowHistory = new ArrayHistory<>(latencyHistorySize);
-                    latencyWindowHistory.put(stream, windowHistory);
-                }
-                windowHistory.add(latencyStream.getLatency().getLastMax());
-
-                ArrayHistory<Number> maxHistory = maxLatencyHistory.get(stream);
-                if (maxHistory == null) {
-                    maxHistory = new ArrayHistory<>(latencyHistorySize);
-                    maxLatencyHistory.put(stream, maxHistory);
-                }
-                maxHistory.add(latencyStream.getLatency().getTotalMax());
-
-                ArrayHistory<Number> avgHistory = avgLatencyHistory.get(stream);
-                if (avgHistory == null) {
-                    avgHistory = new ArrayHistory<>(latencyHistorySize);
-                    avgLatencyHistory.put(stream, avgHistory);
-                }
-                avgHistory.add(latencyStream.getLatency().getAverage());
-
-                ArrayHistory<Number> jitterHistory = jitterLatencyHistory.get(stream);
-                if (jitterHistory == null) {
-                    jitterHistory = new ArrayHistory<>(latencyHistorySize);
-                    jitterLatencyHistory.put(stream, jitterHistory);
-                }
-                jitterHistory.add(latencyStream.getLatency().getJitter());
-            });
-
-            unvisitedStreams.forEach((String stream) -> {
-                latencyWindowHistory.remove(stream);
-            });
-        } catch (JSONException exc) {
-            // TODO: logging
-        }
-    }
-
-    private static StatsLatencyStreamLatency getLatency(JSONObject latencyStreamJSON) {
-        final StatsLatencyStreamLatency latency = new StatsLatencyStreamLatency();
-
-        if (!latencyStreamJSON.has("latency")) {
-            return latency;
-        }
-
-        final JSONObject latencyJSON = latencyStreamJSON.getJSONObject("latency");
-
-        if (latencyJSON.has("histogram")) {
-            final Map<String, Integer> histogram = latency.getHistogram();
-            final JSONObject histogramJSON = latencyJSON.getJSONObject("histogram");
-            histogramJSON.keySet().forEach((String key) -> {
-                try {
-                    histogram.put(key, histogramJSON.getInt(key));
-                } catch (JSONException exc) {
-                    // TODO: logging
-                }
-            });
-        }
-
-        if (latencyJSON.has("average")) {
-            try {
-                latency.setAverage(latencyJSON.getDouble("average"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        if (latencyJSON.has("jitter")) {
-            try {
-                latency.setJitter(latencyJSON.getInt("jitter"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        if (latencyJSON.has("last_max")) {
-            try {
-                latency.setLastMax(latencyJSON.getInt("last_max"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        if (latencyJSON.has("total_max")) {
-            try {
-                latency.setTotalMax(latencyJSON.getInt("total_max"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        return latency;
-    }
-
-    private static StatsLatencyStreamErrCntrs getLatencyErrCntrs(JSONObject latencyStreamJSON) {
-        final StatsLatencyStreamErrCntrs errCntrs = new StatsLatencyStreamErrCntrs();
-
-        if (!latencyStreamJSON.has("err_cntrs")) {
-            return errCntrs;
-        }
-
-        final JSONObject errCntrsJSON = latencyStreamJSON.getJSONObject("err_cntrs");
-
-        if (errCntrsJSON.has("out_of_order")) {
-            try {
-                errCntrs.setOutOfOrder(errCntrsJSON.getInt("out_of_order"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        if (errCntrsJSON.has("seq_too_high")) {
-            try {
-                errCntrs.setSeqTooHigh(errCntrsJSON.getInt("seq_too_high"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        if (errCntrsJSON.has("dropped")) {
-            try {
-                errCntrs.setDropped(errCntrsJSON.getInt("dropped"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        if (errCntrsJSON.has("seq_too_low")) {
-            try {
-                errCntrs.setSeqTooLow(errCntrsJSON.getInt("seq_too_low"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        if (errCntrsJSON.has("dup")) {
-            try {
-                errCntrs.setDup(errCntrsJSON.getInt("dup"));
-            } catch (JSONException exc) {
-                // TODO: logging
-            }
-        }
-
-        return errCntrs;
     }
 
     private void handleFlowStatsPropertyChanged(

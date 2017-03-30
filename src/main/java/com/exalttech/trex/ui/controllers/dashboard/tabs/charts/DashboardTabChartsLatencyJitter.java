@@ -1,8 +1,9 @@
 package com.exalttech.trex.ui.controllers.dashboard.tabs.charts;
 
-import com.exalttech.trex.ui.views.statistics.StatsLoader;
-import com.exalttech.trex.util.ArrayHistory;
 import javafx.beans.property.IntegerProperty;
+
+import com.exalttech.trex.util.ArrayHistory;
+import com.exalttech.trex.ui.views.statistics.LatencyStatsLoader;
 
 import java.util.Map;
 
@@ -17,6 +18,6 @@ public class DashboardTabChartsLatencyJitter extends DashboardTabChartsLatencyLi
     }
 
     protected Map<String, ArrayHistory<Number>> getHistory() {
-        return StatsLoader.getInstance().getJitterLatencyHistory();
+        return LatencyStatsLoader.getInstance().getLatencyJitterHistoryMap();
     }
 }
