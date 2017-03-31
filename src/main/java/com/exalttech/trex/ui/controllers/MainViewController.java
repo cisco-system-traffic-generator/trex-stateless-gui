@@ -16,9 +16,7 @@
 package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.application.TrexApp;
-import com.exalttech.trex.core.AsyncResponseManager;
-import com.exalttech.trex.core.ConnectionManager;
-import com.exalttech.trex.core.RPCMethods;
+import com.exalttech.trex.core.*;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
@@ -84,11 +82,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -234,6 +228,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private boolean treeviewOpened = true;
 
     private EventBus eventBus;
+    private boolean resetAppInProgress;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -250,8 +245,25 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
 
         // Handle update port state event
-        AsyncResponseManager.getInstance().asyncEventProperty().addListener((observable, oldValue, newValue) -> {
-            // Update port view if current selected port updated.
+        AsyncResponseManager.getInstance().asyncEventObjectProperty().addListener((observable, oldValue, newVal) -> {
+            TrexEvent event = newVal;
+
+            int portId = event.getData().getAsJsonPrimitive("port_id").getAsInt();
+            PortModel portModel = portManager.getPortModel(portId);
+            switch (event.getType()) {
+                case PORT_RELEASED:
+                case PORT_ACQUIRED:
+                case PORT_ATTR_CHANGED:
+                case PORT_STARTED:
+                case PORT_STOPPED:
+                    Platform.runLater(
+                        () -> portManager.updatedPorts(Arrays.asList(portModel.getIndex()))
+                    );
+                    break;
+                case SERVER_STOPPED:
+                    resetApplication(true);
+                    break;
+            }
         });
     }
 
@@ -511,6 +523,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Reset the application to initial state
      */
     private void resetApplication(boolean didServerCrash) {
+        resetAppInProgress = true;
         // clear tree
         devicesTree.setRoot(null);
         // hide all right side views
@@ -563,6 +576,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         }
         
         portViewVisibilityProperty.setValue(false);
+        
+        portManager.clearPorts();
+        
+        resetAppInProgress = false;
     }
 
     /**
@@ -576,7 +593,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Build port detail table
      */
     private void loadPortModel() {
-        PortModel model = PortModel.createModelFrom(portManager.getPortList().get(getSelectedPortIndex()));
+        PortModel model = portManager.getPortModel(getSelectedPortIndex());
+        portManager.updatedPorts(Arrays.asList(getSelectedPortIndex()));
         Optional<Integer> optional = portManager.getOwnedPortIndexes().stream().filter(idx -> idx.equals(getSelectedPortIndex())).findFirst();
         optional.ifPresent(val -> model.setIsOwned(true));
         portView.loadModel(model);
@@ -803,19 +821,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 }
             }
         });
-        // bind async trex event property
-        AsyncResponseManager.getInstance().getTrexEventProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // update
-                Platform.runLater(() -> {
-                    if (portManager.getUpdatePortStatusService() != null && ConnectionManager.getInstance().isConnected()) {
-                        portManager.updatePortForce();
-                    }
-                });
-            }
-        });
-
         logContainer.getChildren().add(LogsController.getInstance().getView());
         consoleLogContainer.getChildren().add(LogsController.getInstance().getConsoleLogView());
 
@@ -1093,6 +1098,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     break;
                 case FORCE_ACQUIRE:
                     serverRPCMethods.acquireServerPort(getSelectedPortIndex(), true);
+                    portManager.getPortModel(getSelectedPortIndex()).setIsOwned(true);
                     portManager.updatePortForce();
                     break;
                 case RELEASE_ACQUIRE:
@@ -1135,8 +1141,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             serverRPCMethods.acquireServerPort(getSelectedPortIndex(), false);
             portManager.updatePortForce();
+            portManager.getPortModel(getSelectedPortIndex()).setIsOwned(true);
         } catch (PortAcquireException ex) {
-            LOG.error("Error aquiring port", ex);
+            LOG.error("Error acquiring port", ex);
         }
     }
 
@@ -1148,6 +1155,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         // remove saved assigned profile
         if (assignedPortProfileMap.get(portIndex) != null) {
             assignedPortProfileMap.remove(portIndex);
+        }
+        if (!resetAppInProgress) {
+            portManager.getPortModel(getSelectedPortIndex()).setIsOwned(false);
         }
         if (forceUpdatePort) {
             portManager.updatePortForce();
@@ -1471,8 +1481,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void shutdownRunningServices() {
         stopRefreshingService();
-        // stop port status sceduler
-        portManager.stopPortStatusScheduler();
     }
 
     /**

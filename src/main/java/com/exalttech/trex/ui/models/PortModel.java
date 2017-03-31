@@ -77,7 +77,13 @@ public class PortModel {
         model.rxFilterMode.bindBidirectional(port.rxFilterModeProperty());
         model.multicast.bindBidirectional(port.multicastProperty());
         model.promiscuousMode.bindBidirectional(port.promiscuousProperty());
+        
         model.owner.bindBidirectional(port.ownerProperty());
+        port.ownerProerty.addListener((observable, oldVal, newVal) -> {
+            String currentUser = ConnectionManager.getInstance().getClientName();
+            model.setIsOwned(currentUser.equalsIgnoreCase(newVal));
+        });
+        
         model.portSpeed.bind(port.getAttr().speedProperty().asString());
         model.portStatus.bindBidirectional(port.statusProerty());
         model.capturingMode.bind(port.captureStatusProperty());

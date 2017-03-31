@@ -9,6 +9,7 @@ import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.util.Initialization;
 import com.google.common.base.Strings;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -31,6 +32,8 @@ public class PortAttributes extends BorderPane {
     
     private PortModel port;
     
+    @FXML
+    private Label index;
     @FXML
     private Label driver;
 
@@ -84,7 +87,23 @@ public class PortAttributes extends BorderPane {
     @FXML
     private Button forceAcquireBtn;
     
+    private ChangeListener<Boolean> changeOnwershipListener = (observable , oldVal, newVal) -> {
+        if (newVal) {
+            onAcquireAction();
+        } else {
+            onReleasedAction();
+        }
+    };
     
+    private void onAcquireAction() {
+        acquireReleaseBtn.setText("Release");
+        forceAcquireBtn.setDisable(true);
+    }
+    
+    private void onReleasedAction() {
+        acquireReleaseBtn.setText("Acquire");
+        forceAcquireBtn.setDisable(false);
+    }
     
     public PortAttributes() {
         
@@ -94,25 +113,16 @@ public class PortAttributes extends BorderPane {
 
         acquireReleaseBtn.setOnAction(event -> {
             try {
-                acquireReleaseBtn.setDisable(true);
-                forceAcquireBtn.setDisable(true);
                 if (acquireReleaseBtn.getText().equalsIgnoreCase("Acquire")) {
-                    trexClient.acquireServerPort(port.getIndex(), false);
-                    port.setIsOwned(true);
-                    acquireReleaseBtn.setText("Release");
+                    port.acquire();
                 } else {
-                    trexClient.releasePort(port.getIndex(), true);
-                    acquireReleaseBtn.setText("Acquire");
-                    forceAcquireBtn.setDisable(false);
-                    port.setIsOwned(false);
+                    port.release();
                 }
-                acquireReleaseBtn.setDisable(false);
-                
             } catch (Exception e) {
                 acquireReleaseBtn.setDisable(false);
                 forceAcquireBtn.setDisable(false);
                 
-                String message = "Unable acquire port " + port.getIndex();
+                String message = "Unable acquire/release port " + port.getIndex();
                 logger.error(message, e);
                 LogsController.getInstance().appendText(LogType.ERROR, message);
                 
@@ -137,22 +147,18 @@ public class PortAttributes extends BorderPane {
 
             }
         });
-
-        flowControl.getSelectionModel().selectedItemProperty().addListener((observable , oldVal, newVal) -> port.flowControlProperty().setValue(newVal));
-        multicast.selectedProperty().addListener((observable , oldVal, newVal) -> port.multicastProperty().setValue(newVal));
-        promiscuousMode.selectedProperty().addListener((observable, oldVal, newVal) -> port.promiscuousModeProperty().setValue(newVal));
-        serviceMode.selectedProperty().addListener((observable, oldVal, newVal) -> port.serviceModeProperty().setValue(newVal));
-        link.selectedProperty().addListener((observable , oldVal, newVal) -> port.linkStatusProperty().setValue(newVal));
-        led.selectedProperty().addListener((observable , oldVal, newVal) -> port.ledControlProperty().setValue(newVal));
     }
 
     public void bindModel(PortModel model) {
 
         unbindPrevious();
         
-        this.port = model;
+        port = model;
+
+        port.isOwnedProperty().addListener(changeOnwershipListener);
         
         acquireReleaseBtn.setDisable(false);
+        
         forceAcquireBtn.setDisable(false);
         
         if (this.port.isOwnedProperty().get()) {
@@ -163,7 +169,7 @@ public class PortAttributes extends BorderPane {
             acquireReleaseBtn.setDisable(!Strings.isNullOrEmpty(this.port.getOwner()));
         }
 
-
+        index.textProperty().bind(model.indexProperty().asString());
         driver.textProperty().bind(model.portDriverProperty());
         rxFilterMode.textProperty().bind(model.rxFilterModeProperty());
         owner.textProperty().bind(model.ownerProperty());
@@ -174,11 +180,11 @@ public class PortAttributes extends BorderPane {
         pciAddress.textProperty().bind(model.pciAddressProperty());
         gratArp.textProperty().bind(model.gratARPProperty());
         rxQueueing.textProperty().bind(model.rxQueueingProperty());
-        multicast.selectedProperty().set(model.getMulticast());
-        promiscuousMode.selectedProperty().set(model.getPromiscuousMode());
-        link.selectedProperty().set(model.getLinkStatus());
-        led.selectedProperty().set(model.getLedControl());
-        serviceMode.selectedProperty().set(model.getServiceMode());
+        multicast.selectedProperty().bindBidirectional(model.multicastProperty());
+        promiscuousMode.selectedProperty().bindBidirectional(model.promiscuousModeProperty());
+        link.selectedProperty().bindBidirectional(model.linkStatusProperty());
+        led.selectedProperty().bindBidirectional(model.ledControlProperty());
+        serviceMode.selectedProperty().bindBidirectional(model.serviceModeProperty());
         
         Arrays.asList(
                 link,
@@ -204,6 +210,17 @@ public class PortAttributes extends BorderPane {
     }
 
     private void unbindPrevious() {
+        if (port != null) {
+            port.isOwnedProperty().removeListener(changeOnwershipListener);
+            multicast.selectedProperty().unbindBidirectional(port.multicastProperty());
+            promiscuousMode.selectedProperty().unbindBidirectional(port.promiscuousModeProperty());
+            link.selectedProperty().unbindBidirectional(port.linkStatusProperty());
+            led.selectedProperty().unbindBidirectional(port.ledControlProperty());
+            serviceMode.selectedProperty().unbindBidirectional(port.serviceModeProperty());
+        }
+        
+        port = null;
+        
         Arrays.asList(
             driver,
             rxFilterMode,
@@ -216,8 +233,6 @@ public class PortAttributes extends BorderPane {
             gratArp,
             rxQueueing
         ).forEach(label -> label.textProperty().unbind());
-        
-        port = null;
 
         Arrays.asList(
             link,

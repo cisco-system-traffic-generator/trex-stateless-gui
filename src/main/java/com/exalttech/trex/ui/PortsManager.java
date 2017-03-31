@@ -112,7 +112,6 @@ public class PortsManager {
      */
     public void updatePortForce() {
         updatedPorts(portList.stream().map(port -> port.getIndex()).collect(Collectors.toList()));
-        portManagerHandler.onPortListUpdated(true);
     }
     
     public void updatedPorts(List<Integer> portIndexes) {
@@ -135,6 +134,7 @@ public class PortsManager {
                 port.setService(portStatus.getService());
                 port.linkProperty().set(portStatus.getAttr().getLink().getUp());
             }
+            portManagerHandler.onPortListUpdated(true);
         } catch (Exception ex) {
             logger.error("Error reading port status", ex);
         }

@@ -18,7 +18,7 @@
             </padding>
 
             <Label text="Index:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <Label fx:id="labelTabMainPortIndex" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"
+            <Label fx:id="index" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"
                    GridPane.columnSpan="2"/>
 
             <Label text="Driver:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>

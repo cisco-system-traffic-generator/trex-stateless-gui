@@ -209,21 +209,13 @@ public class PortInfoTabConfig extends BorderPane {
         
         textTabConfigPortNameTitle.setText("Port " + port.getIndex());
 
-        String srcIPv4 = port.getSrcIp() != null
-                ? port.getSrcIp()
-                : null;
+        String srcIPv4 = port.getSrcIp();
         
-        String dstIPv4 = port.getDstIp() != null
-                ? port.getDstIp()
-                : null;
+        String dstIPv4 = port.getDstIp();
         
-        String srcMAC = port.getSrcMac() != null
-                ? port.getSrcMac()
-                : null;
+        String srcMAC = port.getSrcMac();
         
-        String dstMAC = port.getDstMac() != null
-                ? port.getDstMac()
-                : null;
+        String dstMAC = port.getDstMac();
 
         PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg layer_cfg = port.getAttr().getLayer_cfg();
         if (full) {
