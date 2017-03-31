@@ -17,15 +17,14 @@ package com.exalttech.trex.ui;
 
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.models.Port;
-import com.exalttech.trex.ui.views.services.UpdatePortStatusService;
-import com.exalttech.trex.util.Constants;
+import com.exalttech.trex.ui.models.PortModel;
+import com.exalttech.trex.ui.models.PortStatus;
 import com.exalttech.trex.util.Util;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.util.Duration;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Port Manager class implementation
@@ -34,8 +33,12 @@ import java.util.List;
  */
 public class PortsManager {
 
+    private static final Logger logger = Logger.getLogger(PortsManager.class);
+    
     private static PortsManager instance = null;
 
+    ObjectMapper mapper = new ObjectMapper();
+    
     /**
      * Return instance of Port manager
      *
@@ -49,9 +52,10 @@ public class PortsManager {
         return instance;
     }
     private List<Port> portList;
-    UpdatePortStatusService updatePortStatusService;
     PortManagerEventHandler portManagerHandler;
 
+    private Map<Integer, PortModel> portModels = new HashMap<>();
+    
     /**
      * Protected constructor
      */
@@ -59,6 +63,20 @@ public class PortsManager {
         // constructor
     }
 
+    public PortModel getPortModel(int portIndex) {
+        PortModel model = portModels.get(portIndex);
+        if (model == null) {
+            model = PortModel.createModelFrom(portList.get(portIndex));
+            portModels.put(portIndex, model);
+        }
+        return model;
+    }
+    
+    public void clearPorts() {
+        portModels.clear();
+        portList.clear();
+    }
+    
     /**
      * Get port list
      *
@@ -81,18 +99,6 @@ public class PortsManager {
     }
 
     /**
-     * Stop update port state scheduler service
-     */
-    public void stopPortStatusScheduler() {
-        if (updatePortStatusService != null) {
-            if (!updatePortStatusService.isRunning()) {
-                updatePortStatusService.reset();
-            }
-            updatePortStatusService.cancel();
-        }
-    }
-
-    /**
      * Set port handler
      *
      * @param portManagerHandler
@@ -101,35 +107,37 @@ public class PortsManager {
         this.portManagerHandler = portManagerHandler;
     }
 
-    private void initUpdatePortStatusService() {
-        updatePortStatusService = new UpdatePortStatusService(portList);
-        updatePortStatusService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
-        updatePortStatusService.setRestartOnFailure(false);
-        updatePortStatusService.setOnSucceeded((WorkerStateEvent event) -> {
-            portList = (List<Port>) event.getSource().getValue();
-            boolean successfullyUpdate = portList != null && !portList.isEmpty();
-            portManagerHandler.onPortListUpdated(successfullyUpdate);
-        });
-    }
-
     /**
      * Force request to update port state
      */
     public void updatePortForce() {
-        if (updatePortStatusService == null) {
-            initUpdatePortStatusService();
-        }
-        portList = updatePortStatusService.getUpdatedPortList();
+        updatedPorts(portList.stream().map(port -> port.getIndex()).collect(Collectors.toList()));
         portManagerHandler.onPortListUpdated(true);
     }
+    
+    public void updatedPorts(List<Integer> portIndexes) {
+        List<Port> list = portList.stream()
+                                  .filter(port -> portIndexes.contains(port.getIndex()))
+                                  .collect(Collectors.toList());
 
-    /**
-     * Return port state scheduler instance
-     *
-     * @return
-     */
-    public UpdatePortStatusService getUpdatePortStatusService() {
-        return updatePortStatusService;
+        try {
+            String response = ConnectionManager.getInstance().sendPortStatusRequest(list);
+            if (response == null) {
+                return;
+            }
+            List<PortStatus> portStatusList = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, PortStatus.class));
+            for (Port port : list) {
+                PortStatus.PortStatusResult portStatus = portStatusList.get(list.indexOf(port)).getResult();
+                port.setOwner(portStatus.getOwner());
+                port.setStatus(portStatus.getState());
+                port.setAttr(portStatus.getAttr());
+                port.setRx_info(portStatus.getRx_info());
+                port.setService(portStatus.getService());
+                port.linkProperty().set(portStatus.getAttr().getLink().getUp());
+            }
+        } catch (Exception ex) {
+            logger.error("Error reading port status", ex);
+        }
     }
 
     /**
