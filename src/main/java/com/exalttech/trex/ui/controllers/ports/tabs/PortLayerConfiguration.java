@@ -145,7 +145,7 @@ public class PortLayerConfiguration extends BorderPane {
         
         saveBtn.setDisable(true);
         saveBtn.setText("Applying...");
-        Task pingTask = new Task<Optional<String>>() {
+        Task saveConfigurationTask = new Task<Optional<String>>() {
             @Override
             public Optional<String> call(){
                 TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
@@ -180,10 +180,10 @@ public class PortLayerConfiguration extends BorderPane {
             }
         };
 
-        pingTask.setOnSucceeded(e -> {
+        saveConfigurationTask.setOnSucceeded(e -> {
             saveBtn.setText("Apply");
             saveBtn.setDisable(false);
-            Optional result = (Optional)(pingTask.getValue());
+            Optional result = (Optional)(saveConfigurationTask.getValue());
             if (l3Mode.isSelected()) {
                 String status = "unresolved";
                 if (result.isPresent()) {
@@ -196,7 +196,7 @@ public class PortLayerConfiguration extends BorderPane {
             }
         });
 
-        new Thread(pingTask).start();
+        new Thread(saveConfigurationTask).start();
     }
     
     private boolean validateIpAddress(String ip) {
