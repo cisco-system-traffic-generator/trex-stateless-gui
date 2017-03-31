@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import javafx.beans.property.*;
+
 import javax.annotation.Generated;
 
 /**
@@ -247,8 +249,12 @@ public class PortStatus {
             private String rx_filter_mode;
             @JsonProperty("speed")
             private int speed;
+            private IntegerProperty speedProperty = new SimpleIntegerProperty();
             @JsonProperty("led")
             private PortStatusResultAttrLed led;
+            private StringProperty rxFilterModeProperty = new SimpleStringProperty();
+            private PortStatusResultRxInfo rx_info;
+            private Boolean service;
 
             public PortStatusResultAttrMulticast getMulticast() {
                 return multicast;
@@ -264,14 +270,15 @@ public class PortStatus {
 
             public void setRx_filter_mode(String rx_filter_mode) {
                 this.rx_filter_mode = rx_filter_mode;
+                rxFilterModeProperty.set(rx_filter_mode);
             }
 
             public int getSpeed() {
-                return speed;
+                return speedProperty.get();
             }
 
             public void setSpeed(int speed) {
-                this.speed = speed;
+                this.speedProperty.set(speed);
             }
 
             /**
@@ -364,6 +371,31 @@ public class PortStatus {
                 this.layer_cfg = layer_cfg;
             }
 
+            public StringProperty rxFilterModeProperty() {
+                return rxFilterModeProperty;
+            }
+
+            public void updateFrom(PortStatusResultAttr attr) {
+                promiscuous.updateFrom(attr.getPromiscuous());
+                multicast.updateFrom(attr.getMulticast());
+                link.updateFrom(attr.getLink());
+                layer_cfg.updateFrom(attr.getLayer_cfg());
+                fc.updateFrom(attr.getFc());
+                service = attr.getService();
+
+            }
+
+            public PortStatusResultRxInfo getRxInfo() {
+                return rx_info;
+            }
+
+            public Boolean getService() {
+                return service;
+            }
+
+            public IntegerProperty speedProperty() {
+                return speedProperty;
+            }
 
 
             /**
@@ -407,6 +439,9 @@ public class PortStatus {
                                     : mode==3 ? "full" : "ERROR";
                 }
 
+                public void updateFrom(PortStatusResultAttrFc fc) {
+                    setMode(fc.getMode());
+                }
             }
 
             /**
@@ -445,6 +480,9 @@ public class PortStatus {
                     return "down";
                 }
 
+                public void updateFrom(PortStatusResultAttrLink link) {
+                    setUp(link.getUp());
+                }
             }
 
             /**
@@ -459,6 +497,7 @@ public class PortStatus {
 
                 @JsonProperty("enabled")
                 private boolean enabled;
+                private BooleanProperty enabledProperty = new SimpleBooleanProperty();
 
                 /**
                  *
@@ -476,6 +515,7 @@ public class PortStatus {
                 @JsonProperty("enabled")
                 public void setEnabled(boolean enabled) {
                     this.enabled = enabled;
+                    enabledProperty.set(enabled);
                 }
 
                 public String toString() {
@@ -483,6 +523,13 @@ public class PortStatus {
                     return "disabled";
                 }
 
+                public BooleanProperty enabledProperty() {
+                    return enabledProperty;
+                }
+
+                public void updateFrom(PortStatusResultAttrPromiscuous promiscuous) {
+                    setEnabled(promiscuous.getEnabled());
+                }
             }
 
             /**
@@ -497,6 +544,7 @@ public class PortStatus {
 
                 @JsonProperty("enabled")
                 private boolean enabled;
+                private BooleanProperty enabledProperty = new SimpleBooleanProperty();
 
                 /**
                  *
@@ -514,6 +562,7 @@ public class PortStatus {
                 @JsonProperty("enabled")
                 public void setEnabled(boolean enabled) {
                     this.enabled = enabled;
+                    enabledProperty.set(enabled);
                 }
 
                 public String toString() {
@@ -521,6 +570,13 @@ public class PortStatus {
                     return "disabled";
                 }
 
+                public BooleanProperty enabledProperty() {
+                    return enabledProperty;
+                }
+
+                public void updateFrom(PortStatusResultAttrMulticast multicast) {
+                    setEnabled(multicast.getEnabled());
+                }
             }
 
             /**
@@ -612,6 +668,11 @@ public class PortStatus {
                     this.ipv4 = ipv4;
                 }
 
+                public void updateFrom(PortStatusResultAttrLayerCfg layer_cfg) {
+                    ether.updateFrom(layer_cfg.getEther());
+                    ipv4.updateFrom(layer_cfg.getIpv4());
+                }
+
                 /**
                  * class present port status result-attr-link-up model
                  */
@@ -630,25 +691,28 @@ public class PortStatus {
                     private String src;
                     @JsonProperty("state")
                     private String state;
+                    
+                    private StringProperty dstProperty = new SimpleStringProperty();
+                    private StringProperty srcProperty = new SimpleStringProperty();
 
                     @JsonProperty("dst")
                     public String getDst() {
-                        return dst;
+                        return dstProperty.get();
                     }
 
                     @JsonProperty("dst")
                     public void setDst(String dst) {
-                        this.dst = dst;
+                        dstProperty.setValue(dst);
                     }
 
                     @JsonProperty("src")
                     public String getSrc() {
-                        return src;
+                        return srcProperty.get();
                     }
 
                     @JsonProperty("src")
                     public void setSrc(String src) {
-                        this.src = src;
+                        srcProperty.set(src);
                     }
 
                     @JsonProperty("state")
@@ -659,6 +723,16 @@ public class PortStatus {
                     @JsonProperty("state")
                     public void setState(String state) {
                         this.state = state;
+                    }
+
+                    public void updateFrom(PortStatusResultAttrLayerCfgEther ether) {
+                        setState(ether.getState());
+                        setSrc(ether.getSrc());
+                        setDst(ether.getDst());
+                    }
+
+                    public StringProperty dstProperty() {
+                        return dstProperty;
                     }
                 }
 
@@ -680,25 +754,28 @@ public class PortStatus {
                     private String src;
                     @JsonProperty("state")
                     private String state;
+                    
+                    private StringProperty dstProperty = new SimpleStringProperty();
+                    private StringProperty srcProperty = new SimpleStringProperty();
 
                     @JsonProperty("dst")
                     public String getDst() {
-                        return dst;
+                        return dstProperty.get();
                     }
 
                     @JsonProperty("dst")
                     public void setDst(String dst) {
-                        this.dst = dst;
+                        this.dstProperty.set(dst);
                     }
 
                     @JsonProperty("src")
                     public String getSrc() {
-                        return src;
+                        return srcProperty.get();
                     }
 
                     @JsonProperty("src")
                     public void setSrc(String src) {
-                        this.src = src;
+                        this.srcProperty.set(src);
                     }
 
                     @JsonProperty("state")
@@ -709,6 +786,20 @@ public class PortStatus {
                     @JsonProperty("state")
                     public void setState(String state) {
                         this.state = state;
+                    }
+
+                    public void updateFrom(PortStatusResultAttrLayerCfgIPv4 ipv4) {
+                        setState(ipv4.getState());
+                        setSrc(ipv4.getSrc());
+                        setDst(ipv4.getDst());
+                    }
+
+                    public StringProperty srcProperty() {
+                        return srcProperty;
+                    }
+
+                    public StringProperty dstProperty() {
+                        return dstProperty;
                     }
                 }
             }
@@ -730,12 +821,11 @@ public class PortStatus {
 
             @JsonProperty("grat_arp")
             private PortStatusResultRxInfoGratArp grat_arp;
+            
             @JsonProperty("latency")
             private PortStatusResultRxInfoLatency latency;
             @JsonProperty("queue")
             private PortStatusResultRxInfoQueue queue;
-            @JsonProperty("sniffer")
-            private PortStatusResultRxInfoSniffer sniffer;
 
             @JsonProperty("grat_arp")
             public PortStatusResultRxInfoGratArp getGrat_arp() {
@@ -767,14 +857,10 @@ public class PortStatus {
                 this.queue = queue;
             }
 
-            @JsonProperty("sniffer")
-            public PortStatusResultRxInfoSniffer getSniffer() {
-                return sniffer;
-            }
-
-            @JsonProperty("sniffer")
-            public void setSniffer(PortStatusResultRxInfoSniffer sniffer) {
-                this.sniffer = sniffer;
+            public void updateFrom(PortStatusResultRxInfo rxInfo) {
+                grat_arp.updateFrom(rxInfo.getGrat_arp());
+                latency.updateFrom(rxInfo.getLatency());
+                queue.updateFrom(rxInfo.getQueue());
             }
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -784,6 +870,8 @@ public class PortStatus {
             })
             public class PortStatusResultRxInfoGratArp {
 
+                private StringProperty stateProperty = new SimpleStringProperty();
+                
                 @JsonProperty("interval_sec")
                 private int interval_sec;
 
@@ -801,13 +889,27 @@ public class PortStatus {
                 private boolean is_active;
 
                 @JsonProperty("is_active")
-                public boolean isIs_active() {
+                public boolean getIs_active() {
                     return is_active;
                 }
 
                 @JsonProperty("is_active")
                 public void setIs_active(boolean is_active) {
                     this.is_active = is_active;
+                }
+
+                public void updateFrom(PortStatusResultRxInfoGratArp grat_arp) {
+                    setInterval_sec(grat_arp.getInterval_sec());
+                    setIs_active(grat_arp.getIs_active());
+                    if (grat_arp.getIs_active()) {
+                        stateProperty.set(grat_arp.getInterval_sec() + " second(s)");
+                    } else {
+                        stateProperty.set("Off");
+                    }
+                }
+
+                public StringProperty stateProperty() {
+                    return stateProperty;
                 }
             }
 
@@ -818,6 +920,8 @@ public class PortStatus {
             })
             public class PortStatusResultRxInfoQueue {
 
+                private StringProperty statusProperty = new SimpleStringProperty();
+                
                 @JsonProperty("is_active")
                 private boolean is_active;
 
@@ -829,6 +933,19 @@ public class PortStatus {
                 @JsonProperty("is_active")
                 public void setIs_active(boolean is_active) {
                     this.is_active = is_active;
+                    statusProperty().set(is_active ? "On" : "Off");
+                }
+
+                public StringProperty statusProperty() {
+                    return statusProperty;
+                }
+                
+                public String getStatus() {
+                    return statusProperty.get();
+                }
+
+                public void updateFrom(PortStatusResultRxInfoQueue queue) {
+                    setIs_active(queue.isIs_active());
                 }
             }
 
@@ -851,6 +968,10 @@ public class PortStatus {
                 public void setIs_active(boolean is_active) {
                     this.is_active = is_active;
                 }
+
+                public void updateFrom(PortStatusResultRxInfoLatency latency) {
+                    setIs_active(latency.isIs_active());
+                }
             }
 
             @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -871,6 +992,10 @@ public class PortStatus {
                 @JsonProperty("is_active")
                 public void setIs_active(boolean is_active) {
                     this.is_active = is_active;
+                }
+
+                public void updateFrom(PortStatusResultRxInfoSniffer sniffer) {
+                    setIs_active(sniffer.isIs_active());
                 }
             }
         }

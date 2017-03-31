@@ -220,7 +220,7 @@ public class PortInfoTabMain extends BorderPane {
         labelTabMainPortNUMA.setText("" + port.getNuma());
         labelTabMainPortPCI.setText(port.getPci_addr());
         labelTabMainPortRxQueueing.setText(port.getRx_info().getQueue().isIs_active() ? "on" : "off");
-        labelTabMainPortGratARP.setText(port.getRx_info().getGrat_arp().isIs_active() ? "on" : "off");
+        labelTabMainPortGratARP.setText(port.getRx_info().getGrat_arp().getIs_active() ? "on" : "off");
 
         if (full) {
             String str = port.getAttr().getFc().toString();

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
+import javafx.beans.property.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,36 +37,49 @@ import java.util.Map;
 public class Port {
 
     String description;
+    StringProperty descriptionProerty = new SimpleStringProperty();
 
     String driver;
+    StringProperty driverProerty = new SimpleStringProperty();
 
-    int index;
+    IntegerProperty indexProerty = new SimpleIntegerProperty();
 
     boolean is_fc_supported;
+    BooleanProperty is_fc_supportedProerty = new SimpleBooleanProperty();
 
     boolean is_led_supported;
+    BooleanProperty is_led_supportedProerty = new SimpleBooleanProperty();
 
     boolean is_link_supported;
+    BooleanProperty is_link_supportedProerty = new SimpleBooleanProperty();
 
     boolean is_virtual;
+    BooleanProperty is_virtualProerty = new SimpleBooleanProperty();
 
     int numa;
+    IntegerProperty numaProerty = new SimpleIntegerProperty();
 
     String pci_addr;
+    StringProperty pci_addrProerty = new SimpleStringProperty();
 
     PortRx rx;
-
+    
     int[] supp_speeds;
 
     String status;
+    StringProperty statusProerty = new SimpleStringProperty();
 
     String assigned;
+    StringProperty assignedProerty = new SimpleStringProperty();
 
     String profileAssigned;
+    StringProperty profileAssignedProerty = new SimpleStringProperty();
 
     String owner;
+    StringProperty ownerProerty = new SimpleStringProperty();
 
     int speed;
+    IntegerProperty speedProerty = new SimpleIntegerProperty();
 
     PortStatus.PortStatusResult.PortStatusResultAttr attr;
 
@@ -78,22 +92,28 @@ public class Port {
     CaptureStatus[] captureStatus;
 
     boolean service;
+    BooleanProperty serviceModeProperty = new SimpleBooleanProperty();
+    private StringProperty captureStatusProperty = new SimpleStringProperty();
 
     public boolean getServiceMode() {
-        return service;
+        return serviceModeProperty.get();
     }
 
     public void setService(boolean service) {
-        this.service = service;
+        this.serviceModeProperty.set(service);
     }
-    
+
+    public BooleanProperty serviceModeProperty() {
+        return serviceModeProperty;
+    }
+
     /**
      * Return index
      *
      * @return
      */
     public int getIndex() {
-        return index;
+        return indexProerty.get();
     }
 
     /**
@@ -102,7 +122,7 @@ public class Port {
      * @param index
      */
     public void setIndex(int index) {
-        this.index = index;
+        this.indexProerty.set(index);
     }
 
     public String getDescription() {
@@ -111,6 +131,7 @@ public class Port {
 
     public void setDescription(String description) {
         this.description = description;
+        descriptionProerty.set(description);
     }
 
     public int getNuma() {
@@ -119,6 +140,7 @@ public class Port {
 
     public void setNuma(int numa) {
         this.numa = numa;
+        numaProerty.setValue(numa);
     }
 
     public String getPci_addr() {
@@ -127,6 +149,7 @@ public class Port {
 
     public void setPci_addr(String pci_addr) {
         this.pci_addr = pci_addr;
+        pci_addrProerty.set(pci_addr);
     }
 
     public PortRx getRx() {
@@ -161,6 +184,7 @@ public class Port {
      */
     public void setStatus(String status) {
         this.status = status;
+        statusProerty.set(status);
     }
 
     /**
@@ -179,6 +203,7 @@ public class Port {
      */
     public void setAssigned(String assigned) {
         this.assigned = assigned;
+        assignedProerty.set(assigned);
     }
 
     /**
@@ -216,6 +241,7 @@ public class Port {
      */
     public void setOwner(String owner) {
         this.owner = owner;
+        ownerProerty.set(owner);
     }
 
     /**
@@ -233,7 +259,11 @@ public class Port {
      * @param attr
      */
     public void setAttr(PortStatus.PortStatusResult.PortStatusResultAttr attr) {
-        this.attr = attr;
+        if (this.attr == null) {
+            this.attr = attr;
+        } else {
+         this.attr.updateFrom(attr);
+        }
     }
 
     public PortStatus.PortStatusResult.PortStatusResultRxInfo getRx_info() {
@@ -241,7 +271,11 @@ public class Port {
     }
 
     public void setRx_info(PortStatus.PortStatusResult.PortStatusResultRxInfo rx_info) {
-        this.rx_info = rx_info;
+        if (this.rx_info == null) {
+            this.rx_info = rx_info;
+        } else {
+            this.rx_info.updateFrom(rx_info);
+        }
     }
 
     public Map<String, Long> getXstats() {
@@ -263,7 +297,7 @@ public class Port {
         this.xstatsPinned = xstatsPinned;
     }
 
-    public String getCaptureStatus() {
+    private String getCaptureStatusString() {
         String status = "None";
         if (captureStatus != null && captureStatus.length > 0) {
             int port_index_mask = 1 << getIndex();
@@ -292,8 +326,13 @@ public class Port {
         return status;
     }
 
+    public String getCaptureStatus() {
+        return captureStatusProperty.get();
+    }
+    
     public void setCaptureStatus(CaptureStatus[] captureStatus) {
         this.captureStatus = captureStatus;
+        captureStatusProperty.set(getCaptureStatusString());
     }
 
     /**
@@ -312,6 +351,7 @@ public class Port {
      */
     public void setSpeed(int speed) {
         this.speed = speed;
+        speedProerty.set(speed);
     }
 
     /**
@@ -330,6 +370,7 @@ public class Port {
      */
     public void setDriver(String driver) {
         this.driver = driver;
+        driverProerty.set(driver);
     }
 
     /**
@@ -337,7 +378,7 @@ public class Port {
      * @return
      */
     public PortParams getPortParam(){
-        return new PortParams(index);
+        return new PortParams(indexProerty.get());
     }
 
     /**
@@ -345,7 +386,7 @@ public class Port {
      * @return
      */
     public StreamParams getStreamParam(int streamId){
-        return new StreamParams(index, streamId);
+        return new StreamParams(indexProerty.get(), streamId);
     }
 
 
@@ -371,6 +412,7 @@ public class Port {
 
     public void setIs_fc_supported(boolean is_fc_supported) {
         this.is_fc_supported = is_fc_supported;
+        is_fc_supportedProerty.set(is_fc_supported);
     }
 
     public boolean isIs_led_supported() {
@@ -379,6 +421,7 @@ public class Port {
 
     public void setIs_led_supported(boolean is_led_supported) {
         this.is_led_supported = is_led_supported;
+        is_led_supportedProerty.set(is_led_supported);
     }
 
     public boolean isIs_link_supported() {
@@ -387,6 +430,7 @@ public class Port {
 
     public void setIs_link_supported(boolean is_link_supported) {
         this.is_link_supported = is_link_supported;
+        is_link_supportedProerty.set(is_link_supported);
     }
 
     public boolean isIs_virtual() {
@@ -395,6 +439,7 @@ public class Port {
 
     public void setIs_virtual(boolean is_virtual) {
         this.is_virtual = is_virtual;
+        is_virtualProerty.set(is_virtual);
     }
 
     /**
@@ -428,6 +473,66 @@ public class Port {
 
     public boolean getLed() {
         return getAttr().getLed() != null && getAttr().getLed().getOn();
+    }
+
+    public IntegerProperty indexProperty() {
+        return indexProerty;
+    }
+
+    public StringProperty driverProper() {
+        return driverProerty;
+    }
+
+    public StringProperty rxFilterModeProperty() {
+        return getAttr().rxFilterModeProperty();
+    }
+
+    public BooleanProperty multicastProperty() {
+        return getAttr().getMulticast().enabledProperty();
+    }
+
+    public BooleanProperty promiscuousProperty() {
+        return getAttr().getPromiscuous().enabledProperty();
+    }
+
+    public StringProperty ownerProperty() {
+        return ownerProerty;
+    }
+
+    public IntegerProperty speedProperty() {
+        return speedProerty;
+    }
+
+    public StringProperty statusProerty() {
+        return statusProerty;
+    }
+
+    public StringProperty captureStatusProperty() {
+        return captureStatusProperty;
+    }
+
+    public BooleanProperty linkProperty() {
+        return is_link_supportedProerty;
+    }
+
+    public BooleanProperty ledProperty() {
+        return is_led_supportedProerty;
+    }
+
+    public IntegerProperty numaProerty() {
+        return numaProerty;
+    }
+
+    public StringProperty pciAddrProperty() {
+        return pci_addrProerty;
+    }
+
+    public StringProperty rxQueueProperty() {
+        return getRx_info().getQueue().statusProperty();
+    }
+
+    public BooleanProperty serviceModeProerty() {
+        return serviceModeProperty;
     }
 
     /**

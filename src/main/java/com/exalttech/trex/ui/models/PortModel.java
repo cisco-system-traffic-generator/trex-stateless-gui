@@ -4,9 +4,11 @@ import com.cisco.trex.stateless.TRexClient;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCMethods;
+import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import javafx.beans.property.*;
+import org.testng.util.Strings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,30 +72,25 @@ public class PortModel {
     
     public static PortModel createModelFrom(Port port) {
         PortModel model = new PortModel();
-        model.index.setValue(port.getIndex());
-        model.portDriver.setValue(port.getDriver());
-        model.rxFilterMode.setValue(port.getAttr().getRx_filter_mode());
-        model.multicast.setValue(port.getAttr().getMulticast().getEnabled());
-        model.promiscuousMode.setValue(port.getAttr().getPromiscuous().getEnabled());
-        model.owner.setValue(port.getOwner());
-        model.portSpeed.setValue(String.valueOf(port.getSpeed()));
-        model.portStatus.setValue(port.getStatus());
-        model.capturingMode.setValue(port.getCaptureStatus());
-        model.linkStatus.setValue(port.getLink());
-        model.ledControl.setValue(port.getLed());
-        model.numaMode.set(String.valueOf(port.getNuma()));
-        model.pciAddress.setValue(port.getPci_addr());
-        model.rxQueueing.setValue(port.getRx_info().getQueue().isIs_active() ? "On" : "Off");
+        model.index.bindBidirectional(port.indexProperty());
+        model.portDriver.bindBidirectional(port.driverProper());
+        model.rxFilterMode.bindBidirectional(port.rxFilterModeProperty());
+        model.multicast.bindBidirectional(port.multicastProperty());
+        model.promiscuousMode.bindBidirectional(port.promiscuousProperty());
+        model.owner.bindBidirectional(port.ownerProperty());
+        model.portSpeed.bind(port.getAttr().speedProperty().asString());
+        model.portStatus.bindBidirectional(port.statusProerty());
+        model.capturingMode.bind(port.captureStatusProperty());
+        model.linkStatus.bindBidirectional(port.linkProperty());
+        model.ledControl.bindBidirectional(port.ledProperty());
+        model.numaMode.bind(port.numaProerty().asString());
+        model.pciAddress.bind(port.pciAddrProperty());
+        model.rxQueueing.bind(port.rxQueueProperty());
         PortStatus.PortStatusResult.PortStatusResultRxInfo.PortStatusResultRxInfoGratArp grat_arp = port.getRx_info().getGrat_arp();
-        if (grat_arp.isIs_active()) {
-            String interval = String.valueOf(grat_arp.getInterval_sec());
-            model.gratARP.setValue( interval + " second(s)");
-        } else {
-            model.gratARP.setValue("Off");
-        }
+        model.gratARP.bind(grat_arp.stateProperty());
         
         model.flowControl.setValue(port.getFlowControl());
-        model.serviceModeProperty.setValue(port.service);
+        model.serviceModeProperty.bindBidirectional(port.serviceModeProerty());
 
         model.initHandlers(port);
         
@@ -101,11 +98,14 @@ public class PortModel {
         
         PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg.PortStatusResultAttrLayerCfgEther l2 = layerConfiguration.getEther();
         model.l2Configuration = new PortLayerConfigurationModel(ConfigurationMode.L2, l2.getSrc(), l2.getDst(), l2.getState());
+        model.l2Configuration.dstProperty().bindBidirectional(port.getAttr().getLayer_cfg().getEther().dstProperty());
 
         PortStatus.PortStatusResult.PortStatusResultAttr.PortStatusResultAttrLayerCfg.PortStatusResultAttrLayerCfgIPv4 l3 = layerConfiguration.getIpv4();
         model.l3Configuration = new PortLayerConfigurationModel(ConfigurationMode.L3, l3.getSrc(), l3.getDst(), l3.getState());
+        model.l3Configuration.srcProperty().bindBidirectional(port.getAttr().getLayer_cfg().getIpv4().srcProperty());
+        model.l3Configuration.dstProperty().bindBidirectional(port.getAttr().getLayer_cfg().getIpv4().dstProperty());
 
-        if (l3.getSrc() == null && l3.getDst() == null) {
+        if (Strings.isNullOrEmpty(l3.getSrc()) && Strings.isNullOrEmpty(l3.getDst())) {
             model.layerConfigurationType.setValue(ConfigurationMode.L2);
         } else {
             model.layerConfigurationType.setValue(ConfigurationMode.L3);
@@ -113,6 +113,7 @@ public class PortModel {
         model.linkControlSupportProperty().set(port.is_link_supported);
         model.ledControlProperty().set(port.is_led_supported);
         model.flowControlSupportProperty().set(port.is_fc_supported);
+        
         return model;
     }
 
@@ -120,6 +121,9 @@ public class PortModel {
         int portIndex = index.get();
         linkStatus.addListener((observable, oldValue, newValue) -> {
             try {
+                if (!isOwnedProperty.get()) {
+                    return;
+                }
                 serverRPCMethods.setPortAttribute(portIndex, newValue, null, null, null, null);
                 port.getAttr().getLink().setUp(newValue);
             } catch (Exception e) {
@@ -129,6 +133,9 @@ public class PortModel {
 
         ledControl.addListener((observable, oldValue, newValue) -> {
             try {
+                if (!isOwnedProperty.get()) {
+                    return;
+                }
                 serverRPCMethods.setPortAttribute(portIndex, null, null, newValue, null, null);
                 port.getAttr().getLed().setOn(newValue);
             } catch (Exception e) {
@@ -138,6 +145,9 @@ public class PortModel {
 
         multicast.addListener((observable, oldValue, newValue) -> {
             try {
+                if (!isOwnedProperty.get()) {
+                    return;
+                }
                 serverRPCMethods.setPortAttribute(portIndex, null, null, null, null, newValue);
                 port.getAttr().getMulticast().setEnabled(newValue);
             } catch (Exception e) {
@@ -147,6 +157,9 @@ public class PortModel {
 
         promiscuousMode.addListener((observable, oldValue, newValue) -> {
             try {
+                if (!isOwnedProperty.get()) {
+                    return;
+                }
                 serverRPCMethods.setPortAttribute(portIndex, null, newValue, null, null, null);
                 port.getAttr().getPromiscuous().setEnabled(newValue);
             } catch (Exception e) {
@@ -164,6 +177,9 @@ public class PortModel {
         });
 
         serviceModeProperty.addListener((observable, oldValue, newValue) -> {
+            if (!isOwnedProperty.get()) {
+                return;
+            }
             com.cisco.trex.stateless.model.PortStatus status = trexClient.serviceMode(portIndex, newValue);
             if (!newValue.equals(status.service)) {
                 guiLogger.appendText(LogType.ERROR, "Filed to set service mode for port " + portIndex);
@@ -172,6 +188,16 @@ public class PortModel {
         });
     }
 
+    public void acquire() throws PortAcquireException {
+        serverRPCMethods.acquireServerPort(getIndex(), false);
+        setIsOwned(true);
+    }
+
+    public void release() throws PortAcquireException {
+        serverRPCMethods.releasePort(getIndex(), false);
+        setIsOwned(false);
+    }
+    
     public boolean getServiceMode() {
         return serviceModeProperty.get();
     }
