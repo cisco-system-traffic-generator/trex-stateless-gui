@@ -45,4 +45,12 @@ public class IPV4AddressDataBinding extends AddressDataBinding implements Serial
         getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_IP_ADDRESS, "Fixed");
         getDestination().resetModel(StreamBuilderConstants.DEFAULT_DST_IP_ADDRESS, "Fixed");
     }
+    
+    public boolean hasInstructions() {
+        String srcMode = getSource().getModeProperty().get();
+        String dstMode = getSource().getModeProperty().get();
+        return (!"TRex Config".equals(srcMode) && !"Fixed".equals(srcMode))
+                || (!"TRex Config".equals(dstMode) && !"Fixed".equals(dstMode));
+
+    }
 }

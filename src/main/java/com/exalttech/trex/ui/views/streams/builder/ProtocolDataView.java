@@ -311,7 +311,10 @@ public class ProtocolDataView extends Accordion {
         instructionsList.addAll(vmInstructionBuilder.addVmInstruction(VMInstructionBuilder.InstructionType.IP_SRC, ipv4Src.getType(), ipv4Src.getCount(), ipv4Src.getStep(), ipv4Src.getAddress()));
         // add ipv4 checksum instructions
         instructionsList.addAll(vmInstructionBuilder.getPacketLenVMInstruction("pkt_len", selections.getFrameLengthType(), selections.getMinLength(), selections.getMaxLength(), selections.isTaggedVlanSelected()));
-        instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
+        
+        if (needFixIPChksm()) {
+            instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
+        }
 
         Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -329,6 +332,12 @@ public class ProtocolDataView extends Accordion {
 
     }
 
+    private boolean needFixIPChksm() {
+        return !selections.getFrameLengthType().equalsIgnoreCase("fixed")
+               || !ipv4View.getDestinationAddress().getType().equalsIgnoreCase("fixed")
+               || !ipv4View.getSourceAddress().getType().equalsIgnoreCase("fixed");
+    }
+    
     /**
      * Return stream flag value
      *

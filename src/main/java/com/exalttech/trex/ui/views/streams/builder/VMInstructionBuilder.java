@@ -141,12 +141,10 @@ public class VMInstructionBuilder {
      */
     public List<Object> addChecksumInstruction() {
         ArrayList<Object> vmInstructionList = new ArrayList<>();
-        if (isAddFixIPV4Checksum) {
-            LinkedHashMap<String, Object> checksumInstruction = new LinkedHashMap<>();
-            checksumInstruction.put("pkt_offset", isTaggedVlan ? 18 : 14);
-            checksumInstruction.put("type", "fix_checksum_ipv4");
-            vmInstructionList.add(checksumInstruction);
-        }
+        LinkedHashMap<String, Object> checksumInstruction = new LinkedHashMap<>();
+        checksumInstruction.put("pkt_offset", isTaggedVlan ? 18 : 14);
+        checksumInstruction.put("type", "fix_checksum_ipv4");
+        vmInstructionList.add(checksumInstruction);
 
         return vmInstructionList;
     }
@@ -270,10 +268,6 @@ public class VMInstructionBuilder {
         thirdVMInstruction.put("pkt_offset", taggedVlanSelected ? 20 : 16);
         thirdVMInstruction.put("type", "write_flow_var");
 
-        LinkedHashMap<String, Object> forthVMInstruction = new LinkedHashMap<>();
-        forthVMInstruction.put("pkt_offset", taggedVlanSelected ? 18 : 14);
-        forthVMInstruction.put("type", "fix_checksum_ipv4");
-
         LinkedHashMap<String, Object> fifthVMInstruction = new LinkedHashMap<>();
         fifthVMInstruction.put("add_value", taggedVlanSelected ? -38 : -34);
         fifthVMInstruction.put("is_big_endian", true);
@@ -284,11 +278,6 @@ public class VMInstructionBuilder {
         vmInstructionList.add(firstVMInstruction);
         vmInstructionList.add(secondVMInstruction);
         vmInstructionList.add(thirdVMInstruction);
-
-        if (!isAddFixIPV4Checksum) {
-            vmInstructionList.add(forthVMInstruction);
-            isAddFixIPV4Checksum = true;
-        }
 
         if (isUDPSelected) {
             vmInstructionList.add(fifthVMInstruction);

@@ -240,7 +240,7 @@ public class BuilderDataBinding implements Serializable {
             }
         }
 
-        if (isIPv4 || pktSizeChanged) {
+        if (ipv4DB.hasInstructions() || pktSizeChanged) {
             Map<String, String> flowWrVarParameters = new HashMap<>();
             flowWrVarParameters.put("offset", "IP");
             fieldEngine.getAsJsonArray("instructions").add(buildInstruction("STLVmFixIpv4", flowWrVarParameters));
