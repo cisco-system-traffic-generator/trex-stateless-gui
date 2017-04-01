@@ -104,6 +104,8 @@
             <Button fx:id="acquireReleaseBtn" text="Acquire" styleClass="normalButton" />
             <Label text="    "/>
             <Button fx:id="forceAcquireBtn" text="Force Acquire" styleClass="normalButton" />
+            <Label text="    "/>
+            <Button fx:id="resetBtn" text="Reset" styleClass="normalButton" />
         </HBox>
     </bottom>
 </fx:root>

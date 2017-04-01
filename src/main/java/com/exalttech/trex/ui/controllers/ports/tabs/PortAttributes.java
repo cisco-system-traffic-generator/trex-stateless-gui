@@ -1,7 +1,11 @@
 package com.exalttech.trex.ui.controllers.ports.tabs;
 
+import com.cisco.trex.stateless.TRexClient;
 import com.exalttech.trex.application.TrexApp;
+import com.exalttech.trex.core.AsyncResponseManager;
+import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCMethods;
+import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.models.FlowControl;
 import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.views.logs.LogType;
@@ -10,6 +14,7 @@ import com.exalttech.trex.util.Initialization;
 import com.google.common.base.Strings;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -19,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class PortAttributes extends BorderPane {
 
@@ -26,9 +32,7 @@ public class PortAttributes extends BorderPane {
 
     private LogsController guiLogger = LogsController.getInstance();
     
-    private final RPCMethods trexClient = TrexApp.injector.getInstance(RPCMethods.class);
-
-    private RPCMethods serverRPCMethods;
+    private final RPCMethods RPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
     
     private PortModel port;
     
@@ -84,8 +88,12 @@ public class PortAttributes extends BorderPane {
     
     @FXML
     private Button acquireReleaseBtn;
+    
     @FXML
     private Button forceAcquireBtn;
+    
+    @FXML
+    private Button resetBtn;
     
     private ChangeListener<Boolean> changeOnwershipListener = (observable , oldVal, newVal) -> {
         if (newVal) {
@@ -106,9 +114,6 @@ public class PortAttributes extends BorderPane {
     }
     
     public PortAttributes() {
-        
-        serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
-        
         Initialization.initializeFXML(this, "/fxml/ports/PortAttributes.fxml");
 
         acquireReleaseBtn.setOnAction(event -> {
@@ -133,7 +138,7 @@ public class PortAttributes extends BorderPane {
             try {
                 acquireReleaseBtn.setDisable(true);
                 forceAcquireBtn.setDisable(true);
-                trexClient.acquireServerPort(port.getIndex(), true);
+                RPCMethods.acquireServerPort(port.getIndex(), true);
                 acquireReleaseBtn.setDisable(false);
                 acquireReleaseBtn.setText("Release");
                 port.setIsOwned(true);
@@ -146,6 +151,30 @@ public class PortAttributes extends BorderPane {
                 LogsController.getInstance().appendText(LogType.ERROR, message);
 
             }
+        });
+
+        resetBtn.setOnAction(event -> {
+            resetBtn.setText("Resetting...");
+            resetBtn.setDisable(true);
+            LogsController.getInstance().appendText(LogType.INFO, "Resetting port: [" + port.getIndex() + "]");
+            final PortModel currentPortModel = port;
+            Task saveConfigurationTask = new Task<Void>() {
+                @Override
+                public Void call(){
+                    TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
+                    trexClient.resetPort(port.getIndex());
+                    return null;
+                }
+            };
+
+            saveConfigurationTask.setOnSucceeded(e -> {
+                PortsManager.getInstance().updatedPorts(Arrays.asList(currentPortModel.getIndex()));
+                LogsController.getInstance().appendText(LogType.INFO, "Port: [" + currentPortModel.getIndex() + "] has been set to default state.");
+                resetBtn.setText("Reset");
+                resetBtn.setDisable(false);
+            });
+            
+            new Thread(saveConfigurationTask).start();
         });
     }
 

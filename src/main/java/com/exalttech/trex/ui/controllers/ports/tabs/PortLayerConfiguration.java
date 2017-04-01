@@ -166,10 +166,11 @@ public class PortLayerConfiguration extends BorderPane {
                         trexClient.serviceMode(model.getIndex(), true);
                         trexClient.setL3Mode(model.getIndex(), null, portSrcIP, portDstIP);
                         String nextHopMac = trexClient.resolveArp(model.getIndex(), portSrcIP, portDstIP);
-                        
-                        trexClient.setL3Mode(model.getIndex(), nextHopMac, portSrcIP, portDstIP);
-                        AsyncResponseManager.getInstance().unmuteLogger();
-                        return Optional.of(nextHopMac);
+                        if (nextHopMac != null) {
+                            trexClient.setL3Mode(model.getIndex(), nextHopMac, portSrcIP, portDstIP);
+                            AsyncResponseManager.getInstance().unmuteLogger();
+                        }
+                        return nextHopMac == null ? Optional.empty() : Optional.of(nextHopMac);
                     } catch (Exception e) {
                         logger.error("Failed to set L3 mode: " + e.getMessage());
                     } finally {

@@ -254,11 +254,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 case PORT_RELEASED:
                 case PORT_ACQUIRED:
                 case PORT_ATTR_CHANGED:
-                case PORT_STARTED:
-                case PORT_STOPPED:
                     Platform.runLater(
                         () -> portManager.updatedPorts(Arrays.asList(portModel.getIndex()))
                     );
+                    break;
+                case PORT_STARTED:
+                case PORT_STOPPED:
+                    Platform.runLater(() -> onPortListUpdated(true));
                     break;
                 case SERVER_STOPPED:
                     resetApplication(true);
@@ -1421,7 +1423,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
             if (selected != null && selected.getTreeItemType() == TreeItemType.PORT) {
                 updateAcquireReleaseBtnState(false);
-//                loadPortModel();
             } else if (selected != null && selected.getTreeItemType() == TreeItemType.PORT_PROFILE
                     && !portManager.isCurrentUserOwner(getSelectedPortIndex())) {
                 viewProfile();
