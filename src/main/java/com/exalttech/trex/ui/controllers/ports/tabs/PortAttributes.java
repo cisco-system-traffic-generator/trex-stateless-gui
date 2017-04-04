@@ -214,6 +214,7 @@ public class PortAttributes extends BorderPane {
         link.selectedProperty().bindBidirectional(model.linkStatusProperty());
         led.selectedProperty().bindBidirectional(model.ledControlProperty());
         serviceMode.selectedProperty().bindBidirectional(model.serviceModeProperty());
+        flowControl.valueProperty().bindBidirectional(model.flowControlProperty());
         
         Arrays.asList(
                 link,
@@ -246,6 +247,7 @@ public class PortAttributes extends BorderPane {
             link.selectedProperty().unbindBidirectional(port.linkStatusProperty());
             led.selectedProperty().unbindBidirectional(port.ledControlProperty());
             serviceMode.selectedProperty().unbindBidirectional(port.serviceModeProperty());
+            flowControl.valueProperty().unbindBidirectional(port.flowControlProperty());
         }
         
         port = null;
