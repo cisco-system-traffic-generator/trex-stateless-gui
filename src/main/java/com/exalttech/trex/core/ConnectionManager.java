@@ -201,8 +201,9 @@ public class ConnectionManager {
             context = ZMQ.context(1);
             setRequester(context.socket(ZMQ.REQ));
             getRequester().setReceiveTimeOut(3000);
-            getRequester().connect(connectionString);
             LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex server: " + connectionString);
+            getRequester().connect(connectionString);
+            LogsController.getInstance().appendText(LogType.INFO, "Connected");
         } catch (Exception ex) {
             LOG.error("Invalid hostname", ex);
             return false;
@@ -251,6 +252,7 @@ public class ConnectionManager {
         LogsController.getInstance().appendText(LogType.INFO, "Connecting to Scapy server: " + "tcp://" + scapy_ip + ":" + scapy_port);
         scapyServerClient.connect("tcp://" + scapy_ip + ":" + scapy_port, 3000);
         if (scapyServerClient.isConnected()) {
+            LogsController.getInstance().appendText(LogType.INFO, "Connected");
             return true;
         }
         LogsController.getInstance().appendText(LogType.ERROR, "Scapy server is ureachable");

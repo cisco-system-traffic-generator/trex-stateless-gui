@@ -39,6 +39,7 @@ import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
 import com.exalttech.trex.ui.views.*;
+import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.ui.views.models.ProfileMultiplier;
@@ -344,6 +345,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Run loading system info thread
      */
     private void loadSystemInfo() {
+        LogsController.getInstance().appendText(LogType.INFO, "Loading port information");
         String data = ConnectionManager.getInstance().sendRequest("get_system_info", "");
         data = Util.removeFirstBrackets(data);
         systemInfoReq = (SystemInfoReq) Util.fromJSONString(data, SystemInfoReq.class);
@@ -355,6 +357,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         Gson gson = new Gson();
         JsonObject version = gson.fromJson(versionResponse, JsonArray.class).get(0).getAsJsonObject();
         systemInfoReq.getResult().setApiVersion(version.getAsJsonObject("result").getAsJsonPrimitive("version").getAsString());
+        LogsController.getInstance().appendText(LogType.INFO, "Loading port information complete");
     }
 
     /**
