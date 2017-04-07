@@ -15,8 +15,12 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.cisco.trex.stateless.TRexClient;
 import com.exalttech.trex.application.TrexApp;
-import com.exalttech.trex.core.*;
+import com.exalttech.trex.core.AsyncResponseManager;
+import com.exalttech.trex.core.ConnectionManager;
+import com.exalttech.trex.core.RPCMethods;
+import com.exalttech.trex.core.TrexEvent;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
@@ -65,6 +69,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -109,7 +114,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     @FXML
     AnchorPane profileContainer;
     @FXML
-    ComboBox profileListBox;
+    ComboBox<String> profileListBox;
     @FXML
     Label profileDetailLabel;
     @FXML
@@ -231,6 +236,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     private EventBus eventBus;
     private boolean resetAppInProgress;
+    private BooleanProperty trafficProfileLoadedProperty = new SimpleBooleanProperty(false);
+    private int prevViewvedPortPtofileIndex = -1;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -473,6 +480,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         portViewVisibilityProperty.setValue(true);
                         break;
                     case PORT_PROFILE:
+                        doAssignProfile = false;
                         viewProfile();
                         break;
                     default:
@@ -636,35 +644,27 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 assigned = new AssignedProfile();
                 assignedPortProfileMap.put(portIndex, assigned);
             }
-            fillAssignedProfileData(assigned);
-        } catch (IOException ex) {
+            
+            if (assigned.isProfileAssigned()) {
+                doAssignProfile = false;
+                profileListBox.getSelectionModel().select(assigned.getProfileName());
+                profileDetailContainer.setVisible(true);
+            } else {
+                profileDetailContainer.setVisible(false);
+                profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
+                doAssignProfile = true;
+            }
+            
+            tableView.reset();
+            if (!Util.isNullOrEmpty(assigned.getProfileName())) {
+                loadStreamTable(assigned.getProfileName());
+                // fill multiplier values
+                multiplierView.fillAssignedProfileValues(assigned);
+            }
+            prevViewvedPortPtofileIndex = portIndex;
+        } catch (Exception ex) {
             LOG.error("Error loading profile", ex);
         }
-    }
-
-    /**
-     * Fill port assigned profile selection
-     *
-     * @param assigned
-     * @throws IOException
-     */
-    private void fillAssignedProfileData(AssignedProfile assigned) throws IOException {
-
-        if (assigned.isProfileAssigned()) {
-            doAssignProfile = false;
-            profileListBox.getSelectionModel().select(assigned.getProfileName());
-        } else {
-            profileDetailContainer.setVisible(false);
-            profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
-            doAssignProfile = true;
-        }
-        tableView.reset();
-        if (!Util.isNullOrEmpty(assigned.getProfileName())) {
-            loadStreamTable(assigned.getProfileName());
-            // fill multiplier values
-            multiplierView.fillAssignedProfileValues(assigned);
-        }
-
     }
 
     /**
@@ -676,9 +676,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             // update selected profile
             AssignedProfile assignedProf = assignedPortProfileMap.get(portID);
+            if (assignedProf == null) {
+                return;
+            }
             assignedProf.setProfileName(profileName);
             assignedProf.setAllStreamsWithLatency(allStreamWithLatency);
             StreamValidation streamValidationGraph = serverRPCMethods.assignTrafficProfile(portID, loadedProfiles);
+            portManager.getPortModel(portID).setStreamLoaded(true);
             startStream.setDisable(false);
             // update current multiplier data 
             assignedProf.setRate(streamValidationGraph.getResult().getRate());
@@ -689,9 +693,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
             updateMultiplierValues(assignedProf);
         } catch (IOException | InvalidRPCResponseException | IncorrectRPCMethodException ex) {
+            startStream.setDisable(true);
+            portManager.getPortModel(portID).setStreamLoaded(false);
             LOG.error("Failed to load Stream", ex);
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }finally {
+            portManager.updatedPorts(Arrays.asList(portID));
         }
     }
 
@@ -733,26 +741,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         profileDetailLabel.disableProperty().bind(disableProfileProperty);
         profileListBox.getItems().clear();
         profileListBox.setItems(FXCollections.observableArrayList(getProfilesNameList()));
-        profileListBox.valueProperty().addListener((ObservableValue observable, Object oldValue, Object newValue) -> {
-            try {
-                String profileName = String.valueOf(newValue);
-                profileDetailContainer.setVisible(false);
-                if (!"".equals(profileName) && profileName != null && !Constants.SELECT_PROFILE.equals(profileName)) {
-                    profileDetailContainer.setVisible(true);
-                    currentSelectedProfile = profileName;
-                    loadStreamTable(profileName);
-                    if (loadedProfiles.length > 0 && doAssignProfile) {
-                        // assign profile to selected port
-                        assignProfile(profileName, 0, false, getSelectedPortIndex());
-                    }
-
-                    doAssignProfile = true;
-
-                }
-            } catch (Exception ex) {
-                LOG.error("Error loading profile", ex);
-            }
-        });
+        
+        profileListBox.valueProperty().addListener(new UpdateProfileListener<>(profileListBox.getSelectionModel()));
         updateProfileListProperty.bind(ProfileManager.getInstance().getUpdatedProperty());
         updateProfileListProperty.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             List<String> profiles = getProfilesNameList();
@@ -776,7 +766,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         addMenuItem(rightClickProfileMenu, "Play", ContextMenuClickType.PLAY, false);
         addMenuItem(rightClickProfileMenu, "Pause", ContextMenuClickType.PAUSE, false);
         addMenuItem(rightClickProfileMenu, "Stop", ContextMenuClickType.STOP, false);
-
+//        MenuItem unloadProfile = addMenuItem(rightClickProfileMenu, "Unload", ContextMenuClickType.UNLOAD_PROFILE, false);
+//        unloadProfile.disableProperty().bind(Bindings.or(
+//            trafficProfileLoadedProperty.not(),
+//            portManager.getPortModel(lastLoadedPortPtofileIndex).transmittStateProperty()
+//        ));
+//        
         rightClickGlobalMenu = new ContextMenu();
         addMenuItem(rightClickGlobalMenu, "Release All Ports", ContextMenuClickType.RELEASE_ALL, false);
         addMenuItem(rightClickGlobalMenu, "Acquire All ports", ContextMenuClickType.ACQUIRE_ALL, false);
@@ -877,11 +872,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @param type
      * @param isDisable
      */
-    private void addMenuItem(ContextMenu menu, String text, ContextMenuClickType type, boolean isDisable) {
+    private MenuItem addMenuItem(ContextMenu menu, String text, ContextMenuClickType type, boolean isDisable) {
         MenuItem item = new MenuItem(text);
         item.setDisable(isDisable);
         item.setOnAction(event -> handleContextMenuItemCLicked(type));
         menu.getItems().add(item);
+        return item;
     }
 
     /**
@@ -977,6 +973,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         } else {
             startTraffic(portID);
         }
+        portManager.updatedPorts(Arrays.asList(portID));
     }
 
     /**
@@ -1037,6 +1034,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         LOG.trace("Clicked on the Stop Transit Button with selectedPort [" + portID + "]");
         if (portID > -1) {
             serverRPCMethods.stopPortTraffic(portID);
+            portManager.updatedPorts(Arrays.asList(portID));
             if (!updateBtn.isDisabled() && !reAssign) {
                 enableUpdateBtn(false, false);
             }
@@ -1055,6 +1053,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             PortState portState = PortState.getPortStatus(port.getStatus());
             if (portManager.isCurrentUserOwner(port.getIndex()) && portState == PortState.TX) {
                 serverRPCMethods.stopPortTraffic(port.getIndex());
+                portManager.updatedPorts(Arrays.asList(port.getIndex()));
             }
         });
         enableUpdateBtn(false, false);
@@ -1076,6 +1075,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 enableUpdateBtn(false, false);
                 serverRPCMethods.pauseTraffic(portID);
             }
+            portManager.updatedPorts(Arrays.asList(portID));
         }
     }
 
@@ -1099,26 +1099,29 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void handleContextMenuItemCLicked(ContextMenuClickType type) {
         try {
+            Integer portIndex = getSelectedPortIndex();
             switch (type) {
                 case ACQUIRE:
                     acquirePort();
                     break;
                 case FORCE_ACQUIRE:
-                    serverRPCMethods.acquireServerPort(getSelectedPortIndex(), true);
-                    portManager.getPortModel(getSelectedPortIndex()).setIsOwned(true);
+                    serverRPCMethods.acquireServerPort(portIndex, true);
+                    portManager.getPortModel(portIndex).setIsOwned(true);
                     portManager.updatePortForce();
                     break;
                 case RELEASE_ACQUIRE:
-                    releasePort(getSelectedPortIndex(), true, true);
+                    releasePort(portIndex, true, true);
                     break;
                 case PLAY:
-                    doStartResume(getSelectedPortIndex());
+                    doStartResume(portIndex);
                     break;
                 case PAUSE:
-                    serverRPCMethods.pauseTraffic(getSelectedPortIndex());
+                    serverRPCMethods.pauseTraffic(portIndex);
+                    portManager.updatedPorts(Arrays.asList(portIndex));
                     break;
                 case STOP:
-                    serverRPCMethods.stopPortTraffic(getSelectedPortIndex());
+                    serverRPCMethods.stopPortTraffic(portIndex);
+                    portManager.updatedPorts(Arrays.asList(portIndex));
                     break;
                 case ACQUIRE_ALL:
                     acquireAllPorts(false, false);
@@ -1132,6 +1135,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 case RELEASE_ALL:
                     releaseAllPort(true);
                     portManager.updatePortForce();
+                    break;
+                    
+                case UNLOAD_PROFILE:
+                    profileListBox.setValue(Constants.SELECT_PROFILE);
                     break;
                 default:
                     break;
@@ -1294,7 +1301,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             boolean isOwner = portManager.isCurrentUserOwner(portIndex);
             switch (state) {
                 case STREAMS:
-                    startStream.setDisable(!isOwner);
+                    startStream.setDisable(!isOwner || !portManager.getPortModel(portIndex).isStreamLoaded());
                     break;
                 case TX:
                     pauseStream.setDisable(!isOwner);
@@ -1586,6 +1593,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         RELEASE_ACQUIRE,
         PLAY,
         STOP,
+        UNLOAD_PROFILE,
         PAUSE,
         ACQUIRE_ALL,
         FORCE_ACQUIRE_ALL,
@@ -1619,5 +1627,105 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 return;
             }
         }
+    }
+
+    public class UpdateProfileListener<T> implements ChangeListener<T> {
+
+        private final SelectionModel<T> selectionModel;
+        private boolean reverting = false;
+
+        public UpdateProfileListener(SelectionModel<T> selectionModel) {
+            if (selectionModel == null) {
+                throw new IllegalArgumentException();
+            }
+            this.selectionModel = selectionModel;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
+            if (reverting || lastLoadedPortPtofileIndex != prevViewvedPortPtofileIndex) {
+                return;
+            }
+            if (!isAllowed()) {
+                reverting = true;
+                Platform.runLater(() -> {
+                    selectionModel.select(oldValue);
+                    reverting = false;
+                });
+                return;
+            }
+
+            try {
+                doAssignProfile = true;
+                String profileName = String.valueOf(newValue);
+                profileDetailContainer.setVisible(false);
+                if (!"".equals(profileName) && profileName != null && !Constants.SELECT_PROFILE.equals(profileName)) {
+                    profileDetailContainer.setVisible(true);
+                    currentSelectedProfile = profileName;
+                    loadStreamTable(profileName);
+                    if (loadedProfiles.length > 0 && doAssignProfile) {
+                        // assign profile to selected port
+                        assignProfile(profileName, 0, false, getSelectedPortIndex());
+                    }
+                    trafficProfileLoadedProperty.set(true);
+                } else {
+                    unloadProfile();
+                }
+            } catch (Exception ex) {
+                LOG.error("Error loading profile", ex);
+            }
+        }
+
+        protected boolean isAllowed() {
+            int portIndex = getSelectedPortIndex();
+            PortModel currentPortModel = portManager.getPortModel(portIndex);
+            boolean isPortTransmit = currentPortModel.transmittStateProperty().get();
+            
+            if (!isPortTransmit && selectionModel.getSelectedItem().equals(Constants.SELECT_PROFILE)) {
+                return true;
+            }
+            
+            if (isPortTransmit) {
+                String header = "Port "+portIndex+" in TX mode";
+                String content = "Assigning another profile to the port will stop it. Proceed?";
+                Optional result = runConfirmationDialog(header, content);
+                return result.get() == ButtonType.OK;
+            }
+            return true;
+        }
+    }
+
+    private void unloadProfile() {
+        if (currentSelectedProfile == null) {
+            return;
+        }
+        Task<Void> unloadProfileTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
+                trexClient.stopTraffic(lastLoadedPortPtofileIndex);
+                trexClient.removeAllStreams(lastLoadedPortPtofileIndex);
+                return null;
+            }
+        };
+        
+        unloadProfileTask.setOnSucceeded(event -> {
+            LogsController.getInstance().appendText(LogType.INFO, currentSelectedProfile +" profile unloaded");
+            currentSelectedProfile = Constants.SELECT_PROFILE;
+            assignedPortProfileMap.put(lastLoadedPortPtofileIndex, new AssignedProfile());
+            trafficProfileLoadedProperty.set(false);
+            portManager.updatedPorts(Arrays.asList(lastLoadedPortPtofileIndex));
+        });
+        LogsController.getInstance().appendText(LogType.INFO, "Unloading " + currentSelectedProfile +" profile");
+        new Thread(unloadProfileTask).start();
+    }
+
+    private Optional runConfirmationDialog(String header, String content) {
+        Dialog alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.getDialogPane().getStyleClass().add("warning");
+        alert.setTitle("Warning");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        return alert.showAndWait();
     }
 }

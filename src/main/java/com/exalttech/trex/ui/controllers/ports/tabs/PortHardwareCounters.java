@@ -49,7 +49,7 @@ public class PortHardwareCounters extends BorderPane {
         statsTableGenerator = new StatsTableGenerator();
         
         refreshingService = new RefreshingService();
-        refreshingService.setPeriod(Duration.seconds(2));
+        refreshingService.setPeriod(Duration.seconds(0.5));
         refreshingService.setOnSucceeded(e -> update());
         
         resetCounters.setOnAction(e -> resetCountersRequested = true);

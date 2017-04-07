@@ -8,6 +8,7 @@ import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableBooleanValue;
 import org.testng.util.Strings;
 
 import java.util.HashMap;
@@ -57,6 +58,8 @@ public class PortModel {
     private RPCMethods serverRPCMethods;
     private TRexClient trexClient;
     private LogsController guiLogger;
+    private boolean streamLoaded;
+    private BooleanProperty isTransmitProperty = new SimpleBooleanProperty(false);
 
     private PortModel() {
         guiLogger = LogsController.getInstance();
@@ -85,6 +88,7 @@ public class PortModel {
         });
         
         model.portSpeed.bind(port.getAttr().speedProperty().asString());
+        model.portStatus.addListener((_o, o, n) -> model.isTransmitProperty.set(n.equalsIgnoreCase("tx") || n.equalsIgnoreCase("pause")));
         model.portStatus.bindBidirectional(port.statusProerty());
         model.capturingMode.bind(port.captureStatusProperty());
         model.linkStatus.bindBidirectional(port.linkProperty());
@@ -391,5 +395,17 @@ public class PortModel {
     
     public PortLayerConfigurationModel getL3LayerConfiguration() {
         return l3Configuration;
+    }
+
+    public void setStreamLoaded(boolean streamLoaded) {
+        this.streamLoaded = streamLoaded;
+    }
+    
+    public boolean isStreamLoaded() {
+        return streamLoaded;
+    }
+
+    public BooleanProperty transmittStateProperty() {
+        return isTransmitProperty;
     }
 }

@@ -793,32 +793,30 @@ public class ConnectionManager {
      * @param request
      * @return
      */
-    private byte[] getServerRPCResponse(String request) {
-        synchronized (this) {
-            try {
-                // prepare compression header
-                ByteBuffer headerByteBuffer = ByteBuffer.allocate(8);
-                headerByteBuffer.put((byte) 0xAB);
-                headerByteBuffer.put((byte) 0xE8);
-                headerByteBuffer.put((byte) 0x5C);
-                headerByteBuffer.put((byte) 0xEA);
-                headerByteBuffer.putInt(request.length());
-                byte[] headerBytes = headerByteBuffer.array();
-                // compress request
-                byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
-                byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
-                getRequester().send(finalRequest);
-                byte[] serverResponse = getRequester().recv(0);
-                // decompressed response
-                if (serverResponse != null) {
-                    return getDecompressedString(serverResponse).getBytes();
-                }
-            } catch (IOException ex) {
-                LOG.error("Error sending request", ex);
-                return null;
+    synchronized private byte[] getServerRPCResponse(String request) {
+        try {
+            // prepare compression header
+            ByteBuffer headerByteBuffer = ByteBuffer.allocate(8);
+            headerByteBuffer.put((byte) 0xAB);
+            headerByteBuffer.put((byte) 0xE8);
+            headerByteBuffer.put((byte) 0x5C);
+            headerByteBuffer.put((byte) 0xEA);
+            headerByteBuffer.putInt(request.length());
+            byte[] headerBytes = headerByteBuffer.array();
+            // compress request
+            byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
+            byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
+            requester.send(finalRequest);
+            byte[] serverResponse = requester.recv(0);
+            // decompressed response
+            if (serverResponse != null) {
+                return getDecompressedString(serverResponse).getBytes();
             }
+        } catch (IOException ex) {
+            LOG.error("Error sending request", ex);
             return null;
         }
+        return null;
     }
 
     private byte[] concatByteArrays(byte[] firstDataArray, byte[] secondDataArray) {

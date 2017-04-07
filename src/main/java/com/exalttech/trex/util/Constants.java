@@ -15,9 +15,6 @@
  */
 package com.exalttech.trex.util;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  *
  * @author GeorgeKh
@@ -177,7 +174,7 @@ public class Constants {
     /**
      *
      */
-    public static final String SELECT_PROFILE = "Select profile";
+    public static final String SELECT_PROFILE = "Not Selected";
 
     /**
      *
