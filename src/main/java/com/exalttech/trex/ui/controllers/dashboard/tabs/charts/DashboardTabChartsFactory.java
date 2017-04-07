@@ -13,7 +13,7 @@ public class DashboardTabChartsFactory {
         public static final String MAX_LATENCY = "Max Latency";
         public static final String AVG_LATENCY = "Avg Latency";
         public static final String JITTER_LATENCY = "Jitter Latency";
-        public static final String LATENCY_WINDOW = "Latency Window";
+        public static final String TEMPORARY_MAX_LATENCY = "Temporary Max Latency";
         public static final String LATENCY_HISTOGRAM = "Latency Histogram";
     }
 
@@ -35,8 +35,8 @@ public class DashboardTabChartsFactory {
                 return new DashboardTabChartsAvgLatency(interval);
             case ChartTypes.JITTER_LATENCY:
                 return new DashboardTabChartsLatencyJitter(interval);
-            case ChartTypes.LATENCY_WINDOW:
-                return new DashboardTabChartsLatencyWindow(interval);
+            case ChartTypes.TEMPORARY_MAX_LATENCY:
+                return new DashboardTabChartsTemporaryMaxLatency(interval);
             case ChartTypes.LATENCY_HISTOGRAM:
                 return new DashboardTabChartsLatencyHistogram();
         }

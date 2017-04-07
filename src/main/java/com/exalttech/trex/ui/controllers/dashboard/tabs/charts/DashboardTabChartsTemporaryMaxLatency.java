@@ -8,13 +8,13 @@ import com.exalttech.trex.ui.views.statistics.LatencyStatsLoader;
 import com.exalttech.trex.util.ArrayHistory;
 
 
-public class DashboardTabChartsLatencyWindow extends DashboardTabChartsLatencyLine {
-    public DashboardTabChartsLatencyWindow(IntegerProperty interval) {
+public class DashboardTabChartsTemporaryMaxLatency extends DashboardTabChartsLatencyLine {
+    public DashboardTabChartsTemporaryMaxLatency(IntegerProperty interval) {
         super(interval);
     }
 
     protected String getYChartLabel() {
-        return "Latency Window (\u00B5s)";
+        return "Temporary Max Latency (\u00B5s)";
     }
 
     protected Map<String, ArrayHistory<Number>> getHistory() {
