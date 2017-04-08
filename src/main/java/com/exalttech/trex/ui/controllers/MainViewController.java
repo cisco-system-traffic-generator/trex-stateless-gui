@@ -766,12 +766,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         addMenuItem(rightClickProfileMenu, "Play", ContextMenuClickType.PLAY, false);
         addMenuItem(rightClickProfileMenu, "Pause", ContextMenuClickType.PAUSE, false);
         addMenuItem(rightClickProfileMenu, "Stop", ContextMenuClickType.STOP, false);
-//        MenuItem unloadProfile = addMenuItem(rightClickProfileMenu, "Unload", ContextMenuClickType.UNLOAD_PROFILE, false);
-//        unloadProfile.disableProperty().bind(Bindings.or(
-//            trafficProfileLoadedProperty.not(),
-//            portManager.getPortModel(lastLoadedPortPtofileIndex).transmittStateProperty()
-//        ));
-//        
+        
         rightClickGlobalMenu = new ContextMenu();
         addMenuItem(rightClickGlobalMenu, "Release All Ports", ContextMenuClickType.RELEASE_ALL, false);
         addMenuItem(rightClickGlobalMenu, "Acquire All ports", ContextMenuClickType.ACQUIRE_ALL, false);
@@ -1563,6 +1558,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void updateAcquireReleaseBtnState(boolean forceDisable) {
         int selectedPort = getSelectedPortIndex();
+        if (selectedPort == -1) {
+            return;
+        }
         acquirePort.setDisable(!(!forceDisable && portManager.isPortFree(selectedPort)));
         releasePort.setDisable(!(!forceDisable && portManager.isCurrentUserOwner(selectedPort)));
     }
@@ -1679,7 +1677,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         protected boolean isAllowed() {
             int portIndex = getSelectedPortIndex();
             PortModel currentPortModel = portManager.getPortModel(portIndex);
-            boolean isPortTransmit = currentPortModel.transmittStateProperty().get();
+            boolean isPortTransmit = currentPortModel.transmitStateProperty().get();
             
             if (!isPortTransmit && selectionModel.getSelectedItem().equals(Constants.SELECT_PROFILE)) {
                 return true;

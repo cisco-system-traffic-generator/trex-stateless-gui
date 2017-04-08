@@ -405,7 +405,7 @@ public class PortModel {
         return streamLoaded;
     }
 
-    public BooleanProperty transmittStateProperty() {
+    public BooleanProperty transmitStateProperty() {
         return isTransmitProperty;
     }
 }
