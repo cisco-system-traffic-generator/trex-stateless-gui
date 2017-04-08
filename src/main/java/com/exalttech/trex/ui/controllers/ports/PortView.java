@@ -5,6 +5,7 @@ import com.exalttech.trex.ui.controllers.ports.tabs.PortHardwareCounters;
 import com.exalttech.trex.ui.controllers.ports.tabs.PortLayerConfiguration;
 import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.util.Initialization;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
 
@@ -37,7 +38,10 @@ public class PortView extends TabPane {
         hardwareCounters.bindModel(model, runPolling);
 
         layerConfig.disableProperty().unbind();
-        layerConfig.setDisable(model.isOwnedProperty().get());
-        layerConfig.disableProperty().bind(model.isOwnedProperty().not());
+        layerConfig.setDisable(!model.isOwnedProperty().get());
+        layerConfig.disableProperty().bind(Bindings.or(
+            model.isOwnedProperty().not(),
+            model.transmitStateProperty())
+        );
     }
 }
