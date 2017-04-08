@@ -295,10 +295,12 @@ public class PortLayerConfiguration extends BorderPane {
             return;
         }
         
-        l2Destination.textProperty().unbind();
-        l2Source.textProperty().unbind();
-        l3Destination.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().dstProperty());
-        l3Source.textProperty().unbind();
+        l2Destination.textProperty().unbindBidirectional(this.model.getL2LayerConfiguration().dstProperty());
+        l2Source.textProperty().unbindBidirectional(this.model.getL2LayerConfiguration().srcProperty());
+
+        l3Destination.textProperty().unbindBidirectional(this.model.getL3LayerConfiguration().dstProperty());
+        l3Source.textProperty().unbindBidirectional(this.model.getL3LayerConfiguration().srcProperty());
+        
         arpStatus.textProperty().unbindBidirectional(model.getL3LayerConfiguration().stateProperty());
         model.layerConfigurationTypeProperty().removeListener(configurationModeChangeListener);
     }
