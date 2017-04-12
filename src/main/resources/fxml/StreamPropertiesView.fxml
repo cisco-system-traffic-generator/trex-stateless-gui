@@ -50,7 +50,7 @@
                      mnemonicParsing="false"
                      text="Multi-Burst"
                      toggleGroup="$streamModeGroup"
-                     AnchorPane.leftAnchor="8.0"/>
+                     AnchorPane.leftAnchor="10.0"/>
     </AnchorPane>
     <AnchorPane prefWidth="100.0"
                 prefHeight="150.0"
