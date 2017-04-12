@@ -10,68 +10,277 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane id="propertiesTabContainer" minHeight="0.0" minWidth="0.0" prefHeight="545.0" prefWidth="994.0" style="-fx-background-color:white" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.StreamPropertiesViewController">
-    <AnchorPane layoutX="8.0" prefHeight="150.0" prefWidth="120.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="10.0">
-        <Label styleClass="streamPropertiesLabel" text="Mode" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+<AnchorPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.exalttech.trex.ui.controllers.StreamPropertiesViewController"
+            id="propertiesTabContainer"
+            minWidth="0.0"
+            minHeight="0.0"
+            prefWidth="994.0"
+            prefHeight="545.0"
+            style="-fx-background-color:white">
+    <AnchorPane layoutX="8.0"
+                prefWidth="120.0"
+                prefHeight="150.0"
+                style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+                AnchorPane.topAnchor="10.0"
+                AnchorPane.leftAnchor="8.0">
+        <Label styleClass="streamPropertiesLabel"
+               text="Mode"
+               AnchorPane.topAnchor="10.0"
+               AnchorPane.leftAnchor="10.0"/>
         <fx:define>
-            <ToggleGroup fx:id="streamModeGroup" />
+            <ToggleGroup fx:id="streamModeGroup"/>
         </fx:define>
-        <RadioButton id="continous_mode" fx:id="continuousMode" layoutY="41.0" mnemonicParsing="false" selected="true" text="Continuous" toggleGroup="$streamModeGroup" AnchorPane.leftAnchor="10.0"/>
-        <RadioButton id="burst" fx:id="burstMode" layoutY="71.0" mnemonicParsing="false" text="Burst" toggleGroup="$streamModeGroup" AnchorPane.leftAnchor="10.0" />
-        <RadioButton fx:id="multiBurstMode" layoutY="100.0" mnemonicParsing="false" text="Multi-Burst" toggleGroup="$streamModeGroup" AnchorPane.leftAnchor="8.0" />
+        <RadioButton fx:id="continuousMode"
+                     layoutY="41.0"
+                     mnemonicParsing="false"
+                     selected="true"
+                     text="Continuous"
+                     toggleGroup="$streamModeGroup"
+                     AnchorPane.leftAnchor="10.0"/>
+        <RadioButton fx:id="burstMode"
+                     layoutY="71.0"
+                     mnemonicParsing="false"
+                     text="Burst"
+                     toggleGroup="$streamModeGroup"
+                     AnchorPane.leftAnchor="10.0"/>
+        <RadioButton fx:id="multiBurstMode"
+                     layoutY="100.0"
+                     mnemonicParsing="false"
+                     text="Multi-Burst"
+                     toggleGroup="$streamModeGroup"
+                     AnchorPane.leftAnchor="8.0"/>
     </AnchorPane>
-    <AnchorPane prefHeight="150.0" prefWidth="100.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="133.0" AnchorPane.topAnchor="10.0">
-        <CheckBox id="enabledCheckBox" fx:id="enabledCB" mnemonicParsing="false" selected="true" text="Enabled" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
-        <Label styleClass="streamPropertiesLabel" text="Misc" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-        <CheckBox fx:id="selfStartCB" mnemonicParsing="false" selected="true" text="Self start" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
+    <AnchorPane prefWidth="100.0"
+                prefHeight="150.0"
+                style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+                AnchorPane.topAnchor="10.0"
+                AnchorPane.leftAnchor="133.0">
+        <CheckBox fx:id="enabledCB"
+                  mnemonicParsing="false"
+                  selected="true"
+                  text="Enabled"
+                  AnchorPane.topAnchor="40.0"
+                  AnchorPane.leftAnchor="10.0"/>
+        <Label styleClass="streamPropertiesLabel"
+               text="Misc"
+               AnchorPane.topAnchor="10.0"
+               AnchorPane.leftAnchor="10.0"/>
+        <CheckBox fx:id="selfStartCB"
+                  mnemonicParsing="false"
+                  selected="true"
+                  text="Self start"
+                  AnchorPane.topAnchor="70.0"
+                  AnchorPane.leftAnchor="10.0"/>
     </AnchorPane>
-    <AnchorPane id="NumbersContainer" fx:id="numbersContainer" disable="false" prefHeight="150.0" prefWidth="230.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="238.0" AnchorPane.topAnchor="10.0">
-        <Label styleClass="streamPropertiesLabel" text="Numbers" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-        <Label fx:id="numOfPacketLabel" text="Number of Packets" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
-        <Label fx:id="numOfBurstLabel" text="Number of Burst" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
-        <Label fx:id="packetPBurstTitle" text="Packets per  Burst" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="100.0" />
-        <TextField fx:id="numOfPacketTB" layoutY="38.0" prefWidth="85.0" AnchorPane.leftAnchor="140.0" />
-        <TextField fx:id="numOfBurstTB" layoutY="68.0" prefWidth="85.0" AnchorPane.leftAnchor="140.0" />
-        <TextField fx:id="packetPBurstTB" layoutY="98.0" prefWidth="85.0" AnchorPane.leftAnchor="140.0" />
+    <AnchorPane fx:id="numbersContainer"
+                prefWidth="230.0"
+                prefHeight="150.0"
+                style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+                AnchorPane.topAnchor="10.0"
+                AnchorPane.leftAnchor="238.0">
+        <Label styleClass="streamPropertiesLabel"
+               text="Numbers"
+               AnchorPane.topAnchor="10.0"
+               AnchorPane.leftAnchor="10.0"/>
+        <Label fx:id="numOfPacketLabel"
+               text="Number of Packets"
+               AnchorPane.topAnchor="40.0"
+               AnchorPane.leftAnchor="10.0"/>
+        <Label fx:id="numOfBurstLabel"
+               text="Number of Burst"
+               AnchorPane.topAnchor="70.0"
+               AnchorPane.leftAnchor="10.0"/>
+        <Label fx:id="packetPBurstTitle"
+               text="Packets per Burst"
+               AnchorPane.topAnchor="100.0"
+               AnchorPane.leftAnchor="10.0"/>
+        <TextField fx:id="numOfPacketTB"
+                   layoutY="38.0"
+                   prefWidth="85.0"
+                   AnchorPane.leftAnchor="140.0"/>
+        <TextField fx:id="numOfBurstTB"
+                   layoutY="68.0"
+                   prefWidth="85.0"
+                   AnchorPane.leftAnchor="140.0"/>
+        <TextField fx:id="packetPBurstTB"
+                   layoutY="98.0"
+                   prefWidth="85.0"
+                   AnchorPane.leftAnchor="140.0"/>
     </AnchorPane>
-    <AnchorPane prefHeight="150.0" prefWidth="250.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="473.0" AnchorPane.topAnchor="10.0">
-        <Label styleClass="streamPropertiesLabel" text="Rate" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+    <AnchorPane prefWidth="250.0"
+                prefHeight="150.0"
+                style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+                AnchorPane.topAnchor="10.0"
+                AnchorPane.leftAnchor="473.0">
+        <Label styleClass="streamPropertiesLabel"
+               text="Rate"
+               AnchorPane.topAnchor="10.0"
+               AnchorPane.leftAnchor="10.0"/>
         <fx:define>
             <ToggleGroup fx:id="rateGroup" />
         </fx:define>
-        <RadioButton fx:id="packetSecRG" mnemonicParsing="false" selected="true" text="Packet/Sec" toggleGroup="$rateGroup" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0"/>
-        <RadioButton fx:id="packetBitsSecRG" mnemonicParsing="false" text="Packets Bits/Sec" toggleGroup="$rateGroup" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
-        <TextField fx:id="packetSecTB" layoutY="38.0" prefWidth="80.0" text="1" AnchorPane.rightAnchor="5.0" />
-        <TextField fx:id="packetBitsSecTB" disable="true" layoutY="68.0" prefWidth="80.0" AnchorPane.rightAnchor="5.0" />
-        <TextField fx:id="burstSecTB" disable="true" layoutY="98.0" prefWidth="80.0" AnchorPane.rightAnchor="5.0" />
-        <Label disable="true" layoutX="29.0" layoutY="102.0" text="Burst/Sec" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="100.0" />
+        <RadioButton fx:id="packetSecRG"
+                     mnemonicParsing="false"
+                     selected="true"
+                     text="Packet/Sec"
+                     toggleGroup="$rateGroup"
+                     AnchorPane.topAnchor="40.0"
+                     AnchorPane.leftAnchor="10.0"/>
+        <RadioButton fx:id="packetBitsSecRG"
+                     mnemonicParsing="false"
+                     text="Packets Bits/Sec"
+                     toggleGroup="$rateGroup"
+                     AnchorPane.topAnchor="70.0"
+                     AnchorPane.leftAnchor="10.0"/>
+        <TextField fx:id="packetSecTB"
+                   layoutY="38.0"
+                   prefWidth="80.0"
+                   text="1"
+                   AnchorPane.rightAnchor="5.0"/>
+        <TextField fx:id="packetBitsSecTB"
+                   disable="true"
+                   layoutY="68.0"
+                   prefWidth="80.0"
+                   AnchorPane.rightAnchor="5.0"/>
+        <TextField fx:id="burstSecTB"
+                   disable="true"
+                   layoutY="98.0"
+                   prefWidth="80.0"
+                   AnchorPane.rightAnchor="5.0"/>
+        <Label disable="true"
+               layoutX="29.0"
+               layoutY="102.0"
+               text="Burst/Sec"
+               AnchorPane.leftAnchor="30.0"
+               AnchorPane.topAnchor="100.0"/>
     </AnchorPane>
-    <AnchorPane fx:id="afterStreamContainer" prefHeight="150.0" prefWidth="240.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="728.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-        <Label styleClass="streamPropertiesLabel" text="After this stream" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+    <AnchorPane fx:id="afterStreamContainer"
+                prefWidth="240.0"
+                prefHeight="150.0"
+                style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+                AnchorPane.leftAnchor="728.0"
+                AnchorPane.topAnchor="10.0"
+                AnchorPane.rightAnchor="10.0">
+        <Label styleClass="streamPropertiesLabel"
+               text="After this stream"
+               AnchorPane.topAnchor="10.0"
+               AnchorPane.leftAnchor="10.0"/>
         <fx:define>
             <ToggleGroup fx:id="nextStreamGroup" />
         </fx:define>
-        <RadioButton fx:id="stopRG" mnemonicParsing="false" text="Stop" toggleGroup="$nextStreamGroup" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0"/>
-        <RadioButton fx:id="gotoRG" mnemonicParsing="false" text="Goto Stream" toggleGroup="$nextStreamGroup" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
-        <CheckBox fx:id="timeInLoopCB" disable="true" layoutY="100.0" mnemonicParsing="false" text="Time in loop" AnchorPane.leftAnchor="20.0" />
-        <TextField fx:id="timeInLoopTF" disable="true" layoutY="97.0" prefWidth="130.0" text="0" AnchorPane.rightAnchor="5.0" />
-        <ComboBox id="streamCB" fx:id="nextStreamCB" layoutY="68.0" prefHeight="22.0" prefWidth="130.0" AnchorPane.rightAnchor="6.0"/>
+        <RadioButton fx:id="stopRG"
+                     mnemonicParsing="false"
+                     text="Stop"
+                     toggleGroup="$nextStreamGroup"
+                     AnchorPane.topAnchor="40.0"
+                     AnchorPane.leftAnchor="10.0"/>
+        <RadioButton fx:id="gotoRG"
+                     mnemonicParsing="false"
+                     text="Goto Stream"
+                     toggleGroup="$nextStreamGroup"
+                     AnchorPane.topAnchor="70.0"
+                     AnchorPane.leftAnchor="10.0"/>
+        <CheckBox fx:id="timeInLoopCB"
+                  disable="true"
+                  layoutY="100.0"
+                  mnemonicParsing="false"
+                  text="Time in loop"
+                  AnchorPane.leftAnchor="20.0"/>
+        <TextField fx:id="timeInLoopTF"
+                   disable="true"
+                   layoutY="97.0"
+                   prefWidth="130.0"
+                   text="0"
+                   AnchorPane.rightAnchor="5.0"/>
+        <ComboBox fx:id="nextStreamCB"
+                  layoutY="68.0"
+                  prefHeight="22.0"
+                  prefWidth="130.0"
+                  AnchorPane.rightAnchor="6.0"/>
     </AnchorPane>
-    <AnchorPane layoutX="8.0" prefHeight="150.0" prefWidth="980.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="170.0">
-        <ImageView fx:id="gapsImageContainer" fitHeight="32.0" fitWidth="725.0" pickOnBounds="true" preserveRatio="true" smooth="true" style="" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="45.0" />
-        <Label layoutY="104.0" text="ISG" AnchorPane.leftAnchor="10.0" />
-        <Label fx:id="ibgTitle" layoutX="279.0" layoutY="104.0" text="IBG" AnchorPane.leftAnchor="279.0" />
-        <TextField fx:id="ibgTF" layoutX="319.0" layoutY="101.0" prefWidth="200.0" AnchorPane.leftAnchor="319.0" />
-        <Label disable="true" layoutX="628.0" layoutY="104.0" text="IPG" AnchorPane.leftAnchor="540.0" />
-        <TextField fx:id="ipgTF" disable="true" layoutX="662.0" layoutY="101.0" prefWidth="200.0" visible="true" AnchorPane.leftAnchor="580.0" />
-        <TextField fx:id="isgTF" layoutX="53.0" layoutY="101.0" prefWidth="200.0" text="0.0" />
-        <Label styleClass="streamPropertiesLabel" text="Gaps(in seconds)" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+    <AnchorPane layoutX="8.0"
+                prefHeight="150.0"
+                prefWidth="980.0"
+                style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+                AnchorPane.topAnchor="170.0"
+                AnchorPane.rightAnchor="10.0"
+                AnchorPane.leftAnchor="8.0">
+        <ImageView fx:id="gapsImageContainer"
+                   fitHeight="32.0"
+                   fitWidth="725.0"
+                   pickOnBounds="true"
+                   preserveRatio="true"
+                   AnchorPane.topAnchor="45.0"
+                   AnchorPane.leftAnchor="15.0"/>
+        <Label layoutY="104.0"
+               text="ISG"
+               AnchorPane.leftAnchor="10.0"/>
+        <Label fx:id="ibgTitle"
+               layoutX="279.0"
+               layoutY="104.0"
+               text="IBG"
+               AnchorPane.leftAnchor="279.0"/>
+        <TextField fx:id="ibgTF"
+                   layoutX="319.0"
+                   layoutY="101.0"
+                   prefWidth="200.0"
+                   AnchorPane.leftAnchor="319.0"/>
+        <Label disable="true"
+               layoutX="628.0"
+               layoutY="104.0"
+               text="IPG"
+               AnchorPane.leftAnchor="540.0"/>
+        <TextField fx:id="ipgTF"
+                   disable="true"
+                   layoutX="662.0"
+                   layoutY="101.0"
+                   prefWidth="200.0"
+                   AnchorPane.leftAnchor="580.0"/>
+        <TextField fx:id="isgTF"
+                   layoutX="53.0"
+                   layoutY="101.0"
+                   prefWidth="200.0"
+                   text="0.0"/>
+        <Label styleClass="streamPropertiesLabel"
+               text="Gaps(in seconds)"
+               AnchorPane.leftAnchor="10.0"
+               AnchorPane.topAnchor="10.0"/>
     </AnchorPane>
-    <AnchorPane layoutX="9.0" prefHeight="150.0" prefWidth="980.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="330.0">
-        <Label styleClass="streamPropertiesLabel" text="RX Stats" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-        <CheckBox fx:id="rxEnableCB" mnemonicParsing="false" selected="true" text="Enabled" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="60.0" />
-        <Label fx:id="rxStreamIDLabel" layoutX="130.0" text="PG ID" AnchorPane.topAnchor="60.0" />
-        <TextField fx:id="rxStreamID" layoutX="178.0" layoutY="57.0" prefWidth="120.0" text="1" />
-        <CheckBox disable="true" layoutX="483.0" mnemonicParsing="false" selected="true" text="Latency enabled" AnchorPane.leftAnchor="352.0" AnchorPane.topAnchor="60.0" />
+    <AnchorPane layoutX="9.0"
+                prefHeight="150.0"
+                prefWidth="980.0"
+                style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+                AnchorPane.topAnchor="330.0"
+                AnchorPane.rightAnchor="10.0"
+                AnchorPane.bottomAnchor="10.0"
+                AnchorPane.leftAnchor="8.0">
+        <Label styleClass="streamPropertiesLabel"
+               text="RX Stats"
+               AnchorPane.topAnchor="10.0"
+               AnchorPane.leftAnchor="10.0"/>
+        <CheckBox fx:id="rxEnableCB"
+                  mnemonicParsing="false"
+                  selected="true"
+                  text="Enabled"
+                  AnchorPane.topAnchor="60.0"
+                  AnchorPane.leftAnchor="10.0"/>
+        <Label fx:id="rxStreamIDLabel"
+               layoutX="130.0"
+               text="PG ID"
+               AnchorPane.topAnchor="60.0"/>
+        <TextField fx:id="rxStreamID"
+                   layoutX="178.0"
+                   layoutY="57.0"
+                   prefWidth="120.0"
+                   text="1"/>
+        <CheckBox disable="true"
+                  layoutX="483.0"
+                  mnemonicParsing="false"
+                  selected="true"
+                  text="Latency enabled"
+                  AnchorPane.topAnchor="60.0"
+                  AnchorPane.leftAnchor="352.0"/>
     </AnchorPane>
 </AnchorPane>
