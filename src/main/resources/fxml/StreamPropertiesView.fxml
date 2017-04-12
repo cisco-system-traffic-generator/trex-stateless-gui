@@ -13,11 +13,10 @@
 <AnchorPane id="propertiesTabContainer" minHeight="0.0" minWidth="0.0" prefHeight="545.0" prefWidth="994.0" style="-fx-background-color:white" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.StreamPropertiesViewController">
     <AnchorPane layoutX="8.0" prefHeight="150.0" prefWidth="120.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="10.0">
         <Label styleClass="streamPropertiesLabel" text="Mode" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-        <RadioButton id="continous_mode" fx:id="continuousMode" layoutY="41.0" mnemonicParsing="false" selected="true" text="Continuous" AnchorPane.leftAnchor="10.0">
-            <toggleGroup>
-                <ToggleGroup fx:id="streamModeGroup" />
-            </toggleGroup>
-        </RadioButton>
+        <fx:define>
+            <ToggleGroup fx:id="streamModeGroup" />
+        </fx:define>
+        <RadioButton id="continous_mode" fx:id="continuousMode" layoutY="41.0" mnemonicParsing="false" selected="true" text="Continuous" toggleGroup="$streamModeGroup" AnchorPane.leftAnchor="10.0"/>
         <RadioButton id="burst" fx:id="burstMode" layoutY="71.0" mnemonicParsing="false" text="Burst" toggleGroup="$streamModeGroup" AnchorPane.leftAnchor="10.0" />
         <RadioButton fx:id="multiBurstMode" layoutY="100.0" mnemonicParsing="false" text="Multi-Burst" toggleGroup="$streamModeGroup" AnchorPane.leftAnchor="8.0" />
     </AnchorPane>
@@ -37,11 +36,10 @@
     </AnchorPane>
     <AnchorPane prefHeight="150.0" prefWidth="250.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="473.0" AnchorPane.topAnchor="10.0">
         <Label styleClass="streamPropertiesLabel" text="Rate" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-        <RadioButton fx:id="packetSecRG" mnemonicParsing="false" selected="true" text="Packet/Sec" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0">
-            <toggleGroup>
-                <ToggleGroup fx:id="rateGroup" />
-            </toggleGroup>
-        </RadioButton>
+        <fx:define>
+            <ToggleGroup fx:id="rateGroup" />
+        </fx:define>
+        <RadioButton fx:id="packetSecRG" mnemonicParsing="false" selected="true" text="Packet/Sec" toggleGroup="$rateGroup" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0"/>
         <RadioButton fx:id="packetBitsSecRG" mnemonicParsing="false" text="Packets Bits/Sec" toggleGroup="$rateGroup" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
         <TextField fx:id="packetSecTB" layoutY="38.0" prefWidth="80.0" text="1" AnchorPane.rightAnchor="5.0" />
         <TextField fx:id="packetBitsSecTB" disable="true" layoutY="68.0" prefWidth="80.0" AnchorPane.rightAnchor="5.0" />
@@ -50,11 +48,10 @@
     </AnchorPane>
     <AnchorPane fx:id="afterStreamContainer" prefHeight="150.0" prefWidth="240.0" style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;" AnchorPane.leftAnchor="728.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
         <Label styleClass="streamPropertiesLabel" text="After this stream" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-        <RadioButton fx:id="stopRG" mnemonicParsing="false" text="Stop" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0">
-            <toggleGroup>
-                <ToggleGroup fx:id="nextStreamGroup" />
-            </toggleGroup>
-        </RadioButton>
+        <fx:define>
+            <ToggleGroup fx:id="nextStreamGroup" />
+        </fx:define>
+        <RadioButton fx:id="stopRG" mnemonicParsing="false" text="Stop" toggleGroup="$nextStreamGroup" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0"/>
         <RadioButton fx:id="gotoRG" mnemonicParsing="false" text="Goto Stream" toggleGroup="$nextStreamGroup" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
         <CheckBox fx:id="timeInLoopCB" disable="true" layoutY="100.0" mnemonicParsing="false" text="Time in loop" AnchorPane.leftAnchor="20.0" />
         <TextField fx:id="timeInLoopTF" disable="true" layoutY="97.0" prefWidth="130.0" text="0" AnchorPane.rightAnchor="5.0" />
