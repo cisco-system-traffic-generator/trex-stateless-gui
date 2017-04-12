@@ -37,20 +37,24 @@ public class DashboardTabChartsLatencyHistogram extends AnchorPane implements Da
         final String[] histogramKeys = LatencyStatsLoader.getInstance().getHistogramKeys(HISTOGRAM_SIZE);
         final AtomicInteger streamIndex = new AtomicInteger(0);
         final List<XYChart.Series<String, Number>> seriesList = new LinkedList<>();
-        histogramMap.forEach((final String stream, final Map<String, Long> histogram) -> {
-            if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
-                return;
-            }
+        synchronized (histogramMap) {
+            synchronized (histogramKeys) {
+                histogramMap.forEach((final String stream, final Map<String, Long> histogram) -> {
+                    if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                        return;
+                    }
 
-            final XYChart.Series<String, Number> series = new XYChart.Series<>();
-            series.setName(stream);
-            for (final String key : histogramKeys) {
-                series.getData().add(new XYChart.Data<>(key, histogram.getOrDefault(key, 0L)));
-            }
-            seriesList.add(series);
+                    final XYChart.Series<String, Number> series = new XYChart.Series<>();
+                    series.setName(stream);
+                    for (final String key : histogramKeys) {
+                        series.getData().add(new XYChart.Data<>(key, histogram.getOrDefault(key, 0L)));
+                    }
+                    seriesList.add(series);
 
-            streamIndex.getAndAdd(1);
-        });
+                    streamIndex.getAndAdd(1);
+                });
+            }
+        }
 
         if (seriesList.isEmpty()) {
             return;

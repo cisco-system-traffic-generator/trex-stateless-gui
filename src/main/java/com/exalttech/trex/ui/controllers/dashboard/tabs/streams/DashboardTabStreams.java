@@ -47,25 +47,27 @@ public class DashboardTabStreams extends AnchorPane {
 
         AtomicInteger rowIndex = new AtomicInteger(1);
 
-        streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
-            if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream)) || history.isEmpty()) {
-                return;
-            }
+        synchronized (streams) {
+            streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
+                if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream)) || history.isEmpty()) {
+                    return;
+                }
 
-            StatsFlowStream last = history.last();
-            table.add(new HeaderCell(secondHeaderWidth, stream), rowIndex.get(), 0);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxPps(visiblePorts))), true, "pkt/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 1);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxBpsL2(visiblePorts))), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 2);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxBpsL1(visiblePorts))), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 3);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalRxPps(visiblePorts))), true, "pkt/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 4);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalRxBps(visiblePorts))), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 5);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalTxPkts(visiblePorts)), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 6);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalRxPkts(visiblePorts)), true, "pkts"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 7);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalTxBytes(visiblePorts)), true, "B"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 8);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalRxBytes(visiblePorts)), true, "B"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 9);
+                StatsFlowStream last = history.last();
+                table.add(new HeaderCell(secondHeaderWidth, stream), rowIndex.get(), 0);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxPps(visiblePorts))), true, "pkt/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 1);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxBpsL2(visiblePorts))), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 2);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxBpsL1(visiblePorts))), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 3);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalRxPps(visiblePorts))), true, "pkt/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 4);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalRxBps(visiblePorts))), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 5);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalTxPkts(visiblePorts)), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 6);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalRxPkts(visiblePorts)), true, "pkts"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 7);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalTxBytes(visiblePorts)), true, "B"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 8);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalRxBytes(visiblePorts)), true, "B"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 9);
 
-            rowIndex.addAndGet(1);
-        });
+                rowIndex.addAndGet(1);
+            });
+        }
     }
 
     static double round(double value) {

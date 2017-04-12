@@ -48,12 +48,14 @@ public class DashboardTabPorts extends AnchorPane {
     public void update(Set<Integer> visiblePorts) {
         this.lastVisiblePorts = visiblePorts;
         currentStatsList = StatsLoader.getInstance().getLoadedStatsList();
-        String data = currentStatsList.get("m_cpu_util");
-        if (Util.isNullOrEmpty(data)) {
-            data = "0";
-        }
+        synchronized (currentStatsList) {
+            String data = currentStatsList.get("m_cpu_util");
+            if (Util.isNullOrEmpty(data)) {
+                data = "0";
+            }
 
-        buildPortStatTable();
+            buildPortStatTable();
+        }
     }
 
     public void reset() {

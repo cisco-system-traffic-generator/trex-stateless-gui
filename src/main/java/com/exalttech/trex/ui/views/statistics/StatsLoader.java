@@ -118,12 +118,20 @@ public class StatsLoader {
      * Start listening on stats changes for updating
      */
     public void start() {
-        loadedStatsList.clear();
-        previousStatsList.clear();
+        synchronized (loadedStatsList) {
+            loadedStatsList.clear();
+        }
+        synchronized (previousStatsList) {
+            previousStatsList.clear();
+        }
         shadowStatsList = null;
 
-        flowStatsHistoryMap.clear();
-        shadowFlowStatsMap.clear();
+        synchronized (flowStatsHistoryMap) {
+            flowStatsHistoryMap.clear();
+        }
+        synchronized (shadowFlowStatsMap) {
+            shadowFlowStatsMap.clear();
+        }
         flowStatsLastTime = 0.0;
 
         AsyncResponseManager.getInstance().getTrexGlobalProperty().addListener(this::handleGlobalPropertyChanged);
@@ -133,52 +141,54 @@ public class StatsLoader {
     public void reset() {
         shadowStatsList = loadedStatsList;
 
-        flowStatsHistoryMap.forEach((String stream, ArrayHistory<StatsFlowStream> statsFlowStreamHistory) -> {
-            final StatsFlowStream last = statsFlowStreamHistory.last();
-            if (last == null) {
-                return;
-            }
-
-            statsFlowStreamHistory.clear();
-            statsFlowStreamHistory.add(last.getZeroCopy());
-
-            final StatsFlowStream prevShadow = shadowFlowStatsMap.get(stream);
-            if (prevShadow == null) {
-                return;
-            }
-
-            final Map<Integer, Long> txPkts = last.getTxPkts();
-            final Map<Integer, Long> txBytes = last.getTxBytes();
-            final Map<Integer, Long> rxPkts = last.getRxPkts();
-            final Map<Integer, Long> rxBytes = last.getRxBytes();
-
-            txPkts.forEach((Integer port, Long value) -> {
-                final Long shadowValue = prevShadow.getTxPkts().get(port);
-                if (shadowValue != null) {
-                    txPkts.put(port, value + shadowValue);
+        synchronized (flowStatsHistoryMap) {
+            flowStatsHistoryMap.forEach((String stream, ArrayHistory<StatsFlowStream> statsFlowStreamHistory) -> {
+                final StatsFlowStream last = statsFlowStreamHistory.last();
+                if (last == null) {
+                    return;
                 }
-            });
-            txBytes.forEach((Integer port, Long value) -> {
-                final Long shadowValue = prevShadow.getTxBytes().get(port);
-                if (shadowValue != null) {
-                    txBytes.put(port, value + shadowValue);
-                }
-            });
-            rxPkts.forEach((Integer port, Long value) -> {
-                final Long shadowValue = prevShadow.getRxPkts().get(port);
-                if (shadowValue != null) {
-                    rxPkts.put(port, value + shadowValue);
-                }
-            });
-            rxBytes.forEach((Integer port, Long value) -> {
-                final Long shadowValue = prevShadow.getRxBytes().get(port);
-                if (shadowValue != null) {
-                    rxBytes.put(port, value + shadowValue);
-                }
-            });
 
-            shadowFlowStatsMap.put(stream, new StatsFlowStream(txPkts, rxPkts, txBytes, rxBytes, last.getTime()));
-        });
+                statsFlowStreamHistory.clear();
+                statsFlowStreamHistory.add(last.getZeroCopy());
+
+                final StatsFlowStream prevShadow = shadowFlowStatsMap.get(stream);
+                if (prevShadow == null) {
+                    return;
+                }
+
+                final Map<Integer, Long> txPkts = last.getTxPkts();
+                final Map<Integer, Long> txBytes = last.getTxBytes();
+                final Map<Integer, Long> rxPkts = last.getRxPkts();
+                final Map<Integer, Long> rxBytes = last.getRxBytes();
+
+                txPkts.forEach((Integer port, Long value) -> {
+                    final Long shadowValue = prevShadow.getTxPkts().get(port);
+                    if (shadowValue != null) {
+                        txPkts.put(port, value + shadowValue);
+                    }
+                });
+                txBytes.forEach((Integer port, Long value) -> {
+                    final Long shadowValue = prevShadow.getTxBytes().get(port);
+                    if (shadowValue != null) {
+                        txBytes.put(port, value + shadowValue);
+                    }
+                });
+                rxPkts.forEach((Integer port, Long value) -> {
+                    final Long shadowValue = prevShadow.getRxPkts().get(port);
+                    if (shadowValue != null) {
+                        rxPkts.put(port, value + shadowValue);
+                    }
+                });
+                rxBytes.forEach((Integer port, Long value) -> {
+                    final Long shadowValue = prevShadow.getRxBytes().get(port);
+                    if (shadowValue != null) {
+                        rxBytes.put(port, value + shadowValue);
+                    }
+                });
+
+                shadowFlowStatsMap.put(stream, new StatsFlowStream(txPkts, rxPkts, txBytes, rxBytes, last.getTime()));
+            });
+        }
     }
 
     private void handleGlobalPropertyChanged(
@@ -212,88 +222,92 @@ public class StatsLoader {
             return;
         }
 
-        try {
-            final JSONObject flowStatsJSON = new JSONObject(newValue);
-            final JSONObject dataJSON = flowStatsJSON.getJSONObject("data");
+        synchronized (flowStatsHistoryMap) {
+            synchronized (shadowFlowStatsMap) {
+                try {
+                    final JSONObject flowStatsJSON = new JSONObject(newValue);
+                    final JSONObject dataJSON = flowStatsJSON.getJSONObject("data");
 
-            final JSONObject tsJSON = dataJSON.getJSONObject("ts");
-            final long tsFreq = tsJSON.getLong("freq");
-            final long tsValue = tsJSON.getLong("value");
-            final double time = (tsValue*1.0)/tsFreq;
-            if (time == flowStatsLastTime) {
-                return;
+                    final JSONObject tsJSON = dataJSON.getJSONObject("ts");
+                    final long tsFreq = tsJSON.getLong("freq");
+                    final long tsValue = tsJSON.getLong("value");
+                    final double time = (tsValue * 1.0) / tsFreq;
+                    if (time == flowStatsLastTime) {
+                        return;
+                    }
+                    flowStatsLastTime = time;
+
+                    final Set<String> unvisitedStreams = new HashSet<>(flowStatsHistoryMap.keySet());
+                    dataJSON.keySet().forEach((String key) -> {
+                        if (key.equals("ts")) {
+                            return;
+                        }
+
+                        unvisitedStreams.remove(key);
+
+                        final JSONObject streamJSON = dataJSON.getJSONObject(key);
+                        if (streamJSON.keySet().isEmpty()) {
+                            return;
+                        }
+
+                        final Map<Integer, Long> txPkts = getFlowStatsStreamParam(streamJSON, "tx_pkts");
+                        final Map<Integer, Long> txBytes = getFlowStatsStreamParam(streamJSON, "tx_bytes");
+                        final Map<Integer, Long> rxPkts = getFlowStatsStreamParam(streamJSON, "rx_pkts");
+                        final Map<Integer, Long> rxBytes = getFlowStatsStreamParam(streamJSON, "rx_bytes");
+
+                        ArrayHistory<StatsFlowStream> streamHistory = flowStatsHistoryMap.get(key);
+                        if (streamHistory == null) {
+                            streamHistory = new ArrayHistory<>(historySize);
+                            flowStatsHistoryMap.put(key, streamHistory);
+                        }
+
+                        final StatsFlowStream shadow = shadowFlowStatsMap.get(key);
+                        if (shadow == null) {
+                            shadowFlowStatsMap.put(key, new StatsFlowStream(txPkts, rxPkts, txBytes, rxBytes, time));
+                            return;
+                        }
+
+                        txPkts.forEach((Integer port, Long value) -> {
+                            final Long shadowValue = shadow.getTxPkts().get(port);
+                            if (shadowValue != null) {
+                                txPkts.put(port, value - shadowValue);
+                            }
+                        });
+                        txBytes.forEach((Integer port, Long value) -> {
+                            final Long shadowValue = shadow.getTxBytes().get(port);
+                            if (shadowValue != null) {
+                                txBytes.put(port, value - shadowValue);
+                            }
+                        });
+                        rxPkts.forEach((Integer port, Long value) -> {
+                            final Long shadowValue = shadow.getRxPkts().get(port);
+                            if (shadowValue != null) {
+                                rxPkts.put(port, value - shadowValue);
+                            }
+                        });
+                        rxBytes.forEach((Integer port, Long value) -> {
+                            final Long shadowValue = shadow.getRxBytes().get(port);
+                            if (shadowValue != null) {
+                                rxBytes.put(port, value - shadowValue);
+                            }
+                        });
+
+                        StatsFlowStream prev = streamHistory.last();
+                        if (prev == null) {
+                            prev = new StatsFlowStream(shadow.getTime());
+                        }
+
+                        final StatsFlowStream curr = new StatsFlowStream(prev, txPkts, rxPkts, txBytes, rxBytes, time);
+                        streamHistory.add(curr);
+                    });
+
+                    unvisitedStreams.forEach((String stream) -> {
+                        flowStatsHistoryMap.remove(stream);
+                    });
+                } catch (JSONException exc) {
+                    // TODO: logging
+                }
             }
-            flowStatsLastTime = time;
-
-            final Set<String> unvisitedStreams = new HashSet<>(flowStatsHistoryMap.keySet());
-            dataJSON.keySet().forEach((String key) -> {
-                if (key.equals("ts")) {
-                    return;
-                }
-
-                unvisitedStreams.remove(key);
-
-                final JSONObject streamJSON = dataJSON.getJSONObject(key);
-                if (streamJSON.keySet().isEmpty()) {
-                    return;
-                }
-
-                final Map<Integer, Long> txPkts = getFlowStatsStreamParam(streamJSON, "tx_pkts");
-                final Map<Integer, Long> txBytes = getFlowStatsStreamParam(streamJSON, "tx_bytes");
-                final Map<Integer, Long> rxPkts = getFlowStatsStreamParam(streamJSON, "rx_pkts");
-                final Map<Integer, Long> rxBytes = getFlowStatsStreamParam(streamJSON, "rx_bytes");
-
-                ArrayHistory<StatsFlowStream> streamHistory = flowStatsHistoryMap.get(key);
-                if (streamHistory == null) {
-                    streamHistory = new ArrayHistory<>(historySize);
-                    flowStatsHistoryMap.put(key, streamHistory);
-                }
-
-                final StatsFlowStream shadow = shadowFlowStatsMap.get(key);
-                if (shadow == null) {
-                    shadowFlowStatsMap.put(key, new StatsFlowStream(txPkts, rxPkts, txBytes, rxBytes, time));
-                    return;
-                }
-
-                txPkts.forEach((Integer port, Long value) -> {
-                    final Long shadowValue = shadow.getTxPkts().get(port);
-                    if (shadowValue != null) {
-                        txPkts.put(port, value - shadowValue);
-                    }
-                });
-                txBytes.forEach((Integer port, Long value) -> {
-                    final Long shadowValue = shadow.getTxBytes().get(port);
-                    if (shadowValue != null) {
-                        txBytes.put(port, value - shadowValue);
-                    }
-                });
-                rxPkts.forEach((Integer port, Long value) -> {
-                    final Long shadowValue = shadow.getRxPkts().get(port);
-                    if (shadowValue != null) {
-                        rxPkts.put(port, value - shadowValue);
-                    }
-                });
-                rxBytes.forEach((Integer port, Long value) -> {
-                    final Long shadowValue = shadow.getRxBytes().get(port);
-                    if (shadowValue != null) {
-                        rxBytes.put(port, value - shadowValue);
-                    }
-                });
-
-                StatsFlowStream prev = streamHistory.last();
-                if (prev == null) {
-                    prev = new StatsFlowStream(shadow.getTime());
-                }
-
-                final StatsFlowStream curr = new StatsFlowStream(prev, txPkts, rxPkts, txBytes, rxBytes, time);
-                streamHistory.add(curr);
-            });
-
-            unvisitedStreams.forEach((String stream) -> {
-                flowStatsHistoryMap.remove(stream);
-            });
-        } catch (JSONException exc) {
-            // TODO: logging
         }
     }
 

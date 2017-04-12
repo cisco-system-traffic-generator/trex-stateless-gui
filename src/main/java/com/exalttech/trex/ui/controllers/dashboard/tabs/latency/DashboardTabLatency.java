@@ -88,48 +88,54 @@ public class DashboardTabLatency extends AnchorPane {
         final Map<String, ArrayHistory<StatsFlowStream>> flowStatsMap = StatsLoader.getInstance().getFlowStatsHistoryMap();
 
         final AtomicInteger rowIndex = new AtomicInteger(1);
-        latencyInfoMap.forEach((String stream, LatencyInfo latencyInfo) -> {
-            if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
-                return;
-            }
+        synchronized (latencyInfoMap) {
+            synchronized (maxLatencyByStreams) {
+                synchronized (flowStatsMap) {
+                    latencyInfoMap.forEach((String stream, LatencyInfo latencyInfo) -> {
+                        if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                            return;
+                        }
 
-            final ArrayHistory<StatsFlowStream> flowStreamHistory = flowStatsMap.get(stream);
-            if (flowStreamHistory == null || flowStreamHistory.isEmpty()) {
-                return;
-            }
+                        final ArrayHistory<StatsFlowStream> flowStreamHistory = flowStatsMap.get(stream);
+                        if (flowStreamHistory == null || flowStreamHistory.isEmpty()) {
+                            return;
+                        }
 
-            final StatsFlowStream flowStats = flowStreamHistory.last();
-            if (flowStats == null) {
-                return;
-            }
+                        final StatsFlowStream flowStats = flowStreamHistory.last();
+                        if (flowStats == null) {
+                            return;
+                        }
 
-            Number[] window = new Number[WINDOW_SIZE];
-            for (int i = 0; i < WINDOW_SIZE; ++i) {
-                window[i] = 0;
-            }
-            final ArrayHistory<Number> maxLatencyHistory = maxLatencyByStreams.get(stream);
-            if (maxLatencyHistory != null) {
-                final int historySize = maxLatencyHistory.size();
-                final int size = Math.min(historySize, WINDOW_SIZE);
-                for (int i = 0; i < size; i++) {
-                    window[i] = maxLatencyHistory.get(historySize - 1 - i);
+                        Number[] window = new Number[WINDOW_SIZE];
+                        for (int i = 0; i < WINDOW_SIZE; ++i) {
+                            window[i] = 0;
+                        }
+                        final ArrayHistory<Number> maxLatencyHistory = maxLatencyByStreams.get(stream);
+                        if (maxLatencyHistory != null) {
+                            final int historySize = maxLatencyHistory.size();
+                            final int size = Math.min(historySize, WINDOW_SIZE);
+                            for (int i = 0; i < size; i++) {
+                                window[i] = maxLatencyHistory.get(historySize - 1 - i);
+                            }
+                        }
+
+                        int col = 0;
+                        table.add(new HeaderCell(COLUMN_WIDTH, stream), rowIndex.get(), col++);
+                        table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalTxPkts(visiblePorts)), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                        table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalRxPkts(visiblePorts)), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                        table.add(new StatisticLabelCell(String.format("%d \u00B5s", latencyInfo.getTotalMax()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                        table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(latencyInfo.getAverage())), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                        for (int i = 0; i < WINDOW_SIZE; ++i) {
+                            table.add(new StatisticLabelCell(String.valueOf(window[i]), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                        }
+                        table.add(new StatisticLabelCell(String.format("%d \u00B5s", latencyInfo.getJitter()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                        table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getTotalErrors()), COLUMN_WIDTH, true, CellType.ERROR_CELL, true), rowIndex.get(), col++);
+
+                        rowIndex.addAndGet(1);
+                    });
                 }
             }
-
-            int col = 0;
-            table.add(new HeaderCell(COLUMN_WIDTH, stream), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalTxPkts(visiblePorts)), true, "pkts"), COLUMN_WIDTH, col%2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalRxPkts(visiblePorts)), true, "pkts"), COLUMN_WIDTH, col%2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(String.format("%d \u00B5s", latencyInfo.getTotalMax()), COLUMN_WIDTH, col%2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(latencyInfo.getAverage())), COLUMN_WIDTH, col%2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
-            for (int i = 0; i < WINDOW_SIZE; ++i) {
-                table.add(new StatisticLabelCell(String.valueOf(window[i]), COLUMN_WIDTH, col%2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
-            }
-            table.add(new StatisticLabelCell(String.format("%d \u00B5s", latencyInfo.getJitter()), COLUMN_WIDTH, col%2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getTotalErrors()), COLUMN_WIDTH, true, CellType.ERROR_CELL, true), rowIndex.get(), col++);
-
-            rowIndex.addAndGet(1);
-        });
+        }
     }
 
     private void renderHistogram(Set<String> visibleStreams, int streamsCount) {
@@ -152,35 +158,43 @@ public class DashboardTabLatency extends AnchorPane {
         table.add(new StatisticLabelCell("Seq To Low", FIRST_COLUMN_WIDTH, hCol%2 == 0, CellType.DEFAULT_CELL, false), 0, hCol);
 
         final AtomicInteger rowIndex = new AtomicInteger(1);
-        latencyInfoMap.forEach((final String stream, final LatencyInfo latencyInfo) -> {
-            if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
-                return;
-            }
+        synchronized (latencyInfoMap) {
+            synchronized (histogramMap) {
+                synchronized (histogramKeys) {
+                    synchronized (flowStatsMap) {
+                        latencyInfoMap.forEach((final String stream, final LatencyInfo latencyInfo) -> {
+                            if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                                return;
+                            }
 
-            final ArrayHistory<StatsFlowStream> flowStreamHistory = flowStatsMap.get(stream);
-            if (flowStreamHistory == null || flowStreamHistory.isEmpty()) {
-                return;
-            }
+                            final ArrayHistory<StatsFlowStream> flowStreamHistory = flowStatsMap.get(stream);
+                            if (flowStreamHistory == null || flowStreamHistory.isEmpty()) {
+                                return;
+                            }
 
-            final Map<String, Long> histogram = histogramMap.get(stream);
-            if (histogram == null) {
-                return;
-            }
+                            final Map<String, Long> histogram = histogramMap.get(stream);
+                            if (histogram == null) {
+                                return;
+                            }
 
-            int col = 0;
-            table.add(new HeaderCell(COLUMN_WIDTH, stream), rowIndex.get(), col++);
-            for (final String key : histogramKeys) {
-                Long value = histogram.getOrDefault(key, 0L);
-                table.add(new StatisticLabelCell(String.valueOf(value), COLUMN_WIDTH, col%2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
-            }
-            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getDropped()), COLUMN_WIDTH, col%2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getDup()), COLUMN_WIDTH, col%2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getOutOfOrder()), COLUMN_WIDTH, col%2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getSeqTooHigh()), COLUMN_WIDTH, col%2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col++);
-            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getSeqTooLow()), COLUMN_WIDTH, col%2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col);
+                            int col = 0;
+                            table.add(new HeaderCell(COLUMN_WIDTH, stream), rowIndex.get(), col++);
+                            for (final String key : histogramKeys) {
+                                Long value = histogram.getOrDefault(key, 0L);
+                                table.add(new StatisticLabelCell(String.valueOf(value), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                            }
+                            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getDropped()), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col++);
+                            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getDup()), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col++);
+                            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getOutOfOrder()), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col++);
+                            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getSeqTooHigh()), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col++);
+                            table.add(new StatisticLabelCell(String.valueOf(latencyInfo.getSeqTooLow()), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex.get(), col);
 
-            rowIndex.addAndGet(1);
-        });
+                            rowIndex.addAndGet(1);
+                        });
+                    }
+                }
+            }
+        }
     }
 
     static double round(double value) {

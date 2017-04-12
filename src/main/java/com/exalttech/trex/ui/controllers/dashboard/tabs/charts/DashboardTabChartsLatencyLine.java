@@ -27,22 +27,24 @@ public abstract class DashboardTabChartsLatencyLine extends DashboardTabChartsLi
         Map<String, ArrayHistory<Number>> streams = getHistory();
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
         AtomicInteger streamIndex = new AtomicInteger(0);
-        streams.forEach((String stream, ArrayHistory<Number> history) -> {
-            if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
-                return;
-            }
+        synchronized (streams) {
+            streams.forEach((String stream, ArrayHistory<Number> history) -> {
+                if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                    return;
+                }
 
-            XYChart.Series series = new XYChart.Series();
-            series.setName(stream);
-            int size = history.size();
-            for (int i = 0; i < size; ++i) {
-                series.getData().add(new XYChart.Data<>(i + 1 - size, history.get(i)));
-            }
+                XYChart.Series series = new XYChart.Series();
+                series.setName(stream);
+                int size = history.size();
+                for (int i = 0; i < size; ++i) {
+                    series.getData().add(new XYChart.Data<>(i + 1 - size, history.get(i)));
+                }
 
-            seriesList.add(series);
+                seriesList.add(series);
 
-            streamIndex.getAndAdd(1);
-        });
+                streamIndex.getAndAdd(1);
+            });
+        }
         getChart().getData().clear();
         getChart().getData().addAll(seriesList);
     }

@@ -38,22 +38,42 @@ public class LatencyStatsLoader {
     protected LatencyStatsLoader() {}
 
     public void start() {
-        latencyInfoMap.clear();
-        latencyWindowHistoryMap.clear();
-        maxLatencyHistoryMap.clear();
-        avgLatencyHistoryMap.clear();
-        latencyJitterHistoryMap.clear();
-        histogramMap.clear();
+        synchronized (latencyInfoMap) {
+            latencyInfoMap.clear();
+        }
+        synchronized (latencyWindowHistoryMap) {
+            latencyWindowHistoryMap.clear();
+        }
+        synchronized (maxLatencyHistoryMap) {
+            maxLatencyHistoryMap.clear();
+        }
+        synchronized (avgLatencyHistoryMap) {
+            avgLatencyHistoryMap.clear();
+        }
+        synchronized (latencyJitterHistoryMap) {
+            latencyJitterHistoryMap.clear();
+        }
+        synchronized (histogramMap) {
+            histogramMap.clear();
+        }
         unvisitedStreams.clear();
 
         AsyncResponseManager.getInstance().getTrexLatencyProperty().addListener(this::handleLatencyPropertyChanged);
     }
 
     public void reset() {
-        latencyWindowHistoryMap.clear();
-        maxLatencyHistoryMap.clear();
-        avgLatencyHistoryMap.clear();
-        latencyJitterHistoryMap.clear();
+        synchronized (latencyWindowHistoryMap) {
+            latencyWindowHistoryMap.clear();
+        }
+        synchronized (maxLatencyHistoryMap) {
+            maxLatencyHistoryMap.clear();
+        }
+        synchronized (avgLatencyHistoryMap) {
+            avgLatencyHistoryMap.clear();
+        }
+        synchronized (latencyJitterHistoryMap) {
+            latencyJitterHistoryMap.clear();
+        }
 
         updateLatencyInfoShadowMap();
         updateHistogramShadowMap();
@@ -122,38 +142,54 @@ public class LatencyStatsLoader {
             initializeHistogramShadowMap(data);
         }
 
-        latencyInfoMap.clear();
-        histogramMap.clear();
-        data.forEach((final String stream, final LatencyStatsStream streamStats) -> {
-            unvisitedStreams.remove(stream);
+        synchronized (latencyInfoMap) {
+            synchronized (histogramMap) {
+                synchronized (latencyWindowHistoryMap) {
+                    synchronized (maxLatencyHistoryMap) {
+                        synchronized (avgLatencyHistoryMap) {
+                            synchronized (latencyJitterHistoryMap) {
+                                synchronized (latencyInfoShadowMap) {
+                                    synchronized (histogramShadowMap) {
+                                        latencyInfoMap.clear();
+                                        histogramMap.clear();
+                                        data.forEach((final String stream, final LatencyStatsStream streamStats) -> {
+                                            unvisitedStreams.remove(stream);
 
-            final LatencyStatsLatency latency = streamStats.getLatency();
-            if (latency == null) {
-                LOG.error("Latency stats data latency field is null");
+                                            final LatencyStatsLatency latency = streamStats.getLatency();
+                                            if (latency == null) {
+                                                LOG.error("Latency stats data latency field is null");
+                                            }
+
+                                            final LatencyStastsErrCntrs errCntrs = streamStats.getErrCntrs();
+                                            if (errCntrs == null) {
+                                                LOG.error("Latency stats data err cntrs field is null");
+                                            }
+
+                                            processLatencyInfo(stream, latency, errCntrs);
+                                            processLatencyWindow(stream, latency);
+                                            processMaxLatency(stream, latency);
+                                            processAvgLatency(stream, latency);
+                                            processLatencyJitter(stream, latency);
+                                            processLatencyHistogram(stream, latency);
+                                        });
+
+                                        unvisitedStreams.forEach((final String stream) -> {
+                                            latencyWindowHistoryMap.remove(stream);
+                                            maxLatencyHistoryMap.remove(stream);
+                                            avgLatencyHistoryMap.remove(stream);
+                                            latencyJitterHistoryMap.remove(stream);
+                                            latencyInfoShadowMap.remove(stream);
+                                            histogramShadowMap.remove(stream);
+                                        });
+                                        unvisitedStreams = data.keySet();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-
-            final LatencyStastsErrCntrs errCntrs = streamStats.getErrCntrs();
-            if (errCntrs == null) {
-                LOG.error("Latency stats data err cntrs field is null");
-            }
-
-            processLatencyInfo(stream, latency, errCntrs);
-            processLatencyWindow(stream, latency);
-            processMaxLatency(stream, latency);
-            processAvgLatency(stream, latency);
-            processLatencyJitter(stream, latency);
-            processLatencyHistogram(stream, latency);
-        });
-
-        unvisitedStreams.forEach((final String stream) -> {
-            latencyWindowHistoryMap.remove(stream);
-            maxLatencyHistoryMap.remove(stream);
-            avgLatencyHistoryMap.remove(stream);
-            latencyJitterHistoryMap.remove(stream);
-            latencyInfoShadowMap.remove(stream);
-            histogramShadowMap.remove(stream);
-        });
-        unvisitedStreams = data.keySet();
+        }
     }
 
     private void buildHistogramKeys(final Map<String, LatencyStatsStream> data) {
@@ -179,61 +215,69 @@ public class LatencyStatsLoader {
 
     private void updateLatencyInfoShadowMap() {
         final Map<String, LatencyInfo> newLatencyInfoShadowMap = new HashMap<>();
-        latencyInfoMap.forEach((final String stream, final LatencyInfo latencyInfo) -> {
-            final LatencyInfo shadow = latencyInfoShadowMap != null ? latencyInfoShadowMap.get(stream) : null;
-            final LatencyInfo newShadow = new LatencyInfo(latencyInfo);
-            if (shadow != null) {
-                newShadow.plusShadow(shadow);
-            }
-            newLatencyInfoShadowMap.put(stream, newShadow);
-            latencyInfo.resetShadow();
-        });
+        synchronized (latencyInfoMap) {
+            latencyInfoMap.forEach((final String stream, final LatencyInfo latencyInfo) -> {
+                final LatencyInfo shadow = latencyInfoShadowMap != null ? latencyInfoShadowMap.get(stream) : null;
+                final LatencyInfo newShadow = new LatencyInfo(latencyInfo);
+                if (shadow != null) {
+                    newShadow.plusShadow(shadow);
+                }
+                newLatencyInfoShadowMap.put(stream, newShadow);
+                latencyInfo.resetShadow();
+            });
+        }
         latencyInfoShadowMap = newLatencyInfoShadowMap;
     }
 
     private void initializeLatencyInfoShadowMap(final Map<String, LatencyStatsStream> data) {
         latencyInfoShadowMap = new HashMap<>();
-        data.forEach((final String stream, final LatencyStatsStream streamStats) -> {
-            final LatencyStatsLatency latency = streamStats.getLatency();
-            final LatencyStastsErrCntrs errCntrs = streamStats.getErrCntrs();
-            latencyInfoShadowMap.put(stream, new LatencyInfo(latency, errCntrs));
-        });
+        synchronized (latencyInfoShadowMap) {
+            data.forEach((final String stream, final LatencyStatsStream streamStats) -> {
+                final LatencyStatsLatency latency = streamStats.getLatency();
+                final LatencyStastsErrCntrs errCntrs = streamStats.getErrCntrs();
+                latencyInfoShadowMap.put(stream, new LatencyInfo(latency, errCntrs));
+            });
+        }
     }
 
     private void updateHistogramShadowMap() {
         final Map<String, Map<String, Long>> newHistogramShadowMap = new HashMap<>();
-        histogramMap.forEach((final String stream, final Map<String, Long> histogram) -> {
-            final Map<String, Long> shadowHistogram = histogramShadowMap != null ?
-                    histogramShadowMap.get(stream) :
-                    null;
-            final Map<String, Long> newShadowHistogram = new HashMap<>();
-            histogram.forEach((final String key, final Long value) -> {
-                final long shadowValue = shadowHistogram != null ?
-                        shadowHistogram.getOrDefault(key, 0L) :
-                        0L;
-                newShadowHistogram.put(key, value + shadowValue);
-                histogram.put(key, 0L);
+        synchronized (histogramMap) {
+            histogramMap.forEach((final String stream, final Map<String, Long> histogram) -> {
+                final Map<String, Long> shadowHistogram = histogramShadowMap != null ?
+                        histogramShadowMap.get(stream) :
+                        null;
+                final Map<String, Long> newShadowHistogram = new HashMap<>();
+                histogram.forEach((final String key, final Long value) -> {
+                    final long shadowValue = shadowHistogram != null ?
+                            shadowHistogram.getOrDefault(key, 0L) :
+                            0L;
+                    newShadowHistogram.put(key, value + shadowValue);
+                    histogram.put(key, 0L);
+                });
+                newHistogramShadowMap.put(stream, newShadowHistogram);
             });
-            newHistogramShadowMap.put(stream, newShadowHistogram);
-        });
+        }
         histogramShadowMap = newHistogramShadowMap;
     }
 
     private void initializeHistogramShadowMap(final Map<String, LatencyStatsStream> data) {
         histogramShadowMap = new HashMap<>();
-        data.forEach((final String stream, final LatencyStatsStream streamStats) -> {
-            final LatencyStatsLatency latency = streamStats.getLatency();
-            if (latency == null) {
-                return;
-            }
+        synchronized (histogramShadowMap) {
+            data.forEach((final String stream, final LatencyStatsStream streamStats) -> {
+                final LatencyStatsLatency latency = streamStats.getLatency();
+                if (latency == null) {
+                    return;
+                }
 
-            final Map<String, Long> streamHistogram = latency.getHistogram();
-            if (streamHistogram == null) {
-                return;
-            }
+                final Map<String, Long> streamHistogram = latency.getHistogram();
+                if (streamHistogram == null) {
+                    return;
+                }
 
-            histogramShadowMap.put(stream, new HashMap<>(streamHistogram));
-        });
+                histogramShadowMap.put(stream, new HashMap<>(streamHistogram));
+            });
+        }
     }
 
     private void processLatencyInfo(

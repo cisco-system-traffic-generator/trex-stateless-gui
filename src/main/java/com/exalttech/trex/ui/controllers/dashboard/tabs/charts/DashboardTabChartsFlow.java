@@ -33,23 +33,25 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
         AtomicInteger streamIndex = new AtomicInteger(0);
         final Formatter formatter = new Formatter();
-        streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
-            if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
-                return;
-            }
+        synchronized (streams) {
+            streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
+                if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                    return;
+                }
 
-            XYChart.Series<Number, Number> series = new XYChart.Series<>();
-            series.setName(stream);
-            history.forEach((StatsFlowStream point) -> {
-                Number value = calcValue(visiblePorts, point);
-                formatter.addValue(value);
-                series.getData().add(new XYChart.Data<>(point.getTime() - time, value));
+                XYChart.Series<Number, Number> series = new XYChart.Series<>();
+                series.setName(stream);
+                history.forEach((StatsFlowStream point) -> {
+                    Number value = calcValue(visiblePorts, point);
+                    formatter.addValue(value);
+                    series.getData().add(new XYChart.Data<>(point.getTime() - time, value));
+                });
+
+                seriesList.add(series);
+
+                streamIndex.getAndAdd(1);
             });
-
-            seriesList.add(series);
-
-            streamIndex.getAndAdd(1);
-        });
+        }
 
         seriesList.forEach((XYChart.Series<Number, Number> series) -> {
             series.getData().forEach((XYChart.Data<Number, Number> data) -> {
