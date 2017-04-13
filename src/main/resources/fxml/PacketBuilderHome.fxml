@@ -38,10 +38,10 @@
                 <fx:include fx:id="protocolData" source="ProtocolData.fxml" />
             </AnchorPane>
         </Tab>
-        <Tab fx:id="advanceSettingsTab" text="Advanced Settings">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                <fx:include fx:id="advancedSettings" source="AdvancedSettings.fxml" />
-            </AnchorPane>
+        <Tab fx:id="advanceSettingsTab"
+             text="Advanced Settings">
+            <fx:include fx:id="advancedSettings"
+                        source="AdvancedSettings.fxml"/>
         </Tab>
         <Tab fx:id="packetViewerWithTreeTab" text="Packet viewer">
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
