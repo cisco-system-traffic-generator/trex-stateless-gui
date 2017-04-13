@@ -20,7 +20,7 @@
               AnchorPane.bottomAnchor="0.0">
         <xAxis>
             <CategoryAxis fx:id="xAxis"
-                          label="Latency (ms)"/>
+                          label="Latency (µs)"/>
         </xAxis>
         <yAxis>
             <NumberAxis label="Count"
