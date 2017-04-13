@@ -263,13 +263,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 case PORT_RELEASED:
                 case PORT_ACQUIRED:
                 case PORT_ATTR_CHANGED:
-                    Platform.runLater(
-                        () -> portManager.updatedPorts(Arrays.asList(portModel.getIndex()))
-                    );
-                    break;
                 case PORT_STARTED:
                 case PORT_STOPPED:
-                    Platform.runLater(() -> onPortListUpdated(true));
+                    Platform.runLater(() -> {
+                        portManager.updatedPorts(Arrays.asList(portModel.getIndex()));
+                        onPortListUpdated(true);
+                    });
                     break;
                 case SERVER_STOPPED:
                     resetApplication(true);
@@ -1229,6 +1228,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 AssignedProfile assignedProf = assignedPortProfileMap.get(portIndex);
                 updateMultiplierValues(assignedProf);
             }
+            updateHeaderBtnStat();
         } catch (TrafficException ex) {
             LOG.error("Error updating port", ex);
         }
