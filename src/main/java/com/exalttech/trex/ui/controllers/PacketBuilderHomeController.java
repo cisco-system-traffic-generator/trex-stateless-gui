@@ -15,24 +15,6 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.core.ConnectionManager;
-import com.exalttech.trex.remote.models.profiles.Packet;
-import com.exalttech.trex.remote.models.profiles.Profile;
-import com.exalttech.trex.remote.models.profiles.Stream;
-import com.exalttech.trex.ui.StreamBuilderType;
-import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.models.PacketInfo;
-import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
-import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
-import com.exalttech.trex.ui.views.streams.viewer.PacketHex;
-import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
-import com.exalttech.trex.util.TrafficProfile;
-import com.exalttech.trex.util.Util;
-import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import com.xored.javafx.packeteditor.controllers.FieldEditorController;
-import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -46,8 +28,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +42,23 @@ import java.net.URL;
 import java.util.Base64;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import com.xored.javafx.packeteditor.controllers.FieldEditorController;
+import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
+
+import com.exalttech.trex.core.ConnectionManager;
+import com.exalttech.trex.remote.models.profiles.Packet;
+import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.remote.models.profiles.Stream;
+import com.exalttech.trex.ui.StreamBuilderType;
+import com.exalttech.trex.ui.dialog.DialogView;
+import com.exalttech.trex.ui.models.PacketInfo;
+import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
+import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
+import com.exalttech.trex.ui.views.streams.viewer.PacketHex;
+import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
+import com.exalttech.trex.util.TrafficProfile;
+import com.exalttech.trex.util.Util;
 
 
 /**
