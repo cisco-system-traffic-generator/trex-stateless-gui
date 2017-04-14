@@ -20,12 +20,16 @@
                 <fx:include fx:id="streamProperties" source="StreamPropertiesView.fxml" />
             </AnchorPane>
         </Tab>
-        <Tab fx:id="packetViewerTab" style=" " text="Packet Viewer">
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="1000.0" style="">
-                <AnchorPane id="pcapBuilder" fx:id="pcapBuilderPane" prefHeight="508.0" prefWidth="1000.0" style="" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <AnchorPane id="completePacketHex" fx:id="hexPane" maxWidth="667.0" minHeight="0.0" minWidth="655.0" prefHeight="530.0" prefWidth="660.0" style="-fx-background-color:white;" styleClass="tabContentWrapper" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="328.0" AnchorPane.topAnchor="10.0" />
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="550.0" prefWidth="321.0" style="-fx-background-color:#FFFFFF;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="677.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0" />
-                </AnchorPane>
+        <Tab fx:id="packetViewerTab"
+             text="Packet Viewer">
+            <AnchorPane>
+                <AnchorPane fx:id="hexPane"
+                            style="-fx-background-color:white;"
+                            styleClass="tabContentWrapper"
+                            AnchorPane.bottomAnchor="10.0"
+                            AnchorPane.leftAnchor="10.0"
+                            AnchorPane.rightAnchor="10.0"
+                            AnchorPane.topAnchor="10.0"/>
             </AnchorPane>
         </Tab>
         <Tab fx:id="protocolSelectionTab" text="Protocol Selection">
