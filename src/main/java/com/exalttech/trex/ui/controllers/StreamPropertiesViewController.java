@@ -225,8 +225,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
 
         // disable numbers 
         numbersContainer.setDisable(true);
-        packetPBurstTB.setVisible(true);
-        packetPBurstTitle.setVisible(true);
+        packetPBurstTitle.setDisable(false);
+        packetPBurstTB.setDisable(false);
         numOfBurstTB.setText("1");
         packetBitsSecRG.setDisable(false);
 
@@ -251,13 +251,14 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
 
         // disable/hide part of numbers 
         numbersContainer.setDisable(false);
-        numOfPacketTB.setDisable(false);
         numOfPacketLabel.setDisable(false);
+        numOfPacketTB.setDisable(false);
+        numOfBurstLabel.setDisable(true);
         numOfBurstTB.setDisable(true);
         numOfBurstTB.setText("1");
-        numOfBurstLabel.setDisable(true);
-        packetPBurstTB.setVisible(false);
-        packetPBurstTitle.setVisible(false);
+        packetPBurstTitle.setDisable(true);
+        packetPBurstTB.setDisable(true);
+
         packetSecRG.setSelected(true);
         packetBitsSecRG.setDisable(true);
 
@@ -281,13 +282,12 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
 
         // disable numbers
         numbersContainer.setDisable(false);
-        numOfPacketTB.setDisable(true);
         numOfPacketLabel.setDisable(true);
-        numOfBurstTB.setDisable(false);
+        numOfPacketTB.setDisable(true);
         numOfBurstLabel.setDisable(false);
+        numOfBurstTB.setDisable(false);
+        packetPBurstTitle.setDisable(false);
         packetPBurstTB.setDisable(false);
-        packetPBurstTB.setVisible(true);
-        packetPBurstTitle.setVisible(true);
         packetSecRG.setSelected(true);
         packetBitsSecRG.setDisable(true);
 
