@@ -21,21 +21,15 @@ import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.remote.models.profiles.Stream;
 import com.exalttech.trex.ui.StreamBuilderType;
 import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.PacketInfo;
 import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.viewer.PacketHex;
 import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
-import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
-import com.exalttech.trex.util.files.FileManager;
-import com.exalttech.trex.util.files.FileType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
 import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
@@ -51,9 +45,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -75,41 +67,21 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private static final Logger LOG = Logger.getLogger(PacketBuilderHomeController.class.getName());
 
     @FXML
-    AnchorPane details;
-    @FXML
     AnchorPane hexPane;
-    @FXML
-    Button loadPcap;
-    @FXML
-    Button pcapProperties;
-    @FXML
-    Button savePacket;
     @FXML
     Button nextStreamBtn;
     @FXML
     Button streamEditorModeBtn;
     @FXML
     Button prevStreamBtn;
-    @FXML
-    Button resetPacket;
-    @FXML
-    AnchorPane windowContainer;
 
     // define sub FXML & controllers
     @FXML
-    AnchorPane streamProperties;
-    @FXML
     StreamPropertiesViewController streamPropertiesController;
-    @FXML
-    AnchorPane packetViewer;
     @FXML
     PacketViewerController packetViewerController;
     @FXML
-    AnchorPane protocolSelection;
-    @FXML
     ProtocolSelectionController protocolSelectionController;
-    @FXML
-    AnchorPane protocolData;
     @FXML
     ProtocolDataController protocolDataController;
     @FXML
@@ -133,9 +105,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @FXML
     TabPane streamTabPane;
 
-    @FXML
-    StackPane fieldEditorTopPane;
-
     @Inject
     FieldEditorController packetBuilderController;
 
@@ -146,7 +115,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private PacketParser parser;
     private PacketHex packetHex;
 
-    private TextWindowController controller;
     private Profile selectedProfile;
     private boolean isBuildPacket = false;
     private List<Profile> profileList;
@@ -166,7 +134,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     public void initialize(URL url, ResourceBundle rb) {
         trafficProfile = new TrafficProfile();
         packetHex = new PacketHex(hexPane);
-        loadPcap.setVisible(false);
         nextStreamBtn.setGraphic(new ImageView(new Image("/icons/next_stream.png")));
         prevStreamBtn.setGraphic(new ImageView(new Image("/icons/prev_stream.png")));
         packetInfo = new PacketInfo();
@@ -333,29 +300,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.getTabs().clear();
         streamTabPane.getTabs().addAll(streamPropertiesTab, packetEditorTab, fieldEngineTab);
     }
-    
-    /**
-     * Load Pcap button click handler
-     *
-     * @param event
-     * @throws Exception
-     */
-    public void loadPcapFired(ActionEvent event) throws Exception {
-        String loadLocation = PreferencesManager.getInstance().getLoadLocation();
-        Window owner = ((Button) (event.getSource())).getScene().getWindow();
-        File selectedFile = FileManager.getSelectedFile("Open Pcap File", "", owner, FileType.PCAP, loadLocation, false);
-
-        if (selectedFile != null) {
-            packetInfo = new PacketInfo();
-            parser.parseFile(selectedFile.getAbsolutePath(), packetInfo);
-            packetHex.setData(packetInfo);
-            String encodedPcapFile = trafficProfile.encodePcapFile(selectedFile.getAbsolutePath());
-            selectedProfile.getStream().getPacket().setBinary(encodedPcapFile);
-
-        } else {
-            LOG.info("file = null");
-        }
-    }
 
     /**
      * Close button click handler
@@ -367,50 +311,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         Node node = (Node) event.getSource();
         Stage stage = (Stage) node.getScene().getWindow();
         stage.hide();
-    }
-
-    /**
-     * JSON window button click handler
-     *
-     * @param event
-     */
-    @FXML
-    public void updateJSONWindow(ActionEvent event) {
-        try {
-            updateCurrentProfile();
-            if (streamPropertiesController.isValidStreamPropertiesFields()) {
-                if (controller != null && controller.isShown()) {
-                    controller.setContent(Util.toPrettyFormat(new Gson().toJson(selectedProfile)));
-                    controller.focus();
-                } else {
-                    viewStreamDetailWindow(selectedProfile);
-                }
-            }
-        } catch (Exception ex) {
-            LOG.error("Error in viewing object", ex);
-        }
-    }
-
-    /**
-     * View stream detail window
-     *
-     * @param profile
-     */
-    private void viewStreamDetailWindow(Profile profile) {
-        try {
-            Stage currentStage = (Stage) windowContainer.getScene().getWindow();
-            DialogWindow window = new DialogWindow("TextWindow.fxml", "View stream", 300, 150, false, currentStage);
-            controller = (TextWindowController) window.getController();
-
-            if (selectedProfile != null) {
-                ObjectMapper mapper = new ObjectMapper();
-                String jsonString = mapper.writeValueAsString(profile);
-                controller.setContent(Util.toPrettyFormat(jsonString));
-            }
-            window.show(false);
-        } catch (IOException ex) {
-            LOG.error("Error in viewing object", ex);
-        }
     }
 
     /**
