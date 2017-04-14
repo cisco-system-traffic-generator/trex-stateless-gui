@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
+<?import javafx.scene.layout.HBox?>
 <VBox xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.exalttech.trex.ui.controllers.StreamPropertiesViewController"
@@ -27,8 +28,7 @@
                 bottom="10.0"
                 left="10.0"/>
     </padding>
-    <GridPane hgap="10.0"
-              prefHeight="150.0">
+    <GridPane hgap="10.0">
         <columnConstraints>
             <ColumnConstraints percentWidth="14"/>
             <ColumnConstraints percentWidth="14"/>
@@ -39,175 +39,207 @@
         <rowConstraints>
             <RowConstraints percentHeight="100.0"/>
         </rowConstraints>
-        <AnchorPane style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
-                    GridPane.columnIndex="0"
-                    GridPane.rowIndex="0">
+        <VBox spacing="15.0"
+              style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="0">
+            <padding>
+                <Insets top="10.0"
+                        right="10.0"
+                        bottom="10.0"
+                        left="10.0"/>
+            </padding>
             <Label styleClass="streamPropertiesLabel"
-                   text="Mode"
-                   AnchorPane.topAnchor="10.0"
-                   AnchorPane.leftAnchor="10.0"/>
-            <fx:define>
-                <ToggleGroup fx:id="streamModeGroup"/>
-            </fx:define>
-            <RadioButton fx:id="continuousMode"
-                         layoutY="41.0"
-                         mnemonicParsing="false"
-                         selected="true"
-                         text="Continuous"
-                         toggleGroup="$streamModeGroup"
-                         AnchorPane.leftAnchor="10.0"/>
-            <RadioButton fx:id="burstMode"
-                         layoutY="71.0"
-                         mnemonicParsing="false"
-                         text="Burst"
-                         toggleGroup="$streamModeGroup"
-                         AnchorPane.leftAnchor="10.0"/>
-            <RadioButton fx:id="multiBurstMode"
-                         layoutY="100.0"
-                         mnemonicParsing="false"
-                         text="Multi-Burst"
-                         toggleGroup="$streamModeGroup"
-                         AnchorPane.leftAnchor="10.0"/>
-        </AnchorPane>
-        <AnchorPane style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
-                    GridPane.columnIndex="1"
-                    GridPane.rowIndex="0">
-            <CheckBox fx:id="enabledCB"
-                      mnemonicParsing="false"
-                      selected="true"
-                      text="Enabled"
-                      AnchorPane.topAnchor="40.0"
-                      AnchorPane.leftAnchor="10.0"/>
+                   text="Mode"/>
+            <VBox spacing="10.0">
+                <fx:define>
+                    <ToggleGroup fx:id="streamModeGroup"/>
+                </fx:define>
+                <RadioButton fx:id="continuousMode"
+                             mnemonicParsing="false"
+                             selected="true"
+                             text="Continuous"
+                             toggleGroup="$streamModeGroup"/>
+                <RadioButton fx:id="burstMode"
+                             mnemonicParsing="false"
+                             text="Burst"
+                             toggleGroup="$streamModeGroup"/>
+                <RadioButton fx:id="multiBurstMode"
+                             mnemonicParsing="false"
+                             text="Multi-Burst"
+                             toggleGroup="$streamModeGroup"/>
+            </VBox>
+        </VBox>
+        <VBox spacing="15.0"
+              style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="0">
+            <padding>
+                <Insets top="10.0"
+                        right="10.0"
+                        bottom="10.0"
+                        left="10.0"/>
+            </padding>
             <Label styleClass="streamPropertiesLabel"
-                   text="Misc"
-                   AnchorPane.topAnchor="10.0"
-                   AnchorPane.leftAnchor="10.0"/>
-            <CheckBox fx:id="selfStartCB"
-                      mnemonicParsing="false"
-                      selected="true"
-                      text="Self start"
-                      AnchorPane.topAnchor="70.0"
-                      AnchorPane.leftAnchor="10.0"/>
-        </AnchorPane>
-        <AnchorPane fx:id="numbersContainer"
-                    style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
-                    GridPane.columnIndex="2"
-                    GridPane.rowIndex="0">
+                   text="Misc"/>
+            <VBox spacing="10.0">
+                <CheckBox fx:id="enabledCB"
+                          mnemonicParsing="false"
+                          selected="true"
+                          text="Enabled"/>
+                <CheckBox fx:id="selfStartCB"
+                          mnemonicParsing="false"
+                          selected="true"
+                          text="Self start"/>
+            </VBox>
+        </VBox>
+        <VBox fx:id="numbersContainer"
+              spacing="15.0"
+              style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+              GridPane.columnIndex="2"
+              GridPane.rowIndex="0">
+            <padding>
+                <Insets top="10.0"
+                        right="10.0"
+                        bottom="10.0"
+                        left="10.0"/>
+            </padding>
             <Label styleClass="streamPropertiesLabel"
-                   text="Numbers"
-                   AnchorPane.topAnchor="10.0"
-                   AnchorPane.leftAnchor="10.0"/>
-            <Label fx:id="numOfPacketLabel"
-                   text="Number of Packets"
-                   AnchorPane.topAnchor="40.0"
-                   AnchorPane.leftAnchor="10.0"/>
-            <Label fx:id="numOfBurstLabel"
-                   text="Number of Burst"
-                   AnchorPane.topAnchor="70.0"
-                   AnchorPane.leftAnchor="10.0"/>
-            <Label fx:id="packetPBurstTitle"
-                   text="Packets per Burst"
-                   AnchorPane.topAnchor="100.0"
-                   AnchorPane.leftAnchor="10.0"/>
-            <TextField fx:id="numOfPacketTB"
-                       layoutY="38.0"
-                       prefWidth="85.0"
-                       AnchorPane.rightAnchor="10.0"/>
-            <TextField fx:id="numOfBurstTB"
-                       layoutY="68.0"
-                       prefWidth="85.0"
-                       AnchorPane.rightAnchor="10.0"/>
-            <TextField fx:id="packetPBurstTB"
-                       layoutY="98.0"
-                       prefWidth="85.0"
-                       AnchorPane.rightAnchor="10.0"/>
-        </AnchorPane>
-        <AnchorPane style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
-                    GridPane.columnIndex="3"
-                    GridPane.rowIndex="0">
+                   text="Numbers"/>
+            <VBox spacing="10.0">
+                <HBox alignment="CENTER_LEFT">
+                    <Label fx:id="numOfPacketLabel"
+                           text="Number of Packets"/>
+                    <HBox alignment="CENTER_RIGHT"
+                          HBox.hgrow="ALWAYS">
+                        <TextField fx:id="numOfPacketTB"
+                                   prefWidth="85.0"/>
+                    </HBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <Label fx:id="numOfBurstLabel"
+                           text="Number of Burst"/>
+                    <HBox alignment="CENTER_RIGHT"
+                          HBox.hgrow="ALWAYS">
+                        <TextField fx:id="numOfBurstTB"
+                                   prefWidth="85.0"/>
+                    </HBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <Label fx:id="packetPBurstTitle"
+                           text="Packets per Burst"/>
+                    <HBox alignment="CENTER_RIGHT"
+                          HBox.hgrow="ALWAYS">
+                        <TextField fx:id="packetPBurstTB"
+                                   prefWidth="85.0"/>
+                    </HBox>
+                </HBox>
+            </VBox>
+        </VBox>
+        <VBox spacing="15.0"
+              style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+              GridPane.columnIndex="3"
+              GridPane.rowIndex="0">
+            <padding>
+                <Insets top="10.0"
+                        right="10.0"
+                        bottom="10.0"
+                        left="10.0"/>
+            </padding>
             <Label styleClass="streamPropertiesLabel"
-                   text="Rate"
-                   AnchorPane.topAnchor="10.0"
-                   AnchorPane.leftAnchor="10.0"/>
-            <fx:define>
-                <ToggleGroup fx:id="rateGroup" />
-            </fx:define>
-            <RadioButton fx:id="packetSecRG"
-                         mnemonicParsing="false"
-                         selected="true"
-                         text="Packet/Sec"
-                         toggleGroup="$rateGroup"
-                         AnchorPane.topAnchor="40.0"
-                         AnchorPane.leftAnchor="10.0"/>
-            <RadioButton fx:id="packetBitsSecRG"
-                         mnemonicParsing="false"
-                         text="Packets Bits/Sec"
-                         toggleGroup="$rateGroup"
-                         AnchorPane.topAnchor="70.0"
-                         AnchorPane.leftAnchor="10.0"/>
-            <TextField fx:id="packetSecTB"
-                       layoutY="38.0"
-                       prefWidth="80.0"
-                       text="1"
-                       AnchorPane.rightAnchor="10.0"/>
-            <TextField fx:id="packetBitsSecTB"
-                       disable="true"
-                       layoutY="68.0"
-                       prefWidth="80.0"
-                       AnchorPane.rightAnchor="10.0"/>
-            <TextField fx:id="burstSecTB"
-                       disable="true"
-                       layoutY="98.0"
-                       prefWidth="80.0"
-                       AnchorPane.rightAnchor="10.0"/>
-            <Label disable="true"
-                   layoutX="29.0"
-                   layoutY="102.0"
-                   text="Burst/Sec"
-                   AnchorPane.leftAnchor="30.0"
-                   AnchorPane.topAnchor="100.0"/>
-        </AnchorPane>
-        <AnchorPane fx:id="afterStreamContainer"
-                    style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
-                    GridPane.columnIndex="4"
-                    GridPane.rowIndex="0">
+                   text="Rate"/>
+            <VBox spacing="10.0">
+                <fx:define>
+                    <ToggleGroup fx:id="rateGroup" />
+                </fx:define>
+                <HBox alignment="CENTER_LEFT">
+                    <RadioButton fx:id="packetSecRG"
+                                 mnemonicParsing="false"
+                                 selected="true"
+                                 text="Packet/Sec"
+                                 toggleGroup="$rateGroup"/>
+                    <HBox alignment="CENTER_RIGHT"
+                          HBox.hgrow="ALWAYS">
+                        <TextField fx:id="packetSecTB"
+                                   prefWidth="80.0"
+                                   text="1"/>
+                    </HBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <RadioButton fx:id="packetBitsSecRG"
+                                 mnemonicParsing="false"
+                                 text="Packets Bits/Sec"
+                                 toggleGroup="$rateGroup"/>
+                    <HBox alignment="CENTER_RIGHT"
+                          HBox.hgrow="ALWAYS">
+                        <TextField fx:id="packetBitsSecTB"
+                                   disable="true"
+                                   prefWidth="80.0"/>
+                    </HBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets left="23.0"/>
+                    </padding>
+                    <Label disable="true"
+                           text="Burst/Sec"/>
+                    <HBox alignment="CENTER_RIGHT"
+                          HBox.hgrow="ALWAYS">
+                        <TextField fx:id="burstSecTB"
+                                   disable="true"
+                                   prefWidth="80.0"/>
+                    </HBox>
+                </HBox>
+            </VBox>
+        </VBox>
+        <VBox fx:id="afterStreamContainer"
+              spacing="15.0"
+              style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;"
+              GridPane.columnIndex="4"
+              GridPane.rowIndex="0">
+            <padding>
+                <Insets top="10.0"
+                        right="10.0"
+                        bottom="10.0"
+                        left="10.0"/>
+            </padding>
             <Label styleClass="streamPropertiesLabel"
-                   text="After this stream"
-                   AnchorPane.topAnchor="10.0"
-                   AnchorPane.leftAnchor="10.0"/>
-            <fx:define>
-                <ToggleGroup fx:id="nextStreamGroup" />
-            </fx:define>
-            <RadioButton fx:id="stopRG"
-                         mnemonicParsing="false"
-                         text="Stop"
-                         toggleGroup="$nextStreamGroup"
-                         AnchorPane.topAnchor="40.0"
-                         AnchorPane.leftAnchor="10.0"/>
-            <RadioButton fx:id="gotoRG"
-                         mnemonicParsing="false"
-                         text="Goto Stream"
-                         toggleGroup="$nextStreamGroup"
-                         AnchorPane.topAnchor="70.0"
-                         AnchorPane.leftAnchor="10.0"/>
-            <CheckBox fx:id="timeInLoopCB"
-                      disable="true"
-                      layoutY="100.0"
-                      mnemonicParsing="false"
-                      text="Time in loop"
-                      AnchorPane.leftAnchor="20.0"/>
-            <TextField fx:id="timeInLoopTF"
-                       disable="true"
-                       layoutY="97.0"
-                       prefWidth="130.0"
-                       text="0"
-                       AnchorPane.rightAnchor="10.0"/>
-            <ComboBox fx:id="nextStreamCB"
-                      layoutY="68.0"
-                      prefHeight="22.0"
-                      prefWidth="130.0"
-                      AnchorPane.rightAnchor="10.0"/>
-        </AnchorPane>
+                   text="After this stream"/>
+            <VBox spacing="10.0">
+                <fx:define>
+                    <ToggleGroup fx:id="nextStreamGroup" />
+                </fx:define>
+                <RadioButton fx:id="stopRG"
+                             mnemonicParsing="false"
+                             text="Stop"
+                             toggleGroup="$nextStreamGroup"/>
+                <HBox alignment="CENTER_LEFT">
+                    <RadioButton fx:id="gotoRG"
+                                 mnemonicParsing="false"
+                                 text="Goto Stream"
+                                 toggleGroup="$nextStreamGroup"/>
+                    <HBox alignment="CENTER_RIGHT"
+                          HBox.hgrow="ALWAYS">
+                        <ComboBox fx:id="nextStreamCB"
+                                  prefHeight="22.0"
+                                  prefWidth="130.0"/>
+                    </HBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT">
+                    <CheckBox fx:id="timeInLoopCB"
+                              disable="true"
+                              mnemonicParsing="false"
+                              text="Time in loop"/>
+                    <HBox alignment="CENTER_RIGHT"
+                          HBox.hgrow="ALWAYS">
+                        <TextField fx:id="timeInLoopTF"
+                                   disable="true"
+                                   prefWidth="130.0"
+                                   text="0"/>
+                    </HBox>
+                </HBox>
+            </VBox>
+        </VBox>
     </GridPane>
     <AnchorPane prefHeight="150.0"
                 style="-fx-border-color:#DFDFDF; -fx-background-color: #ffffff;">

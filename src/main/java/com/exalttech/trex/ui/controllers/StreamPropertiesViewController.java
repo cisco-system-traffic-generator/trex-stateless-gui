@@ -40,6 +40,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 /**
  * FXML Controller class
@@ -64,7 +65,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     CheckBox selfStartCB;
     //Numbers
     @FXML
-    AnchorPane numbersContainer;
+    VBox numbersContainer;
     @FXML
     TextField numOfPacketTB;
     @FXML
@@ -93,7 +94,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     TextField burstSecTB;
     // next stream
     @FXML
-    AnchorPane afterStreamContainer;
+    VBox afterStreamContainer;
     @FXML
     ToggleGroup nextStreamGroup;
     @FXML
