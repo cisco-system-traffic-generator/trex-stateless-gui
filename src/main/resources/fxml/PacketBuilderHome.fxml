@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.paint.Color?>
 
 <?import java.lang.String?>
 <?import java.net.URL?>
 
 
-<AnchorPane xmlns="http://javafx.com/javafx/8"
+<BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.exalttech.trex.ui.controllers.PacketBuilderHomeController"
             maxHeight="-Infinity"
@@ -21,131 +24,147 @@
             prefHeight="650.0"
             prefWidth="1030.0"
             style="-fx-background-color: #f0f0f0">
-    <TabPane fx:id="streamTabPane"
-             layoutX="14.0"
-             layoutY="16.0"
-             prefHeight="586.0"
-             prefWidth="1000.0"
-             tabClosingPolicy="UNAVAILABLE">
-        <Tab fx:id="streamPropertiesTab"
-             text="Stream Properties">
-            <AnchorPane minHeight="0.0"
-                        minWidth="0.0"
-                        prefHeight="180.0"
-                        prefWidth="200.0">
-                <fx:include fx:id="streamProperties"
-                            source="StreamPropertiesView.fxml"/>
-            </AnchorPane>
-        </Tab>
-        <Tab fx:id="packetViewerTab"
-             text="Packet Viewer">
-            <AnchorPane>
-                <AnchorPane fx:id="hexPane"
-                            style="-fx-background-color:white;"
-                            styleClass="tabContentWrapper"
-                            AnchorPane.bottomAnchor="10.0"
-                            AnchorPane.leftAnchor="10.0"
-                            AnchorPane.rightAnchor="10.0"
-                            AnchorPane.topAnchor="10.0"/>
-            </AnchorPane>
-        </Tab>
-        <Tab fx:id="protocolSelectionTab"
-             text="Protocol Selection">
-            <fx:include fx:id="protocolSelection"
-                        source="ProtocolSelection.fxml"/>
-        </Tab>
-        <Tab fx:id="protocolDataTab"
-             text="Protocol Data">
-            <fx:include fx:id="protocolData"
-                        source="ProtocolData.fxml"/>
-        </Tab>
-        <Tab fx:id="advanceSettingsTab"
-             text="Advanced Settings">
-            <fx:include fx:id="advancedSettings"
-                        source="AdvancedSettings.fxml"/>
-        </Tab>
-        <Tab fx:id="packetViewerWithTreeTab"
-             text="Packet viewer">
-            <fx:include fx:id="packetViewer"
-                        source="PacketViewer.fxml"/>
-        </Tab>
-        <Tab fx:id="packetEditorTab"
-             text="Packet Editor">
-            <fx:include source="/com/xored/javafx/packeteditor/controllers/PacketEditor_embedded.fxml"/>
-        </Tab>
-        <Tab fx:id="fieldEngineTab"
-             text="Field Engine">
-            <fx:include source="/com/xored/javafx/packeteditor/controllers/FieldEngine_embedded.fxml"/>
-        </Tab>
-        <styleClass>
-            <String fx:value="packetTabContainer"/>
-            <String fx:value="floating"/>
-        </styleClass>
-    </TabPane>
-    <Button fx:id="prevStreamBtn"
-            mnemonicParsing="false"
-            onAction="#prevStreamBtnClick"
-            prefHeight="24.0"
-            prefWidth="60.0"
-            styleClass="normalButton"
-            AnchorPane.bottomAnchor="12.0"
-            AnchorPane.leftAnchor="14.0">
-        <tooltip>
-            <Tooltip text="Previous Stream"/>
-        </tooltip>
-    </Button>
-    <Button fx:id="nextStreamBtn"
-            mnemonicParsing="false"
-            onAction="#nextStreamBtnClicked"
-            prefHeight="24.0"
-            prefWidth="60.0"
-            styleClass="normalButton"
-            AnchorPane.bottomAnchor="12.0"
-            AnchorPane.leftAnchor="85.0">
-        <tooltip>
-            <Tooltip text="Next Stream"/>
-        </tooltip>
-    </Button>
-    <Button fx:id="streamEditorModeBtn"
-            mnemonicParsing="false"
-            onAction="#switchEditorMode"
-            prefHeight="24.0"
-            prefWidth="150.0"
-            styleClass="normalButton"
-            text="Advanced mode"
-            AnchorPane.bottomAnchor="12.0"
-            AnchorPane.leftAnchor="160.0">
-        <textFill>
-            <Color blue="0.161"
-                   green="0.161"
-                   red="0.161"/>
-        </textFill>
-    </Button>
-    <Button mnemonicParsing="false"
-            onAction="#saveProfileBtnClicked"
-            prefHeight="24.0"
-            prefWidth="110.0"
-            styleClass="normalButton"
-            text="Save"
-            AnchorPane.bottomAnchor="12.0"
-            AnchorPane.leftAnchor="782.0">
-        <textFill>
-            <Color blue="0.161"
-                   green="0.161"
-                   red="0.161"
-                   fx:id="x5"/>
-        </textFill>
-    </Button>
-    <Button mnemonicParsing="false"
-            onMouseClicked="#handleCloseDialog"
-            prefHeight="24.0"
-            prefWidth="110.0"
-            styleClass="cancelButton"
-            text="Cancel"
-            textFill="$x5"
-            AnchorPane.bottomAnchor="12.0"
-            AnchorPane.leftAnchor="904.0"/>
+    <padding>
+        <Insets top="15.0"
+                right="15.0"
+                bottom="15.0"
+                left="15.0"/>
+    </padding>
+    <center>
+        <TabPane fx:id="streamTabPane"
+                 tabClosingPolicy="UNAVAILABLE">
+            <Tab fx:id="streamPropertiesTab"
+                 text="Stream Properties">
+                <AnchorPane minHeight="0.0"
+                            minWidth="0.0"
+                            prefHeight="180.0"
+                            prefWidth="200.0">
+                    <fx:include fx:id="streamProperties"
+                                source="StreamPropertiesView.fxml"/>
+                </AnchorPane>
+            </Tab>
+            <Tab fx:id="packetViewerTab"
+                 text="Packet Viewer">
+                <AnchorPane>
+                    <AnchorPane fx:id="hexPane"
+                                style="-fx-background-color:white;"
+                                styleClass="tabContentWrapper"
+                                AnchorPane.bottomAnchor="10.0"
+                                AnchorPane.leftAnchor="10.0"
+                                AnchorPane.rightAnchor="10.0"
+                                AnchorPane.topAnchor="10.0"/>
+                </AnchorPane>
+            </Tab>
+            <Tab fx:id="protocolSelectionTab"
+                 text="Protocol Selection">
+                <fx:include fx:id="protocolSelection"
+                            source="ProtocolSelection.fxml"/>
+            </Tab>
+            <Tab fx:id="protocolDataTab"
+                 text="Protocol Data">
+                <fx:include fx:id="protocolData"
+                            source="ProtocolData.fxml"/>
+            </Tab>
+            <Tab fx:id="advanceSettingsTab"
+                 text="Advanced Settings">
+                <fx:include fx:id="advancedSettings"
+                            source="AdvancedSettings.fxml"/>
+            </Tab>
+            <Tab fx:id="packetViewerWithTreeTab"
+                 text="Packet viewer">
+                <fx:include fx:id="packetViewer"
+                            source="PacketViewer.fxml"/>
+            </Tab>
+            <Tab fx:id="packetEditorTab"
+                 text="Packet Editor">
+                <fx:include source="/com/xored/javafx/packeteditor/controllers/PacketEditor_embedded.fxml"/>
+            </Tab>
+            <Tab fx:id="fieldEngineTab"
+                 text="Field Engine">
+                <fx:include source="/com/xored/javafx/packeteditor/controllers/FieldEngine_embedded.fxml"/>
+            </Tab>
+            <styleClass>
+                <String fx:value="packetTabContainer"/>
+                <String fx:value="floating"/>
+            </styleClass>
+        </TabPane>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_LEFT"
+              spacing="10.0">
+            <padding>
+                <Insets top="10.0"/>
+            </padding>
+            <Button fx:id="prevStreamBtn"
+                    mnemonicParsing="false"
+                    onAction="#prevStreamBtnClick"
+                    prefHeight="24.0"
+                    prefWidth="60.0"
+                    styleClass="normalButton"
+                    AnchorPane.bottomAnchor="12.0"
+                    AnchorPane.leftAnchor="14.0">
+                <tooltip>
+                    <Tooltip text="Previous Stream"/>
+                </tooltip>
+            </Button>
+            <Button fx:id="nextStreamBtn"
+                    mnemonicParsing="false"
+                    onAction="#nextStreamBtnClicked"
+                    prefHeight="24.0"
+                    prefWidth="60.0"
+                    styleClass="normalButton"
+                    AnchorPane.bottomAnchor="12.0"
+                    AnchorPane.leftAnchor="85.0">
+                <tooltip>
+                    <Tooltip text="Next Stream"/>
+                </tooltip>
+            </Button>
+            <Button fx:id="streamEditorModeBtn"
+                    mnemonicParsing="false"
+                    onAction="#switchEditorMode"
+                    prefHeight="24.0"
+                    prefWidth="150.0"
+                    styleClass="normalButton"
+                    text="Advanced mode"
+                    AnchorPane.bottomAnchor="12.0"
+                    AnchorPane.leftAnchor="160.0">
+                <textFill>
+                    <Color blue="0.161"
+                           green="0.161"
+                           red="0.161"/>
+                </textFill>
+            </Button>
+            <HBox alignment="CENTER_RIGHT"
+                  spacing="10.0"
+                  HBox.hgrow="ALWAYS">
+                <Button mnemonicParsing="false"
+                        onAction="#saveProfileBtnClicked"
+                        prefHeight="24.0"
+                        prefWidth="110.0"
+                        styleClass="normalButton"
+                        text="Save"
+                        AnchorPane.bottomAnchor="12.0"
+                        AnchorPane.leftAnchor="782.0">
+                    <textFill>
+                        <Color blue="0.161"
+                               green="0.161"
+                               red="0.161"
+                               fx:id="x5"/>
+                    </textFill>
+                </Button>
+                <Button mnemonicParsing="false"
+                        onMouseClicked="#handleCloseDialog"
+                        prefHeight="24.0"
+                        prefWidth="110.0"
+                        styleClass="cancelButton"
+                        text="Cancel"
+                        textFill="$x5"
+                        AnchorPane.bottomAnchor="12.0"
+                        AnchorPane.leftAnchor="904.0"/>
+            </HBox>
+        </HBox>
+    </bottom>
     <stylesheets>
         <URL value="@../styles/packetBuilderStyle.css"/>
     </stylesheets>
-</AnchorPane>
+</BorderPane>
