@@ -22,7 +22,7 @@
             minHeight="-Infinity"
             minWidth="-Infinity"
             prefHeight="650.0"
-            prefWidth="1030.0"
+            prefWidth="1230.0"
             style="-fx-background-color: #f0f0f0">
     <padding>
         <Insets top="15.0"
@@ -35,13 +35,8 @@
                  tabClosingPolicy="UNAVAILABLE">
             <Tab fx:id="streamPropertiesTab"
                  text="Stream Properties">
-                <AnchorPane minHeight="0.0"
-                            minWidth="0.0"
-                            prefHeight="180.0"
-                            prefWidth="200.0">
-                    <fx:include fx:id="streamProperties"
-                                source="StreamPropertiesView.fxml"/>
-                </AnchorPane>
+                <fx:include fx:id="streamProperties"
+                            source="StreamPropertiesView.fxml"/>
             </Tab>
             <Tab fx:id="packetViewerTab"
                  text="Packet Viewer">
