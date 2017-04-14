@@ -37,10 +37,10 @@
                 <fx:include fx:id="protocolSelection" source="ProtocolSelection.fxml" />
             </AnchorPane>
         </Tab>
-        <Tab fx:id="protocolDataTab" text="Protocol Data">
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                <fx:include fx:id="protocolData" source="ProtocolData.fxml" />
-            </AnchorPane>
+        <Tab fx:id="protocolDataTab"
+             text="Protocol Data">
+            <fx:include fx:id="protocolData"
+                        source="ProtocolData.fxml" />
         </Tab>
         <Tab fx:id="advanceSettingsTab"
              text="Advanced Settings">
