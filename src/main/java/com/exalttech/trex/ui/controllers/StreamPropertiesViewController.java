@@ -78,20 +78,9 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     Label packetPBurstTitle;
     @FXML
     Label numOfBurstLabel;
-    // rate
-    @FXML
-    ToggleGroup rateGroup;
-    @FXML
-    RadioButton packetSecRG;
-    @FXML
-    RadioButton packetBitsSecRG;
 
     @FXML
     TextField packetSecTB;
-    @FXML
-    TextField packetBitsSecTB;
-    @FXML
-    TextField burstSecTB;
     // next stream
     @FXML
     VBox afterStreamContainer;
@@ -156,9 +145,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
      * Initialize events and properties binding
      */
     private void initStreamPropertiesEvent() {
-        packetSecTB.disableProperty().bind(packetSecRG.selectedProperty().not());
-        packetBitsSecTB.disableProperty().bind(packetBitsSecRG.selectedProperty().not());
-
         timeInLoopTF.disableProperty().bind(timeInLoopCB.selectedProperty().not());
         nextStreamCB.disableProperty().bind(gotoRG.selectedProperty().not());
 
@@ -204,7 +190,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         packetSecTB.addEventFilter(KeyEvent.KEY_TYPED, this);
         numOfBurstTB.addEventFilter(KeyEvent.KEY_TYPED, this);
         packetPBurstTB.addEventFilter(KeyEvent.KEY_TYPED, this);
-        packetBitsSecTB.addEventFilter(KeyEvent.KEY_TYPED, this);
         timeInLoopTF.addEventFilter(KeyEvent.KEY_TYPED, this);
         rxStreamID.addEventFilter(KeyEvent.KEY_TYPED, this);
 
@@ -229,7 +214,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         packetPBurstTitle.setDisable(false);
         packetPBurstTB.setDisable(false);
         numOfBurstTB.setText("1");
-        packetBitsSecRG.setDisable(false);
 
         // disable next stream
         afterStreamContainer.setDisable(true);
@@ -260,9 +244,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         packetPBurstTitle.setDisable(true);
         packetPBurstTB.setDisable(true);
 
-        packetSecRG.setSelected(true);
-        packetBitsSecRG.setDisable(true);
-
         // enable next stream
         afterStreamContainer.setDisable(false);
 
@@ -289,8 +270,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         numOfBurstTB.setDisable(false);
         packetPBurstTitle.setDisable(false);
         packetPBurstTB.setDisable(false);
-        packetSecRG.setSelected(true);
-        packetBitsSecRG.setDisable(true);
 
         // enable next stream
         afterStreamContainer.setDisable(false);
@@ -436,9 +415,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setType(StreamMode.CONTINUOUS.toString());
 
         // update rate
-        if (rateGroup.getSelectedToggle() == packetSecRG) {
-            profile.getStream().getMode().setPps(Double.parseDouble(packetSecTB.getText()));
-        }
+        profile.getStream().getMode().setPps(Double.parseDouble(packetSecTB.getText()));
 
         // update next stream 
         updateNextStream(profile);

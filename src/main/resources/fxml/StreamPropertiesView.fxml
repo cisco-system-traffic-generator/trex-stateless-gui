@@ -149,45 +149,13 @@
             <Label styleClass="streamPropertiesLabel"
                    text="Rate"/>
             <VBox spacing="10.0">
-                <fx:define>
-                    <ToggleGroup fx:id="rateGroup" />
-                </fx:define>
                 <HBox alignment="CENTER_LEFT">
-                    <RadioButton fx:id="packetSecRG"
-                                 mnemonicParsing="false"
-                                 selected="true"
-                                 text="Packet/Sec"
-                                 toggleGroup="$rateGroup"/>
+                    <Label text="Packet/Sec"/>
                     <HBox alignment="CENTER_RIGHT"
                           HBox.hgrow="ALWAYS">
                         <TextField fx:id="packetSecTB"
                                    prefWidth="80.0"
                                    text="1"/>
-                    </HBox>
-                </HBox>
-                <HBox alignment="CENTER_LEFT">
-                    <RadioButton fx:id="packetBitsSecRG"
-                                 mnemonicParsing="false"
-                                 text="Packets Bits/Sec"
-                                 toggleGroup="$rateGroup"/>
-                    <HBox alignment="CENTER_RIGHT"
-                          HBox.hgrow="ALWAYS">
-                        <TextField fx:id="packetBitsSecTB"
-                                   disable="true"
-                                   prefWidth="80.0"/>
-                    </HBox>
-                </HBox>
-                <HBox alignment="CENTER_LEFT">
-                    <padding>
-                        <Insets left="23.0"/>
-                    </padding>
-                    <Label disable="true"
-                           text="Burst/Sec"/>
-                    <HBox alignment="CENTER_RIGHT"
-                          HBox.hgrow="ALWAYS">
-                        <TextField fx:id="burstSecTB"
-                                   disable="true"
-                                   prefWidth="80.0"/>
                     </HBox>
                 </HBox>
             </VBox>
