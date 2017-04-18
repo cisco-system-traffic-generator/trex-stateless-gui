@@ -24,6 +24,34 @@ repositories {
      mavenLocal()
 }
 
+sourceSets {
+    uiTest {
+        compileClasspath = sourceSets.main.output + configurations.testRuntime
+        runtimeClasspath = output + sourceSets.main.output + configurations.testRuntime
+
+        java {
+            srcDirs = ['src/ui-test/java']
+        }
+    }
+}
+
+task uiTest(type: Test) {
+    description 'Runs UI testing(E2E)'
+    outputs.upToDateWhen { false }
+    testClassesDir = sourceSets.uiTest.output.classesDir
+    classpath = sourceSets.uiTest.runtimeClasspath
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+
+    if (project.hasProperty('headless')) {
+        // for running JavaFX tests headless using Monocle
+        jvmArgs "-Dheadless=true"
+    }
+}
+
 dependencies {
 
     compile project(':trex-packet-editor')
@@ -49,7 +77,10 @@ dependencies {
     compile group: 'org.jfxtras', name: 'jfxtras-labs', version:'8.0-r4'
     compile group: 'commons-codec', name: 'commons-codec', version:'1.9'
     compile group: 'org.testng', name: 'testng', version:'6.9.10'
-    testCompile group: 'org.testfx', name: 'testfx-core', version:'4.0.4-alpha'
-    testCompile group: 'org.testfx', name: 'testfx-junit', version:'4.0.4-alpha'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile "org.testfx:testfx-core:4.0.+"
+    testCompile "org.testfx:testfx-junit:4.0.+"
+    testRuntime "org.testfx:openjfx-monocle:1.8.0_20"
 }
 

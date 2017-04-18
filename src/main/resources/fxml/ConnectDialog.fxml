@@ -22,6 +22,7 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.exalttech.trex.ui.controllers.ConnectDialogController"
             fx:id="mainViewContainer"
+            id="connection-dialog"
             prefWidth="450.0"
             minHeight="195.0"
             prefHeight="195.0"
@@ -40,6 +41,7 @@
                AnchorPane.topAnchor="15.0"
                AnchorPane.leftAnchor="30.0"/>
         <ComboBox fx:id="connectionsCB"
+                  id="connection-dialog-ip"
                   prefWidth="200.0"
                   prefHeight="2.0"
                   editable="true"
@@ -141,7 +143,8 @@
           spacing="10.0"
           AnchorPane.rightAnchor="0.0"
           AnchorPane.bottomAnchor="0.0">
-        <Button prefWidth="90.0"
+        <Button id="connection-dialog-connect"
+                prefWidth="90.0"
                 prefHeight="22.0"
                 mnemonicParsing="false"
                 styleClass="normalButton"

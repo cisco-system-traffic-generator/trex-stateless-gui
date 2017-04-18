@@ -21,9 +21,9 @@
         <MenuBar id="headerMenuBar" layoutY="0.0" prefHeight="30.0" prefWidth="1000.0" AnchorPane.leftAnchor="0.0"
                  AnchorPane.rightAnchor="0.0">
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu id="main-menu" mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem fx:id="connectMenuItem" mnemonicParsing="false"
+                        <MenuItem fx:id="connectMenuItem" id="main-menu-connect" mnemonicParsing="false"
                                   onAction="#handleConnectMenuItemClicked" text="  Connect               Ctrl+C"/>
                         <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemClicked"
                                   text="  Preferences         Ctrl+P"/>
