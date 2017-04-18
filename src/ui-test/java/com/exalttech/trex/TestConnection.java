@@ -36,7 +36,8 @@ public class TestConnection extends TestBase {
         clickOn("#connection-dialog-connect");
         sleep(5000);
         verifyThat("#connection-dialog", NodeMatchers.isNull());
-        clickOn(".disconnectIcon");
+        clickOn("#main-menu");
+        clickOn("#main-menu-connect");
         sleep(1000);
         verifyThat(".disconnectIcon", NodeMatchers.isNull());
     }

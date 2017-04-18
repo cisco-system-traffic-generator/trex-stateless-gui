@@ -26,6 +26,6 @@ public class TestBase extends ApplicationTest {
     }
 
     public String getTRexServerIP() {
-        return "192.168.50.150";
+        return "192.168.50.154";
     }
 }
