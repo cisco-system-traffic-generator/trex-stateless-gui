@@ -1,44 +1,47 @@
 package com.exalttech.trex;
 
-import javafx.scene.input.KeyCode;
-
-import static org.testfx.api.FxAssert.verifyThat;
-
+import javafx.scene.control.*;
+import org.junit.Assert;
 import org.junit.Test;
-
-import org.testfx.matcher.base.NodeMatchers;
 
 
 public class TestConnection extends TestBase {
-    @Test
-    public void testConnectDisconnectFromToolbar(){
-        clickOn(".connectIcon");
-        clickOn("#connection-dialog-ip");
-        push(KeyCode.CONTROL, KeyCode.A);
-        push(KeyCode.DELETE);
-        write(getTRexServerIP());
-        clickOn("#connection-dialog-connect");
-        sleep(5000);
-        verifyThat("#connection-dialog", NodeMatchers.isNull());
-        clickOn(".disconnectIcon");
-        sleep(1000);
-        verifyThat(".disconnectIcon", NodeMatchers.isNull());
+    private void validateDisconnectedState() {
+        final MenuBar menuBar = lookup("#headerMenuBar").query();
+        Assert.assertEquals(menuBar.getMenus().get(0).getItems().get(0).getText(), "Connect");
+        Assert.assertEquals(getText("#main-server-status"), "Disconnected");
+    }
+
+    private void validateConnectedState() {
+        final MenuBar menuBar = lookup("#headerMenuBar").query();
+        Assert.assertEquals(menuBar.getMenus().get(0).getItems().get(0).getText(), "Disconnect");
+        Assert.assertEquals(getText("#main-server-status"), "Connected");
     }
 
     @Test
-    public void testConnectDisconnectFromMenu(){
-        clickOn("#main-menu");
-        clickOn("#main-menu-connect");
-        clickOn("#connection-dialog-ip");
-        push(KeyCode.CONTROL, KeyCode.A);
-        push(KeyCode.DELETE);
-        write(getTRexServerIP());
-        clickOn("#connection-dialog-connect");
-        sleep(5000);
-        verifyThat("#connection-dialog", NodeMatchers.isNull());
-        clickOn("#main-menu");
-        clickOn("#main-menu-connect");
-        sleep(1000);
-        verifyThat(".disconnectIcon", NodeMatchers.isNull());
+    public void testConnectDisconnectByToolbar() {
+        validateDisconnectedState();
+        Assert.assertTrue("Failed to connect", connect(MenuType.TOOLBAR));
+        validateConnectedState();
+        Assert.assertTrue("Failed to disconnect", disconnect(MenuType.TOOLBAR));
+        validateDisconnectedState();
+    }
+
+    @Test
+    public void testConnectDisconnectByMenu() {
+        validateDisconnectedState();
+        Assert.assertTrue("Failed to connect", connect(MenuType.MENU));
+        validateConnectedState();
+        Assert.assertTrue("Failed to disconnect", disconnect(MenuType.MENU));
+        validateDisconnectedState();
+    }
+
+    @Test
+    public void testConnectDisconnectByShortcut() {
+        validateDisconnectedState();
+        Assert.assertTrue("Failed to connect", connect(MenuType.SHORTCUT));
+        validateConnectedState();
+        Assert.assertTrue("Failed to disconnect", disconnect(MenuType.SHORTCUT));
+        validateDisconnectedState();
     }
 }

@@ -49,6 +49,7 @@
                   AnchorPane.rightAnchor="30.0"
                   AnchorPane.leftAnchor="140.0"/>
         <TitledPane fx:id="advanceTitledPan"
+                    id="connection-dialog-advance"
                     prefWidth="342.0"
                     prefHeight="30.0"
                     animated="false"
@@ -81,6 +82,7 @@
                        GridPane.rowIndex="0"
                        GridPane.columnIndex="0"/>
                 <TextField fx:id="rpcPortTextField"
+                           id="connection-dialog-sync-port"
                            text="4501"
                            GridPane.rowIndex="0"
                            GridPane.columnIndex="1"/>
@@ -88,6 +90,7 @@
                        GridPane.rowIndex="1"
                        GridPane.columnIndex="0"/>
                 <TextField fx:id="asyncPortTextField"
+                           id="connection-dialog-async-port"
                            text="4500"
                            GridPane.rowIndex="1"
                            GridPane.columnIndex="1"/>
@@ -95,6 +98,7 @@
                        GridPane.rowIndex="2"
                        GridPane.columnIndex="0"/>
                 <TextField fx:id="scapyPortTextField"
+                           id="connection-dialog-scapy-port"
                            text="4507"
                            GridPane.rowIndex="2"
                            GridPane.columnIndex="1"/>
@@ -102,6 +106,7 @@
                        GridPane.columnIndex="0"
                        text="Name"/>
                 <TextField fx:id="nameTextField"
+                           id="connection-dialog-user"
                            text="Client1"
                            GridPane.rowIndex="3"
                            GridPane.columnIndex="1"/>

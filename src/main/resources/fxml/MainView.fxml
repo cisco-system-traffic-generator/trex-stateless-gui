@@ -36,7 +36,8 @@
                               text="Exit"
                               onAction="#handleExitMenuItemClick"/>
                 </Menu>
-                <Menu mnemonicParsing="false"
+                <Menu id="main-menu-status"
+                      mnemonicParsing="false"
                       text="Traffic Profiles">
                     <MenuItem mnemonicParsing="false"
                               text="Traffic Profiles"
@@ -112,8 +113,12 @@
                                 <Tooltip text="Release Port"/>
                             </tooltip>
                         </Label>
-                        <Label fx:id="connectIcon" onMouseClicked="#handleConnectDisconnectBtnClicked" prefHeight="24.0"
-                               prefWidth="24.0" styleClass="connectIcon">
+                        <Label fx:id="connectIcon"
+                               id="main-toolbar-connect"
+                               onMouseClicked="#handleConnectDisconnectBtnClicked"
+                               prefHeight="24.0"
+                               prefWidth="24.0"
+                               styleClass="connectIcon">
                             <tooltip>
                                 <Tooltip fx:id="connectDixconnectTooltip" text="Connect to TRex server"/>
                             </tooltip>
@@ -364,8 +369,12 @@
         <AnchorPane id="" prefHeight="25.0" prefWidth="1100.0" styleClass="bottomRow" AnchorPane.bottomAnchor="0.0"
                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <children>
-                <Label fx:id="serverStatusLabel" styleClass="serverStatusLabel" text="Disconnected"
-                       AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="4.0"/>
+                <Label fx:id="serverStatusLabel"
+                       id="main-server-status"
+                       styleClass="serverStatusLabel"
+                       text="Disconnected"
+                       AnchorPane.rightAnchor="40.0"
+                       AnchorPane.topAnchor="4.0"/>
                 <ImageView fx:id="serverStatusIcon" fitHeight="12.0" fitWidth="12.0" pickOnBounds="true"
                            preserveRatio="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="12.0"
                            AnchorPane.topAnchor="6.0"/>
