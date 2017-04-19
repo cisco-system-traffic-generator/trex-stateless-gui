@@ -204,9 +204,11 @@ public class MultiplierView extends AnchorPane implements MultiplierSelectionEve
     public double getPPSValue() {
         MultiplierOption option = multiplierOptionMap.get(MultiplierType.pps);
         validateSelectedMultiplierValue();
+        final double minRate = MultiplierType.pps.getMinRate(rate);
+        final double maxRate = MultiplierType.pps.getMaxRate(rate);
         // force PPS value to 1 if it less than 1
-        if (option.getMultiplierValue() < 1 && MultiplierType.pps.getMaxRate(rate) > 0) {
-            option.setValue(1);
+        if (option.getMultiplierValue() <= minRate && maxRate > minRate) {
+            option.setValue(minRate + 1.0);
             updateAll(option);
         }
         return option.getMultiplierValue();
