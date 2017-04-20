@@ -158,7 +158,6 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 }
 
 .menu-item{
-    -fx-pref-width:150px;
     -fx-background-color:#f0f0f0;
 }
 .context-menu {

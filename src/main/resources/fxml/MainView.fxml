@@ -1,60 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
-<?import java.util.*?>
 <?import javafx.collections.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
 
 <?import com.exalttech.trex.ui.controllers.ports.PortView?>
+
 
 <AnchorPane fx:id="mainViewContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="670.0" minWidth="500.0"
             prefHeight="670.0" prefWidth="1225.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.exalttech.trex.ui.controllers.MainViewController">
     <children>
-        <MenuBar id="headerMenuBar" layoutY="0.0" prefHeight="30.0" prefWidth="1000.0" AnchorPane.leftAnchor="0.0"
+        <MenuBar id="headerMenuBar"
+                 prefHeight="30.0"
+                 AnchorPane.leftAnchor="0.0"
                  AnchorPane.rightAnchor="0.0">
-            <menus>
-                <Menu id="main-menu" mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem fx:id="connectMenuItem" id="main-menu-connect" mnemonicParsing="false"
-                                  onAction="#handleConnectMenuItemClicked" text="  Connect               Ctrl+C"/>
-                        <MenuItem mnemonicParsing="false" onAction="#handlePreferencesMenuItemClicked"
-                                  text="  Preferences         Ctrl+P"/>
-                        <MenuItem mnemonicParsing="false" onAction="#handleExitMenuItemClick"
-                                  text="  Exit                      Ctrl+X"/>
-                    </items>
+                <Menu id="main-menu"
+                      mnemonicParsing="false"
+                      text="File">
+                    <MenuItem fx:id="connectMenuItem"
+                              id="main-menu-connect"
+                              accelerator="Ctrl+C"
+                              mnemonicParsing="false"
+                              text="Connect"
+                              onAction="#handleConnectMenuItemClicked"/>
+                    <MenuItem accelerator="Ctrl+P"
+                              mnemonicParsing="false"
+                              text="Preferences"
+                              onAction="#handlePreferencesMenuItemClicked"/>
+                    <MenuItem accelerator="Ctrl+X"
+                              mnemonicParsing="false"
+                              text="Exit"
+                              onAction="#handleExitMenuItemClick"/>
                 </Menu>
-                <Menu fx:id="trafficProfileMenu" mnemonicParsing="false" text="Traffic Profiles">
-                    <items>
-                        <MenuItem fx:id="trafficProfileItem" mnemonicParsing="false" onAction="#openTrafficProfile"
-                                  text="Traffic Profiles"/>
-                    </items>
+                <Menu mnemonicParsing="false"
+                      text="Traffic Profiles">
+                    <MenuItem mnemonicParsing="false"
+                              text="Traffic Profiles"
+                              onAction="#openTrafficProfile"/>
                 </Menu>
-                <Menu fx:id="statsMenuItem" disable="true" mnemonicParsing="false" text="Stats">
-                    <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleStatMenuItemClicked"
-                                  text="  Dashboard           Ctrl+S"/>
-                    </items>
+                <Menu mnemonicParsing="false"
+                      text="Stats">
+                    <MenuItem fx:id="statsMenuItem"
+                              accelerator="Ctrl+S"
+                              disable="true"
+                              mnemonicParsing="false"
+                              text="Dashboard"
+                              onAction="#handleStatMenuItemClicked"/>
                 </Menu>
-                <Menu disable="true" mnemonicParsing="false" text="Snapshots" visible="false"/>
-                <Menu mnemonicParsing="false" text="Window" visible="false">
-                    <items>
-                        <MenuItem disable="true" mnemonicParsing="false" text="Cascade"/>
-                    </items>
+                <Menu mnemonicParsing="false"
+                      text="Help">
+                    <MenuItem mnemonicParsing="false"
+                              text="About"
+                              onAction="#handleAboutTreeItemClicked"/>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleAboutTreeItemClicked" text="  About"/>
-                    </items>
-                </Menu>
-            </menus>
         </MenuBar>
         <AnchorPane id="" prefHeight="50.0" prefWidth="1000.0" styleClass="headerBtnContainer"
                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">

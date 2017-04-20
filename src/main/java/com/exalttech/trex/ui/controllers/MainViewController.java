@@ -218,14 +218,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     StatsTableGenerator statsTableGenerator;
     RightPaneContent rightPaneContent;
     boolean doAssignProfile = true;
-    KeyCombination openDashboardCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
-    KeyCombination connectCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
-    KeyCombination openPreferencesCombination = new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN);
-    KeyCombination quiteCombination = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
     private boolean allStreamWithLatency;
     private boolean isFirstPortStatusRequest = true;
-    private static final String DISCONNECT_MENU_ITEM_TITLE = "  Disconnect";
-    private static final String CONNECT_MENU_ITEM_TITLE = "  Connect               Ctrl+C";
+    private static final String DISCONNECT_MENU_ITEM_TITLE = "Disconnect";
+    private static final String CONNECT_MENU_ITEM_TITLE = "Connect";
 
     private int lastLoadedPortPtofileIndex = -1;
     private boolean profileLoaded = false;
@@ -802,19 +798,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             @Override
             public void handle(WindowEvent event) {
                 System.exit(0);
-            }
-        });
-        TrexApp.getPrimaryStage().addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
-            if (openDashboardCombination.match(event) && ConnectionManager.getInstance().isConnected()) {
-                openStateDialog();
-            } else if (openPreferencesCombination.match(event)) {
-                openPreferencesWindow();
-            } else if (connectCombination.match(event) && !ConnectionManager.getInstance().isConnected()) {
-                openConnectDialog();
-            } else if (quiteCombination.match(event)) {
-                if (Util.isConfirmed("Are you sure you want to close the application?")) {
-                    TrexApp.getPrimaryStage().fireEvent(new WindowEvent(TrexApp.getPrimaryStage(), WindowEvent.WINDOW_CLOSE_REQUEST));
-                }
             }
         });
         logContainer.getChildren().add(LogsController.getInstance().getView());
