@@ -1148,7 +1148,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             assignedPortProfileMap.remove(portIndex);
         }
         if (!resetAppInProgress) {
-            portManager.getPortModel(getSelectedPortIndex()).setIsOwned(false);
+            final int selectedPortIndex = getSelectedPortIndex();
+            if (selectedPortIndex != -1) {
+                portManager.getPortModel(selectedPortIndex).setIsOwned(false);
+            }
         }
         if (forceUpdatePort) {
             portManager.updatePortForce();
