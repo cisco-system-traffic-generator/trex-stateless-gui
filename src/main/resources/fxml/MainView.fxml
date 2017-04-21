@@ -101,14 +101,24 @@
                                 <Tooltip text="Clear All Stats"/>
                             </tooltip>
                         </Label>
-                        <Label fx:id="acquirePort" disable="true" onMouseClicked="#handleAcquireBtnClicked"
-                               prefHeight="24.0" prefWidth="24.0" styleClass="acquirePortIcon">
+                        <Label fx:id="acquirePort"
+                               id="main-toolbar-acquire-port"
+                               disable="true"
+                               onMouseClicked="#handleAcquireBtnClicked"
+                               prefHeight="24.0"
+                               prefWidth="24.0"
+                               styleClass="acquirePortIcon">
                             <tooltip>
                                 <Tooltip text="Acquire Port"/>
                             </tooltip>
                         </Label>
-                        <Label fx:id="releasePort" disable="true" onMouseClicked="#handleReleaseBtnClicked"
-                               prefHeight="24.0" prefWidth="24.0" styleClass="releasePortIcon">
+                        <Label fx:id="releasePort"
+                               id="main-toolbar-release-port"
+                               disable="true"
+                               onMouseClicked="#handleReleaseBtnClicked"
+                               prefHeight="24.0"
+                               prefWidth="24.0"
+                               styleClass="releasePortIcon">
                             <tooltip>
                                 <Tooltip text="Release Port"/>
                             </tooltip>
@@ -168,6 +178,7 @@
                                                                             AnchorPane.topAnchor="0.0">
                                                                     <children>
                                                                         <TreeView fx:id="devicesTree"
+                                                                                  id="main-devices-tree"
                                                                                   onMouseClicked="#handleTreeClicked"
                                                                                   prefHeight="267.0" prefWidth="250.0"
                                                                                   AnchorPane.bottomAnchor="0.0"

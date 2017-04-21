@@ -63,7 +63,7 @@ public class TestBase extends ApplicationTest {
         return null;
     }
 
-    private String getTRexServerIP() {
+    String getTRexServerIP() {
         return "192.168.50.154";
     }
 
@@ -79,11 +79,11 @@ public class TestBase extends ApplicationTest {
         return "4500";
     }
 
-    private String getTRexDefaultUser() {
+    String getTRexDefaultUser() {
         return "Test";
     }
 
-    boolean connect(final MenuType menuType) {
+    boolean connect(final MenuType menuType, final String user) {
         switch (menuType) {
             case MENU:
                 clickOn("#main-menu");
@@ -105,7 +105,7 @@ public class TestBase extends ApplicationTest {
         setText("#connection-dialog-sync-port", getTRexSyncPort());
         setText("#connection-dialog-async-port", getTRexAsyncPort());
         setText("#connection-dialog-scapy-port", getTRexScapyPort());
-        setText("#connection-dialog-user", getTRexDefaultUser());
+        setText("#connection-dialog-user", user);
 
         clickOn("#connection-dialog-connect");
 
@@ -129,6 +129,10 @@ public class TestBase extends ApplicationTest {
         }
 
         return connected;
+    }
+
+    boolean connect(final MenuType menuType) {
+        return connect(menuType, getTRexDefaultUser());
     }
 
     boolean disconnect(final MenuType menuType) {
@@ -168,5 +172,12 @@ public class TestBase extends ApplicationTest {
         }
 
         return disconnected;
+    }
+
+    void resetAllPorts() {
+        clickOn("Port 0");
+        clickOn("Reset");
+        clickOn("Port 1");
+        clickOn("Reset");
     }
 }
