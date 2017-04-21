@@ -450,6 +450,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void handleTreeItemSelectionChanged() {
         updateHeaderBtnStat();
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
+        // update acquire/release port icon state
+        updateAcquireReleaseBtnState(true);
         if (selected != null) {
 
             if (profileLoaded) {
@@ -458,8 +460,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
             try {
                 stopRefreshingService();
-                // update acquire/release port icon state
-                updateAcquireReleaseBtnState(true);
                 // show table container by default
                 hideShowStatTable(true);
                 portViewVisibilityProperty.setValue(false);
