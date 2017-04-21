@@ -766,9 +766,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         
         rightClickGlobalMenu = new ContextMenu();
         addMenuItem(rightClickGlobalMenu, "Release All Ports", ContextMenuClickType.RELEASE_ALL, false);
-        addMenuItem(rightClickGlobalMenu, "Acquire All ports", ContextMenuClickType.ACQUIRE_ALL, false);
-        addMenuItem(rightClickGlobalMenu, "Force acquire All ports", ContextMenuClickType.FORCE_ACQUIRE_ALL, false);
-        addMenuItem(rightClickGlobalMenu, "Re-acquire my ports", ContextMenuClickType.ACQUIRE_MY_PORT, false);
+        addMenuItem(rightClickGlobalMenu, "Acquire All Ports", ContextMenuClickType.ACQUIRE_ALL, false);
+        addMenuItem(rightClickGlobalMenu, "Force Acquire All Ports", ContextMenuClickType.FORCE_ACQUIRE_ALL, false);
+        addMenuItem(rightClickGlobalMenu, "Re-Acquire my Ports", ContextMenuClickType.ACQUIRE_MY_PORT, false);
 
         // initialize multiplexer
         multiplierView = new MultiplierView(this);
