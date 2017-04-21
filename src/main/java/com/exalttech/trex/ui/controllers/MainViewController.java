@@ -261,11 +261,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 case PORT_ATTR_CHANGED:
                 case PORT_STARTED:
                 case PORT_STOPPED:
-                    Platform.runLater(() -> {
-                        portManager.updatedPorts(Arrays.asList(portModel.getIndex()));
-                        onPortListUpdated(true);
-                    });
-                    break;
+                    if (ConnectionManager.getInstance().isConnected()) {
+                        Platform.runLater(() -> {
+                            portManager.updatedPorts(Arrays.asList(portModel.getIndex()));
+                            onPortListUpdated(true);
+                        });
+                        break;
+                    }
                 case SERVER_STOPPED:
                     resetApplication(true);
                     break;
