@@ -24,213 +24,186 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- *
- * Model present selected protocol
- *
- * @author GeorgeKh
- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class ProtocolSelectionDataBinding implements Externalizable {
+    @JsonIgnore
+    private BooleanProperty ipv4Property = new SimpleBooleanProperty(true);
+    @JsonIgnore
+    private BooleanProperty tcpProperty = new SimpleBooleanProperty(true);
+    @JsonIgnore
+    private BooleanProperty udpProperty = new SimpleBooleanProperty(false);
+    @JsonIgnore
+    private BooleanProperty patternProperty = new SimpleBooleanProperty(true);
+    @JsonIgnore
+    private BooleanProperty taggedVlanProperty = new SimpleBooleanProperty(false);
+    @JsonIgnore
+    private BooleanProperty stackedVlanProperty = new SimpleBooleanProperty(false);
 
-    BooleanProperty ipv4Property = new SimpleBooleanProperty(true);
-    BooleanProperty tcpProperty = new SimpleBooleanProperty(true);
-    BooleanProperty udpProperty = new SimpleBooleanProperty(false);
-    BooleanProperty patternProperty = new SimpleBooleanProperty(true);
-    BooleanProperty taggedVlanProperty = new SimpleBooleanProperty(false);
-    BooleanProperty stackedVlanProperty = new SimpleBooleanProperty(false);
+    @JsonIgnore
+    private StringProperty frameLengthTypeProperty = new SimpleStringProperty("Fixed");
+    @JsonIgnore
+    private StringProperty frameLengthProperty = new SimpleStringProperty("64");
+    @JsonIgnore
+    private StringProperty minLengthProperty = new SimpleStringProperty("64");
+    @JsonIgnore
+    private StringProperty maxLengthProperty = new SimpleStringProperty("1518");
 
-    StringProperty frameLengthTypeProperty = new SimpleStringProperty("Fixed");
-    StringProperty frameLengthProperty = new SimpleStringProperty("64");
-    StringProperty minLengthProperty = new SimpleStringProperty("64");
-    StringProperty maxLengthProperty = new SimpleStringProperty("1518");
-
-    /**
-     * Return IPV4 property
-     *
-     * @return
-     */
+    @JsonIgnore
     public BooleanProperty getIpv4Property() {
         return ipv4Property;
     }
 
-    /**
-     * Return TCP property
-     *
-     * @return
-     */
+    @JsonIgnore
     public BooleanProperty getTcpProperty() {
         return tcpProperty;
     }
 
-    /**
-     * Return UDP property
-     *
-     * @return
-     */
+    @JsonIgnore
     public BooleanProperty getUdpProperty() {
         return udpProperty;
     }
 
-    /**
-     * Return pattern property
-     *
-     * @return
-     */
+    @JsonIgnore
     public BooleanProperty getPatternProperty() {
         return patternProperty;
     }
 
-    /**
-     * Return tagged vlan property
-     *
-     * @return
-     */
+    @JsonIgnore
     public BooleanProperty getTaggedVlanProperty() {
         return taggedVlanProperty;
     }
 
-    /**
-     * Return stacked vlan property
-     *
-     * @return
-     */
+    @JsonIgnore
     public BooleanProperty getStackedVlanProperty() {
         return stackedVlanProperty;
     }
 
-    /**
-     * Return true if IPv4 is selected, otherwise return false
-     *
-     * @return
-     */
+    @JsonProperty("is_ipv4_selected")
     public boolean isIPV4Selected() {
-        return ipv4Property.getValue();
+        return ipv4Property.get();
     }
 
-    /**
-     * Return true if tcp is selected, otherwise return false
-     *
-     * @return
-     */
+    @JsonProperty("is_ipv4_selected")
+    public void setIPV4Selected(final boolean isIPV4Selected) {
+        ipv4Property.set(isIPV4Selected);
+    }
+
+    @JsonProperty("is_tcp_selected")
     public boolean isTCPSelected() {
-        return tcpProperty.getValue();
+        return tcpProperty.get();
     }
 
-    /**
-     * Return true if udp is selected, otherwise return false
-     *
-     * @return
-     */
+    @JsonProperty("is_tcp_selected")
+    public void setTCPSelected(final boolean isTCPSelected) {
+        tcpProperty.set(isTCPSelected);
+    }
+
+    @JsonProperty("is_udp_selected")
     public boolean isUDPSelected() {
-        return udpProperty.getValue();
+        return udpProperty.get();
     }
 
-    /**
-     * Return true if payload pattern is selected, otherwise return false
-     *
-     * @return
-     */
+    @JsonProperty("is_udp_selected")
+    public void setUDPSelected(final boolean isUDPSelected) {
+        udpProperty.set(isUDPSelected);
+    }
+
+    @JsonProperty("is_pattern_selected")
     public boolean isPatternSelected() {
-        return patternProperty.getValue();
+        return patternProperty.get();
     }
 
-    /**
-     * Return true if tagged vlan is selected, otherwise return false
-     *
-     * @return
-     */
+    @JsonProperty("is_pattern_selected")
+    public void setPatternSelected(final boolean isPatternSelected) {
+        patternProperty.set(isPatternSelected);
+    }
+
+    @JsonProperty("is_tagged_vlan_selected")
     public boolean isTaggedVlanSelected() {
-        return taggedVlanProperty.getValue();
+        return taggedVlanProperty.get();
     }
 
-    /**
-     * Return true if stacked vlan is selected, otherwise return false
-     *
-     * @return
-     */
+    @JsonProperty("is_tagged_vlan_selected")
+    public void setTaggedVlanSelected(final boolean isTaggedVlanSelected) {
+        taggedVlanProperty.set(isTaggedVlanSelected);
+    }
+
+    @JsonProperty("is_stacked_vlan_selected")
     public boolean isStackedVlanSelected() {
-        return stackedVlanProperty.getValue();
+        return stackedVlanProperty.get();
     }
 
-    /**
-     * Return frame length type property
-     *
-     * @return
-     */
+    @JsonProperty("is_stacked_vlan_selected")
+    public void setStackedVlanSelected(final boolean isStackedVlanSelected) {
+        stackedVlanProperty.set(isStackedVlanSelected);
+    }
+
+    @JsonIgnore
     public StringProperty getFrameLengthTypeProperty() {
         return frameLengthTypeProperty;
     }
 
-    /**
-     * Return frame length property
-     *
-     * @return
-     */
+    @JsonIgnore
     public StringProperty getFrameLengthProperty() {
         return frameLengthProperty;
     }
 
-    /**
-     * Return min length property
-     *
-     * @return
-     */
+    @JsonIgnore
     public StringProperty getMinLengthProperty() {
         return minLengthProperty;
     }
 
-    /**
-     * Return max length property
-     *
-     * @return
-     */
+    @JsonIgnore
     public StringProperty getMaxLengthProperty() {
         return maxLengthProperty;
     }
 
-    /**
-     * Return frame length type
-     *
-     * @return
-     */
+    @JsonProperty("frame_length_type")
     public String getFrameLengthType() {
-        return frameLengthTypeProperty.getValue();
+        return frameLengthTypeProperty.get();
     }
 
-    /**
-     * Return frame length
-     *
-     * @return
-     */
+    @JsonProperty("frame_length_type")
+    public void setFrameLengthType(final String frameLengthType) {
+        frameLengthTypeProperty.set(frameLengthType);
+    }
+
+    @JsonProperty("frame_length")
     public String getFrameLength() {
-        return String.valueOf(getValidLength(this.frameLengthProperty.getValue()));
+        return String.valueOf(getValidLength(this.frameLengthProperty.get()));
     }
 
-    /**
-     * Return min length
-     *
-     * @return
-     */
+    @JsonProperty("frame_length")
+    public void setFrameLength(final String frameLength) {
+        frameLengthProperty.set(frameLength);
+    }
+
+    @JsonProperty("min_length")
     public String getMinLength() {
-        int validLength = getValidLength(this.minLengthProperty.getValue());
+        int validLength = getValidLength(this.minLengthProperty.get());
         if (validLength == 9238) {
             validLength = 9233;
         }
         return String.valueOf(validLength);
     }
 
-    /**
-     * Return max length
-     *
-     * @return
-     */
+    @JsonProperty("min_length")
+    public void setMinLength(final String minLength) {
+        minLengthProperty.set(minLength);
+    }
+
+    @JsonProperty("max_length")
     public String getMaxLength() {
-        int validLength = getValidLength(this.maxLengthProperty.getValue());
+        int validLength = getValidLength(this.maxLengthProperty.get());
         int minLength = Integer.parseInt(getMinLength());
         if (validLength - 5 <= minLength) {
             validLength = minLength + 5;
@@ -238,12 +211,12 @@ public class ProtocolSelectionDataBinding implements Externalizable {
         return String.valueOf(validLength);
     }
 
-    /**
-     * Return valid length
-     *
-     * @param value
-     * @return
-     */
+    @JsonProperty("max_length")
+    public void setMaxLength(final String maxLength) {
+        maxLengthProperty.set(maxLength);
+    }
+
+    @JsonIgnore
     private int getValidLength(String value) {
         try {
             int length = Integer.parseInt(value);
