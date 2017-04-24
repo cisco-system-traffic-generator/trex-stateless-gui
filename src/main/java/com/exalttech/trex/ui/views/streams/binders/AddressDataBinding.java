@@ -25,40 +25,30 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * Abstract class that present Address data binding model
- *
- * @author Georgekh
- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public abstract class AddressDataBinding extends AbstractStreamDataBinding implements Serializable {
+    @JsonProperty("source")
+    private AddressInfo source = new AddressInfo();
+    @JsonProperty("destination")
+    private AddressInfo destination = new AddressInfo();
 
-    AddressInfo source;
-    AddressInfo destination;
-
-    /**
-     *
-     */
     public AddressDataBinding() {
         setInitialValues();
     }
 
-    /**
-     * Set destination info
-     *
-     * @param destination
-     */
+    @JsonProperty("destination")
     public void setDestination(AddressInfo destination) {
         this.destination = destination;
     }
 
-    /**
-     * Return destination info
-     *
-     * @return
-     */
+    @JsonProperty("destination")
     public AddressInfo getDestination() {
         if (destination == null) {
             destination = new AddressInfo();
@@ -66,20 +56,12 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding imple
         return destination;
     }
 
-    /**
-     * Set source info
-     *
-     * @param source
-     */
+    @JsonProperty("source")
     public void setSource(AddressInfo source) {
         this.source = source;
     }
 
-    /**
-     * Return source info
-     *
-     * @return
-     */
+    @JsonProperty("source")
     public AddressInfo getSource() {
         if (source == null) {
             source = new AddressInfo();
@@ -87,101 +69,100 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding imple
         return source;
     }
 
-    /**
-     * Address info data binding model
-     */
     public static class AddressInfo implements Externalizable {
-
+        @JsonIgnore
         StringProperty addressProperty = new SimpleStringProperty();
+        @JsonIgnore
         StringProperty modeProperty = new SimpleStringProperty();
+        @JsonIgnore
         StringProperty countProperty = new SimpleStringProperty();
+        @JsonIgnore
         StringProperty stepProperty = new SimpleStringProperty();
 
-        /**
-         * Constructor
-         */
         public AddressInfo() {
             // constructor
         }
 
-        /**
-         * Return Address property
-         *
-         * @return
-         */
+        @JsonIgnore
         public StringProperty getAddressProperty() {
             return addressProperty;
         }
 
-        /**
-         * Set Address property
-         *
-         * @param addressProperty
-         */
+        @JsonIgnore
         public void setAddressProperty(StringProperty addressProperty) {
             this.addressProperty = addressProperty;
         }
 
-        /**
-         * Return Mode property
-         *
-         * @return
-         */
+        @JsonIgnore
         public StringProperty getModeProperty() {
             return modeProperty;
         }
 
-        /**
-         * Set Mode property
-         *
-         * @param modeProperty
-         */
+        @JsonIgnore
         public void setModeProperty(StringProperty modeProperty) {
             this.modeProperty = modeProperty;
         }
 
-        /**
-         * Return Count property
-         *
-         * @return
-         */
+        @JsonIgnore
         public StringProperty getCountProperty() {
             return countProperty;
         }
 
-        /**
-         * Set count property
-         *
-         * @param countProperty
-         */
+        @JsonIgnore
         public void setCountProperty(StringProperty countProperty) {
             this.countProperty = countProperty;
         }
 
-        /**
-         * Return Step property
-         *
-         * @return
-         */
+        @JsonIgnore
         public StringProperty getStepProperty() {
             return stepProperty;
         }
 
-        /**
-         * Set step property
-         *
-         * @param stepProperty
-         */
+        @JsonIgnore
         public void setStepProperty(StringProperty stepProperty) {
             this.stepProperty = stepProperty;
         }
 
-        /**
-         * Write serialized binding data
-         *
-         * @param out
-         * @throws IOException
-         */
+        @JsonProperty("address")
+        public String getAddress() {
+            return addressProperty.get();
+        }
+
+        @JsonProperty("address")
+        public void setAddress(final String address) {
+            addressProperty.set(address);
+        }
+
+        @JsonProperty("mode")
+        public String getMode() {
+            return modeProperty.get();
+        }
+
+        @JsonProperty("mode")
+        public void setMode(final String mode) {
+            modeProperty.set("mode");
+        }
+
+        @JsonProperty("count")
+        public String getCount() {
+            return countProperty.get();
+        }
+
+        @JsonProperty("count")
+        public void setCount(final String count) {
+            countProperty.set(count);
+        }
+
+        @JsonProperty("step")
+        public String getStep() {
+            return stepProperty.get();
+        }
+
+        @JsonProperty("step")
+        public void setStep(final String step) {
+            stepProperty.set(step);
+        }
+
         @Override
         public void writeExternal(ObjectOutput out) throws IOException {
             out.writeObject(getAddressProperty().get());
@@ -190,13 +171,6 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding imple
             out.writeObject(getStepProperty().get());
         }
 
-        /**
-         * Read serialized binding data
-         *
-         * @param in
-         * @throws IOException
-         * @throws ClassNotFoundException
-         */
         @Override
         public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
             getAddressProperty().set((String) in.readObject());
@@ -205,12 +179,6 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding imple
             getStepProperty().set((String) in.readObject());
         }
 
-        /**
-         * Reset address info property values
-         *
-         * @param address
-         * @param mode
-         */
         public void resetModel(String address, String mode) {
             addressProperty.set(address);
             modeProperty.set(mode);
