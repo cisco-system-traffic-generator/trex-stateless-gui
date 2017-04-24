@@ -9,88 +9,79 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * Cache size data binding model
- * @author GeorgeKH
- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class AdvancedPropertiesDataBinding extends AbstractStreamDataBinding implements Externalizable{
+    @JsonIgnore
+    private StringProperty cacheSizeTypeProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty cacheValueProperty = new SimpleStringProperty();
 
-    StringProperty cacheSizeType = new SimpleStringProperty();
-    StringProperty cacheValue = new SimpleStringProperty();
-
-    /**
-     * Constructor
-     */
     public AdvancedPropertiesDataBinding(){
          setInitialValues();
     }
 
-    /**
-     * Return cache size type
-     * @return 
-     */
-    public StringProperty getCacheSizeType() {
-        return cacheSizeType;
+    @JsonIgnore
+    public StringProperty getCacheSizeTypeProperty() {
+        return cacheSizeTypeProperty;
     }
 
-    /**
-     * Set cache size type
-     * @param cacheSizeType 
-     */
-    public void setCacheSizeType(StringProperty cacheSizeType) {
-        this.cacheSizeType = cacheSizeType;
+    @JsonIgnore
+    public void setCacheSizeTypeProperty(StringProperty cacheSizeTypeProperty) {
+        this.cacheSizeTypeProperty = cacheSizeTypeProperty;
     }
 
-    /**
-     * Return cache value
-     * @return 
-     */
-    public StringProperty getCacheValue() {
-        return cacheValue;
+    @JsonIgnore
+    public StringProperty getCacheValueProperty() {
+        return cacheValueProperty;
     }
 
-    /**
-     * Set cache value
-     * @param cacheValue 
-     */
-    public void setCacheValue(StringProperty cacheValue) {
-        this.cacheValue = cacheValue;
+    @JsonIgnore
+    public void setCacheValueProperty(StringProperty cacheValueProperty) {
+        this.cacheValueProperty = cacheValueProperty;
+    }
+
+    @JsonProperty("cache_size_type")
+    public String getCacheSizeType() {
+        return cacheSizeTypeProperty.get();
+    }
+
+    @JsonProperty("cache_size_type")
+    public void setCacheSizeType(final String cacheSizeType) {
+        cacheSizeTypeProperty.set(cacheSizeType);
+    }
+
+    @JsonProperty("cache_value")
+    public String getCacheValue() {
+        return cacheValueProperty.get();
+    }
+
+    @JsonProperty("cache_value")
+    public void setCacheValue(final String cacheValue) {
+        cacheValueProperty.set(cacheValue);
     }
     
-    /**
-     * Set initial values
-     */
     @Override
     protected void setInitialValues() {
-        cacheSizeType.set("Auto");
-        cacheValue.set("5000");
+        cacheSizeTypeProperty.set("Auto");
+        cacheValueProperty.set("5000");
     }
 
-     /**
-     * Write serialized property values
-     *
-     * @param out
-     * @throws IOException
-     */
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(cacheSizeType.get());
-        out.writeObject(cacheValue.get());
+        out.writeObject(cacheSizeTypeProperty.get());
+        out.writeObject(cacheValueProperty.get());
     }
 
-    /**
-     * Read serialized property values
-     *
-     * @param in
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        cacheSizeType.set((String) in.readObject());
-        cacheValue.set((String) in.readObject());
+        cacheSizeTypeProperty.set((String) in.readObject());
+        cacheValueProperty.set((String) in.readObject());
     }
 }

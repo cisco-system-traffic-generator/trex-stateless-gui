@@ -46,8 +46,8 @@ public class AdvancedSettingsController implements Initializable {
      * @param advancedPropertiesData
      */
     public void bindSelections(AdvancedPropertiesDataBinding advancedPropertiesData) {
-        cacheSizeType.valueProperty().bindBidirectional(advancedPropertiesData.getCacheSizeType());
-        cacheSizeTF.textProperty().bindBidirectional(advancedPropertiesData.getCacheValue());
+        cacheSizeType.valueProperty().bindBidirectional(advancedPropertiesData.getCacheSizeTypeProperty());
+        cacheSizeTF.textProperty().bindBidirectional(advancedPropertiesData.getCacheValueProperty());
     }
 
     /**

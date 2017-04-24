@@ -211,8 +211,8 @@ public class BuilderDataBinding implements Serializable {
 
         // Field Engine instructions
         String cache_size = "5000";
-        if("Enable".equals(advancedPropertiesDB.getCacheSizeType().getValue())) {
-            cache_size = advancedPropertiesDB.getCacheValue().getValue();
+        if("Enable".equals(advancedPropertiesDB.getCacheSizeTypeProperty().getValue())) {
+            cache_size = advancedPropertiesDB.getCacheValueProperty().getValue();
         }
         fieldEngine.getAsJsonObject("global_parameters").add("cache_size", new JsonPrimitive(cache_size));
         
