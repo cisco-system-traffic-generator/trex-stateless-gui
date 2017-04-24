@@ -20,11 +20,6 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -36,22 +31,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
 
 
-public class UDPProtocolDataBinding extends AbstractStreamDataBinding implements Externalizable {
-    @JsonIgnore
+public class UDPProtocolDataBinding extends AbstractStreamDataBinding {
     private StringProperty srcPortProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty dstPortProperty = new SimpleStringProperty();
-    @JsonIgnore
     private BooleanProperty overrideSrcPortProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private BooleanProperty overrideDstPortProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private StringProperty lengthProperty = new SimpleStringProperty();
-    @JsonIgnore
     private BooleanProperty overrideLengthProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private StringProperty checksumProperty = new SimpleStringProperty();
-    @JsonIgnore
     private BooleanProperty overrideChecksumProperty = new SimpleBooleanProperty();
 
     public UDPProtocolDataBinding() {
@@ -228,29 +215,5 @@ public class UDPProtocolDataBinding extends AbstractStreamDataBinding implements
         overrideLengthProperty.set(false);
         checksumProperty.set("FFBA");
         overrideChecksumProperty.set(false);
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(srcPortProperty.get());
-        out.writeObject(dstPortProperty.get());
-        out.writeBoolean(overrideSrcPortProperty.get());
-        out.writeBoolean(overrideDstPortProperty.get());
-        out.writeObject(lengthProperty.get());
-        out.writeBoolean(overrideLengthProperty.get());
-        out.writeObject(checksumProperty.get());
-        out.writeBoolean(overrideChecksumProperty.get());
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        srcPortProperty.set((String) in.readObject());
-        dstPortProperty.set((String) in.readObject());
-        overrideSrcPortProperty.set(in.readBoolean());
-        overrideDstPortProperty.set(in.readBoolean());
-        lengthProperty.set((String) in.readObject());
-        overrideLengthProperty.set(in.readBoolean());
-        checksumProperty.set((String) in.readObject());
-        overrideChecksumProperty.set(in.readBoolean());
     }
 }

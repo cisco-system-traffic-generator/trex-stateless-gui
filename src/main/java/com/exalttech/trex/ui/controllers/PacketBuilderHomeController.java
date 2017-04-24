@@ -43,6 +43,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.xored.javafx.packeteditor.controllers.FieldEditorController;
 import com.xored.javafx.packeteditor.events.ScapyClientNeedConnectEvent;
 
@@ -249,7 +251,16 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         String meta = selectedProfile.getStream().getPacket().getMeta();
         boolean emptyMeta = meta == null; 
         isImportedStreamProperty.setValue(emptyMeta);
-        return emptyMeta ? null : (BuilderDataBinding) Util.deserializeStringToObject(meta);
+        if (emptyMeta) {
+            return null;
+        }
+        final String metaJSON = new String(Base64.getDecoder().decode(meta));
+        try {
+            return new ObjectMapper().readValue(metaJSON, BuilderDataBinding.class);
+        } catch (Exception exc) {
+            LOG.error("Can't read packet meta", exc);
+            return null;
+        }
     }
 
     /**
@@ -507,8 +518,11 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             hexPacket = PacketBuilderHelper.getPacketHex(protocolDataController.getProtocolData().getPacket().getRawData());
             selectedProfile.getStream().setAdditionalProperties(protocolDataController.getVm(advancedSettingsController.getCacheSize()));
             selectedProfile.getStream().setFlags(protocolDataController.getFlagsValue());
+
             // save stream selected in stream property
-            selectedProfile.getStream().getPacket().setMeta(Util.serializeObjectToString(builderDataBinder));
+            final String metaJSON = new ObjectMapper().writeValueAsString(builderDataBinder);
+            final String encodedMeta = Base64.getEncoder().encodeToString(metaJSON.getBytes());
+            selectedProfile.getStream().getPacket().setMeta(encodedMeta);
         }
         String encodedBinaryPacket = trafficProfile.encodeBinaryFromHexString(hexPacket);
         Packet packet = selectedProfile.getStream().getPacket();

@@ -21,25 +21,12 @@
 package com.exalttech.trex.ui.views.streams.binders;
 
 import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
-import java.io.Serializable;
 
-/**
- * IPVE address data binding model
- *
- * @author Georgekh
- */
-public class IPV4AddressDataBinding extends AddressDataBinding implements Serializable {
-
-    /**
-     * Constructor
-     */
+public class IPV4AddressDataBinding extends AddressDataBinding {
     public IPV4AddressDataBinding() {
         super();
     }
 
-    /**
-     * Set initial property values
-     */
     @Override
     public void setInitialValues() {
         getSource().resetModel(StreamBuilderConstants.DEFAULT_SRC_IP_ADDRESS, "Fixed");

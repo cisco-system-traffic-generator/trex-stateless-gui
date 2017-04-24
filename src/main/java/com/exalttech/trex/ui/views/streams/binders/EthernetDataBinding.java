@@ -20,11 +20,6 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,10 +29,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class EthernetDataBinding extends AbstractStreamDataBinding implements Externalizable {
-    @JsonIgnore
+public class EthernetDataBinding extends AbstractStreamDataBinding {
     private BooleanProperty overrideProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private StringProperty typeProperty = new SimpleStringProperty();
 
     public EthernetDataBinding() {
@@ -82,18 +75,6 @@ public class EthernetDataBinding extends AbstractStreamDataBinding implements Ex
     @JsonProperty("type")
     public void setType(final String type) {
         typeProperty.set(type);
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeBoolean(overrideProperty.get());
-        out.writeObject(typeProperty.get());
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        getOverrideProperty().set(in.readBoolean());
-        getTypeProperty().set((String) in.readObject());
     }
 
     @Override

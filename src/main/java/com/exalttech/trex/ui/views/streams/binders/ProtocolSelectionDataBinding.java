@@ -20,11 +20,6 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,27 +29,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class ProtocolSelectionDataBinding implements Externalizable {
-    @JsonIgnore
+public class ProtocolSelectionDataBinding {
     private BooleanProperty ipv4Property = new SimpleBooleanProperty(true);
-    @JsonIgnore
     private BooleanProperty tcpProperty = new SimpleBooleanProperty(true);
-    @JsonIgnore
     private BooleanProperty udpProperty = new SimpleBooleanProperty(false);
-    @JsonIgnore
     private BooleanProperty patternProperty = new SimpleBooleanProperty(true);
-    @JsonIgnore
     private BooleanProperty taggedVlanProperty = new SimpleBooleanProperty(false);
-    @JsonIgnore
     private BooleanProperty stackedVlanProperty = new SimpleBooleanProperty(false);
 
-    @JsonIgnore
     private StringProperty frameLengthTypeProperty = new SimpleStringProperty("Fixed");
-    @JsonIgnore
     private StringProperty frameLengthProperty = new SimpleStringProperty("64");
-    @JsonIgnore
     private StringProperty minLengthProperty = new SimpleStringProperty("64");
-    @JsonIgnore
     private StringProperty maxLengthProperty = new SimpleStringProperty("1518");
 
     @JsonIgnore
@@ -216,7 +201,6 @@ public class ProtocolSelectionDataBinding implements Externalizable {
         maxLengthProperty.set(maxLength);
     }
 
-    @JsonIgnore
     private int getValidLength(String value) {
         try {
             int length = Integer.parseInt(value);
@@ -229,35 +213,5 @@ public class ProtocolSelectionDataBinding implements Externalizable {
         } catch (NumberFormatException ex) {
             return 64;
         }
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeBoolean(ipv4Property.get());
-        out.writeBoolean(tcpProperty.get());
-        out.writeBoolean(udpProperty.get());
-        out.writeBoolean(patternProperty.get());
-        out.writeBoolean(taggedVlanProperty.get());
-        out.writeBoolean(stackedVlanProperty.get());
-
-        out.writeObject(frameLengthTypeProperty.get());
-        out.writeObject(frameLengthProperty.get());
-        out.writeObject(minLengthProperty.get());
-        out.writeObject(maxLengthProperty.get());
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        getIpv4Property().set(in.readBoolean());
-        getTcpProperty().set(in.readBoolean());
-        getUdpProperty().set(in.readBoolean());
-        getPatternProperty().set(in.readBoolean());
-        getTaggedVlanProperty().set(in.readBoolean());
-        getStackedVlanProperty().set(in.readBoolean());
-
-        getFrameLengthTypeProperty().set((String) in.readObject());
-        getFrameLengthProperty().set((String) in.readObject());
-        getMinLengthProperty().set((String) in.readObject());
-        getMaxLengthProperty().set((String) in.readObject());
     }
 }

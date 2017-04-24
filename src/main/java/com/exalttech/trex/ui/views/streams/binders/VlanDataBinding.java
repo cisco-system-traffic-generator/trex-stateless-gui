@@ -20,11 +20,6 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,16 +29,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class VlanDataBinding extends AbstractStreamDataBinding implements Externalizable {
-    @JsonIgnore
+public class VlanDataBinding extends AbstractStreamDataBinding {
     private BooleanProperty overrideTPIdProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private StringProperty tpIdProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty priorityProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty cfiProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty vIdProperty = new SimpleStringProperty();
 
     public VlanDataBinding() {
@@ -157,23 +147,5 @@ public class VlanDataBinding extends AbstractStreamDataBinding implements Extern
         priorityProperty.set("0");
         cfiProperty.set("0");
         vIdProperty.set("0");
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeBoolean(overrideTPIdProperty.get());
-        out.writeObject(tpIdProperty.get());
-        out.writeObject(priorityProperty.get());
-        out.writeObject(cfiProperty.get());
-        out.writeObject(vIdProperty.get());
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        overrideTPIdProperty.set(in.readBoolean());
-        tpIdProperty.set((String) in.readObject());
-        priorityProperty.set((String) in.readObject());
-        cfiProperty.set((String) in.readObject());
-        vIdProperty.set((String) in.readObject());
     }
 }

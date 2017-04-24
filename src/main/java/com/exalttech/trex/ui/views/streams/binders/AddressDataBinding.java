@@ -20,12 +20,6 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.Serializable;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -33,10 +27,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public abstract class AddressDataBinding extends AbstractStreamDataBinding implements Serializable {
-    @JsonProperty("source")
+public abstract class AddressDataBinding extends AbstractStreamDataBinding {
     private AddressInfo source = new AddressInfo();
-    @JsonProperty("destination")
     private AddressInfo destination = new AddressInfo();
 
     public AddressDataBinding() {
@@ -69,15 +61,11 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding imple
         return source;
     }
 
-    public static class AddressInfo implements Externalizable {
-        @JsonIgnore
-        StringProperty addressProperty = new SimpleStringProperty();
-        @JsonIgnore
-        StringProperty modeProperty = new SimpleStringProperty();
-        @JsonIgnore
-        StringProperty countProperty = new SimpleStringProperty();
-        @JsonIgnore
-        StringProperty stepProperty = new SimpleStringProperty();
+    public static class AddressInfo {
+        private StringProperty addressProperty = new SimpleStringProperty();
+        private StringProperty modeProperty = new SimpleStringProperty();
+        private StringProperty countProperty = new SimpleStringProperty();
+        private StringProperty stepProperty = new SimpleStringProperty();
 
         public AddressInfo() {
             // constructor
@@ -140,7 +128,7 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding imple
 
         @JsonProperty("mode")
         public void setMode(final String mode) {
-            modeProperty.set("mode");
+            modeProperty.set(mode);
         }
 
         @JsonProperty("count")
@@ -161,22 +149,6 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding imple
         @JsonProperty("step")
         public void setStep(final String step) {
             stepProperty.set(step);
-        }
-
-        @Override
-        public void writeExternal(ObjectOutput out) throws IOException {
-            out.writeObject(getAddressProperty().get());
-            out.writeObject(getModeProperty().get());
-            out.writeObject(getCountProperty().get());
-            out.writeObject(getStepProperty().get());
-        }
-
-        @Override
-        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-            getAddressProperty().set((String) in.readObject());
-            getModeProperty().set((String) in.readObject());
-            getCountProperty().set((String) in.readObject());
-            getStepProperty().set((String) in.readObject());
         }
 
         public void resetModel(String address, String mode) {

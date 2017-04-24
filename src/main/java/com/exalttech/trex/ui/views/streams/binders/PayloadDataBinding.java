@@ -20,11 +20,6 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -32,10 +27,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class PayloadDataBinding extends AbstractStreamDataBinding implements Externalizable {
-    @JsonIgnore
+public class PayloadDataBinding extends AbstractStreamDataBinding {
     private StringProperty typeProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty patternProperty = new SimpleStringProperty();
 
     public PayloadDataBinding() {
@@ -86,17 +79,5 @@ public class PayloadDataBinding extends AbstractStreamDataBinding implements Ext
     protected void setInitialValues() {
         typeProperty.set("Fixed Word");
         patternProperty.set("00");
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(typeProperty.get());
-        out.writeObject(patternProperty.get());
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        typeProperty.set((String) in.readObject());
-        patternProperty.set((String) in.readObject());
     }
 }

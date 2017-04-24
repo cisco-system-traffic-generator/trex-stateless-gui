@@ -5,11 +5,6 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -17,10 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class AdvancedPropertiesDataBinding extends AbstractStreamDataBinding implements Externalizable{
-    @JsonIgnore
+public class AdvancedPropertiesDataBinding extends AbstractStreamDataBinding {
     private StringProperty cacheSizeTypeProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty cacheValueProperty = new SimpleStringProperty();
 
     public AdvancedPropertiesDataBinding(){
@@ -66,22 +59,10 @@ public class AdvancedPropertiesDataBinding extends AbstractStreamDataBinding imp
     public void setCacheValue(final String cacheValue) {
         cacheValueProperty.set(cacheValue);
     }
-    
+
     @Override
     protected void setInitialValues() {
         cacheSizeTypeProperty.set("Auto");
         cacheValueProperty.set("5000");
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(cacheSizeTypeProperty.get());
-        out.writeObject(cacheValueProperty.get());
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        cacheSizeTypeProperty.set((String) in.readObject());
-        cacheValueProperty.set((String) in.readObject());
     }
 }

@@ -20,53 +20,33 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
 
 
-public class TCPProtocolDataBinding extends AbstractStreamDataBinding implements Externalizable {
-    @JsonIgnore
+public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     private StringProperty srcPortProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty dstPortProperty = new SimpleStringProperty();
-    @JsonIgnore
     private BooleanProperty overrideSrcPortProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private BooleanProperty overrideDstPortProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private StringProperty sequenceNumberProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty ackNumberProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty windowProperty = new SimpleStringProperty();
-    @JsonIgnore
     private BooleanProperty overrideChecksumProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private StringProperty checksumProperty = new SimpleStringProperty();
-    @JsonIgnore
     private StringProperty urgentPointerProperty = new SimpleStringProperty();
-    @JsonIgnore
     private BooleanProperty urgProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private BooleanProperty ackProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private BooleanProperty pshProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private BooleanProperty rstProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private BooleanProperty synProperty = new SimpleBooleanProperty();
-    @JsonIgnore
     private BooleanProperty finProperty = new SimpleBooleanProperty();
 
     public TCPProtocolDataBinding() {
@@ -411,45 +391,5 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding implements
         rstProperty.set(false);
         synProperty.set(false);
         finProperty.set(false);
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(srcPortProperty.get());
-        out.writeObject(dstPortProperty.get());
-        out.writeBoolean(overrideSrcPortProperty.get());
-        out.writeBoolean(overrideDstPortProperty.get());
-        out.writeObject(sequenceNumberProperty.get());
-        out.writeObject(ackNumberProperty.get());
-        out.writeObject(windowProperty.get());
-        out.writeBoolean(overrideChecksumProperty.get());
-        out.writeObject(checksumProperty.get());
-        out.writeObject(urgentPointerProperty.get());
-        out.writeBoolean(urgProperty.get());
-        out.writeBoolean(ackProperty.get());
-        out.writeBoolean(pshProperty.get());
-        out.writeBoolean(rstProperty.get());
-        out.writeBoolean(synProperty.get());
-        out.writeBoolean(finProperty.get());
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        srcPortProperty.set((String) in.readObject());
-        dstPortProperty.set((String) in.readObject());
-        overrideSrcPortProperty.set(in.readBoolean());
-        overrideDstPortProperty.set(in.readBoolean());
-        sequenceNumberProperty.set((String) in.readObject());
-        ackNumberProperty.set((String) in.readObject());
-        windowProperty.set((String) in.readObject());
-        overrideChecksumProperty.set(in.readBoolean());
-        checksumProperty.set((String) in.readObject());
-        urgentPointerProperty.set((String) in.readObject());
-        urgProperty.set(in.readBoolean());
-        ackProperty.set(in.readBoolean());
-        pshProperty.set(in.readBoolean());
-        rstProperty.set(in.readBoolean());
-        synProperty.set(in.readBoolean());
-        finProperty.set(in.readBoolean());
     }
 }

@@ -20,41 +20,31 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.io.Serializable;
 import java.util.*;
 
-/**
- * Stream builder data binding model
- *
- * @author Georgekh
- */
-public class BuilderDataBinding implements Serializable {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
+
+
+public class BuilderDataBinding {
     public static final String MODE_TREX_CONFIG = "TRex Config";
     public static final String MODE_FIXED = "Fixed";
-    ProtocolSelectionDataBinding protocolSelection = new ProtocolSelectionDataBinding();
 
-    EthernetDataBinding ethernetDB = new EthernetDataBinding();
-
-    MacAddressDataBinding macDB = new MacAddressDataBinding();
-
-    IPV4AddressDataBinding ipv4DB = new IPV4AddressDataBinding();
-
-    TCPProtocolDataBinding tcpProtocolDB = new TCPProtocolDataBinding();
-
-    UDPProtocolDataBinding udpProtocolDB = new UDPProtocolDataBinding();
-
-    PayloadDataBinding payloadDB = new PayloadDataBinding();
-
-    List<VlanDataBinding> vlanDB = new ArrayList<>();
-
-    AdvancedPropertiesDataBinding advancedPropertiesDB = new AdvancedPropertiesDataBinding();
+    private ProtocolSelectionDataBinding protocolSelection = new ProtocolSelectionDataBinding();
+    private EthernetDataBinding ethernetDB = new EthernetDataBinding();
+    private MacAddressDataBinding macDB = new MacAddressDataBinding();
+    private IPV4AddressDataBinding ipv4DB = new IPV4AddressDataBinding();
+    private TCPProtocolDataBinding tcpProtocolDB = new TCPProtocolDataBinding();
+    private UDPProtocolDataBinding udpProtocolDB = new UDPProtocolDataBinding();
+    private PayloadDataBinding payloadDB = new PayloadDataBinding();
+    private List<VlanDataBinding> vlanDB = new ArrayList<>();
+    private AdvancedPropertiesDataBinding advancedPropertiesDB = new AdvancedPropertiesDataBinding();
 
     public String serializeAsPacketModel() {
 
@@ -316,144 +306,81 @@ public class BuilderDataBinding implements Serializable {
         return field;
     }
     
-    /**
-     * Constructor
-     */
     public BuilderDataBinding() {
         // constructor
     }
 
-    /**
-     * Return Protocol selection data binding model
-     *
-     * @return
-     */
+    @JsonProperty("protocol_selection")
     public ProtocolSelectionDataBinding getProtocolSelection() {
         return protocolSelection;
     }
 
-    /**
-     * Set Protocol selection data binding model
-     *
-     * @param protocolSelection
-     */
-    public void setProtocolSelection(ProtocolSelectionDataBinding protocolSelection) {
+    @JsonProperty("protocol_selection")
+    public void setProtocolSelection(final ProtocolSelectionDataBinding protocolSelection) {
         this.protocolSelection = protocolSelection;
     }
 
-    /**
-     * Return Ethernet data binding model
-     *
-     * @return
-     */
+    @JsonProperty("ethernet")
     public EthernetDataBinding getEthernetDB() {
         return ethernetDB;
     }
 
-    /**
-     * Set Ethernet data binding model
-     *
-     * @param ethernetDB
-     */
-    public void setEthernetDB(EthernetDataBinding ethernetDB) {
+    @JsonProperty("ethernet")
+    public void setEthernetDB(final EthernetDataBinding ethernetDB) {
         this.ethernetDB = ethernetDB;
     }
 
-    /**
-     * Return Mac address data binding model
-     *
-     * @return
-     */
+    @JsonProperty("mac")
     public MacAddressDataBinding getMacDB() {
         return macDB;
     }
 
-    /**
-     * Set Mac address data binding model
-     *
-     * @param macDB
-     */
-    public void setMacDB(MacAddressDataBinding macDB) {
+    @JsonProperty("mac")
+    public void setMacDB(final MacAddressDataBinding macDB) {
         this.macDB = macDB;
     }
 
-    /**
-     * Return IPV4 data binding model
-     *
-     * @return
-     */
+    @JsonProperty("ipv4")
     public IPV4AddressDataBinding getIpv4DB() {
         return ipv4DB;
     }
 
-    /**
-     * Set IPV4 data binding model
-     *
-     * @param ipv4DB
-     */
-    public void setIpv4DB(IPV4AddressDataBinding ipv4DB) {
+    @JsonProperty("ipv4")
+    public void setIpv4DB(final IPV4AddressDataBinding ipv4DB) {
         this.ipv4DB = ipv4DB;
     }
 
-    /**
-     * Return TCP protocol data binding model
-     *
-     * @return
-     */
+    @JsonProperty("tcp")
     public TCPProtocolDataBinding getTcpProtocolDB() {
         return tcpProtocolDB;
     }
 
-    /**
-     * Set TCP protocol data binding model
-     *
-     * @param tcpProtocolDB
-     */
-    public void setTcpProtocolDB(TCPProtocolDataBinding tcpProtocolDB) {
+    @JsonProperty("tcp")
+    public void setTcpProtocolDB(final TCPProtocolDataBinding tcpProtocolDB) {
         this.tcpProtocolDB = tcpProtocolDB;
     }
 
-    /**
-     * Return UDP protocol data binding model
-     *
-     * @return
-     */
+    @JsonProperty("udp")
     public UDPProtocolDataBinding getUdpProtocolDB() {
         return udpProtocolDB;
     }
 
-    /**
-     * Set UDP protocol data binding model
-     *
-     * @param udpProtocolDB
-     */
-    public void setUdpProtocolDB(UDPProtocolDataBinding udpProtocolDB) {
+    @JsonProperty("udp")
+    public void setUdpProtocolDB(final UDPProtocolDataBinding udpProtocolDB) {
         this.udpProtocolDB = udpProtocolDB;
     }
 
-    /**
-     * Return payload data binding model
-     *
-     * @return
-     */
+    @JsonProperty("payload")
     public PayloadDataBinding getPayloadDB() {
         return payloadDB;
     }
 
-    /**
-     * Set payload data binding model
-     *
-     * @param payloadDB
-     */
-    public void setPayloadDB(PayloadDataBinding payloadDB) {
+    @JsonProperty("payload")
+    public void setPayloadDB(final PayloadDataBinding payloadDB) {
         this.payloadDB = payloadDB;
     }
 
-    /**
-     * Return list of vlan data binding model
-     *
-     * @return
-     */
+    @JsonProperty("vlan")
     public List<VlanDataBinding> getVlanDB() {
         if (vlanDB.isEmpty()) {
             vlanDB.add(new VlanDataBinding());
@@ -462,28 +389,18 @@ public class BuilderDataBinding implements Serializable {
         return vlanDB;
     }
 
-    /**
-     * Set list of vlan data binding model
-     *
-     * @param vlanDB
-     */
-    public void setVlanDB(List<VlanDataBinding> vlanDB) {
+    @JsonProperty("vlan")
+    public void setVlanDB(final List<VlanDataBinding> vlanDB) {
         this.vlanDB = vlanDB;
     }
 
-    /**
-     * Return cahce size
-     * @return 
-     */
+    @JsonProperty("advansed_properties")
     public AdvancedPropertiesDataBinding getAdvancedPropertiesDB() {
         return advancedPropertiesDB;
     }
 
-    /**
-     * Set cache size
-     * @param advancedPropertiesDB 
-     */
-    public void setAdvancedPropertiesDB(AdvancedPropertiesDataBinding advancedPropertiesDB) {
+    @JsonProperty("advansed_properties")
+    public void setAdvancedPropertiesDB(final AdvancedPropertiesDataBinding advancedPropertiesDB) {
         this.advancedPropertiesDB = advancedPropertiesDB;
     }
 }
