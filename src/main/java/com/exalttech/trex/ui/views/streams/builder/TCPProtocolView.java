@@ -187,21 +187,21 @@ public class TCPProtocolView extends AbstractProtocolView {
     @Override
     protected void bindProperties() {
         TCPProtocolDataBinding tcpDB = (TCPProtocolDataBinding) dataBinding;
-        srcPort.textProperty().bindBidirectional(tcpDB.getSrcPort());
-        dstPort.textProperty().bindBidirectional(tcpDB.getDstPort());
-        srcPortCB.selectedProperty().bindBidirectional(tcpDB.getOverrideSrcPort());
-        dstPortCB.selectedProperty().bindBidirectional(tcpDB.getOverrideDstPort());
-        seqNumber.textProperty().bindBidirectional(tcpDB.getSequeceNumber());
-        ackNumber.textProperty().bindBidirectional(tcpDB.getAckNumber());
-        window.textProperty().bindBidirectional(tcpDB.getWindow());
-        checksum.textProperty().bindBidirectional(tcpDB.getChecksum());
-        checkSumCB.selectedProperty().bindBidirectional(tcpDB.getOverrideChecksum());
-        urgentPointer.textProperty().bindBidirectional(tcpDB.getUrgentPointer());
-        urg.selectedProperty().bindBidirectional(tcpDB.getUrg());
-        ack.selectedProperty().bindBidirectional(tcpDB.getAck());
-        psh.selectedProperty().bindBidirectional(tcpDB.getPsh());
-        rst.selectedProperty().bindBidirectional(tcpDB.getRst());
-        syn.selectedProperty().bindBidirectional(tcpDB.getSyn());
-        fin.selectedProperty().bindBidirectional(tcpDB.getFin());
+        srcPort.textProperty().bindBidirectional(tcpDB.getSrcPortProperty());
+        dstPort.textProperty().bindBidirectional(tcpDB.getDstPortProperty());
+        srcPortCB.selectedProperty().bindBidirectional(tcpDB.getOverrideSrcPortProperty());
+        dstPortCB.selectedProperty().bindBidirectional(tcpDB.getOverrideDstPortProperty());
+        seqNumber.textProperty().bindBidirectional(tcpDB.getSequenceNumberProperty());
+        ackNumber.textProperty().bindBidirectional(tcpDB.getAckNumberProperty());
+        window.textProperty().bindBidirectional(tcpDB.getWindowProperty());
+        checksum.textProperty().bindBidirectional(tcpDB.getChecksumProperty());
+        checkSumCB.selectedProperty().bindBidirectional(tcpDB.getOverrideChecksumProperty());
+        urgentPointer.textProperty().bindBidirectional(tcpDB.getUrgentPointerProperty());
+        urg.selectedProperty().bindBidirectional(tcpDB.getUrgProperty());
+        ack.selectedProperty().bindBidirectional(tcpDB.getAckProperty());
+        psh.selectedProperty().bindBidirectional(tcpDB.getPshProperty());
+        rst.selectedProperty().bindBidirectional(tcpDB.getRstProperty());
+        syn.selectedProperty().bindBidirectional(tcpDB.getSynProperty());
+        fin.selectedProperty().bindBidirectional(tcpDB.getFinProperty());
     }
 }

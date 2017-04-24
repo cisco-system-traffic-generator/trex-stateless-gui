@@ -177,30 +177,30 @@ public class BuilderDataBinding implements Serializable {
             tcpProto.add("id", new JsonPrimitive("TCP"));
             
             Map<String, String> fieldsMap = new HashMap<>();
-            fieldsMap.put("sport", tcpProtocolDB.getSrcPort().getValue());
-            fieldsMap.put("dport", tcpProtocolDB.getDstPort().getValue());
-            fieldsMap.put("chksum", "0x"+tcpProtocolDB.getChecksum().getValue());
-            fieldsMap.put("seq", tcpProtocolDB.getSequeceNumber().getValue());
-            fieldsMap.put("urgptr", tcpProtocolDB.getUrgentPointer().getValue());
-            fieldsMap.put("ack", tcpProtocolDB.getAckNumber().getValue());
+            fieldsMap.put("sport", tcpProtocolDB.getSrcPortProperty().getValue());
+            fieldsMap.put("dport", tcpProtocolDB.getDstPortProperty().getValue());
+            fieldsMap.put("chksum", "0x"+tcpProtocolDB.getChecksumProperty().getValue());
+            fieldsMap.put("seq", tcpProtocolDB.getSequenceNumberProperty().getValue());
+            fieldsMap.put("urgptr", tcpProtocolDB.getUrgentPointerProperty().getValue());
+            fieldsMap.put("ack", tcpProtocolDB.getAckNumberProperty().getValue());
 
             int tcp_flags = 0;
-            if (tcpProtocolDB.getUrg().get()) {
+            if (tcpProtocolDB.getUrgProperty().get()) {
                 tcp_flags = tcp_flags | (1 << 5);
             }
-            if (tcpProtocolDB.getAck().get()) {
+            if (tcpProtocolDB.getAckProperty().get()) {
                 tcp_flags = tcp_flags | (1 << 4);
             }
-            if (tcpProtocolDB.getPsh().get()) {
+            if (tcpProtocolDB.getPshProperty().get()) {
                 tcp_flags = tcp_flags | (1 << 3);
             }
-            if (tcpProtocolDB.getRst().get()) {
+            if (tcpProtocolDB.getRstProperty().get()) {
                 tcp_flags = tcp_flags | (1 << 2);
             }
-            if (tcpProtocolDB.getSyn().get()) {
+            if (tcpProtocolDB.getSynProperty().get()) {
                 tcp_flags = tcp_flags | (1 << 1);
             }
-            if (tcpProtocolDB.getFin().get()) {
+            if (tcpProtocolDB.getFinProperty().get()) {
                 tcp_flags = tcp_flags | 1;
             }
             fieldsMap.put("flags", String.valueOf(tcp_flags));

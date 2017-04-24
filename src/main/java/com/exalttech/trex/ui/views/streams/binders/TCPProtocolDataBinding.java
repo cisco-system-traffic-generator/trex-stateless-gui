@@ -20,408 +20,436 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * TCP protocol data binding model
- *
- * @author Georgekh
- */
+import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
+
+
 public class TCPProtocolDataBinding extends AbstractStreamDataBinding implements Externalizable {
+    @JsonIgnore
+    private StringProperty srcPortProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty dstPortProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private BooleanProperty overrideSrcPortProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private BooleanProperty overrideDstPortProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private StringProperty sequenceNumberProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty ackNumberProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty windowProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private BooleanProperty overrideChecksumProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private StringProperty checksumProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty urgentPointerProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private BooleanProperty urgProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private BooleanProperty ackProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private BooleanProperty pshProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private BooleanProperty rstProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private BooleanProperty synProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private BooleanProperty finProperty = new SimpleBooleanProperty();
 
-    private StringProperty srcPort = new SimpleStringProperty();
-    private StringProperty dstPort = new SimpleStringProperty();
-    private BooleanProperty overrideSrcPort = new SimpleBooleanProperty();
-    private BooleanProperty overrideDstPort = new SimpleBooleanProperty();
-    private StringProperty sequeceNumber = new SimpleStringProperty();
-    private StringProperty ackNumber = new SimpleStringProperty();
-    private StringProperty window = new SimpleStringProperty();
-    private BooleanProperty overrideChecksum = new SimpleBooleanProperty();
-    private StringProperty checksum = new SimpleStringProperty();
-    private StringProperty urgentPointer = new SimpleStringProperty();
-    private BooleanProperty urg = new SimpleBooleanProperty();
-    private BooleanProperty ack = new SimpleBooleanProperty();
-    private BooleanProperty psh = new SimpleBooleanProperty();
-    private BooleanProperty rst = new SimpleBooleanProperty();
-    private BooleanProperty syn = new SimpleBooleanProperty();
-    private BooleanProperty fin = new SimpleBooleanProperty();
-
-    /**
-     * Constructor
-     */
     public TCPProtocolDataBinding() {
         setInitialValues();
     }
 
-    /**
-     * Return source port property
-     *
-     * @return
-     */
-    public StringProperty getSrcPort() {
-        return srcPort;
+    @JsonIgnore
+    public StringProperty getSrcPortProperty() {
+        return srcPortProperty;
     }
 
-    /**
-     * Set source port property
-     *
-     * @param srcPort
-     */
-    public void setSrcPort(StringProperty srcPort) {
-        this.srcPort = srcPort;
+    @JsonIgnore
+    public void setSrcPortProperty(StringProperty srcPortProperty) {
+        this.srcPortProperty = srcPortProperty;
     }
 
-    /**
-     * Return destination port property
-     *
-     * @return
-     */
-    public StringProperty getDstPort() {
-        return dstPort;
+    @JsonIgnore
+    public StringProperty getDstPortProperty() {
+        return dstPortProperty;
     }
 
-    /**
-     * Set destination port property
-     *
-     * @param dstPort
-     */
-    public void setDstPort(StringProperty dstPort) {
-        this.dstPort = dstPort;
+    @JsonIgnore
+    public void setDstPortProperty(StringProperty dstPortProperty) {
+        this.dstPortProperty = dstPortProperty;
     }
 
-    /**
-     * Return override source port property
-     *
-     * @return
-     */
-    public BooleanProperty getOverrideSrcPort() {
-        return overrideSrcPort;
+    @JsonIgnore
+    public BooleanProperty getOverrideSrcPortProperty() {
+        return overrideSrcPortProperty;
     }
 
-    /**
-     * Set override source port property
-     *
-     * @param overrideSrcPort
-     */
-    public void setOverrideSrcPort(BooleanProperty overrideSrcPort) {
-        this.overrideSrcPort = overrideSrcPort;
+    @JsonIgnore
+    public void setOverrideSrcPortProperty(BooleanProperty overrideSrcPortProperty) {
+        this.overrideSrcPortProperty = overrideSrcPortProperty;
     }
 
-    /**
-     * Return override destination port property
-     *
-     * @return
-     */
-    public BooleanProperty getOverrideDstPort() {
-        return overrideDstPort;
+    @JsonIgnore
+    public BooleanProperty getOverrideDstPortProperty() {
+        return overrideDstPortProperty;
     }
 
-    /**
-     * Set override destination port property
-     *
-     * @param ovverideDstPort
-     */
-    public void setOverrideDstPort(BooleanProperty ovverideDstPort) {
-        this.overrideDstPort = ovverideDstPort;
+    @JsonIgnore
+    public void setOverrideDstPortProperty(BooleanProperty ovverideDstPort) {
+        this.overrideDstPortProperty = ovverideDstPort;
     }
 
-    /**
-     * Return sequence number property
-     *
-     * @return
-     */
-    public StringProperty getSequeceNumber() {
-        return sequeceNumber;
+    @JsonIgnore
+    public StringProperty getSequenceNumberProperty() {
+        return sequenceNumberProperty;
     }
 
-    /**
-     * Set sequence number property
-     *
-     * @param sequeceNumber
-     */
-    public void setSequeceNumber(StringProperty sequeceNumber) {
-        this.sequeceNumber = sequeceNumber;
+    @JsonIgnore
+    public void setSequenceNumberProperty(StringProperty sequenceNumberProperty) {
+        this.sequenceNumberProperty = sequenceNumberProperty;
     }
 
-    /**
-     * Return Acknowledge number property
-     *
-     * @return
-     */
-    public StringProperty getAckNumber() {
-        return ackNumber;
+    @JsonIgnore
+    public StringProperty getAckNumberProperty() {
+        return ackNumberProperty;
     }
 
-    /**
-     * Set acknowledge number property
-     *
-     * @param ackNumber
-     */
-    public void setAckNumber(StringProperty ackNumber) {
-        this.ackNumber = ackNumber;
+    @JsonIgnore
+    public void setAckNumberProperty(StringProperty ackNumberProperty) {
+        this.ackNumberProperty = ackNumberProperty;
     }
 
-    /**
-     * Return window property
-     *
-     * @return
-     */
-    public StringProperty getWindow() {
-        return window;
+    @JsonIgnore
+    public StringProperty getWindowProperty() {
+        return windowProperty;
     }
 
-    /**
-     * Set Window property
-     *
-     * @param window
-     */
-    public void setWindow(StringProperty window) {
-        this.window = window;
+    @JsonIgnore
+    public void setWindowProperty(StringProperty windowProperty) {
+        this.windowProperty = windowProperty;
     }
 
-    /**
-     * Return override checksum property
-     *
-     * @return
-     */
-    public BooleanProperty getOverrideChecksum() {
-        return overrideChecksum;
+    @JsonIgnore
+    public BooleanProperty getOverrideChecksumProperty() {
+        return overrideChecksumProperty;
     }
 
-    /**
-     * Set override checksum property
-     *
-     * @param overrideChecksum
-     */
-    public void setOverrideChecksum(BooleanProperty overrideChecksum) {
-        this.overrideChecksum = overrideChecksum;
+    @JsonIgnore
+    public void setOverrideChecksumProperty(BooleanProperty overrideChecksumProperty) {
+        this.overrideChecksumProperty = overrideChecksumProperty;
     }
 
-    /**
-     * Return checksum property
-     *
-     * @return
-     */
-    public StringProperty getChecksum() {
-        return checksum;
+    @JsonIgnore
+    public StringProperty getChecksumProperty() {
+        return checksumProperty;
     }
 
-    /**
-     * Set checksum property
-     *
-     * @param checksum
-     */
-    public void setChecksum(StringProperty checksum) {
-        this.checksum = checksum;
+    @JsonIgnore
+    public void setChecksumProperty(StringProperty checksumProperty) {
+        this.checksumProperty = checksumProperty;
     }
 
-    /**
-     * Return urgent pointer property
-     *
-     * @return
-     */
-    public StringProperty getUrgentPointer() {
-        return urgentPointer;
+    @JsonIgnore
+    public StringProperty getUrgentPointerProperty() {
+        return urgentPointerProperty;
     }
 
-    /**
-     * Set urgent pointer property
-     *
-     * @param urgentPointer
-     */
-    public void setUrgentPointer(StringProperty urgentPointer) {
-        this.urgentPointer = urgentPointer;
+    @JsonIgnore
+    public void setUrgentPointerProperty(StringProperty urgentPointerProperty) {
+        this.urgentPointerProperty = urgentPointerProperty;
     }
 
-    /**
-     * Return URG property
-     *
-     * @return
-     */
-    public BooleanProperty getUrg() {
-        return urg;
+    @JsonIgnore
+    public BooleanProperty getUrgProperty() {
+        return urgProperty;
     }
 
-    /**
-     * Set URG property
-     *
-     * @param urg
-     */
-    public void setUrg(BooleanProperty urg) {
-        this.urg = urg;
+    @JsonIgnore
+    public void setUrgProperty(BooleanProperty urgProperty) {
+        this.urgProperty = urgProperty;
     }
 
-    /**
-     * Return ACK property
-     *
-     * @return
-     */
-    public BooleanProperty getAck() {
-        return ack;
+    @JsonIgnore
+    public BooleanProperty getAckProperty() {
+        return ackProperty;
     }
 
-    /**
-     * Set ACK property
-     *
-     * @param ack
-     */
-    public void setAck(BooleanProperty ack) {
-        this.ack = ack;
+    @JsonIgnore
+    public void setAckProperty(BooleanProperty ackProperty) {
+        this.ackProperty = ackProperty;
     }
 
-    /**
-     * Return PSH property
-     *
-     * @return
-     */
-    public BooleanProperty getPsh() {
-        return psh;
+    @JsonIgnore
+    public BooleanProperty getPshProperty() {
+        return pshProperty;
     }
 
-    /**
-     * Set PSH property
-     *
-     * @param psh
-     */
-    public void setPsh(BooleanProperty psh) {
-        this.psh = psh;
+    @JsonIgnore
+    public void setPshProperty(BooleanProperty pshProperty) {
+        this.pshProperty = pshProperty;
     }
 
-    /**
-     * Return RST property
-     *
-     * @return
-     */
-    public BooleanProperty getRst() {
-        return rst;
+    @JsonIgnore
+    public BooleanProperty getRstProperty() {
+        return rstProperty;
     }
 
-    /**
-     * Set RST property
-     *
-     * @param rst
-     */
-    public void setRst(BooleanProperty rst) {
-        this.rst = rst;
+    @JsonIgnore
+    public void setRstProperty(BooleanProperty rstProperty) {
+        this.rstProperty = rstProperty;
     }
 
-    /**
-     * Return SYN property
-     *
-     * @return
-     */
-    public BooleanProperty getSyn() {
-        return syn;
+    @JsonIgnore
+    public BooleanProperty getSynProperty() {
+        return synProperty;
     }
 
-    /**
-     * Set SYN property
-     *
-     * @param syn
-     */
-    public void setSyn(BooleanProperty syn) {
-        this.syn = syn;
+    @JsonIgnore
+    public void setSynProperty(BooleanProperty synProperty) {
+        this.synProperty = synProperty;
     }
 
-    /**
-     * Return FIN property
-     *
-     * @return
-     */
-    public BooleanProperty getFin() {
-        return fin;
+    @JsonIgnore
+    public BooleanProperty getFinProperty() {
+        return finProperty;
     }
 
-    /**
-     * Set FIN property
-     *
-     * @param fin
-     */
-    public void setFin(BooleanProperty fin) {
-        this.fin = fin;
+    @JsonIgnore
+    public void setFinProperty(BooleanProperty finProperty) {
+        this.finProperty = finProperty;
     }
 
-    /**
-     * Set initial values
-     */
+    @JsonProperty("src_port")
+    public String getSrcPort() {
+        return srcPortProperty.get();
+    }
+
+    @JsonProperty("src_port")
+    public void setSrcPort(final String srcPort) {
+        srcPortProperty.set(srcPort);
+    }
+
+    @JsonProperty("dst_port")
+    public String getDstPort() {
+        return dstPortProperty.get();
+    }
+
+    @JsonProperty("dst_port")
+    public void setDstPort(final String dstPort) {
+        dstPortProperty.set(dstPort);
+    }
+
+    @JsonProperty("is_override_src_port")
+    public boolean isOverrideSrcPort() {
+        return overrideSrcPortProperty.get();
+    }
+
+    @JsonProperty("is_override_src_port")
+    public void setOverrideSrcPort(final boolean isOverrideSrcPort) {
+        overrideSrcPortProperty.set(isOverrideSrcPort);
+    }
+
+    @JsonProperty("is_override_dst_port")
+    public boolean isOverrideDstPort() {
+        return overrideDstPortProperty.get();
+    }
+
+    @JsonProperty("is_override_dst_port")
+    public void setOverrideDstPortProperty(final boolean isOverrideDstPort) {
+        overrideDstPortProperty.set(isOverrideDstPort);
+    }
+
+    @JsonProperty("sequence_number")
+    public String getSequenceNumber() {
+        return sequenceNumberProperty.get();
+    }
+
+    @JsonProperty("sequence_number")
+    public void setSequenceNumber(final String sequenceNumber) {
+        sequenceNumberProperty.set(sequenceNumber);
+    }
+
+    @JsonProperty("ack_number")
+    public String getAckNumber() {
+        return ackNumberProperty.get();
+    }
+
+    @JsonProperty("ack_number")
+    public void setAckNumber(final String ackNumber) {
+        ackNumberProperty.set(ackNumber);
+    }
+
+    @JsonProperty("window")
+    public String getWindow() {
+        return windowProperty.get();
+    }
+
+    @JsonProperty("window")
+    public void setWindow(final String window) {
+        windowProperty.set(window);
+    }
+
+    @JsonProperty("is_override_checksum")
+    public boolean isOverrideChecksum() {
+        return overrideChecksumProperty.get();
+    }
+
+    @JsonProperty("is_override_checksum")
+    public void setOverrideChecksum(final boolean isOverrideChecksum) {
+        overrideChecksumProperty.set(isOverrideChecksum);
+    }
+
+    @JsonProperty("checksum")
+    public String getChecksum() {
+        return checksumProperty.get();
+    }
+
+    @JsonProperty("checksum")
+    public void setChecksum(final String checksum) {
+        checksumProperty.set(checksum);
+    }
+
+    @JsonProperty("urgent_pointer")
+    public String getUrgentPointer() {
+        return urgentPointerProperty.get();
+    }
+
+    @JsonProperty("urgent_pointer")
+    public void setUrgentPointer(final String urgentPointer) {
+        urgentPointerProperty.set(urgentPointer);
+    }
+
+    @JsonProperty("is_urg")
+    public boolean isUrg() {
+        return urgProperty.get();
+    }
+
+    @JsonProperty("is_urg")
+    public void setUrg(final boolean isUrg) {
+        urgProperty.set(isUrg);
+    }
+
+    @JsonProperty("is_ack")
+    public boolean isAck() {
+        return ackProperty.get();
+    }
+
+    @JsonProperty("is_ack")
+    public void setAck(final boolean isAck) {
+        ackProperty.set(isAck);
+    }
+
+    @JsonProperty("is_psh")
+    public boolean isPsh() {
+        return pshProperty.get();
+    }
+
+    @JsonProperty("is_psh")
+    public void setPsh(final boolean isPsh) {
+        pshProperty.set(isPsh);
+    }
+
+    @JsonProperty("is_rst")
+    public boolean isRst() {
+        return rstProperty.get();
+    }
+
+    @JsonProperty("is_rst")
+    public void setRst(final boolean isRst) {
+        rstProperty.set(isRst);
+    }
+
+    @JsonProperty("is_sync")
+    public boolean isSyn() {
+        return synProperty.get();
+    }
+
+    @JsonProperty("is_sync")
+    public void setSyn(final boolean isSync) {
+        synProperty.set(isSync);
+    }
+
+    @JsonProperty("is_fin")
+    public boolean isFin() {
+        return finProperty.get();
+    }
+
+    @JsonProperty("is_fin")
+    public void setFin(final boolean isFin) {
+        finProperty.set(isFin);
+    }
+
     @Override
     protected void setInitialValues() {
-        srcPort.set(StreamBuilderConstants.DEFAULT_SRC_PORT);
-        overrideSrcPort.set(false);
-        dstPort.set(StreamBuilderConstants.DEFAULT_DST_PORT);
-        overrideDstPort.set(false);
-        sequeceNumber.set("129018");
-        ackNumber.set("0");
-        window.set("1024");
-        checksum.set("B3E3");
-        overrideChecksum.set(false);
-        urgentPointer.set("0");
-        urg.set(false);
-        ack.set(false);
-        psh.set(false);
-        rst.set(false);
-        syn.set(false);
-        fin.set(false);
+        srcPortProperty.set(StreamBuilderConstants.DEFAULT_SRC_PORT);
+        overrideSrcPortProperty.set(false);
+        dstPortProperty.set(StreamBuilderConstants.DEFAULT_DST_PORT);
+        overrideDstPortProperty.set(false);
+        sequenceNumberProperty.set("129018");
+        ackNumberProperty.set("0");
+        windowProperty.set("1024");
+        checksumProperty.set("B3E3");
+        overrideChecksumProperty.set(false);
+        urgentPointerProperty.set("0");
+        urgProperty.set(false);
+        ackProperty.set(false);
+        pshProperty.set(false);
+        rstProperty.set(false);
+        synProperty.set(false);
+        finProperty.set(false);
     }
 
-    /**
-     * Write the serialized properties
-     *
-     * @param out
-     * @throws IOException
-     */
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(srcPort.get());
-        out.writeObject(dstPort.get());
-        out.writeBoolean(overrideSrcPort.get());
-        out.writeBoolean(overrideDstPort.get());
-        out.writeObject(sequeceNumber.get());
-        out.writeObject(ackNumber.get());
-        out.writeObject(window.get());
-        out.writeBoolean(overrideChecksum.get());
-        out.writeObject(checksum.get());
-        out.writeObject(urgentPointer.get());
-        out.writeBoolean(urg.get());
-        out.writeBoolean(ack.get());
-        out.writeBoolean(psh.get());
-        out.writeBoolean(rst.get());
-        out.writeBoolean(syn.get());
-        out.writeBoolean(fin.get());
+        out.writeObject(srcPortProperty.get());
+        out.writeObject(dstPortProperty.get());
+        out.writeBoolean(overrideSrcPortProperty.get());
+        out.writeBoolean(overrideDstPortProperty.get());
+        out.writeObject(sequenceNumberProperty.get());
+        out.writeObject(ackNumberProperty.get());
+        out.writeObject(windowProperty.get());
+        out.writeBoolean(overrideChecksumProperty.get());
+        out.writeObject(checksumProperty.get());
+        out.writeObject(urgentPointerProperty.get());
+        out.writeBoolean(urgProperty.get());
+        out.writeBoolean(ackProperty.get());
+        out.writeBoolean(pshProperty.get());
+        out.writeBoolean(rstProperty.get());
+        out.writeBoolean(synProperty.get());
+        out.writeBoolean(finProperty.get());
     }
 
-    /**
-     * Read the serialized property
-     *
-     * @param in
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        srcPort.set((String) in.readObject());
-        dstPort.set((String) in.readObject());
-        overrideSrcPort.set(in.readBoolean());
-        overrideDstPort.set(in.readBoolean());
-        sequeceNumber.set((String) in.readObject());
-        ackNumber.set((String) in.readObject());
-        window.set((String) in.readObject());
-        overrideChecksum.set(in.readBoolean());
-        checksum.set((String) in.readObject());
-        urgentPointer.set((String) in.readObject());
-        urg.set(in.readBoolean());
-        ack.set(in.readBoolean());
-        psh.set(in.readBoolean());
-        rst.set(in.readBoolean());
-        syn.set(in.readBoolean());
-        fin.set(in.readBoolean());
+        srcPortProperty.set((String) in.readObject());
+        dstPortProperty.set((String) in.readObject());
+        overrideSrcPortProperty.set(in.readBoolean());
+        overrideDstPortProperty.set(in.readBoolean());
+        sequenceNumberProperty.set((String) in.readObject());
+        ackNumberProperty.set((String) in.readObject());
+        windowProperty.set((String) in.readObject());
+        overrideChecksumProperty.set(in.readBoolean());
+        checksumProperty.set((String) in.readObject());
+        urgentPointerProperty.set((String) in.readObject());
+        urgProperty.set(in.readBoolean());
+        ackProperty.set(in.readBoolean());
+        pshProperty.set(in.readBoolean());
+        rstProperty.set(in.readBoolean());
+        synProperty.set(in.readBoolean());
+        finProperty.set(in.readBoolean());
     }
 }
