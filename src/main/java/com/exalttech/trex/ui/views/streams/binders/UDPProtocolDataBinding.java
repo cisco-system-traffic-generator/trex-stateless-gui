@@ -20,231 +20,237 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
-import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * UDP protocol data binding model
- *
- * @author Georgekh
- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.exalttech.trex.ui.views.streams.builder.StreamBuilderConstants;
+
+
 public class UDPProtocolDataBinding extends AbstractStreamDataBinding implements Externalizable {
+    @JsonIgnore
+    private StringProperty srcPortProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty dstPortProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private BooleanProperty overrideSrcPortProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private BooleanProperty overrideDstPortProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private StringProperty lengthProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private BooleanProperty overrideLengthProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private StringProperty checksumProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private BooleanProperty overrideChecksumProperty = new SimpleBooleanProperty();
 
-    StringProperty srcPort = new SimpleStringProperty();
-    StringProperty dstPort = new SimpleStringProperty();
-    BooleanProperty overrideSrcPort = new SimpleBooleanProperty();
-    BooleanProperty overrideDstPort = new SimpleBooleanProperty();
-    StringProperty length = new SimpleStringProperty();
-    BooleanProperty overrideLength = new SimpleBooleanProperty();
-    StringProperty checksum = new SimpleStringProperty();
-    BooleanProperty overrideChecksum = new SimpleBooleanProperty();
-
-    /**
-     * Constructor
-     */
     public UDPProtocolDataBinding() {
         setInitialValues();
     }
 
-    /**
-     * Return source port property
-     *
-     * @return
-     */
-    public StringProperty getSrcPort() {
-        return srcPort;
+    @JsonIgnore
+    public StringProperty getSrcPortProperty() {
+        return srcPortProperty;
     }
 
-    /**
-     * Set source port property
-     *
-     * @param srcPort
-     */
-    public void setSrcPort(StringProperty srcPort) {
-        this.srcPort = srcPort;
+    @JsonIgnore
+    public void setSrcPortProperty(StringProperty srcPortProperty) {
+        this.srcPortProperty = srcPortProperty;
     }
 
-    /**
-     * Return destination port property
-     *
-     * @return
-     */
-    public StringProperty getDstPort() {
-        return dstPort;
+    @JsonIgnore
+    public StringProperty getDstPortProperty() {
+        return dstPortProperty;
     }
 
-    /**
-     * Return destination port property
-     *
-     * @param dstPort
-     */
-    public void setDstPort(StringProperty dstPort) {
-        this.dstPort = dstPort;
+    @JsonIgnore
+    public void setDstPortProperty(StringProperty dstPortProperty) {
+        this.dstPortProperty = dstPortProperty;
     }
 
-    /**
-     * Return override source port property
-     *
-     * @return
-     */
-    public BooleanProperty getOverrideSrcPort() {
-        return overrideSrcPort;
+    @JsonIgnore
+    public BooleanProperty getOverrideSrcPortProperty() {
+        return overrideSrcPortProperty;
     }
 
-    /**
-     * Set override source port property
-     *
-     * @param overrideSrcPort
-     */
-    public void setOverrideSrcPort(BooleanProperty overrideSrcPort) {
-        this.overrideSrcPort = overrideSrcPort;
+    @JsonIgnore
+    public void setOverrideSrcPortProperty(BooleanProperty overrideSrcPortProperty) {
+        this.overrideSrcPortProperty = overrideSrcPortProperty;
     }
 
-    /**
-     * Return override destination port property
-     *
-     * @return
-     */
-    public BooleanProperty getOverrideDstPort() {
-        return overrideDstPort;
+    @JsonIgnore
+    public BooleanProperty getOverrideDstPortProperty() {
+        return overrideDstPortProperty;
     }
 
-    /**
-     * Set override destination port property
-     *
-     * @param overrideDstPort
-     */
-    public void setOverrideDstPort(BooleanProperty overrideDstPort) {
-        this.overrideDstPort = overrideDstPort;
+    @JsonIgnore
+    public void setOverrideDstPortProperty(BooleanProperty overrideDstPortProperty) {
+        this.overrideDstPortProperty = overrideDstPortProperty;
     }
 
-    /**
-     * Return length property
-     *
-     * @return
-     */
-    public StringProperty getLength() {
-        return length;
+    @JsonIgnore
+    public StringProperty getLengthProperty() {
+        return lengthProperty;
     }
 
-    /**
-     * Set length property
-     *
-     * @param length
-     */
-    public void setLength(StringProperty length) {
-        this.length = length;
+    @JsonIgnore
+    public void setLengthProperty(StringProperty lengthProperty) {
+        this.lengthProperty = lengthProperty;
     }
 
-    /**
-     * Return override length property
-     *
-     * @return
-     */
-    public BooleanProperty getOverrideLength() {
-        return overrideLength;
+    @JsonIgnore
+    public BooleanProperty getOverrideLengthProperty() {
+        return overrideLengthProperty;
     }
 
-    /**
-     * Set override length property
-     *
-     * @param overrideLength
-     */
-    public void setOverrideLength(BooleanProperty overrideLength) {
-        this.overrideLength = overrideLength;
+    @JsonIgnore
+    public void setOverrideLengthProperty(BooleanProperty overrideLengthProperty) {
+        this.overrideLengthProperty = overrideLengthProperty;
     }
 
-    /**
-     * Return checksum property
-     *
-     * @return
-     */
-    public StringProperty getChecksum() {
-        return checksum;
+    @JsonIgnore
+    public StringProperty getChecksumProperty() {
+        return checksumProperty;
     }
 
-    /**
-     * Set checksum property
-     *
-     * @param checksum
-     */
-    public void setChecksum(StringProperty checksum) {
-        this.checksum = checksum;
+    @JsonIgnore
+    public void setChecksumProperty(StringProperty checksumProperty) {
+        this.checksumProperty = checksumProperty;
     }
 
-    /**
-     * Return override checksum property
-     *
-     * @return
-     */
-    public BooleanProperty getOverrideChecksum() {
-        return overrideChecksum;
+    @JsonIgnore
+    public BooleanProperty getOverrideChecksumProperty() {
+        return overrideChecksumProperty;
     }
 
-    /**
-     * Set override checksum property
-     *
-     * @param overrideChecksum
-     */
-    public void setOverrideChecksum(BooleanProperty overrideChecksum) {
-        this.overrideChecksum = overrideChecksum;
+    @JsonIgnore
+    public void setOverrideChecksumProperty(BooleanProperty overrideChecksumProperty) {
+        this.overrideChecksumProperty = overrideChecksumProperty;
     }
 
-    /**
-     * Initialize properties
-     */
+    @JsonProperty("src_port")
+    public String getSrcPort() {
+        return srcPortProperty.get();
+    }
+
+    @JsonProperty("src_port")
+    public void setSrcPort(final String srcPort) {
+        srcPortProperty.set(srcPort);
+    }
+
+    @JsonProperty("dst_port")
+    public String getDstPort() {
+        return dstPortProperty.get();
+    }
+
+    @JsonProperty("dst_port")
+    public void setDstPort(final String dstPort) {
+        dstPortProperty.set(dstPort);
+    }
+
+    @JsonProperty("is_override_src_port")
+    public boolean isOverrideSrcPort() {
+        return overrideSrcPortProperty.get();
+    }
+
+    @JsonProperty("is_override_src_port")
+    public void setOverrideSrcPort(final boolean isOverrideSrcPort) {
+        overrideSrcPortProperty.set(isOverrideSrcPort);
+    }
+
+    @JsonProperty("is_override_dst_port")
+    public boolean isOverrideDstPort() {
+        return overrideDstPortProperty.get();
+    }
+
+    @JsonProperty("is_override_dst_port")
+    public void setOverrideDstPortProperty(final boolean isOverrideDstPort) {
+        overrideDstPortProperty.set(isOverrideDstPort);
+    }
+
+    @JsonProperty("length")
+    public String getLength() {
+        return lengthProperty.get();
+    }
+
+    @JsonProperty("length")
+    public void setLength(final String length) {
+        lengthProperty.set(length);
+    }
+
+    @JsonProperty("is_override_length")
+    public boolean isOverrideLength() {
+        return overrideLengthProperty.get();
+    }
+
+    @JsonProperty("is_override_length")
+    public void setOverrideLength(final boolean isOverrideLength) {
+        overrideLengthProperty.set(isOverrideLength);
+    }
+
+    @JsonProperty("is_override_checksum")
+    public boolean isOverrideChecksum() {
+        return overrideChecksumProperty.get();
+    }
+
+    @JsonProperty("is_override_checksum")
+    public void setOverrideChecksum(final boolean isOverrideChecksum) {
+        overrideChecksumProperty.set(isOverrideChecksum);
+    }
+
+    @JsonProperty("checksum")
+    public String getChecksum() {
+        return checksumProperty.get();
+    }
+
+    @JsonProperty("checksum")
+    public void setChecksum(final String checksum) {
+        checksumProperty.set(checksum);
+    }
+
     @Override
     protected void setInitialValues() {
-        srcPort.set(StreamBuilderConstants.DEFAULT_SRC_PORT);
-        dstPort.set(StreamBuilderConstants.DEFAULT_DST_PORT);
-        overrideSrcPort.set(false);
-        overrideDstPort.set(false);
-        length.set("26");
-        overrideLength.set(false);
-        checksum.set("FFBA");
-        overrideChecksum.set(false);
+        srcPortProperty.set(StreamBuilderConstants.DEFAULT_SRC_PORT);
+        dstPortProperty.set(StreamBuilderConstants.DEFAULT_DST_PORT);
+        overrideSrcPortProperty.set(false);
+        overrideDstPortProperty.set(false);
+        lengthProperty.set("26");
+        overrideLengthProperty.set(false);
+        checksumProperty.set("FFBA");
+        overrideChecksumProperty.set(false);
     }
 
-    /**
-     * Write serialized properties
-     *
-     * @param out
-     * @throws IOException
-     */
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(srcPort.get());
-        out.writeObject(dstPort.get());
-        out.writeBoolean(overrideSrcPort.get());
-        out.writeBoolean(overrideDstPort.get());
-        out.writeObject(length.get());
-        out.writeBoolean(overrideLength.get());
-        out.writeObject(checksum.get());
-        out.writeBoolean(overrideChecksum.get());
+        out.writeObject(srcPortProperty.get());
+        out.writeObject(dstPortProperty.get());
+        out.writeBoolean(overrideSrcPortProperty.get());
+        out.writeBoolean(overrideDstPortProperty.get());
+        out.writeObject(lengthProperty.get());
+        out.writeBoolean(overrideLengthProperty.get());
+        out.writeObject(checksumProperty.get());
+        out.writeBoolean(overrideChecksumProperty.get());
     }
 
-    /**
-     * Read serialized properties
-     *
-     * @throws java.lang.ClassNotFoundException
-     */
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        srcPort.set((String) in.readObject());
-        dstPort.set((String) in.readObject());
-        overrideSrcPort.set(in.readBoolean());
-        overrideDstPort.set(in.readBoolean());
-        length.set((String) in.readObject());
-        overrideLength.set(in.readBoolean());
-        checksum.set((String) in.readObject());
-        overrideChecksum.set(in.readBoolean());
+        srcPortProperty.set((String) in.readObject());
+        dstPortProperty.set((String) in.readObject());
+        overrideSrcPortProperty.set(in.readBoolean());
+        overrideDstPortProperty.set(in.readBoolean());
+        lengthProperty.set((String) in.readObject());
+        overrideLengthProperty.set(in.readBoolean());
+        checksumProperty.set((String) in.readObject());
+        overrideChecksumProperty.set(in.readBoolean());
     }
-
 }

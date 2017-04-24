@@ -222,10 +222,10 @@ public class BuilderDataBinding implements Serializable {
             udpProto.add("id", new JsonPrimitive("UDP"));
             
             Map<String, String> fieldsMap = new HashMap<>();
-            fieldsMap.put("sport", udpProtocolDB.getSrcPort().getValue());
-            fieldsMap.put("dport", udpProtocolDB.getDstPort().getValue());
-            fieldsMap.put("len", udpProtocolDB.getLength().getValue());
-            fieldsMap.put("chksum", "0x"+udpProtocolDB.getChecksum().getValue());
+            fieldsMap.put("sport", udpProtocolDB.getSrcPortProperty().getValue());
+            fieldsMap.put("dport", udpProtocolDB.getDstPortProperty().getValue());
+            fieldsMap.put("len", udpProtocolDB.getLengthProperty().getValue());
+            fieldsMap.put("chksum", "0x"+udpProtocolDB.getChecksumProperty().getValue());
             
             udpProto.add("fields", buildProtoFieldsFromMap(fieldsMap));
             model.getAsJsonArray("protocols").add(udpProto);

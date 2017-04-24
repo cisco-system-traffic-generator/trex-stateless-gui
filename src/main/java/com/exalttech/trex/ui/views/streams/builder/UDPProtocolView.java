@@ -124,14 +124,14 @@ public class UDPProtocolView extends AbstractProtocolView {
     @Override
     protected void bindProperties() {
         UDPProtocolDataBinding udpDB = (UDPProtocolDataBinding) dataBinding;
-        srcPort.textProperty().bindBidirectional(udpDB.getSrcPort());
-        dstPort.textProperty().bindBidirectional(udpDB.getDstPort());
-        srcPortCB.selectedProperty().bindBidirectional(udpDB.getOverrideSrcPort());
-        dstPortCB.selectedProperty().bindBidirectional(udpDB.getOverrideDstPort());
-        length.textProperty().bindBidirectional(udpDB.getLength());
-        lengthCB.selectedProperty().bindBidirectional(udpDB.getOverrideLength());
-        checksum.textProperty().bindBidirectional(udpDB.getChecksum());
-        checksumCB.selectedProperty().bindBidirectional(udpDB.getOverrideChecksum());
+        srcPort.textProperty().bindBidirectional(udpDB.getSrcPortProperty());
+        dstPort.textProperty().bindBidirectional(udpDB.getDstPortProperty());
+        srcPortCB.selectedProperty().bindBidirectional(udpDB.getOverrideSrcPortProperty());
+        dstPortCB.selectedProperty().bindBidirectional(udpDB.getOverrideDstPortProperty());
+        length.textProperty().bindBidirectional(udpDB.getLengthProperty());
+        lengthCB.selectedProperty().bindBidirectional(udpDB.getOverrideLengthProperty());
+        checksum.textProperty().bindBidirectional(udpDB.getChecksumProperty());
+        checksumCB.selectedProperty().bindBidirectional(udpDB.getOverrideChecksumProperty());
     }
 
 }
