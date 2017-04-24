@@ -24,162 +24,156 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- * Vlan data binding model
- *
- * @author Georgekh
- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class VlanDataBinding extends AbstractStreamDataBinding implements Externalizable {
+    @JsonIgnore
+    private BooleanProperty overrideTPIdProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private StringProperty tpIdProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty priorityProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty cfiProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty vIdProperty = new SimpleStringProperty();
 
-    BooleanProperty overrideTPID = new SimpleBooleanProperty();
-    StringProperty tpid = new SimpleStringProperty();
-    StringProperty priority = new SimpleStringProperty();
-    StringProperty cfi = new SimpleStringProperty();
-    StringProperty vID = new SimpleStringProperty();
-
-    /**
-     *
-     */
     public VlanDataBinding() {
         setInitialValues();
     }
 
-    /**
-     * Return override tpID property
-     *
-     * @return
-     */
-    public BooleanProperty getOverrideTPID() {
-        return overrideTPID;
+    @JsonIgnore
+    public BooleanProperty getOverrideTPIdProperty() {
+        return overrideTPIdProperty;
     }
 
-    /**
-     * Set override tpID property
-     *
-     * @param overrideTPID
-     */
-    public void setOverrideTPID(BooleanProperty overrideTPID) {
-        this.overrideTPID = overrideTPID;
+    @JsonIgnore
+    public void setOverrideTPIdProperty(BooleanProperty overrideTPIdProperty) {
+        this.overrideTPIdProperty = overrideTPIdProperty;
     }
 
-    /**
-     * Return tpID property
-     *
-     * @return
-     */
-    public StringProperty getTpid() {
-        return tpid;
+    @JsonIgnore
+    public StringProperty getTpIdProperty() {
+        return tpIdProperty;
     }
 
-    /**
-     * Set tpID property
-     *
-     * @param tpid
-     */
-    public void setTpid(StringProperty tpid) {
-        this.tpid = tpid;
+    @JsonIgnore
+    public void setTpIdProperty(StringProperty tpIdProperty) {
+        this.tpIdProperty = tpIdProperty;
     }
 
-    /**
-     * Return priority property
-     *
-     * @return
-     */
-    public StringProperty getPriority() {
-        return priority;
+    @JsonIgnore
+    public StringProperty getPriorityProperty() {
+        return priorityProperty;
     }
 
-    /**
-     * Set priority property
-     *
-     * @param priority
-     */
-    public void setPriority(StringProperty priority) {
-        this.priority = priority;
+    @JsonIgnore
+    public void setPriorityProperty(StringProperty priorityProperty) {
+        this.priorityProperty = priorityProperty;
     }
 
-    /**
-     * Return CFI property
-     *
-     * @return
-     */
-    public StringProperty getCfi() {
-        return cfi;
+    @JsonIgnore
+    public StringProperty getCfiProperty() {
+        return cfiProperty;
     }
 
-    /**
-     * Set CFI property
-     *
-     * @param cfi
-     */
-    public void setCfi(StringProperty cfi) {
-        this.cfi = cfi;
+    @JsonIgnore
+    public void setCfiProperty(StringProperty cfiProperty) {
+        this.cfiProperty = cfiProperty;
     }
 
-    /**
-     * Return vID property
-     *
-     * @return
-     */
-    public StringProperty getvID() {
-        return vID;
+    @JsonIgnore
+    public StringProperty getVIdProperty() {
+        return vIdProperty;
     }
 
-    /**
-     * Set vID property
-     *
-     * @param vID
-     */
-    public void setvID(StringProperty vID) {
-        this.vID = vID;
+    @JsonIgnore
+    public void setVIdProperty(StringProperty vIdProperty) {
+        this.vIdProperty = vIdProperty;
     }
 
-    /**
-     * Initialize property values
-     */
+    @JsonProperty("is_override_tp_id")
+    public boolean isOverrideTPId() {
+        return overrideTPIdProperty.get();
+    }
+
+    @JsonProperty("is_override_tp_id")
+    public void setOverrideTPId(final boolean isOverrideTPId) {
+        overrideTPIdProperty.set(isOverrideTPId);
+    }
+
+    @JsonProperty("tp_id")
+    public String getTpId() {
+        return tpIdProperty.get();
+    }
+
+    @JsonProperty("tp_id")
+    public void setTpId(final String tpId) {
+        tpIdProperty.set(tpId);
+    }
+
+    @JsonProperty("priority")
+    public String getPriority() {
+        return priorityProperty.get();
+    }
+
+    @JsonProperty("priority")
+    public void setPriority(final String priority) {
+        priorityProperty.set(priority);
+    }
+
+    @JsonProperty("cfi")
+    public String getCfi() {
+        return cfiProperty.get();
+    }
+
+    @JsonProperty("cfi")
+    public void setCfi(final String cfi) {
+        cfiProperty.set(cfi);
+    }
+
+    @JsonProperty("v_id")
+    public String getVId() {
+        return vIdProperty.get();
+    }
+
+    @JsonProperty("v_id")
+    public void setVId(final String vId) {
+        vIdProperty.set(vId);
+    }
+
     @Override
     protected void setInitialValues() {
-        overrideTPID.set(false);
-        tpid.setValue("FFFF");
-        priority.set("0");
-        cfi.set("0");
-        vID.set("0");
+        overrideTPIdProperty.set(false);
+        tpIdProperty.setValue("FFFF");
+        priorityProperty.set("0");
+        cfiProperty.set("0");
+        vIdProperty.set("0");
     }
 
-    /**
-     * Write serialized property values
-     *
-     * @param out
-     * @throws IOException
-     */
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeBoolean(overrideTPID.get());
-        out.writeObject(tpid.get());
-        out.writeObject(priority.get());
-        out.writeObject(cfi.get());
-        out.writeObject(vID.get());
+        out.writeBoolean(overrideTPIdProperty.get());
+        out.writeObject(tpIdProperty.get());
+        out.writeObject(priorityProperty.get());
+        out.writeObject(cfiProperty.get());
+        out.writeObject(vIdProperty.get());
     }
 
-    /**
-     * Read serialized property values
-     *
-     * @param in
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        overrideTPID.set(in.readBoolean());
-        tpid.set((String) in.readObject());
-        priority.set((String) in.readObject());
-        cfi.set((String) in.readObject());
-        vID.set((String) in.readObject());
+        overrideTPIdProperty.set(in.readBoolean());
+        tpIdProperty.set((String) in.readObject());
+        priorityProperty.set((String) in.readObject());
+        cfiProperty.set((String) in.readObject());
+        vIdProperty.set((String) in.readObject());
     }
-
 }

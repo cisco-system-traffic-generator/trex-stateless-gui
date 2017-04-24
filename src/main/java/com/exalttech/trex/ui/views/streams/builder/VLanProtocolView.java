@@ -235,11 +235,11 @@ public class VLanProtocolView extends AbstractProtocolView {
          * @param dataBinding
          */
         public void bindProperties(VlanDataBinding dataBinding) {
-            tpid.textProperty().bindBidirectional(dataBinding.getTpid());
-            tpidCB.selectedProperty().bindBidirectional(dataBinding.getOverrideTPID());
-            priority.valueProperty().bindBidirectional(dataBinding.getPriority());
-            cfi.valueProperty().bindBidirectional(dataBinding.getCfi());
-            vlanID.textProperty().bindBidirectional(dataBinding.getvID());
+            tpid.textProperty().bindBidirectional(dataBinding.getTpIdProperty());
+            tpidCB.selectedProperty().bindBidirectional(dataBinding.getOverrideTPIdProperty());
+            priority.valueProperty().bindBidirectional(dataBinding.getPriorityProperty());
+            cfi.valueProperty().bindBidirectional(dataBinding.getCfiProperty());
+            vlanID.textProperty().bindBidirectional(dataBinding.getVIdProperty());
         }
     }
 }

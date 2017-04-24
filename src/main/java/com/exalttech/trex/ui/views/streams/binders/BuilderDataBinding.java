@@ -146,9 +146,9 @@ public class BuilderDataBinding implements Serializable {
             dot1QProto.add("id", new JsonPrimitive("Dot1Q"));
             Map<String, String> fieldsMap = new HashMap<>();
 
-            fieldsMap.put("prio", vlanDB.get(0).getPriority().getValue());
-            fieldsMap.put("id", vlanDB.get(0).getCfi().getValue());
-            fieldsMap.put("vlan", vlanDB.get(0).getvID().getValue());
+            fieldsMap.put("prio", vlanDB.get(0).getPriorityProperty().getValue());
+            fieldsMap.put("id", vlanDB.get(0).getCfiProperty().getValue());
+            fieldsMap.put("vlan", vlanDB.get(0).getVIdProperty().getValue());
             
             dot1QProto.add("fields", buildProtoFieldsFromMap(fieldsMap));
             
@@ -162,12 +162,12 @@ public class BuilderDataBinding implements Serializable {
             }
             
             
-            if (vlanDB.get(0).getOverrideTPID().getValue()) {
+            if (vlanDB.get(0).getOverrideTPIdProperty().getValue()) {
                 JsonArray etherFields = ((JsonObject) model.getAsJsonArray("protocols").get(0)).get("fields").getAsJsonArray();
                 if (etherFields.size() == 3) {
                     etherFields.remove(2);
                 }
-                etherFields.add(buildProtoField("type", vlanDB.get(0).getTpid().getValue()));
+                etherFields.add(buildProtoField("type", vlanDB.get(0).getTpIdProperty().getValue()));
             }
         }
         
