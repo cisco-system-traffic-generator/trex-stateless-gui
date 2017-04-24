@@ -24,93 +24,79 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- *
- * @author Georgekh
- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class PayloadDataBinding extends AbstractStreamDataBinding implements Externalizable {
+    @JsonIgnore
+    private StringProperty typeProperty = new SimpleStringProperty();
+    @JsonIgnore
+    private StringProperty patternProperty = new SimpleStringProperty();
 
-    StringProperty type = new SimpleStringProperty();
-    StringProperty pattern = new SimpleStringProperty();
-
-    /**
-     * Constructor
-     */
     public PayloadDataBinding() {
         setInitialValues();
     }
 
-    /**
-     * Return type property
-     *
-     * @return
-     */
-    public StringProperty getType() {
-        return type;
+    @JsonIgnore
+    public StringProperty getTypeProperty() {
+        return typeProperty;
     }
 
-    /**
-     * Set type property
-     *
-     * @param type
-     */
-    public void setType(StringProperty type) {
-        this.type = type;
+    @JsonIgnore
+    public void setTypeProperty(StringProperty typeProperty) {
+        this.typeProperty = typeProperty;
     }
 
-    /**
-     * Return pattern property
-     *
-     * @return
-     */
-    public StringProperty getPattern() {
-        return pattern;
+    @JsonIgnore
+    public StringProperty getPatternProperty() {
+        return patternProperty;
     }
 
-    /**
-     * Set pattern property
-     *
-     * @param pattern
-     */
-    public void setPattern(StringProperty pattern) {
-        this.pattern = pattern;
+    @JsonIgnore
+    public void setPatternProperty(StringProperty patternProperty) {
+        this.patternProperty = patternProperty;
     }
 
-    /**
-     * Initialize property values
-     */
+    @JsonProperty("type")
+    public String getType() {
+        return typeProperty.get();
+    }
+
+    @JsonProperty("type")
+    public void setType(final String type) {
+        typeProperty.set(type);
+    }
+
+    @JsonProperty("pattern")
+    public String getPattern() {
+        return patternProperty.get();
+    }
+
+    @JsonProperty("pattern")
+    public void setPattern(final String pattern) {
+        patternProperty.set(pattern);
+    }
+
     @Override
     protected void setInitialValues() {
-        type.set("Fixed Word");
-        pattern.set("00");
+        typeProperty.set("Fixed Word");
+        patternProperty.set("00");
     }
 
-    /**
-     * Write serialized property values
-     *
-     * @param out
-     * @throws IOException
-     */
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(type.get());
-        out.writeObject(pattern.get());
+        out.writeObject(typeProperty.get());
+        out.writeObject(patternProperty.get());
     }
 
-    /**
-     * Read serialized property values
-     *
-     * @param in
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        type.set((String) in.readObject());
-        pattern.set((String) in.readObject());
+        typeProperty.set((String) in.readObject());
+        patternProperty.set((String) in.readObject());
     }
-
 }

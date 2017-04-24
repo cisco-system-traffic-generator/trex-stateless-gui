@@ -157,8 +157,8 @@ public class PayloadView extends AbstractProtocolView {
     @Override
     protected void bindProperties() {
         PayloadDataBinding payloadDB = (PayloadDataBinding) dataBinding;
-        type.valueProperty().bindBidirectional(payloadDB.getType());
-        pattern.textProperty().bindBidirectional(payloadDB.getPattern());
+        type.valueProperty().bindBidirectional(payloadDB.getTypeProperty());
+        pattern.textProperty().bindBidirectional(payloadDB.getPatternProperty());
     }
 
     private void selectPatternFile() {
