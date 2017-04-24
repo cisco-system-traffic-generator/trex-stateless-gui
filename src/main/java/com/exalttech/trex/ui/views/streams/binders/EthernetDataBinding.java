@@ -24,97 +24,81 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**
- *
- * Ethernet data binding model
- *
- * @author Georgekh
- */
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class EthernetDataBinding extends AbstractStreamDataBinding implements Externalizable {
+    @JsonIgnore
+    private BooleanProperty overrideProperty = new SimpleBooleanProperty();
+    @JsonIgnore
+    private StringProperty typeProperty = new SimpleStringProperty();
 
-    BooleanProperty overrideProperty = new SimpleBooleanProperty();
-    StringProperty typeProperty = new SimpleStringProperty();
-
-    /**
-     *
-     */
     public EthernetDataBinding() {
         setInitialValues();
     }
 
-    /**
-     * Return override type property
-     *
-     * @return
-     */
+    @JsonIgnore
     public BooleanProperty getOverrideProperty() {
         return overrideProperty;
     }
 
-    /**
-     * Set override type property
-     *
-     * @param overrideProperty
-     */
+    @JsonIgnore
     public void setOverrideProperty(BooleanProperty overrideProperty) {
         this.overrideProperty = overrideProperty;
     }
 
-    /**
-     * Return type property
-     *
-     * @return
-     */
+    @JsonIgnore
     public StringProperty getTypeProperty() {
         return typeProperty;
     }
 
-    /**
-     * Set type property
-     *
-     * @param typeProperty
-     */
+    @JsonIgnore
     public void setTypeProperty(StringProperty typeProperty) {
         this.typeProperty = typeProperty;
     }
 
-    /**
-     * Write serialized data
-     *
-     * @param out
-     * @throws IOException
-     */
+    @JsonProperty("is_override")
+    public boolean isOverride() {
+        return overrideProperty.get();
+    }
+
+    @JsonProperty("is_override")
+    public void setOverride(final boolean isOverride) {
+        overrideProperty.set(isOverride);
+    }
+
+    @JsonProperty("type")
+    public String getType() {
+        return typeProperty.get();
+    }
+
+    @JsonProperty("type")
+    public void setType(final String type) {
+        typeProperty.set(type);
+    }
+
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeBoolean(overrideProperty.get());
         out.writeObject(typeProperty.get());
     }
 
-    /**
-     * Read serialized data
-     *
-     * @param in
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         getOverrideProperty().set(in.readBoolean());
         getTypeProperty().set((String) in.readObject());
     }
 
-    /**
-     * Initialize Ethernet properties values
-     */
     @Override
     protected void setInitialValues() {
         overrideProperty.set(false);
         typeProperty.set("0800");
     }
-
 }
