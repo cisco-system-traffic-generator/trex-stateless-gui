@@ -46,6 +46,8 @@ public class BuilderDataBinding {
     private List<VlanDataBinding> vlanDB = new ArrayList<>();
     private AdvancedPropertiesDataBinding advancedPropertiesDB = new AdvancedPropertiesDataBinding();
 
+    private String modelVersion = "1.0";
+
     public String serializeAsPacketModel() {
 
         JsonObject model = new JsonObject();
@@ -402,5 +404,15 @@ public class BuilderDataBinding {
     @JsonProperty("advansed_properties")
     public void setAdvancedPropertiesDB(final AdvancedPropertiesDataBinding advancedPropertiesDB) {
         this.advancedPropertiesDB = advancedPropertiesDB;
+    }
+
+    @JsonProperty("model_version")
+    public String getModelVersion() {
+        return modelVersion;
+    }
+
+    @JsonProperty("model_version")
+    public void setModelVersion(final String modelVersion) {
+        this.modelVersion = modelVersion;
     }
 }
