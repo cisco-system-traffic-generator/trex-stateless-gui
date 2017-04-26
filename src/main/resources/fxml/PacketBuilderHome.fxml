@@ -132,7 +132,8 @@
             <HBox alignment="CENTER_RIGHT"
                   spacing="10.0"
                   HBox.hgrow="ALWAYS">
-                <Button mnemonicParsing="false"
+                <Button fx:id="saveButton"
+                        mnemonicParsing="false"
                         onAction="#saveProfileBtnClicked"
                         prefHeight="24.0"
                         prefWidth="110.0"
