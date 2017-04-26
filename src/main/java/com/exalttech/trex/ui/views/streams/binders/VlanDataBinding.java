@@ -46,18 +46,8 @@ public class VlanDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setOverrideTPIdProperty(BooleanProperty overrideTPIdProperty) {
-        this.overrideTPIdProperty = overrideTPIdProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getTpIdProperty() {
         return tpIdProperty;
-    }
-
-    @JsonIgnore
-    public void setTpIdProperty(StringProperty tpIdProperty) {
-        this.tpIdProperty = tpIdProperty;
     }
 
     @JsonIgnore
@@ -66,28 +56,13 @@ public class VlanDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setPriorityProperty(StringProperty priorityProperty) {
-        this.priorityProperty = priorityProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getCfiProperty() {
         return cfiProperty;
     }
 
     @JsonIgnore
-    public void setCfiProperty(StringProperty cfiProperty) {
-        this.cfiProperty = cfiProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getVIdProperty() {
         return vIdProperty;
-    }
-
-    @JsonIgnore
-    public void setVIdProperty(StringProperty vIdProperty) {
-        this.vIdProperty = vIdProperty;
     }
 
     @JsonProperty("is_override_tp_id")

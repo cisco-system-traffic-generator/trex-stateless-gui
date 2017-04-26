@@ -43,18 +43,8 @@ public class EthernetDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setOverrideProperty(BooleanProperty overrideProperty) {
-        this.overrideProperty = overrideProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getTypeProperty() {
         return typeProperty;
-    }
-
-    @JsonIgnore
-    public void setTypeProperty(StringProperty typeProperty) {
-        this.typeProperty = typeProperty;
     }
 
     @JsonProperty("is_override")

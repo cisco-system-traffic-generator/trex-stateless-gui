@@ -26,18 +26,8 @@ public class AdvancedPropertiesDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setCacheSizeTypeProperty(StringProperty cacheSizeTypeProperty) {
-        this.cacheSizeTypeProperty = cacheSizeTypeProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getCacheValueProperty() {
         return cacheValueProperty;
-    }
-
-    @JsonIgnore
-    public void setCacheValueProperty(StringProperty cacheValueProperty) {
-        this.cacheValueProperty = cacheValueProperty;
     }
 
     @JsonProperty("cache_size_type")

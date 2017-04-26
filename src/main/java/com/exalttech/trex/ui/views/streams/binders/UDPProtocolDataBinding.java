@@ -51,18 +51,8 @@ public class UDPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setSrcPortProperty(StringProperty srcPortProperty) {
-        this.srcPortProperty = srcPortProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getDstPortProperty() {
         return dstPortProperty;
-    }
-
-    @JsonIgnore
-    public void setDstPortProperty(StringProperty dstPortProperty) {
-        this.dstPortProperty = dstPortProperty;
     }
 
     @JsonIgnore
@@ -71,18 +61,8 @@ public class UDPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setOverrideSrcPortProperty(BooleanProperty overrideSrcPortProperty) {
-        this.overrideSrcPortProperty = overrideSrcPortProperty;
-    }
-
-    @JsonIgnore
     public BooleanProperty getOverrideDstPortProperty() {
         return overrideDstPortProperty;
-    }
-
-    @JsonIgnore
-    public void setOverrideDstPortProperty(BooleanProperty overrideDstPortProperty) {
-        this.overrideDstPortProperty = overrideDstPortProperty;
     }
 
     @JsonIgnore
@@ -91,18 +71,8 @@ public class UDPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setLengthProperty(StringProperty lengthProperty) {
-        this.lengthProperty = lengthProperty;
-    }
-
-    @JsonIgnore
     public BooleanProperty getOverrideLengthProperty() {
         return overrideLengthProperty;
-    }
-
-    @JsonIgnore
-    public void setOverrideLengthProperty(BooleanProperty overrideLengthProperty) {
-        this.overrideLengthProperty = overrideLengthProperty;
     }
 
     @JsonIgnore
@@ -111,18 +81,8 @@ public class UDPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setChecksumProperty(StringProperty checksumProperty) {
-        this.checksumProperty = checksumProperty;
-    }
-
-    @JsonIgnore
     public BooleanProperty getOverrideChecksumProperty() {
         return overrideChecksumProperty;
-    }
-
-    @JsonIgnore
-    public void setOverrideChecksumProperty(BooleanProperty overrideChecksumProperty) {
-        this.overrideChecksumProperty = overrideChecksumProperty;
     }
 
     @JsonProperty("src_port")

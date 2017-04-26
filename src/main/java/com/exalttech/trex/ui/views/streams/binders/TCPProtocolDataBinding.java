@@ -59,18 +59,8 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setSrcPortProperty(StringProperty srcPortProperty) {
-        this.srcPortProperty = srcPortProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getDstPortProperty() {
         return dstPortProperty;
-    }
-
-    @JsonIgnore
-    public void setDstPortProperty(StringProperty dstPortProperty) {
-        this.dstPortProperty = dstPortProperty;
     }
 
     @JsonIgnore
@@ -79,18 +69,8 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setOverrideSrcPortProperty(BooleanProperty overrideSrcPortProperty) {
-        this.overrideSrcPortProperty = overrideSrcPortProperty;
-    }
-
-    @JsonIgnore
     public BooleanProperty getOverrideDstPortProperty() {
         return overrideDstPortProperty;
-    }
-
-    @JsonIgnore
-    public void setOverrideDstPortProperty(BooleanProperty ovverideDstPort) {
-        this.overrideDstPortProperty = ovverideDstPort;
     }
 
     @JsonIgnore
@@ -99,18 +79,8 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setSequenceNumberProperty(StringProperty sequenceNumberProperty) {
-        this.sequenceNumberProperty = sequenceNumberProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getAckNumberProperty() {
         return ackNumberProperty;
-    }
-
-    @JsonIgnore
-    public void setAckNumberProperty(StringProperty ackNumberProperty) {
-        this.ackNumberProperty = ackNumberProperty;
     }
 
     @JsonIgnore
@@ -119,18 +89,8 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setWindowProperty(StringProperty windowProperty) {
-        this.windowProperty = windowProperty;
-    }
-
-    @JsonIgnore
     public BooleanProperty getOverrideChecksumProperty() {
         return overrideChecksumProperty;
-    }
-
-    @JsonIgnore
-    public void setOverrideChecksumProperty(BooleanProperty overrideChecksumProperty) {
-        this.overrideChecksumProperty = overrideChecksumProperty;
     }
 
     @JsonIgnore
@@ -139,18 +99,8 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setChecksumProperty(StringProperty checksumProperty) {
-        this.checksumProperty = checksumProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getUrgentPointerProperty() {
         return urgentPointerProperty;
-    }
-
-    @JsonIgnore
-    public void setUrgentPointerProperty(StringProperty urgentPointerProperty) {
-        this.urgentPointerProperty = urgentPointerProperty;
     }
 
     @JsonIgnore
@@ -159,18 +109,8 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setUrgProperty(BooleanProperty urgProperty) {
-        this.urgProperty = urgProperty;
-    }
-
-    @JsonIgnore
     public BooleanProperty getAckProperty() {
         return ackProperty;
-    }
-
-    @JsonIgnore
-    public void setAckProperty(BooleanProperty ackProperty) {
-        this.ackProperty = ackProperty;
     }
 
     @JsonIgnore
@@ -179,18 +119,8 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setPshProperty(BooleanProperty pshProperty) {
-        this.pshProperty = pshProperty;
-    }
-
-    @JsonIgnore
     public BooleanProperty getRstProperty() {
         return rstProperty;
-    }
-
-    @JsonIgnore
-    public void setRstProperty(BooleanProperty rstProperty) {
-        this.rstProperty = rstProperty;
     }
 
     @JsonIgnore
@@ -199,18 +129,8 @@ public class TCPProtocolDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setSynProperty(BooleanProperty synProperty) {
-        this.synProperty = synProperty;
-    }
-
-    @JsonIgnore
     public BooleanProperty getFinProperty() {
         return finProperty;
-    }
-
-    @JsonIgnore
-    public void setFinProperty(BooleanProperty finProperty) {
-        this.finProperty = finProperty;
     }
 
     @JsonProperty("src_port")

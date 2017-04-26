@@ -77,18 +77,8 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding {
         }
 
         @JsonIgnore
-        public void setAddressProperty(StringProperty addressProperty) {
-            this.addressProperty = addressProperty;
-        }
-
-        @JsonIgnore
         public StringProperty getModeProperty() {
             return modeProperty;
-        }
-
-        @JsonIgnore
-        public void setModeProperty(StringProperty modeProperty) {
-            this.modeProperty = modeProperty;
         }
 
         @JsonIgnore
@@ -97,18 +87,8 @@ public abstract class AddressDataBinding extends AbstractStreamDataBinding {
         }
 
         @JsonIgnore
-        public void setCountProperty(StringProperty countProperty) {
-            this.countProperty = countProperty;
-        }
-
-        @JsonIgnore
         public StringProperty getStepProperty() {
             return stepProperty;
-        }
-
-        @JsonIgnore
-        public void setStepProperty(StringProperty stepProperty) {
-            this.stepProperty = stepProperty;
         }
 
         @JsonProperty("address")

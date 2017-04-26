@@ -41,18 +41,8 @@ public class PayloadDataBinding extends AbstractStreamDataBinding {
     }
 
     @JsonIgnore
-    public void setTypeProperty(StringProperty typeProperty) {
-        this.typeProperty = typeProperty;
-    }
-
-    @JsonIgnore
     public StringProperty getPatternProperty() {
         return patternProperty;
-    }
-
-    @JsonIgnore
-    public void setPatternProperty(StringProperty patternProperty) {
-        this.patternProperty = patternProperty;
     }
 
     @JsonProperty("type")
