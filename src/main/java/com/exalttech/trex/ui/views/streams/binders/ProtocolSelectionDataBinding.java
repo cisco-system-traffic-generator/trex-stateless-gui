@@ -35,7 +35,6 @@ public class ProtocolSelectionDataBinding {
     private BooleanProperty udpProperty = new SimpleBooleanProperty(false);
     private BooleanProperty patternProperty = new SimpleBooleanProperty(true);
     private BooleanProperty taggedVlanProperty = new SimpleBooleanProperty(false);
-    private BooleanProperty stackedVlanProperty = new SimpleBooleanProperty(false);
 
     private StringProperty frameLengthTypeProperty = new SimpleStringProperty("Fixed");
     private StringProperty frameLengthProperty = new SimpleStringProperty("64");
@@ -65,11 +64,6 @@ public class ProtocolSelectionDataBinding {
     @JsonIgnore
     public BooleanProperty getTaggedVlanProperty() {
         return taggedVlanProperty;
-    }
-
-    @JsonIgnore
-    public BooleanProperty getStackedVlanProperty() {
-        return stackedVlanProperty;
     }
 
     @JsonProperty("is_ipv4_selected")
@@ -120,16 +114,6 @@ public class ProtocolSelectionDataBinding {
     @JsonProperty("is_tagged_vlan_selected")
     public void setTaggedVlanSelected(final boolean isTaggedVlanSelected) {
         taggedVlanProperty.set(isTaggedVlanSelected);
-    }
-
-    @JsonProperty("is_stacked_vlan_selected")
-    public boolean isStackedVlanSelected() {
-        return stackedVlanProperty.get();
-    }
-
-    @JsonProperty("is_stacked_vlan_selected")
-    public void setStackedVlanSelected(final boolean isStackedVlanSelected) {
-        stackedVlanProperty.set(isStackedVlanSelected);
     }
 
     @JsonIgnore

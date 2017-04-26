@@ -43,7 +43,7 @@ public class BuilderDataBinding {
     private TCPProtocolDataBinding tcpProtocolDB = new TCPProtocolDataBinding();
     private UDPProtocolDataBinding udpProtocolDB = new UDPProtocolDataBinding();
     private PayloadDataBinding payloadDB = new PayloadDataBinding();
-    private List<VlanDataBinding> vlanDB = new ArrayList<>();
+    private VlanDataBinding vlanDB = new VlanDataBinding();
     private AdvancedPropertiesDataBinding advancedPropertiesDB = new AdvancedPropertiesDataBinding();
 
     private String modelVersion = "1.0";
@@ -138,9 +138,9 @@ public class BuilderDataBinding {
             dot1QProto.add("id", new JsonPrimitive("Dot1Q"));
             Map<String, String> fieldsMap = new HashMap<>();
 
-            fieldsMap.put("prio", vlanDB.get(0).getPriorityProperty().getValue());
-            fieldsMap.put("id", vlanDB.get(0).getCfiProperty().getValue());
-            fieldsMap.put("vlan", vlanDB.get(0).getVIdProperty().getValue());
+            fieldsMap.put("prio", vlanDB.getPriorityProperty().getValue());
+            fieldsMap.put("id", vlanDB.getCfiProperty().getValue());
+            fieldsMap.put("vlan", vlanDB.getVIdProperty().getValue());
             
             dot1QProto.add("fields", buildProtoFieldsFromMap(fieldsMap));
             
@@ -154,12 +154,12 @@ public class BuilderDataBinding {
             }
             
             
-            if (vlanDB.get(0).getOverrideTPIdProperty().getValue()) {
+            if (vlanDB.getOverrideTPIdProperty().getValue()) {
                 JsonArray etherFields = ((JsonObject) model.getAsJsonArray("protocols").get(0)).get("fields").getAsJsonArray();
                 if (etherFields.size() == 3) {
                     etherFields.remove(2);
                 }
-                etherFields.add(buildProtoField("type", vlanDB.get(0).getTpIdProperty().getValue()));
+                etherFields.add(buildProtoField("type", vlanDB.getTpIdProperty().getValue()));
             }
         }
         
@@ -383,16 +383,12 @@ public class BuilderDataBinding {
     }
 
     @JsonProperty("vlan")
-    public List<VlanDataBinding> getVlanDB() {
-        if (vlanDB.isEmpty()) {
-            vlanDB.add(new VlanDataBinding());
-            vlanDB.add(new VlanDataBinding());
-        }
+    public VlanDataBinding getVlanDB() {
         return vlanDB;
     }
 
     @JsonProperty("vlan")
-    public void setVlanDB(final List<VlanDataBinding> vlanDB) {
+    public void setVlanDB(final VlanDataBinding vlanDB) {
         this.vlanDB = vlanDB;
     }
 

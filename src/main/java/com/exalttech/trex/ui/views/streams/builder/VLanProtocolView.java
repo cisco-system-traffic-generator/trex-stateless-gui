@@ -20,12 +20,6 @@
  */
 package com.exalttech.trex.ui.views.streams.builder;
 
-import com.exalttech.trex.packets.TrexVlanPacket;
-import com.exalttech.trex.ui.views.streams.binders.VlanDataBinding;
-import com.exalttech.trex.util.Util;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -34,112 +28,52 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
-/**
- * VLAN protocol view implementation
- *
- * @author Georgekh
- */
+import com.exalttech.trex.packets.TrexVlanPacket;
+import com.exalttech.trex.ui.views.streams.binders.VlanDataBinding;
+import com.exalttech.trex.util.Util;
+
+
 public class VLanProtocolView extends AbstractProtocolView {
-
     private static final String TAGGED_TITLE = "VLAN";
-    private static final String STACKED_TITLE = "Stacked VLAN";
 
-    VlanView taggedVlan;
-    VlanView stackedVlan;
-    boolean isStacked = false;
+    private final VlanDataBinding vlanDataBinding;
 
-    private final List<VlanDataBinding> vlanDataBindingList;
+    private VlanView taggedVlan;
 
-    /**
-     * Constructor
-     *
-     * @param dataBinding
-     */
-    public VLanProtocolView(List<VlanDataBinding> dataBinding) {
+    public VLanProtocolView(VlanDataBinding dataBinding) {
         super(TAGGED_TITLE, 120, null);
-        this.vlanDataBindingList = dataBinding;
+        this.vlanDataBinding = dataBinding;
         bindProperties();
     }
 
-    /**
-     * Set stacked VLAN view
-     *
-     * @param stacked
-     */
-    public void setStacked(boolean stacked) {
-        stackedVlan.setVisible(stacked);
-        isStacked = stacked;
-        if (stacked) {
-            setText(STACKED_TITLE);
-        }
-    }
-
-    /**
-     * Build UI
-     */
     @Override
     protected void buildCustomProtocolView() {
         taggedVlan = new VlanView();
         container.getChildren().add(taggedVlan);
-        container.setTopAnchor(taggedVlan, 0d);
-        container.setLeftAnchor(taggedVlan, 0d);
-
-        stackedVlan = new VlanView();
-        container.getChildren().add(stackedVlan);
-        container.setTopAnchor(stackedVlan, 60d);
-        container.setLeftAnchor(stackedVlan, 0d);
+        AnchorPane.setTopAnchor(taggedVlan, 0d);
+        AnchorPane.setLeftAnchor(taggedVlan, 0d);
     }
 
-    /**
-     * add input validation
-     */
     @Override
     protected void addInputValidation() {
         taggedVlan.addValidation();
-        stackedVlan.addValidation();
     }
 
-    /**
-     * Return list of VLAN data
-     *
-     * @return
-     */
-    public List<TrexVlanPacket> getVlanList() {
-        List<TrexVlanPacket> vlanList = new ArrayList<>();
-        vlanList.add(taggedVlan.getVlanData());
-        if (isStacked) {
-            vlanList.add(stackedVlan.getVlanData());
-        }
-        return vlanList;
+    public TrexVlanPacket getVlan() {
+        return taggedVlan.getVlanData();
     }
 
-    /**
-     * Bind properties with related properties
-     */
     @Override
     protected void bindProperties() {
-        taggedVlan.bindProperties(vlanDataBindingList.get(0));
-        stackedVlan.bindProperties(vlanDataBindingList.get(1));
+        taggedVlan.bindProperties(vlanDataBinding);
     }
 
-    /**
-     * Reset model
-     */
     @Override
     protected void reset() {
-        vlanDataBindingList.stream().forEach(new Consumer<VlanDataBinding>() {
-            @Override
-            public void accept(VlanDataBinding vlanDB) {
-                vlanDB.resetModel();
-            }
-        });
+        vlanDataBinding.resetModel();
     }
 
-    /**
-     * Class present VLAN view
-     */
     private class VlanView extends AnchorPane {
-
         CheckBox tpidCB;
         ComboBox<String> priority;
         ComboBox<String> cfi;
@@ -151,9 +85,6 @@ public class VLanProtocolView extends AbstractProtocolView {
             bindWidget();
         }
 
-        /**
-         * Build UI
-         */
         private void buildUI() {
             tpidCB = new CheckBox("Override TPID");
             setNode(tpidCB, 28, 10);
@@ -181,31 +112,16 @@ public class VLanProtocolView extends AbstractProtocolView {
             setNode(vlanID, 25, 500);
         }
 
-        /**
-         * Set node according to left/top
-         *
-         * @param node
-         * @param top
-         * @param left
-         */
         private void setNode(Node node, double top, double left) {
             getChildren().add(node);
             setTopAnchor(node, top);
             setLeftAnchor(node, left);
         }
 
-        /**
-         * Bind widget properties
-         */
         private void bindWidget() {
             tpid.disableProperty().bind(tpidCB.selectedProperty().not());
         }
 
-        /**
-         * Return vlan data object
-         *
-         * @return
-         */
         public TrexVlanPacket getVlanData() {
             TrexVlanPacket vlanData = new TrexVlanPacket();
             vlanData.setType(Util.getShortFromString(tpid.getText(), true));
@@ -216,9 +132,6 @@ public class VLanProtocolView extends AbstractProtocolView {
             return vlanData;
         }
 
-        /**
-         * Add input validation
-         */
         public void addValidation() {
             tpid.setTextFormatter(Util.getHexFilter(4));
             vlanID.setTextFormatter(Util.getNumberFilter(4));
@@ -229,11 +142,6 @@ public class VLanProtocolView extends AbstractProtocolView {
             });
         }
 
-        /**
-         * Bind fields with related properties
-         *
-         * @param dataBinding
-         */
         public void bindProperties(VlanDataBinding dataBinding) {
             tpid.textProperty().bindBidirectional(dataBinding.getTpIdProperty());
             tpidCB.selectedProperty().bindBidirectional(dataBinding.getOverrideTPIdProperty());

@@ -24,7 +24,6 @@
                     </toggleGroup>
                 </RadioButton>
                 <RadioButton fx:id="taggedVlanRB" layoutX="23.0" layoutY="83.0" mnemonicParsing="false" text="Tagged" toggleGroup="$vlanGroup" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="85.0" />
-                <RadioButton fx:id="stackedVlanRB" disable="true" layoutX="16.0" layoutY="120.0" mnemonicParsing="false" text="Stacked" toggleGroup="$vlanGroup" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="120.0" />
             </children>
         </AnchorPane>
         <AnchorPane layoutX="239.0" layoutY="60.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #DFDFDF;" AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="70.0">

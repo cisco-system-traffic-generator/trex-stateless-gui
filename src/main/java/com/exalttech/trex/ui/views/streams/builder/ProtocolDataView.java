@@ -20,60 +20,44 @@
  */
 package com.exalttech.trex.ui.views.streams.builder;
 
-import com.exalttech.trex.packets.TrexEthernetPacket;
-import com.exalttech.trex.packets.TrexIpV4Packet;
-import com.exalttech.trex.packets.TrexVlanPacket;
-import com.exalttech.trex.remote.models.profiles.Stream;
-import com.exalttech.trex.ui.views.models.AddressProtocolData;
-import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
-import com.exalttech.trex.ui.views.streams.binders.AdvancedPropertiesDataBinding;
-import com.exalttech.trex.ui.views.streams.binders.ProtocolSelectionDataBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.Accordion;
+import javafx.scene.layout.AnchorPane;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.xored.javafx.packeteditor.events.UpdateEtherLayerEvent;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.TitledPane;
-
-import static com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding.MODE_FIXED;
-import static com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding.MODE_TREX_CONFIG;
-import static com.xored.javafx.packeteditor.events.UpdateEtherLayerEvent.MacMode.PACKET;
-import static javafx.scene.layout.AnchorPane.setLeftAnchor;
-import static javafx.scene.layout.AnchorPane.setRightAnchor;
-import static javafx.scene.layout.AnchorPane.setTopAnchor;
 import org.pcap4j.packet.IpV4Packet.Builder;
 import org.pcap4j.packet.namednumber.EtherType;
 import org.pcap4j.packet.namednumber.IpNumber;
 
-/**
- * Protocol data view implementation
- *
- * @author GeorgeKh
- */
-public class ProtocolDataView extends Accordion {
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
-    ProtocolSelectionDataBinding selections;
-    TitledPane current;
-    MacProtocolView macView;
-    IPV4ProtocolView ipv4View;
-    EthernetProtocolView ethernetView;
-    TCPProtocolView tcpView;
-    UDPProtocolView udpView;
-    PayloadView payloadView;
-    VLanProtocolView vlanView;
-    AdvancedPropertiesDataBinding cahceSizeDataBinding;
+import com.xored.javafx.packeteditor.events.UpdateEtherLayerEvent;
+
+import com.exalttech.trex.packets.TrexEthernetPacket;
+import com.exalttech.trex.packets.TrexIpV4Packet;
+import com.exalttech.trex.packets.TrexVlanPacket;
+import com.exalttech.trex.ui.views.models.AddressProtocolData;
+import com.exalttech.trex.ui.views.streams.binders.BuilderDataBinding;
+import com.exalttech.trex.ui.views.streams.binders.ProtocolSelectionDataBinding;
+
+
+public class ProtocolDataView extends Accordion {
+    private ProtocolSelectionDataBinding selections;
+    private MacProtocolView macView;
+    private IPV4ProtocolView ipv4View;
+    private EthernetProtocolView ethernetView;
+    private TCPProtocolView tcpView;
+    private UDPProtocolView udpView;
+    private PayloadView payloadView;
+    private VLanProtocolView vlanView;
+    private EventBus eventBus;
     
-    EventBus eventBus;
-    
-    /**
-     *
-     */
     public ProtocolDataView() {
         getStyleClass().add("protocolData");
         init();
@@ -86,13 +70,10 @@ public class ProtocolDataView extends Accordion {
         
     }
 
-    /**
-     * Initialize view
-     */
     private void init() {
-        setTopAnchor(this, 0d);
-        setLeftAnchor(this, 0d);
-        setRightAnchor(this, 0d);
+        AnchorPane.setTopAnchor(this, 0d);
+        AnchorPane.setLeftAnchor(this, 0d);
+        AnchorPane.setRightAnchor(this, 0d);
         setPrefHeight(150);
         eventBus.register(this);
     }
@@ -100,10 +81,10 @@ public class ProtocolDataView extends Accordion {
     @Subscribe
     public void handleUpdateEtherLayerEvent(UpdateEtherLayerEvent event) {
         String modeValue;
-        if(event.getMode().equals(PACKET)) {
-            modeValue = MODE_FIXED;
+        if(event.getMode().equals(UpdateEtherLayerEvent.MacMode.PACKET)) {
+            modeValue = BuilderDataBinding.MODE_FIXED;
         } else {
-            modeValue = MODE_TREX_CONFIG;
+            modeValue = BuilderDataBinding.MODE_TREX_CONFIG;
         }
         if (event.getFieldName().equals("src")) {
             macView.getSourceAddress().getTypeProperty().set(modeValue);
@@ -112,11 +93,6 @@ public class ProtocolDataView extends Accordion {
         }
     }
     
-    /**
-     * Do initialize tabs
-     *
-     * @param selections
-     */
     public void doInitializingTabs(BuilderDataBinding selections) {
         this.selections = selections.getProtocolSelection();
         macView = new MacProtocolView(selections.getMacDB());
@@ -131,11 +107,7 @@ public class ProtocolDataView extends Accordion {
         bindSelection();
     }
 
-    /**
-     * Bind properties
-     */
     public void bindSelection() {
-
         this.selections.getIpv4Property().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             ethernetView.reset();
             ipv4View.reset();
@@ -163,32 +135,17 @@ public class ProtocolDataView extends Accordion {
                 vlanUpdated();
             }
         });
-        this.selections.getStackedVlanProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                vlanUpdated();
-            }
-        });
     }
 
-    /**
-     * Enable/Disable stacked VLAN
-     *
-     * @param isStacked
-     */
     private void vlanUpdated() {
         vlanView.reset();
         updateTabs();
     }
 
-    /**
-     * Update tabs view
-     */
     private void updateTabs() {
         getPanes().clear();
         getPanes().add(macView);
-        if (selections.isTaggedVlanSelected() || selections.isStackedVlanSelected()) {
-            vlanView.setStacked(selections.isStackedVlanSelected());
+        if (selections.isTaggedVlanSelected()) {
             getPanes().add(vlanView);
         }
         if (selections.isIPV4Selected()) {
@@ -232,7 +189,7 @@ public class ProtocolDataView extends Accordion {
             if (!ethernetView.isOverrideType()) {
                 ethernetPacket.setType(EtherType.DOT1Q_VLAN_TAGGED_FRAMES.value());
             }
-            TrexVlanPacket vlanPacket = vlanView.getVlanList().get(0);
+            TrexVlanPacket vlanPacket = vlanView.getVlan();
             /// IF IPV4 is selected
             if (!vlanPacket.isOverrideType()) {
                 if (!selections.isIPV4Selected()) {

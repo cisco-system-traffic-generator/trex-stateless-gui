@@ -15,11 +15,6 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.ui.views.streams.binders.ProtocolSelectionDataBinding;
-import com.exalttech.trex.ui.views.streams.builder.PacketLengthType;
-import com.exalttech.trex.util.Util;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -28,74 +23,56 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 
-/**
- * Protocol selection FXML controller
- *
- * @author Georgekh
- */
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import com.exalttech.trex.ui.views.streams.binders.ProtocolSelectionDataBinding;
+import com.exalttech.trex.ui.views.streams.builder.PacketLengthType;
+import com.exalttech.trex.util.Util;
+
+
 public class ProtocolSelectionController implements Initializable {
+    private static int NUM_OF_ALLOWED_DIGITS = 4;
 
     @FXML
-    RadioButton ipv4RB;
+    private RadioButton ipv4RB;
     @FXML
-    RadioButton tcpRB;
+    private RadioButton tcpRB;
     @FXML
-    RadioButton udpRB;
+    private RadioButton udpRB;
     @FXML
-    RadioButton l3NoneRB;
+    private RadioButton l3NoneRB;
     @FXML
-    RadioButton l4NoneRB;
+    private RadioButton l4NoneRB;
     @FXML
-    RadioButton payloadRB;
+    private RadioButton payloadRB;
     @FXML
-    RadioButton nonePattern;
+    private RadioButton taggedVlanRB;
     @FXML
-    RadioButton taggedVlanRB;
+    private ComboBox lengthCB;
     @FXML
-    RadioButton stackedVlanRB;
+    private TextField lengthTF;
     @FXML
-    ComboBox lengthCB;
+    private TextField minTF;
     @FXML
-    TextField lengthTF;
-    @FXML
-    TextField minTF;
-    @FXML
-    TextField maxTF;
+    private TextField maxTF;
 
-    ProtocolSelectionDataBinding selection;
-
-    int numOfAllowedDigit = 4;
-
-    /**
-     * Initializes the controller class.
-     *
-     * @param url
-     * @param rb
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initialzeComponents();
 
     }
 
-    /**
-     * Bind protocol selection with related radio group selection
-     *
-     * @param selection
-     */
     public void bindSelections(ProtocolSelectionDataBinding selection) {
-        this.selection = selection;
-
-        ipv4RB.selectedProperty().bindBidirectional(this.selection.getIpv4Property());
-        payloadRB.selectedProperty().bindBidirectional(this.selection.getPatternProperty());
-        tcpRB.selectedProperty().bindBidirectional(this.selection.getTcpProperty());
-        udpRB.selectedProperty().bindBidirectional(this.selection.getUdpProperty());
-        taggedVlanRB.selectedProperty().bindBidirectional(this.selection.getTaggedVlanProperty());
-        stackedVlanRB.selectedProperty().bindBidirectional(this.selection.getStackedVlanProperty());
-        lengthCB.valueProperty().bindBidirectional(this.selection.getFrameLengthTypeProperty());
-        lengthTF.textProperty().bindBidirectional(this.selection.getFrameLengthProperty());
-        minTF.textProperty().bindBidirectional(this.selection.getMinLengthProperty());
-        maxTF.textProperty().bindBidirectional(this.selection.getMaxLengthProperty());
+        ipv4RB.selectedProperty().bindBidirectional(selection.getIpv4Property());
+        payloadRB.selectedProperty().bindBidirectional(selection.getPatternProperty());
+        tcpRB.selectedProperty().bindBidirectional(selection.getTcpProperty());
+        udpRB.selectedProperty().bindBidirectional(selection.getUdpProperty());
+        taggedVlanRB.selectedProperty().bindBidirectional(selection.getTaggedVlanProperty());
+        lengthCB.valueProperty().bindBidirectional(selection.getFrameLengthTypeProperty());
+        lengthTF.textProperty().bindBidirectional(selection.getFrameLengthProperty());
+        minTF.textProperty().bindBidirectional(selection.getMinLengthProperty());
+        maxTF.textProperty().bindBidirectional(selection.getMaxLengthProperty());
 
         l4NoneRB.disableProperty().bind(l3NoneRB.selectedProperty());
         tcpRB.disableProperty().bind(l3NoneRB.selectedProperty());
@@ -108,9 +85,6 @@ public class ProtocolSelectionController implements Initializable {
         });
     }
 
-    /**
-     * Initialize components
-     */
     private void initialzeComponents() {
         lengthCB.getItems().addAll(PacketLengthType.FIXED.getTitle(), PacketLengthType.INCREMENT.getTitle(), PacketLengthType.DECREMENT.getTitle(), PacketLengthType.RANDOM.getTitle());
         lengthCB.getSelectionModel().select(0);
@@ -120,10 +94,8 @@ public class ProtocolSelectionController implements Initializable {
         lengthTF.disableProperty().bind(lengthCB.valueProperty().isEqualTo(PacketLengthType.FIXED.getTitle()).not().or(lengthCB.disableProperty()));
 
         // add valication
-        lengthTF.setTextFormatter(Util.getNumberFilter(numOfAllowedDigit));
-        minTF.setTextFormatter(Util.getNumberFilter(numOfAllowedDigit));
-        maxTF.setTextFormatter(Util.getNumberFilter(numOfAllowedDigit));
-
+        lengthTF.setTextFormatter(Util.getNumberFilter(NUM_OF_ALLOWED_DIGITS));
+        minTF.setTextFormatter(Util.getNumberFilter(NUM_OF_ALLOWED_DIGITS));
+        maxTF.setTextFormatter(Util.getNumberFilter(NUM_OF_ALLOWED_DIGITS));
     }
-
 }
