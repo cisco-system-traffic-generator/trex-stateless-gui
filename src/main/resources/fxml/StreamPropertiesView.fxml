@@ -16,6 +16,7 @@
 
 
 <?import javafx.scene.layout.HBox?>
+<?import com.exalttech.trex.ui.components.NumberField?>
 <VBox xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.exalttech.trex.ui.controllers.StreamPropertiesViewController"
@@ -153,9 +154,10 @@
                     <Label text="Packet/Sec"/>
                     <HBox alignment="CENTER_RIGHT"
                           HBox.hgrow="ALWAYS">
-                        <TextField fx:id="packetSecTB"
-                                   prefWidth="80.0"
-                                   text="1"/>
+                        <NumberField fx:id="packetSecTB"
+                                     prefWidth="120.0"
+                                     value="1"
+                                     minValue="1"/>
                     </HBox>
                 </HBox>
             </VBox>

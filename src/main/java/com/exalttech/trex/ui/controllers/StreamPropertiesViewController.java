@@ -17,6 +17,7 @@ package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.remote.models.profiles.Mode;
 import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.ui.components.NumberField;
 import com.exalttech.trex.util.Util;
 import java.net.URL;
 import java.util.List;
@@ -39,7 +40,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 /**
@@ -80,7 +80,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     Label numOfBurstLabel;
 
     @FXML
-    TextField packetSecTB;
+    NumberField packetSecTB;
     // next stream
     @FXML
     VBox afterStreamContainer;
@@ -173,10 +173,10 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
             }
         });
 
-        packetSecTB.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+        packetSecTB.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             double ipgValue = 0;
-            if (!Util.isNullOrEmpty(newValue) && Double.parseDouble(newValue) > 0) {
-                ipgValue = 1.0 / Double.parseDouble(newValue);
+            if (newValue != null && newValue.doubleValue() > 0) {
+                ipgValue = 1.0 / newValue.doubleValue();
             }
             ipgTF.setText(Util.getFormatedFraction(ipgValue));
         });
@@ -187,7 +187,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
 
         // add key press event to allow digits only
         numOfPacketTB.addEventFilter(KeyEvent.KEY_TYPED, this);
-        packetSecTB.addEventFilter(KeyEvent.KEY_TYPED, this);
         numOfBurstTB.addEventFilter(KeyEvent.KEY_TYPED, this);
         packetPBurstTB.addEventFilter(KeyEvent.KEY_TYPED, this);
         timeInLoopTF.addEventFilter(KeyEvent.KEY_TYPED, this);
@@ -314,7 +313,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         numOfPacketTB.setText(String.valueOf(mode.getTotalPkts()));
         packetPBurstTB.setText(String.valueOf(mode.getPacketsPerBurst()));
         numOfBurstTB.setText(String.valueOf(mode.getCount()));
-        packetSecTB.setText(String.valueOf(mode.getPps()));
+        packetSecTB.setValue(mode.getPps());
         isgTF.setText(convertNumToUnit(selectedProfile.getStream().getIsg()));
         ibgTF.setText(convertNumToUnit(mode.getIbg()));
 
@@ -415,7 +414,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setType(StreamMode.CONTINUOUS.toString());
 
         // update rate
-        profile.getStream().getMode().setPps(Double.parseDouble(packetSecTB.getText()));
+        profile.getStream().getMode().setPps(packetSecTB.getValue());
 
         // update next stream 
         updateNextStream(profile);
@@ -439,7 +438,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setPacketsPerBurst(0);
 
         // update rate
-        profile.getStream().getMode().setPps(Double.parseDouble(packetSecTB.getText()));
+        profile.getStream().getMode().setPps(packetSecTB.getValue());
 
         // update next stream
         updateNextStream(profile);
@@ -464,7 +463,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setCount(getIntValue(numOfBurstTB.getText()));
 
         // update rate
-        profile.getStream().getMode().setPps(Double.parseDouble(packetSecTB.getText()));
+        profile.getStream().getMode().setPps(packetSecTB.getValue());
 
         // update next stream
         updateNextStream(profile);
@@ -510,7 +509,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     private boolean validInputData() {
         String errMsg = "";
         boolean valid = true;
-        if (Double.parseDouble(packetSecTB.getText()) <= 0) {
+        if (packetSecTB.getValue() <= 0) {
             errMsg = "Packet/sec should be > 0";
             valid = false;
         } else if ((Util.isNullOrEmpty(numOfPacketTB.getText()) || Double.parseDouble(numOfPacketTB.getText()) <= 0)
