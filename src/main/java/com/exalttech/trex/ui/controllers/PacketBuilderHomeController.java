@@ -184,6 +184,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void initEditStream(String pcapFileBinary) {
         streamTabPane.setDisable(false);
         saveButton.setDisable(false);
+        streamEditorModeBtn.setDisable(false);
         Stream currentStream = selectedProfile.getStream();
         streamEditorModeBtn.setText(currentStream.getAdvancedMode() ? "Simple mode" : "Advanced mode");
         if (!Util.isNullOrEmpty(currentStream.getPacket().getMeta())) {
@@ -199,6 +200,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 alert.showAndWait();
                 streamTabPane.setDisable(true);
                 saveButton.setDisable(true);
+                streamEditorModeBtn.setDisable(true);
             }
         } else {
             isImportedStreamProperty.set(true);
