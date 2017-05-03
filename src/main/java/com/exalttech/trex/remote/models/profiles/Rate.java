@@ -44,7 +44,7 @@ public class Rate implements Cloneable {
     private String type = "pps";
 
     @JsonProperty("value")
-    private Integer value = 100;
+    private Integer value = 1;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 

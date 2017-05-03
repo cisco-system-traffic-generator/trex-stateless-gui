@@ -217,7 +217,7 @@ public class TrafficProfile {
             stream.setEnabled(p.getStream().isEnabled());
             stream.setName(p.getName());
             stream.setMode(modeYaml.getType());
-            stream.setRate(String.valueOf(modeYaml.getPps()));
+            stream.setRate(String.valueOf(modeYaml.getRate().getValue()));
             stream.setNextStream(getNextStreamValue(p.getNext()));
             String packetBinary = p.getStream().getPacket().getBinary();
             String packetModel = p.getStream().getPacket().getModel();
@@ -323,7 +323,6 @@ public class TrafficProfile {
 
             trafficProfile.setHandler(handler);
             trafficProfile.setPortId(portID);
-            trafficProfile.getStream().getMode().getRate().setValue((int) trafficProfile.getStream().getMode().getPps());
             updatedProfileArray[i] = trafficProfile;
 
         }

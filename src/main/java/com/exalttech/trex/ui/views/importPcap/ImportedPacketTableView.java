@@ -47,13 +47,8 @@ import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.Packet;
 
-/**
- * Imported packet table view implementation
- *
- * @author GeorgeKH
- */
-public class ImportedPacketTableView extends AnchorPane {
 
+public class ImportedPacketTableView extends AnchorPane {
     private static final Logger LOG = Logger.getLogger(ImportedPacketTableView.class.getName());
 
     @FXML
@@ -356,7 +351,7 @@ public class ImportedPacketTableView extends AnchorPane {
     /**
      * Add index to duplicate list
      * @param duplicateIndexesList
-     * @param tableData 
+     * @param tableData
      */
     private void addDuplicateIndex(ObservableList<Integer> duplicateIndexesList,ImportPcapTableData tableData ){
         if(!duplicateIndexesList.contains(tableData.getIndex())){
@@ -426,7 +421,7 @@ public class ImportedPacketTableView extends AnchorPane {
             ipg = 1;
         }
         double ppsValue = Math.max(1.0, 1.0/ipg);
-        profile.getStream().getMode().setPps(ppsValue);
+        profile.getStream().getMode().getRate().setValue((int) ppsValue);
     }
 
     /**

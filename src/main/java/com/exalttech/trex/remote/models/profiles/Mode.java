@@ -32,15 +32,12 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-@JsonPropertyOrder({"rate", "type", "pps", "total_pkts", "pkts_per_burst", "ibg", "count"})
+@JsonPropertyOrder({"rate", "type", "total_pkts", "pkts_per_burst", "ibg", "count"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Mode implements Cloneable {
 
     @JsonProperty("type")
     private String type;
-
-    @JsonProperty("pps")
-    private double pps = 1.0;
 
     @JsonProperty("total_pkts")
     private int totalPkts = 1;
@@ -110,15 +107,6 @@ public class Mode implements Cloneable {
 
     /**
      *
-     * @return The pps
-     */
-    @JsonProperty("pps")
-    public double getPps() {
-        return pps;
-    }
-
-    /**
-     *
      * @return The totalPkts
      */
     @JsonProperty("total_pkts")
@@ -133,15 +121,6 @@ public class Mode implements Cloneable {
     @JsonProperty("type")
     public String getType() {
         return type;
-    }
-
-    /**
-     *
-     * @param pps The pps
-     */
-    @JsonProperty("pps")
-    public void setPps(double pps) {
-        this.pps = pps;
     }
 
     /**
@@ -209,7 +188,7 @@ public class Mode implements Cloneable {
 
     @Override
     public String toString() {
-        return "Mode [type=" + type + ", pps=" + pps + ", totalPkts=" + totalPkts + ", packetsPerBurst="
+        return "Mode [type=" + type + ", totalPkts=" + totalPkts + ", packetsPerBurst="
                 + packetsPerBurst + ", ibg=" + ibg + ", count=" + count + ", additionalProperties="
                 + additionalProperties + "]";
     }
