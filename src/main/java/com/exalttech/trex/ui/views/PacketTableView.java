@@ -430,16 +430,16 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         streamPacketTableView.getColumns().add(createStaticTableColumn("Index", "indexProperty", 50, false));
 
         streamPacketTableView.getColumns().add(createTableColumn("Name", "nameProperty", .17));
-        streamPacketTableView.getColumns().add(createTableColumn("Packet Type", "packetTypeProperty", .25));
-        TableColumn lengthColumn = createTableColumn("Length", "lengthProperty", .115);
+        streamPacketTableView.getColumns().add(createTableColumn("Packet Type", "packetTypeProperty", .24));
+        TableColumn lengthColumn = createTableColumn("Length", "lengthProperty", .105);
         lengthColumn.setId("alignedColumn");
         streamPacketTableView.getColumns().add(lengthColumn);
-        streamPacketTableView.getColumns().add(createTableColumn("Mode", "modeProperty", .175));
-        TableColumn rateColumn = createTableColumn("Rate", "rateProperty", .115);
+        streamPacketTableView.getColumns().add(createTableColumn("Mode", "modeProperty", .145));
+        TableColumn rateColumn = createTableColumn("Rate", "rateProperty", .195);
         rateColumn.setId("alignedColumn");
         streamPacketTableView.getColumns().add(rateColumn);
 
-        TableColumn nextStreamCol = createTableColumn("Next Stream", "nextStreamProperty", .174);
+        TableColumn nextStreamCol = createTableColumn("Next Stream", "nextStreamProperty", .144);
         nextStreamCol.setCellFactory(new ImageCellFactory());
         streamPacketTableView.getColumns().add(nextStreamCol);
 

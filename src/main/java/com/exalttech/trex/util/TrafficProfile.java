@@ -18,6 +18,7 @@ package com.exalttech.trex.util;
 import com.exalttech.trex.remote.models.profiles.Mode;
 import com.exalttech.trex.remote.models.profiles.PacketInfo;
 import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.remote.models.profiles.Rate;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
@@ -217,7 +218,22 @@ public class TrafficProfile {
             stream.setEnabled(p.getStream().isEnabled());
             stream.setName(p.getName());
             stream.setMode(modeYaml.getType());
-            stream.setRate(String.valueOf(modeYaml.getRate().getValue()));
+            String rateUnits = "";
+            switch (modeYaml.getRate().getType()) {
+                case Rate.RateTypes.PPS:
+                    rateUnits = "pps";
+                    break;
+                case Rate.RateTypes.BPS_L1:
+                    rateUnits = "bps L1";
+                    break;
+                case Rate.RateTypes.BPS_L2:
+                    rateUnits = "bps L2";
+                    break;
+                case Rate.RateTypes.PERCENTAGE:
+                    rateUnits = "%";
+                    break;
+            }
+            stream.setRate(Util.formattedData((long) modeYaml.getRate().getValue(), true) + rateUnits);
             stream.setNextStream(getNextStreamValue(p.getNext()));
             String packetBinary = p.getStream().getPacket().getBinary();
             String packetModel = p.getStream().getPacket().getModel();
