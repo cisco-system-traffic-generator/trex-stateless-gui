@@ -41,6 +41,7 @@ import java.util.function.UnaryOperator;
 
 import com.exalttech.trex.remote.models.profiles.Mode;
 import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.remote.models.profiles.Rate;
 import com.exalttech.trex.ui.components.NumberField;
 import com.exalttech.trex.util.Util;
 
@@ -77,7 +78,9 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     private Label numOfBurstLabel;
     // Rate
     @FXML
-    private NumberField packetSecTB;
+    private ComboBox<String> rateTypeCB;
+    @FXML
+    private NumberField rateValueTF;
     // Next Stream
     @FXML
     private VBox afterStreamContainer;
@@ -102,6 +105,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     private TextField ibgTF;
     @FXML
     private Label ibgTitle;
+    @FXML
+    private Label ipdL;
     @FXML
     private TextField ipgTF;
     // Rx Stats
@@ -155,7 +160,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
             }
         });
 
-        packetSecTB.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+        rateTypeCB.getSelectionModel().selectedItemProperty().addListener(this::handleRateTypeChanged);
+        rateValueTF.valueProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             double ipgValue = 0;
             if (newValue != null && newValue.doubleValue() > 0) {
                 ipgValue = 1.0 / newValue.doubleValue();
@@ -181,6 +187,35 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         
         // allow only 5 digits
         timeInLoopTF.setTextFormatter(Util.getNumberFilter(5));
+    }
+
+    private String getSelectedRateType() {
+        return rateTypeCB.getValue().replace(' ', '_');
+    }
+
+    private void handleRateTypeChanged(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        final Rate rate = selectedProfile.getStream().getMode().getRate();
+        final String rateType = rate.getType();
+        final String selectedRateType = getSelectedRateType();
+        if (selectedRateType.equals(Rate.RateTypes.PERCENTAGE)) {
+            rateValueTF.setMaxValue(100.0);
+            rateValueTF.setAllowUnits(false);
+        } else {
+            rateValueTF.setMaxValue(null);
+            rateValueTF.setAllowUnits(true);
+        }
+        if (selectedRateType.equals(Rate.RateTypes.PPS)) {
+            ipdL.setVisible(true);
+            ipgTF.setVisible(true);
+        } else {
+            ipdL.setVisible(false);
+            ipgTF.setVisible(false);
+        }
+        if (selectedRateType.equals(rateType)) {
+            rateValueTF.setValue(rate.getValue());
+        } else {
+            rateValueTF.setValue(1.0);
+        }
     }
 
     private void handleContinousModeSelection() {
@@ -276,7 +311,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         numOfPacketTB.setText(String.valueOf(mode.getTotalPkts()));
         packetPBurstTB.setText(String.valueOf(mode.getPacketsPerBurst()));
         numOfBurstTB.setText(String.valueOf(mode.getCount()));
-        packetSecTB.setValue(mode.getRate().getValue());
+        rateTypeCB.getSelectionModel().select(mode.getRate().getType().replace('_', ' '));
+        rateValueTF.setValue(mode.getRate().getValue());
         isgTF.setText(convertNumToUnit(selectedProfile.getStream().getIsg()));
         ibgTF.setText(convertNumToUnit(mode.getIbg()));
 
@@ -361,7 +397,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setType(StreamMode.CONTINUOUS.toString());
 
         // update rate
-        profile.getStream().getMode().getRate().setValue(packetSecTB.getValue());
+        profile.getStream().getMode().getRate().setType(getSelectedRateType());
+        profile.getStream().getMode().getRate().setValue(rateValueTF.getValue());
 
         // update next stream 
         updateNextStream(profile);
@@ -380,7 +417,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setPacketsPerBurst(0);
 
         // update rate
-        profile.getStream().getMode().getRate().setValue(packetSecTB.getValue());
+        profile.getStream().getMode().getRate().setType(getSelectedRateType());
+        profile.getStream().getMode().getRate().setValue(rateValueTF.getValue());
 
         // update next stream
         updateNextStream(profile);
@@ -400,7 +438,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setCount(getIntValue(numOfBurstTB.getText()));
 
         // update rate
-        profile.getStream().getMode().getRate().setValue(packetSecTB.getValue());
+        profile.getStream().getMode().getRate().setType(getSelectedRateType());
+        profile.getStream().getMode().getRate().setValue(rateValueTF.getValue());
 
         // update next stream
         updateNextStream(profile);
@@ -436,8 +475,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     private boolean validInputData() {
         String errMsg = "";
         boolean valid = true;
-        if (packetSecTB.getValue() <= 0) {
-            errMsg = "Packet/sec should be > 0";
+        if (rateValueTF.getValue() <= 0) {
+            errMsg = "Rate value should be > 0";
             valid = false;
         } else if ((Util.isNullOrEmpty(numOfPacketTB.getText()) || Double.parseDouble(numOfPacketTB.getText()) <= 0)
                 && (StreamMode) streamModeGroup.getUserData() == StreamMode.SINGLE_BURST) {

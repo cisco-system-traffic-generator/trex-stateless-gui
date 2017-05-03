@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
@@ -11,12 +12,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import java.lang.String?>
 
-<?import javafx.scene.layout.HBox?>
 <?import com.exalttech.trex.ui.components.NumberField?>
+
+
 <VBox xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.exalttech.trex.ui.controllers.StreamPropertiesViewController"
@@ -151,10 +155,21 @@
                    text="Rate"/>
             <VBox spacing="10.0">
                 <HBox alignment="CENTER_LEFT">
-                    <Label text="Packet/Sec"/>
+                    <ComboBox fx:id="rateTypeCB"
+                              prefWidth="120.0"
+                              value="pps">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="pps"/>
+                                <String fx:value="bps L1"/>
+                                <String fx:value="bps L2"/>
+                                <String fx:value="percentage"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
                     <HBox alignment="CENTER_RIGHT"
                           HBox.hgrow="ALWAYS">
-                        <NumberField fx:id="packetSecTB"
+                        <NumberField fx:id="rateValueTF"
                                      prefWidth="120.0"
                                      value="1"
                                      minValue="1"/>
@@ -233,7 +248,8 @@
                    layoutY="101.0"
                    prefWidth="200.0"
                    AnchorPane.leftAnchor="319.0"/>
-        <Label disable="true"
+        <Label fx:id="ipdL"
+               disable="true"
                layoutX="628.0"
                layoutY="104.0"
                text="IPG"

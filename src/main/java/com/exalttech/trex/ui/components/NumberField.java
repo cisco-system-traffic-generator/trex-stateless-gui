@@ -21,10 +21,20 @@ public class NumberField extends TextField {
     private static final int UNIT_VALUE = 1000;
     private static final String UNITS = "KMGTPE";
 
-    private static class NumberFormatter implements UnaryOperator<Change> {
+    private static class NumberWithUnitsFormatter implements UnaryOperator<Change> {
         private final static Pattern PATTERN = Pattern.compile(
                 String.format("^(((0|[1-9]\\d*)(\\.\\d*)?|\\.\\d*)[%s]?)?$", UNITS)
         );
+
+        @Override
+        public Change apply(final Change change) {
+            change.setText(change.getText().toUpperCase());
+            return PATTERN.matcher(change.getControlNewText()).matches() ? change : null;
+        }
+    }
+
+    private static class NumberFormatter implements UnaryOperator<Change> {
+        private final static Pattern PATTERN = Pattern.compile("^(((0|[1-9]\\d*)(\\.\\d*)?|\\.\\d*)?)?$");
 
         @Override
         public Change apply(final Change change) {
@@ -77,7 +87,7 @@ public class NumberField extends TextField {
     private boolean isSkipSetText = false;
 
     public NumberField() {
-        setTextFormatter(new TextFormatter<>(new NumberFormatter()));
+        setAllowUnits(true);
 
         focusedProperty().addListener(this::handleFocusChanged);
         textProperty().addListener(this::handleTextChanged);
@@ -110,6 +120,14 @@ public class NumberField extends TextField {
 
     public void setMaxValue(final Double maxValue) {
         this.maxValue = maxValue;
+    }
+
+    public void setAllowUnits(final boolean isAllowUnits) {
+        if (isAllowUnits) {
+            setTextFormatter(new TextFormatter<>(new NumberWithUnitsFormatter()));
+        } else {
+            setTextFormatter(new TextFormatter<>(new NumberFormatter()));
+        }
     }
 
     private void handleFocusChanged(final Observable observable, final boolean oldValue, final boolean newValue) {

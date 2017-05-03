@@ -36,6 +36,13 @@ import com.exalttech.trex.util.Util;
 @JsonPropertyOrder({"type", "value"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Rate implements Cloneable {
+    public static class RateTypes {
+        public static final String PPS = "pps";
+        public static final String BPS_L1 = "bps_L1";
+        public static final String BPS_L2 = "bps_L2";
+        public static final String PERCENTAGE = "percentage";
+    }
+
     @JsonProperty("type")
     private String type = "pps";
     @JsonProperty("value")
