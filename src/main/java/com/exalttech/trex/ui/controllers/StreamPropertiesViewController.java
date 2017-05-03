@@ -15,14 +15,6 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.remote.models.profiles.Mode;
-import com.exalttech.trex.remote.models.profiles.Profile;
-import com.exalttech.trex.ui.components.NumberField;
-import com.exalttech.trex.util.Util;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.function.UnaryOperator;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -42,108 +34,98 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
-/**
- * FXML Controller class
- *
- * @author Georgekh
- */
-public class StreamPropertiesViewController implements Initializable, EventHandler<KeyEvent> {
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
 
-    // mode type
+import com.exalttech.trex.remote.models.profiles.Mode;
+import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.ui.components.NumberField;
+import com.exalttech.trex.util.Util;
+
+
+public class StreamPropertiesViewController implements Initializable, EventHandler<KeyEvent> {
+    // Mode
     @FXML
-    ToggleGroup streamModeGroup;
+    private ToggleGroup streamModeGroup;
     @FXML
-    RadioButton continuousMode;
+    private RadioButton continuousMode;
     @FXML
-    RadioButton burstMode;
+    private RadioButton burstMode;
     @FXML
-    RadioButton multiBurstMode;
+    private RadioButton multiBurstMode;
     // Misc
     @FXML
-    CheckBox enabledCB;
+    private CheckBox enabledCB;
     @FXML
-    CheckBox selfStartCB;
-    //Numbers
+    private CheckBox selfStartCB;
+    // Numbers
     @FXML
-    VBox numbersContainer;
+    private VBox numbersContainer;
     @FXML
-    TextField numOfPacketTB;
+    private TextField numOfPacketTB;
     @FXML
-    TextField numOfBurstTB;
+    private TextField numOfBurstTB;
     @FXML
-    TextField packetPBurstTB;
+    private TextField packetPBurstTB;
     @FXML
-    Label numOfPacketLabel;
+    private Label numOfPacketLabel;
     @FXML
-    Label packetPBurstTitle;
+    private Label packetPBurstTitle;
     @FXML
-    Label numOfBurstLabel;
-
+    private Label numOfBurstLabel;
+    // Rate
     @FXML
-    NumberField packetSecTB;
-    // next stream
+    private NumberField packetSecTB;
+    // Next Stream
     @FXML
-    VBox afterStreamContainer;
+    private VBox afterStreamContainer;
     @FXML
-    ToggleGroup nextStreamGroup;
+    private ToggleGroup nextStreamGroup;
     @FXML
-    RadioButton stopRG;
+    private RadioButton stopRG;
     @FXML
-    RadioButton gotoRG;
+    private RadioButton gotoRG;
     @FXML
-    ComboBox nextStreamCB;
+    private ComboBox nextStreamCB;
     @FXML
-    CheckBox timeInLoopCB;
+    private CheckBox timeInLoopCB;
     @FXML
-    TextField timeInLoopTF;
-    // gaps
+    private TextField timeInLoopTF;
+    // Gaps
     @FXML
-    ImageView gapsImageContainer;
+    private ImageView gapsImageContainer;
     @FXML
-    TextField isgTF;
+    private TextField isgTF;
     @FXML
-    TextField ibgTF;
+    private TextField ibgTF;
     @FXML
-    Label ibgTitle;
+    private Label ibgTitle;
     @FXML
-    TextField ipgTF;
-
+    private TextField ipgTF;
+    // Rx Stats
     @FXML
-    CheckBox rxEnableCB;
+    private CheckBox rxEnableCB;
     @FXML
-    TextField rxStreamID;
+    private TextField rxStreamID;
     @FXML
-    Label rxStreamIDLabel;
+    private Label rxStreamIDLabel;
 
     private List<Profile> profileList;
     private Profile selectedProfile;
 
-    /**
-     * Initializes the controller class.
-     *
-     * @param url
-     * @param rb
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initStreamPropertiesEvent();
     }
 
-    /**
-     * Initialize profile and stream properties
-     *
-     * @param profileList
-     * @param selectedProfileIndex
-     */
     public void init(List<Profile> profileList, int selectedProfileIndex) {
         this.profileList = profileList;
         this.selectedProfile = profileList.get(selectedProfileIndex);
         fillStreamProperties(selectedProfileIndex);
     }
 
-    /**
-     * Initialize events and properties binding
-     */
     private void initStreamPropertiesEvent() {
         timeInLoopTF.disableProperty().bind(timeInLoopCB.selectedProperty().not());
         nextStreamCB.disableProperty().bind(gotoRG.selectedProperty().not());
@@ -201,9 +183,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         timeInLoopTF.setTextFormatter(Util.getNumberFilter(5));
     }
 
-    /**
-     * Handle continuous mode selection
-     */
     private void handleContinousModeSelection() {
         streamModeGroup.selectToggle(continuousMode);
         streamModeGroup.setUserData(StreamMode.CONTINUOUS);
@@ -226,9 +205,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         gapsImageContainer.setImage(new Image("/icons/" + StreamMode.CONTINUOUS.getImageName()));
     }
 
-    /**
-     * Handle Burst mode selection
-     */
     private void handleBurstModeSelection() {
         streamModeGroup.selectToggle(burstMode);
         streamModeGroup.setUserData(StreamMode.SINGLE_BURST);
@@ -254,9 +230,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         gapsImageContainer.setImage(new Image("/icons/" + StreamMode.SINGLE_BURST.getImageName()));
     }
 
-    /**
-     * Handle multi burst mode selection
-     */
     private void handleMultiBurstModeSelection() {
         streamModeGroup.selectToggle(multiBurstMode);
         streamModeGroup.setUserData(StreamMode.MULTI_BURST);
@@ -289,11 +262,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         numOfBurstTB.setText(String.valueOf(numOfBurst));
     }
 
-    /**
-     * key press event handler
-     *
-     * @param event
-     */
     @Override
     public void handle(KeyEvent event) {
         if (!event.getCharacter().matches("[0-9]") && event.getCode() != KeyCode.BACK_SPACE) {
@@ -301,11 +269,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         }
     }
 
-    /**
-     * Fills stream properties value
-     *
-     * @param currentSelectedIndex
-     */
     private void fillStreamProperties(int currentSelectedIndex) {
         Mode mode = selectedProfile.getStream().getMode();
         enabledCB.setSelected(selectedProfile.getStream().isEnabled());
@@ -347,11 +310,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         }
     }
 
-    /**
-     * Fill goto Stream value
-     *
-     * @param currentSelectedIndex
-     */
     private void fillGotoStreamOption(int currentSelectedIndex) {
         nextStreamCB.getItems().clear();
         if (currentSelectedIndex > 0) {
@@ -367,13 +325,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         }
     }
 
-    /**
-     * Return selected profile after update it according to selection
-     *
-     * @return
-     * @throws Exception
-     */
-    public Profile getUpdatedSelectedProfile() throws Exception {
+    Profile getUpdatedSelectedProfile() throws Exception {
         // update Misc
         selectedProfile.getStream().setEnabled(enabledCB.isSelected());
         selectedProfile.getStream().setSelfStart(selfStartCB.isSelected());
@@ -404,11 +356,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         return selectedProfile;
     }
 
-    /**
-     * Update profile according to continuous mode selection
-     *
-     * @param profile
-     */
     private void updateContinuousProfile(Profile profile) {
         // update mode
         profile.getStream().getMode().setType(StreamMode.CONTINUOUS.toString());
@@ -422,11 +369,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().setIsg(convertUnitToNum(isgTF.getText()));
     }
 
-    /**
-     * Update profile according to single burst mode selection
-     *
-     * @param profile
-     */
     private void updateSingleBurstProfile(Profile profile) {
         // update mode
         profile.getStream().getMode().setType(StreamMode.SINGLE_BURST.toString());
@@ -447,11 +389,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().setIsg(convertUnitToNum(isgTF.getText()));
     }
 
-    /**
-     * Update profile according to multi burst mode selection
-     *
-     * @param profile
-     */
     private void updateMultiBurstProfile(Profile profile) {
         // update mode
         profile.getStream().getMode().setType(StreamMode.MULTI_BURST.toString());
@@ -474,12 +411,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setIbg(convertUnitToNum(ibgValue));
     }
 
-    /**
-     * Return within the stream properties value is valid
-     *
-     * @return
-     */
-    public boolean isValidStreamPropertiesFields() {
+    boolean isValidStreamPropertiesFields() {
         String errMsg = "";
         boolean valid = true;
         if (selectedProfile.getStream().getPacket().getBinary() == null) {
@@ -501,11 +433,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         return valid && validInputData;
     }
 
-    /**
-     * Return within the input fields value is valid
-     *
-     * @return
-     */
     private boolean validInputData() {
         String errMsg = "";
         boolean valid = true;
@@ -533,11 +460,6 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         return valid;
     }
 
-    /**
-     * Update next stream
-     *
-     * @param profile
-     */
     private void updateNextStream(Profile profile) {
         profile.setNext("-1");
         if (nextStreamGroup.getSelectedToggle() == gotoRG) {
@@ -550,39 +472,18 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         }
     }
 
-    /**
-     * Return integer value from number String value
-     *
-     * @param text
-     * @return
-     */
     private int getIntValue(String text) {
         return Util.isNullOrEmpty(text) ? 0 : Integer.parseInt(text);
     }
 
-    /**
-     * Convert unit to related number
-     *
-     * @param valueData
-     * @return
-     */
-    public double convertUnitToNum(String valueData) {
+    private double convertUnitToNum(String valueData) {
         return Util.convertUnitToNum(valueData) * 1000000;
     }
 
-    /**
-     * Convert number to related unit format
-     *
-     * @param value
-     * @return
-     */
-    public String convertNumToUnit(double value) {
+    private String convertNumToUnit(double value) {
         return Util.convertNumToUnit(value / 1000000);
     }
 
-    /**
-     * Enumerator that present stream mode type
-     */
     private enum StreamMode {
         CONTINUOUS,
         SINGLE_BURST,
