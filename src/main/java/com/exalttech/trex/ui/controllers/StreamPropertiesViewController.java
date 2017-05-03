@@ -414,7 +414,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setType(StreamMode.CONTINUOUS.toString());
 
         // update rate
-        profile.getStream().getMode().getRate().setValue((int) packetSecTB.getValue());
+        profile.getStream().getMode().getRate().setValue(packetSecTB.getValue());
 
         // update next stream 
         updateNextStream(profile);
@@ -438,7 +438,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setPacketsPerBurst(0);
 
         // update rate
-        profile.getStream().getMode().getRate().setValue((int) packetSecTB.getValue());
+        profile.getStream().getMode().getRate().setValue(packetSecTB.getValue());
 
         // update next stream
         updateNextStream(profile);
@@ -463,7 +463,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         profile.getStream().getMode().setCount(getIntValue(numOfBurstTB.getText()));
 
         // update rate
-        profile.getStream().getMode().getRate().setValue((int) packetSecTB.getValue());
+        profile.getStream().getMode().getRate().setValue(packetSecTB.getValue());
 
         // update next stream
         updateNextStream(profile);
