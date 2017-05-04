@@ -1667,7 +1667,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             PortModel currentPortModel = portManager.getPortModel(portIndex);
             boolean isPortTransmit = currentPortModel.transmitStateProperty().get();
             
-            if (!isPortTransmit && selectionModel.getSelectedItem().equals(Constants.SELECT_PROFILE)) {
+            if (!isPortTransmit && Constants.SELECT_PROFILE.equals(selectionModel.getSelectedItem())) {
                 return true;
             }
             
