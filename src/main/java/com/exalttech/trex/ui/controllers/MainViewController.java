@@ -266,8 +266,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                             portManager.updatedPorts(Arrays.asList(portModel.getIndex()));
                             onPortListUpdated(true);
                         });
-                        break;
                     }
+                    break;
                 case SERVER_STOPPED:
                     resetApplication(true);
                     break;
