@@ -1,7 +1,5 @@
 package com.exalttech.trex;
 
-import com.exalttech.trex.application.TrexApp;
-import com.exalttech.trex.core.ConnectionManager;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -9,11 +7,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+
+import org.apache.commons.io.FileUtils;
+
 import org.junit.Assert;
+
 import org.testfx.framework.junit.ApplicationTest;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.*;
+
+import com.exalttech.trex.application.TrexApp;
+import com.exalttech.trex.core.ConnectionManager;
+import com.exalttech.trex.util.files.FileManager;
 
 
 public class TestBase extends ApplicationTest {
@@ -33,6 +40,8 @@ public class TestBase extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
+        FileUtils.cleanDirectory(new File(FileManager.getLocalFilePath()));
+
         TrexApp.setPrimaryStage(stage);
         app = new TrexApp();
         app.start(stage);
@@ -149,6 +158,10 @@ public class TestBase extends ApplicationTest {
             future.cancel(true);
             return false;
         }
+    }
+
+    void assertCall(final Runnable action, final Callable<Boolean> resultValidator) {
+        Assert.assertTrue(tryCall(action, resultValidator));
     }
     
     boolean disconnect(final MenuType menuType) {

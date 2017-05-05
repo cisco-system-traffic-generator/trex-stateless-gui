@@ -36,10 +36,11 @@
                               text="Exit"
                               onAction="#handleExitMenuItemClick"/>
                 </Menu>
-                <Menu id="main-menu-status"
+                <Menu id="main-traffic-profiles-menu"
                       mnemonicParsing="false"
                       text="Traffic Profiles">
-                    <MenuItem mnemonicParsing="false"
+                    <MenuItem id="main-traffic-profiles-menu-traffic-profiles"
+                              mnemonicParsing="false"
                               text="Traffic Profiles"
                               onAction="#openTrafficProfile"/>
                 </Menu>

@@ -48,7 +48,8 @@ public class FileManager {
                 path = System.getenv("LOCALAPPDATA") ;
             }
         }
-        return path + APP_DATA_PATH;
+        final String additionalPath = (System.getProperty("test") != null ? "test" + File.separator : "");
+        return path + APP_DATA_PATH + additionalPath;
     }
 
     /**

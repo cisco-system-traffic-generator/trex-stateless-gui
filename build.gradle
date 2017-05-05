@@ -50,6 +50,8 @@ task uiTest(type: Test) {
         // for running JavaFX tests headless using Monocle
         jvmArgs "-Dheadless=true"
     }
+
+    systemProperty "test", "true"
 }
 
 dependencies {
