@@ -303,6 +303,7 @@ public class StatsLoader {
 
                     unvisitedStreams.forEach((String stream) -> {
                         flowStatsHistoryMap.remove(stream);
+                        shadowFlowStatsMap.remove(stream);
                     });
                 } catch (JSONException exc) {
                     // TODO: logging
