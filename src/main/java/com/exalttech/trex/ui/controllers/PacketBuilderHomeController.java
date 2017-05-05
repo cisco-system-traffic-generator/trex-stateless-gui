@@ -193,11 +193,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 initStreamBuilder(dataBinding);
                 return;
             } else {
-                final Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("Stream initialization failed");
-                alert.setContentText("Can't load stream information.");
-                alert.setTitle("Warning");
-                alert.showAndWait();
                 streamTabPane.setDisable(true);
                 saveButton.setDisable(true);
                 streamEditorModeBtn.setDisable(true);
@@ -239,10 +234,15 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             return null;
         }
         final String metaJSON = new String(Base64.getDecoder().decode(meta));
+        if (metaJSON.charAt(0) != '{') {
+            alertSimpleWarning("Stream initialization failed", "This stream couldn't be edited due to outdated data format.");
+            return null;
+        }
         try {
             return new ObjectMapper().readValue(metaJSON, BuilderDataBinding.class);
         } catch (Exception exc) {
             LOG.error("Can't read packet meta", exc);
+            alertSimpleWarning("Stream initialization failed", exc.getMessage());
             return null;
         }
     }
@@ -490,5 +490,13 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             return false;
         }
         return true;
+    }
+
+    private void alertSimpleWarning(final String header, final String content) {
+        final Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.setTitle("Warning");
+        alert.showAndWait();
     }
 }
