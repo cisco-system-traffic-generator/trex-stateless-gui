@@ -53,11 +53,15 @@ Find more information about Packet Crafting tool on [Wiki page](https://github.c
  
 ### Dashboard
 
-Dashboard provides a capability to view real-time statistics from the server.
+Updated dashboard provides a capability to view real-time statistics per stream. Enhacned global statistic. You can find more information about Dashboard on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki#dashboard)
 
 ![trex-main-dashboard](https://cloud.githubusercontent.com/assets/11919839/25692284/8073163e-30cb-11e7-8f2d-f442c44993c1.png)
 
-Find more information about Dashboard on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki#dashboard)
+### Port Management
+ 
+Now it is easy to manage port attributes, configure port layer mode and see hardware counters. You can find more infromation on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki#port-management)
+
+![Port Attributes](https://cloud.githubusercontent.com/assets/2825175/25737935/93aaad6e-31a4-11e7-8d27-b51b3dd3d8c2.png)
 
 ## Build a Native App
 
