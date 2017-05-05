@@ -23,15 +23,15 @@
                       text="File">
                     <MenuItem fx:id="connectMenuItem"
                               id="main-menu-connect"
-                              accelerator="Ctrl+C"
+                              accelerator="Ctrl+Shift+C"
                               mnemonicParsing="false"
                               text="Connect"
                               onAction="#handleConnectMenuItemClicked"/>
-                    <MenuItem accelerator="Ctrl+P"
+                    <MenuItem accelerator="Ctrl+Shift+P"
                               mnemonicParsing="false"
                               text="Preferences"
                               onAction="#handlePreferencesMenuItemClicked"/>
-                    <MenuItem accelerator="Ctrl+X"
+                    <MenuItem accelerator="Ctrl+Q"
                               mnemonicParsing="false"
                               text="Exit"
                               onAction="#handleExitMenuItemClick"/>
@@ -46,7 +46,7 @@
                 <Menu mnemonicParsing="false"
                       text="Stats">
                     <MenuItem fx:id="statsMenuItem"
-                              accelerator="Ctrl+S"
+                              accelerator="Ctrl+Shift+D"
                               disable="true"
                               mnemonicParsing="false"
                               text="Dashboard"

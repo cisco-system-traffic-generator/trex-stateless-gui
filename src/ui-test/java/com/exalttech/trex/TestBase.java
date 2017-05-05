@@ -65,7 +65,7 @@ public class TestBase extends ApplicationTest {
     }
 
     protected String getTRexServerIP() {
-        return "trex-host";
+        return "trex-host2";
     }
 
     protected String getTRexSyncPort() {
@@ -182,7 +182,7 @@ public class TestBase extends ApplicationTest {
                 clickOn("#main-menu-connect");
                 break;
             case SHORTCUT:
-                push(KeyCode.CONTROL, KeyCode.C);
+                push(KeyCode.CONTROL, KeyCode.SHIFT, KeyCode.C);
                 break;
             case TOOLBAR:
                 clickOn("#main-toolbar-connect");
