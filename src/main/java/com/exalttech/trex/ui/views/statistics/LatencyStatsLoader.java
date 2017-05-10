@@ -79,6 +79,11 @@ public class LatencyStatsLoader {
         updateHistogramShadowMap();
     }
 
+    public void clear() {
+        latencyInfoShadowMap = null;
+        histogramShadowMap = null;
+    }
+
     public Map<String, LatencyInfo> getLatencyInfoMap() {
         return latencyInfoMap;
     }

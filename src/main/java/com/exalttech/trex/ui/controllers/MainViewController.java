@@ -266,6 +266,20 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                             portManager.updatedPorts(Arrays.asList(portModel.getIndex()));
                             onPortListUpdated(true);
                         });
+                        boolean isAllPortsStopped = true;
+                        for (final Port port : portManager.getPortList()) {
+                            if (port.getIndex() == port.getIndex()) {
+                                continue;
+                            }
+                            final String portStatus = port.getStatus();
+                            if (portStatus.equals("TX") || portStatus.equals("PAUSE")) {
+                                isAllPortsStopped = false;
+                                break;
+                            }
+                        }
+                        if (isAllPortsStopped) {
+                            LatencyStatsLoader.getInstance().clear();
+                        }
                     }
                     break;
                 case SERVER_STOPPED:
