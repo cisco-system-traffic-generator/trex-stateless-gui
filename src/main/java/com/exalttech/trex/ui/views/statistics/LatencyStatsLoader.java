@@ -80,6 +80,18 @@ public class LatencyStatsLoader {
     }
 
     public void clear() {
+        synchronized (latencyWindowHistoryMap) {
+            latencyWindowHistoryMap.clear();
+        }
+        synchronized (maxLatencyHistoryMap) {
+            maxLatencyHistoryMap.clear();
+        }
+        synchronized (avgLatencyHistoryMap) {
+            avgLatencyHistoryMap.clear();
+        }
+        synchronized (latencyJitterHistoryMap) {
+            latencyJitterHistoryMap.clear();
+        }
         latencyInfoShadowMap = null;
         histogramShadowMap = null;
     }
