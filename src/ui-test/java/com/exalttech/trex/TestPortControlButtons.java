@@ -13,7 +13,7 @@ import java.util.Collection;
 public class TestPortControlButtons extends TestBase {
     
     private MenuType connectionType;
-    
+
     @Parameterized.Parameters
     public static Collection<MenuType> data() {
         return Arrays.asList(MenuType.MENU, MenuType.TOOLBAR, MenuType.SHORTCUT);
@@ -27,14 +27,14 @@ public class TestPortControlButtons extends TestBase {
     public void checkButtonsAfterAcquireTest() {
         connect(connectionType);
         resetAllPorts();
-        
+
         Button forceAcquireReleaseBtn = lookup("#forceAcquireBtn").query();
         Assert.assertFalse(forceAcquireReleaseBtn.isDisable());
-        
+
         acquirePortViaToolbar("Port 0");
-        
+
         Assert.assertTrue(forceAcquireReleaseBtn.isDisable());
-        
+
         Button acquireReleaseBtn = lookup("#acquireReleaseBtn").query();
         Assert.assertEquals(acquireReleaseBtn.getText(), "Release");
         disconnect(connectionType);

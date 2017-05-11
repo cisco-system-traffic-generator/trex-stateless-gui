@@ -1,6 +1,7 @@
 package com.exalttech.trex;
 
 import javafx.scene.control.Label;
+
 import org.junit.Assert;
 import org.junit.Test;
 

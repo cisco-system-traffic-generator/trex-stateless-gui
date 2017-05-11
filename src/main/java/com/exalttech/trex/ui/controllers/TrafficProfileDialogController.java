@@ -18,10 +18,7 @@ package com.exalttech.trex.ui.controllers;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.views.PacketTableView;
-import com.exalttech.trex.util.PreferencesManager;
-import com.exalttech.trex.util.ProfileManager;
-import com.exalttech.trex.util.TrafficProfile;
-import com.exalttech.trex.util.Util;
+import com.exalttech.trex.util.*;
 import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 import java.io.File;
@@ -183,7 +180,7 @@ public class TrafficProfileDialogController extends DialogView implements Initia
 
         String loadFileName = "";
         try {
-            FileChooser fileChooser = new FileChooser();
+            FileChooser fileChooser = FileChooserFactory.get();
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("YAML Files (*.yaml)", "*.yaml");
             FileChooser.ExtensionFilter allFilesFilter = new FileChooser.ExtensionFilter("All files ", "*.*");
             fileChooser.getExtensionFilters().add(extFilter);

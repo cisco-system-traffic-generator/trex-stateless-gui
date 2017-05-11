@@ -32,6 +32,7 @@ sourceSets {
         java {
             srcDirs = ['src/ui-test/java']
         }
+        resources.srcDirs = ["src/ui-test/resources"]
     }
 }
 
@@ -84,5 +85,6 @@ dependencies {
     testCompile "org.testfx:testfx-core:4.0.+"
     testCompile "org.testfx:testfx-junit:4.0.+"
     testRuntime "org.testfx:openjfx-monocle:1.8.0_20"
+    testCompile "org.mockito:mockito-core:2.7.9"
 }
 

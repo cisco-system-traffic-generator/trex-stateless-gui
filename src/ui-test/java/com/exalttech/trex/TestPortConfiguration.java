@@ -20,7 +20,7 @@ public class TestPortConfiguration extends TestBase {
         connect(MenuType.TOOLBAR);
         resetAllPorts();
     }
-    
+
     @After
     public void after() {
         disconnect(MenuType.TOOLBAR);
@@ -28,21 +28,21 @@ public class TestPortConfiguration extends TestBase {
     
     @Test
     public void checkAttributeChangingTest() {
-        
+
         acquirePortViaToolbar("Port 0");
-        
+
         checkPortAttrs();
-        
+
         checkPortAttrsModification();
     }
-    
+
     @Test
     public void checkPortConfigurationNegative() {
         clickOn("Configuration");
         Node tabContent = lookup("#layerConfig").query();
         Assert.assertTrue(tabContent.isDisabled());
     }
-    
+
     @Test
     public void checkPortConfiguration() {
         acquirePortViaToolbar("Port 0");
@@ -50,7 +50,7 @@ public class TestPortConfiguration extends TestBase {
         Node tabContent = lookup("#layerConfig").query();
         Button applyBtn = lookup("#applyBtn").query();
         Assert.assertFalse(tabContent.isDisabled());
-        
+
         tryCall(
             () -> {
                 clearLogs();
@@ -59,9 +59,9 @@ public class TestPortConfiguration extends TestBase {
             },
             () -> applyBtn.getText().equalsIgnoreCase("Apply")
         );
-        
+
         Assert.assertTrue(checkResultInLogs("L2 mode configured"));
-        
+
         tryCall(
             () -> {
                 acquirePortViaToolbar("Port 1");
@@ -73,7 +73,7 @@ public class TestPortConfiguration extends TestBase {
             },
             () -> applyBtn.getText().equalsIgnoreCase("Apply")
         );
-        
+
         tryCall(
             () -> {
                 clearLogs();

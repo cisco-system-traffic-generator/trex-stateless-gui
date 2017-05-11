@@ -19,6 +19,8 @@ import org.junit.Assert;
 import org.testfx.framework.junit.ApplicationTest;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.*;
 
@@ -39,10 +41,20 @@ public class TestBase extends ApplicationTest {
     static private final long RENDER_DELAY_MS = 2500;
 
     private TrexApp app;
+    private URL resources = null;
+    {
+        try {
+            resources = new URL(getClass().getResource("/"), "../../resources/uiTest/");
+        } catch (MalformedURLException e) {
+        }
+    }
+    private final String testTrafficProfilesFolder = resources.getFile() + "traffic-profiles/";
 
     @Override
     public void start(Stage stage) throws Exception {
+        FileManager.createDirectoryIfNotExists(FileManager.getLocalFilePath());
         FileUtils.cleanDirectory(new File(FileManager.getLocalFilePath()));
+        FileManager.createDirectoryIfNotExists(FileManager.getProfilesFilePath());
 
         TrexApp.setPrimaryStage(stage);
         app = new TrexApp();
@@ -248,5 +260,9 @@ public class TestBase extends ApplicationTest {
             logsContainer = lookup("#logs_view").query();
         }
         Platform.runLater(() -> logsContainer.getChildren().clear());
+    }
+
+    public String getTestTrafficProfilesFolder() {
+        return testTrafficProfilesFolder;
     }
 }
