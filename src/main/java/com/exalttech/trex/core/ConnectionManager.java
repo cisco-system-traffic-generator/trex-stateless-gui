@@ -240,7 +240,7 @@ public class ConnectionManager {
         if (sendRequest("ping") != null) {
             return true;
         }
-        LogsController.getInstance().appendText(LogType.ERROR, "Trex server is ureachable");
+        LogsController.getInstance().appendText(LogType.ERROR, "Trex server is unreachable");
         return false;
     }
 
@@ -255,7 +255,7 @@ public class ConnectionManager {
             LogsController.getInstance().appendText(LogType.INFO, "Connected");
             return true;
         }
-        LogsController.getInstance().appendText(LogType.ERROR, "Scapy server is ureachable");
+        LogsController.getInstance().appendText(LogType.ERROR, "Scapy server is unreachable");
         return false;
     }
 
