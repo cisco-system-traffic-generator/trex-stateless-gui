@@ -604,6 +604,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portViewVisibilityProperty.setValue(false);
         
         portManager.clearPorts();
+
+        profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
         
         resetAppInProgress = false;
     }
