@@ -550,6 +550,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void resetApplication(boolean didServerCrash) {
         resetAppInProgress = true;
+        profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
         // clear tree
         devicesTree.setRoot(null);
         // hide all right side views
@@ -605,8 +606,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         
         portManager.clearPorts();
 
-        profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
-        
         resetAppInProgress = false;
     }
 
