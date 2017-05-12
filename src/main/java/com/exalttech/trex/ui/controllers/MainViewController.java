@@ -216,7 +216,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private PortsManager portManager;
     private final BooleanProperty disableProfileProperty = new SimpleBooleanProperty();
     StatsTableGenerator statsTableGenerator;
-    RightPaneContent rightPaneContent;
     boolean doAssignProfile = true;
     private boolean allStreamWithLatency;
     private boolean isFirstPortStatusRequest = true;
@@ -240,7 +239,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portManager = PortsManager.getInstance();
         portManager.setPortManagerHandler(this);
         statsTableGenerator = new StatsTableGenerator();
-        rightPaneContent = new RightPaneContent();
         leftArrow = new Image("/icons/arrow_left.png");
         rightArrow = new Image("/icons/arrow_right.png");
         initializeInlineComponent();
