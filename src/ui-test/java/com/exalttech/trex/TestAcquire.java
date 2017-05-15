@@ -11,14 +11,12 @@ public class TestAcquire extends TestBase {
         connect(MenuType.SHORTCUT);
         resetAllPorts();
 
-        clickOn("Port 0");
-        clickOn("#main-toolbar-acquire-port");
+        acquirePortViaToolbar("Port 0");
         Assert.assertNotNull(lookup(String.format("(%s)", getTRexDefaultUser())).query());
         clickOn("#main-toolbar-release-port");
         Assert.assertNull(lookup(String.format("(%s)", getTRexDefaultUser())).query());
 
-        clickOn("Port 1");
-        clickOn("#main-toolbar-acquire-port");
+        acquirePortViaToolbar("Port 1");
         Assert.assertNotNull(lookup(String.format("(%s)", getTRexDefaultUser())).query());
         clickOn("#main-toolbar-release-port");
         Assert.assertNull(lookup(String.format("(%s)", getTRexDefaultUser())).query());

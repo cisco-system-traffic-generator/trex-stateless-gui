@@ -1,31 +1,33 @@
 package com.exalttech.trex;
 
+import com.exalttech.trex.application.TrexApp;
+import com.exalttech.trex.core.ConnectionManager;
+import com.exalttech.trex.util.files.FileManager;
+import com.google.common.collect.Iterables;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import org.apache.commons.io.FileUtils;
-
 import org.junit.Assert;
-
 import org.testfx.framework.junit.ApplicationTest;
 
 import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.*;
 
-import com.exalttech.trex.application.TrexApp;
-import com.exalttech.trex.core.ConnectionManager;
-import com.exalttech.trex.util.files.FileManager;
-
 
 public class TestBase extends ApplicationTest {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    protected VBox logsContainer = lookup("#logs_view").query();
+    
     enum MenuType {
         MENU,
         SHORTCUT,
@@ -52,6 +54,11 @@ public class TestBase extends ApplicationTest {
         app.stop();
     }
 
+    protected void acquirePortViaToolbar(String portSelector) {
+        clickOn(portSelector);
+        clickOn("#main-toolbar-acquire-port");
+    }
+    
     protected void setText(final String query, final String text) {
         final Node node = lookup(query).query();
         if (node instanceof TextField) {
@@ -126,8 +133,8 @@ public class TestBase extends ApplicationTest {
         return connected;
     }
 
-    private boolean isConnected() {
-        return !isDisconnected();
+    protected boolean isConnected() {
+            return !isDisconnected();
     }
 
     protected Boolean isDisconnected() {
@@ -208,8 +215,9 @@ public class TestBase extends ApplicationTest {
         resetPort("Port 1");
     }
     
-    private void resetPort(String port) {
+    protected void resetPort(String port) {
         clickOn(port);
+        clickOn("Control");
         tryCall(
           () -> clickOn("#resetBtn"),
           () -> {
@@ -223,5 +231,22 @@ public class TestBase extends ApplicationTest {
     public boolean isVisible(String query) {
         Optional<Node> result = lookup(query).tryQuery();
         return result.isPresent() && result.get().isVisible();
+    }
+
+    protected boolean checkResultInLogs(String substring) {
+        Optional<Node> logEntry = logsContainer.getChildren().stream().filter(hbox -> {
+            HBox entry = (HBox) hbox;
+            Label messageEntry = (Label) Iterables.getLast(entry.getChildren());
+            String message = messageEntry.getText();
+            return message.contains(substring);
+        }).findFirst();
+        return logEntry.isPresent();
+    }
+    
+    protected void clearLogs() {
+        if (logsContainer == null) {
+            logsContainer = lookup("#logs_view").query();
+        }
+        Platform.runLater(() -> logsContainer.getChildren().clear());
     }
 }
