@@ -21,10 +21,7 @@
 package com.exalttech.trex.ui.views.logs;
 
 import com.exalttech.trex.util.Util;
-import java.util.Date;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.Clipboard;
@@ -32,6 +29,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import java.util.Date;
 
 /**
  *
@@ -67,12 +66,8 @@ public class LogsView extends AnchorPane {
         setRightAnchor(contentWrapper, 0d);
 
         logsContent = new VBox();
-        logsContent.heightProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-                contentWrapper.setVvalue((Double) newValue);
-            }
-        });
+        logsContent.setId("logs_view");
+        logsContent.heightProperty().addListener((observable, oldValue, newValue) -> contentWrapper.setVvalue((Double) newValue));
 
         logsContent.setSpacing(5);
 

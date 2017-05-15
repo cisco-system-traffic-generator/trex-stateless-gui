@@ -16,7 +16,7 @@
             <PortAttributes fx:id="portAttributes"/>
         </Tab>
         <Tab text="Configuration" closable="false" fx:id="configTab">
-            <PortLayerConfiguration fx:id="layerConfig"/>
+            <PortLayerConfiguration id="layerConfig" fx:id="layerConfig"/>
         </Tab>
         <Tab text="Hardware counters" closable="false" fx:id="hardwareCountersTab">
             <PortHardwareCounters fx:id="hardwareCounters"/>

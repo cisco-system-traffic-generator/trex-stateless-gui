@@ -24,7 +24,7 @@
                         <ToggleGroup fx:id="layerMode" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton fx:id="l3Mode" selected="false" text="L3" toggleGroup="$layerMode" />
+                <RadioButton fx:id="l3Mode" id="l3Mode" selected="false" text="L3" toggleGroup="$layerMode" />
             </HBox>
 
             <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
@@ -35,11 +35,11 @@
 
             <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
             <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2">
-                <TextField fx:id="l2Destination" text="" minWidth="${16 * s.width}" />
-                <TextField fx:id="l3Destination" text="" minWidth="${16 * s.width}" />
+                <TextField fx:id="l2Destination" id="l2Destination" text="" minWidth="${16 * s.width}" />
+                <TextField fx:id="l3Destination" id="l3Destination" text="" minWidth="${16 * s.width}" />
             </HBox>
             <Label fx:id="arpLabel" text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <Label fx:id="arpStatus" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
+            <Label fx:id="arpStatus" id="arpStatus" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
 
             <Label fx:id="pingLabel" text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
             <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="6">
@@ -51,7 +51,7 @@
     <bottom>
         <BorderPane>
             <center>
-                <Button fx:id="saveBtn" text="Apply" styleClass="normalButton" />
+                <Button fx:id="saveBtn" id="applyBtn" text="Apply" styleClass="normalButton" />
             </center>
             <padding>
                 <Insets bottom="10" />

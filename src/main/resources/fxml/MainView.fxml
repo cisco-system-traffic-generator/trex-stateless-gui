@@ -353,7 +353,7 @@
                                         <tabs>
                                             <Tab fx:id="logTab" text="Log View">
                                                 <content>
-                                                    <AnchorPane fx:id="logContainer" minHeight="0.0"
+                                                    <AnchorPane id="logContainer" fx:id="logContainer" minHeight="0.0"
                                                                 minWidth="0.0" prefHeight="180.0"
                                                                 prefWidth="200.0"/>
                                                 </content>
