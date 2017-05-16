@@ -127,6 +127,37 @@ public class TestTrafficProfiles extends TestBase {
         final File expected = new File(getResourcesFolder() + "/profile.json");
         Assert.assertEquals(FileUtils.checksumCRC32(expected), FileUtils.checksumCRC32(result));
     }
+    @Test
+    public void testExportProfileToYAML() throws Exception {
+        prepareProfile();
+
+        assertCall(
+                () -> {
+                    clickOn("#main-traffic-profiles-menu");
+                    clickOn("#main-traffic-profiles-menu-traffic-profiles");
+                },
+                () -> lookup("#traffic-profile-dialog").query() != null
+        );
+
+        final ListView profileList = lookup("#traffic-profile-dialog-profiles-list-view").query();
+        Assert.assertTrue(profileList.getItems().contains("profile.yaml"));
+
+        final FileChooser fileChooser = Mockito.spy(FileChooser.class);
+        FileChooserFactory.set(fileChooser);
+        final File result = new File(FileManager.getLocalFilePath() + "/profile.yaml");
+        Mockito.doReturn(result).when(fileChooser).showSaveDialog(Mockito.any());
+
+        tryCall(
+                () -> {
+                    clickOn("profile.yaml");
+                    clickOn("#export-profile-to-yaml-button");
+                },
+                () -> true
+        );
+
+        final File expected = new File(getResourcesFolder() + "/profile.yaml");
+        Assert.assertEquals(FileUtils.checksumCRC32(expected), FileUtils.checksumCRC32(result));
+    }
 
     private void prepareProfile() throws IOException {
         final File profile = new File(getTestTrafficProfilesFolder() + "/profile.yaml");

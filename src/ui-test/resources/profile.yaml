@@ -1,0 +1,32 @@
+---
+- name: "stream"
+  
+  stream:
+    action_count: 0
+    enabled: true
+    flags: 0
+    flow_stats:
+      enabled: false
+      stream_id: 0
+    isg: 0.0
+    mode:
+      rate:
+        type: "pps"
+        value: 1000.0
+      type: "continuous"
+      total_pkts: 1
+      pkts_per_burst: 1
+      ibg: 0.0
+      count: 1
+    
+    packet:
+      binary: "AAAAAAAAAAAAAAAACABFAAAuBNKAAH8GdvYQAAABMAAAAQQBBAEAAff6AAAAAFLABACz4wAAAKoAAAAA"
+      meta: "eyJwcm90b2NvbF9zZWxlY3Rpb24iOnsiZnJhbWVfbGVuZ3RoX3R5cGUiOiJGaXhlZCIsImlzX3BhdHRlcm5fc2VsZWN0ZWQiOnRydWUsImlzX3RhZ2dlZF92bGFuX3NlbGVjdGVkIjpmYWxzZSwiaXNfdWRwX3NlbGVjdGVkIjpmYWxzZSwiaXNfdGNwX3NlbGVjdGVkIjp0cnVlLCJtYXhfbGVuZ3RoIjoiMTUxOCIsImZyYW1lX2xlbmd0aCI6IjY0IiwiaXNfaXB2NF9zZWxlY3RlZCI6dHJ1ZSwibWluX2xlbmd0aCI6IjY0In0sImV0aGVybmV0Ijp7InR5cGUiOiIwODAwIiwiaXNfb3ZlcnJpZGUiOmZhbHNlfSwibWFjIjp7InNvdXJjZSI6eyJhZGRyZXNzIjoiMDA6MDA6MDA6MDA6MDA6MDAiLCJjb3VudCI6IjE2IiwibW9kZSI6IlRSZXggQ29uZmlnIiwic3RlcCI6IjEifSwiZGVzdGluYXRpb24iOnsiYWRkcmVzcyI6IjAwOjAwOjAwOjAwOjAwOjAwIiwiY291bnQiOiIxNiIsIm1vZGUiOiJUUmV4IENvbmZpZyIsInN0ZXAiOiIxIn19LCJpcHY0Ijp7InNvdXJjZSI6eyJhZGRyZXNzIjoiMTYuMC4wLjEiLCJjb3VudCI6IjE2IiwibW9kZSI6IkZpeGVkIiwic3RlcCI6IjEifSwiZGVzdGluYXRpb24iOnsiYWRkcmVzcyI6IjQ4LjAuMC4xIiwiY291bnQiOiIxNiIsIm1vZGUiOiJGaXhlZCIsInN0ZXAiOiIxIn19LCJ0Y3AiOnsiaXNfb3ZlcnJpZGVfZHN0X3BvcnQiOmZhbHNlLCJ3aW5kb3ciOiIxMDI0IiwidXJnZW50X3BvaW50ZXIiOiIwIiwiZHN0X3BvcnQiOiIxMDI1IiwiYWNrX251bWJlciI6IjAiLCJpc191cmciOmZhbHNlLCJzcmNfcG9ydCI6IjEwMjUiLCJjaGVja3N1bSI6IkIzRTMiLCJpc19hY2siOmZhbHNlLCJpc19wc2giOmZhbHNlLCJpc19maW4iOmZhbHNlLCJpc19yc3QiOmZhbHNlLCJpc19zeW5jIjpmYWxzZSwiaXNfb3ZlcnJpZGVfc3JjX3BvcnQiOmZhbHNlLCJpc19vdmVycmlkZV9jaGVja3N1bSI6ZmFsc2UsInNlcXVlbmNlX251bWJlciI6IjEyOTAxOCJ9LCJ1ZHAiOnsiaXNfb3ZlcnJpZGVfZHN0X3BvcnQiOmZhbHNlLCJsZW5ndGgiOiIyNiIsImRzdF9wb3J0IjoiMTAyNSIsInNyY19wb3J0IjoiMTAyNSIsImNoZWNrc3VtIjoiRkZCQSIsImlzX292ZXJyaWRlX2xlbmd0aCI6ZmFsc2UsImlzX292ZXJyaWRlX3NyY19wb3J0IjpmYWxzZSwiaXNfb3ZlcnJpZGVfY2hlY2tzdW0iOmZhbHNlfSwicGF5bG9hZCI6eyJ0eXBlIjoiRml4ZWQgV29yZCIsInBhdHRlcm4iOiIwMCJ9LCJ2bGFuIjp7InByaW9yaXR5IjoiMCIsImlzX292ZXJyaWRlX3RwX2lkIjpmYWxzZSwidHBfaWQiOiJGRkZGIiwiY2ZpIjoiMCIsInZfaWQiOiIwIn0sImFkdmFuc2VkX3Byb3BlcnRpZXMiOnsiY2FjaGVfc2l6ZV90eXBlIjoiQXV0byIsImNhY2hlX3ZhbHVlIjoiNTAwMCJ9LCJtb2RlbF92ZXJzaW9uIjoiMS4wIn0="
+      model: ""
+    self_start: true
+    advanced_mode: false
+    vm:
+      split_by_var: ""
+      instructions: []
+      cache_size: 5000
+  stream_id: 0

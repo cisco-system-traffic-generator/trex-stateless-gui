@@ -54,8 +54,8 @@
                                 text="Export to JSON"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="1"/>
-                        <Button id="exportToYaml"
-                                fx:id="exportToYamlBtn"
+                        <Button fx:id="exportToYamlBtn"
+                                id="export-profile-to-yaml-button"
                                 disable="true"
                                 mnemonicParsing="false"
                                 onAction="#handleExportToYamlBtnClicked"
