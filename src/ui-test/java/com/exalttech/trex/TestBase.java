@@ -263,6 +263,10 @@ public class TestBase extends ApplicationTest {
         Platform.runLater(() -> logsContainer.getChildren().clear());
     }
 
+    public String getResourcesFolder() {
+        return resources.getFile();
+    }
+
     public String getTestTrafficProfilesFolder() {
         return testTrafficProfilesFolder;
     }

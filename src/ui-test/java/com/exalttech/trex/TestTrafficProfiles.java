@@ -1,7 +1,10 @@
 package com.exalttech.trex;
 
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
 import javafx.stage.FileChooser;
+
+import org.apache.commons.io.FileUtils;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,6 +14,7 @@ import org.mockito.Mockito;
 import java.io.File;
 
 import com.exalttech.trex.util.FileChooserFactory;
+import com.exalttech.trex.util.files.FileManager;
 
 
 public class TestTrafficProfiles extends TestBase {
@@ -64,6 +68,37 @@ public class TestTrafficProfiles extends TestBase {
                     final ListView profileList = lookup("#traffic-profile-dialog-profiles-list-view").query();
                     return profileList.getItems().contains("profile.yaml");
                 }
+        );
+    }
+
+    @Test
+    public void testDeleteProfile() throws Exception {
+        final File profile = new File(getTestTrafficProfilesFolder() + "/profile.yaml");
+        final File profilesDir = new File(FileManager.getProfilesFilePath());
+        FileUtils.copyFileToDirectory(profile, profilesDir);
+
+        final File profiles = new File(getResourcesFolder() + "/profiles.xml");
+        final File localDir = new File(FileManager.getLocalFilePath());
+        FileUtils.copyFileToDirectory(profiles, localDir);
+
+        assertCall(
+                () -> {
+                    clickOn("#main-traffic-profiles-menu");
+                    clickOn("#main-traffic-profiles-menu-traffic-profiles");
+                },
+                () -> lookup("#traffic-profile-dialog").query() != null
+        );
+
+        final ListView profileList = lookup("#traffic-profile-dialog-profiles-list-view").query();
+        Assert.assertTrue(profileList.getItems().contains("profile.yaml"));
+
+        assertCall(
+                () -> {
+                    clickOn("profile.yaml");
+                    clickOn("#delete-profile-button");
+                    type(KeyCode.ENTER);
+                },
+                () -> !profileList.getItems().contains("profile.yaml")
         );
     }
 }
