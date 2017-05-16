@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.util.files;
 
+import com.exalttech.trex.util.FileChooserFactory;
 import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
 import java.io.File;
@@ -193,7 +194,7 @@ public class FileManager {
      * @return
      */
     public static File getSelectedFile(String windowTitle, String fileName, Window window, FileType type, String filePath, boolean isExport) {
-        FileChooser fileChooser = new FileChooser();
+        FileChooser fileChooser = FileChooserFactory.get();
         fileChooser.setTitle(windowTitle);
 
         fileChooser.setInitialFileName(fileName);
