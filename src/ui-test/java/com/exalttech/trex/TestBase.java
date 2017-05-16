@@ -64,6 +64,7 @@ public class TestBase extends ApplicationTest {
     @Override
     public void stop() throws Exception {
         app.stop();
+        TrexApp.getPrimaryStage().close();
     }
 
     protected void acquirePortViaToolbar(String portSelector) {
