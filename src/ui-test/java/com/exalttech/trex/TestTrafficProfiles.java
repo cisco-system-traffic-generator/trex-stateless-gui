@@ -21,13 +21,8 @@ import com.exalttech.trex.util.files.FileManager;
 public class TestTrafficProfiles extends TestBase {
     @Test
     public void testCreateProfile() {
-        assertCall(
-                () -> {
-                    clickOn("#main-traffic-profiles-menu");
-                    clickOn("#main-traffic-profiles-menu-traffic-profiles");
-                },
-                () -> lookup("#traffic-profile-dialog").query() != null
-        );
+        openTrafficProfilesDialog();
+
         assertCall(
                 () -> {
                     clickOn("#create-profile-button");
@@ -47,13 +42,7 @@ public class TestTrafficProfiles extends TestBase {
 
     @Test
     public void testLoadProfile() throws Exception {
-        assertCall(
-                () -> {
-                    clickOn("#main-traffic-profiles-menu");
-                    clickOn("#main-traffic-profiles-menu-traffic-profiles");
-                },
-                () -> lookup("#traffic-profile-dialog").query() != null
-        );
+        openTrafficProfilesDialog();
 
         final FileChooser fileChooser = Mockito.spy(FileChooser.class);
         FileChooserFactory.set(fileChooser);
@@ -75,14 +64,7 @@ public class TestTrafficProfiles extends TestBase {
     @Test
     public void testDeleteProfile() throws Exception {
         prepareProfile();
-
-        assertCall(
-                () -> {
-                    clickOn("#main-traffic-profiles-menu");
-                    clickOn("#main-traffic-profiles-menu-traffic-profiles");
-                },
-                () -> lookup("#traffic-profile-dialog").query() != null
-        );
+        openTrafficProfilesDialog();
 
         final ListView profileList = lookup("#traffic-profile-dialog-profiles-list-view").query();
         Assert.assertTrue(profileList.getItems().contains("profile.yaml"));
@@ -99,14 +81,7 @@ public class TestTrafficProfiles extends TestBase {
     @Test
     public void testExportProfileToJSON() throws Exception {
         prepareProfile();
-
-        assertCall(
-                () -> {
-                    clickOn("#main-traffic-profiles-menu");
-                    clickOn("#main-traffic-profiles-menu-traffic-profiles");
-                },
-                () -> lookup("#traffic-profile-dialog").query() != null
-        );
+        openTrafficProfilesDialog();
 
         final ListView profileList = lookup("#traffic-profile-dialog-profiles-list-view").query();
         Assert.assertTrue(profileList.getItems().contains("profile.yaml"));
@@ -125,19 +100,12 @@ public class TestTrafficProfiles extends TestBase {
         );
 
         final File expected = new File(getResourcesFolder() + "/profile.json");
-        Assert.assertEquals(FileUtils.checksumCRC32(expected), FileUtils.checksumCRC32(result));
+        Assert.assertTrue(FileUtils.contentEquals(expected, result));
     }
     @Test
     public void testExportProfileToYAML() throws Exception {
         prepareProfile();
-
-        assertCall(
-                () -> {
-                    clickOn("#main-traffic-profiles-menu");
-                    clickOn("#main-traffic-profiles-menu-traffic-profiles");
-                },
-                () -> lookup("#traffic-profile-dialog").query() != null
-        );
+        openTrafficProfilesDialog();
 
         final ListView profileList = lookup("#traffic-profile-dialog-profiles-list-view").query();
         Assert.assertTrue(profileList.getItems().contains("profile.yaml"));
@@ -151,12 +119,23 @@ public class TestTrafficProfiles extends TestBase {
                 () -> {
                     clickOn("profile.yaml");
                     clickOn("#export-profile-to-yaml-button");
+                    FileChooserFactory.set(null);
                 },
                 () -> true
         );
 
         final File expected = new File(getResourcesFolder() + "/profile.yaml");
-        Assert.assertEquals(FileUtils.checksumCRC32(expected), FileUtils.checksumCRC32(result));
+        Assert.assertTrue(FileUtils.contentEquals(expected, result));
+    }
+
+    private void openTrafficProfilesDialog() {
+        assertCall(
+                () -> {
+                    clickOn("#main-traffic-profiles-menu");
+                    clickOn("#main-traffic-profiles-menu-traffic-profiles");
+                },
+                () -> lookup("#traffic-profile-dialog").query() != null
+        );
     }
 
     private void prepareProfile() throws IOException {
