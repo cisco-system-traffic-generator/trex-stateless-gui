@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 
-public class RCPCommands {
+public class RPCCommands {
     private static final class Commands {
         private static final String GET_ACTIVE_PGIDS = "get_active_pgids";
         private static final String GET_PGID_STATS = "get_pgid_stats";
     }
 
-    private RCPCommands() {}
+    private RPCCommands() {}
 
     public static String getActivePGIds() throws JsonProcessingException {
         return sendRequest(Commands.GET_ACTIVE_PGIDS, null);
