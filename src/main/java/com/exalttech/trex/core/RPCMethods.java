@@ -79,7 +79,7 @@ public class RPCMethods {
             response = Util.removeFirstBrackets(response);
 
             RPCResult rpcResult = mapper.readValue(response, RPCResult.class);
-            String handler = (String) rpcResult.getResult();
+            String handler = mapper.readValue(rpcResult.getResult(), String.class);
             connectionHandler.put(portID, handler);
             serverConnectionManager.propagatePortHandler(portID, handler);
             return handler;
