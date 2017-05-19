@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.exalttech.trex.remote.models.common.RPCResult;
+import com.exalttech.trex.remote.models.stats.ActivePGIdsRPCResult;
+import com.exalttech.trex.remote.models.stats.PGIdStatsRPCResult;
 
 
 public class RPCCommands {
@@ -19,17 +21,19 @@ public class RPCCommands {
 
     private RPCCommands() {}
 
-    public static String getActivePGIds() throws IOException {
-        return sendRequest(Commands.GET_ACTIVE_PGIDS, null);
+    public static ActivePGIdsRPCResult getActivePGIds() throws IOException {
+        final String jsonResult = sendRequest(Commands.GET_ACTIVE_PGIDS, null);
+        return new ObjectMapper().readValue(jsonResult, ActivePGIdsRPCResult.class);
     }
 
-    public static String getPGIdStats(List<Integer> pgIds) throws IOException {
+    public static PGIdStatsRPCResult getPGIdStats(List<Integer> pgIds) throws IOException {
         if (pgIds == null) {
             pgIds = new ArrayList<>();
         }
         final Map<String, Object> parameters = new HashMap<>();
         parameters.put("pgids", pgIds);
-        return sendRequest(Commands.GET_PGID_STATS, parameters);
+        final String jsonResult = sendRequest(Commands.GET_PGID_STATS, parameters);
+        return new ObjectMapper().readValue(jsonResult, PGIdStatsRPCResult.class);
     }
 
     // Should be removed from here, it is needed only for old architecture
