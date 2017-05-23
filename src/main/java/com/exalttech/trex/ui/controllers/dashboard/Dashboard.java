@@ -12,10 +12,11 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsSelector;
+import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardStreamsSelector;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts;
@@ -33,6 +34,8 @@ public class Dashboard extends DialogView implements Initializable {
     private BorderPane root;
     @FXML
     private DashboardPortsSelector portsSelector;
+    @FXML
+    private DashboardStreamsSelector streamsSelector;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -59,35 +62,46 @@ public class Dashboard extends DialogView implements Initializable {
     }
 
     @Override
-    public void onEnterKeyPressed(Stage stage) {
+    public void onEnterKeyPressed(final Stage stage) {
         // Nothing to do
     }
 
     @FXML
-    public void handleUpdate(Event event) {
-        String selectedTab = tabPane.getSelectionModel().getSelectedItem().getText();
-        Set<Integer> visiblePorts = portsSelector.getSelectedPortIndexes();
-        if (selectedTab.equals("Ports")) {
-            ports.update(visiblePorts);
-        }
-        switch (selectedTab) {
-            case "Streams":
-                streams.update();
-                break;
-            case "Latency":
-                latency.update();
-                break;
-            case "Charts":
-                charts.update();
-                break;
-        }
+    public void handleTabChanged(final Event event) {
+        final boolean isPortsTab = tabPane.getSelectionModel().getSelectedItem().getText().equals("Ports");
+        portsSelector.setVisible(isPortsTab);
+        streamsSelector.setVisible(!isPortsTab);
     }
 
     @FXML
-    public void handleClearCacheButtonClicked(ActionEvent event) {
+    public void handleFiltersChanged(final Event event) {
+        handleUpdate(event);
+    }
+
+    @FXML
+    public void handleClearCacheButtonClicked(final ActionEvent event) {
         StatsLoader.getInstance().reset();
         LatencyStatsLoader.getInstance().reset();
         handleUpdate(event);
+    }
+
+    private void handleUpdate(final Event event) {
+        final String selectedTab = tabPane.getSelectionModel().getSelectedItem().getText();
+        if (selectedTab.equals("Ports")) {
+            ports.update(portsSelector.getSelectedPortIndexes());
+        }
+        final Map<Integer, String> selectedPGIds = streamsSelector.getSelectedPGIds();
+        switch (selectedTab) {
+            case "Streams":
+                streams.update(selectedPGIds);
+                break;
+            case "Latency":
+                latency.update(selectedPGIds);
+                break;
+            case "Charts":
+                charts.update(selectedPGIds);
+                break;
+        }
     }
 
     private void onWindowCloseRequest(WindowEvent window) {

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.GridPane"
+         fx:id="root"
+         minWidth="200.0"
+         maxWidth="200.0"
+         styleClass="dashboard-filter-panel">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="100.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints percentHeight="50.0"/>
+        <RowConstraints percentHeight="50.0"/>
+    </rowConstraints>
+    <VBox styleClass="dashboard-filter-panel-border-bottom"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="0">
+        <padding>
+            <Insets/>
+        </padding>
+        <HBox alignment="CENTER_LEFT"
+              styleClass="dashboard-filter-panel-header">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Selected PG IDs (Max 8)"/>
+        </HBox>
+        <ScrollPane fitToWidth="true"
+                    VBox.vgrow="ALWAYS">
+            <VBox fx:id="selectedStreamsContainer"
+                  spacing="10.0">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+    <VBox GridPane.columnIndex="0"
+          GridPane.rowIndex="1">
+        <padding>
+            <Insets/>
+        </padding>
+        <HBox alignment="CENTER_LEFT"
+              styleClass="dashboard-filter-panel-header">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Unselected PG IDs"/>
+        </HBox>
+        <ScrollPane fitToWidth="true"
+                    VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets/>
+            </padding>
+            <VBox fx:id="streamsContainer"
+                  spacing="10.0">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+</fx:root>

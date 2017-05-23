@@ -6,7 +6,6 @@ import javafx.scene.chart.XYChart;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
@@ -19,29 +18,30 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         super(interval);
     }
 
-    public void update() {
+    public void update(final Map<Integer, String> selectedPGIds) {
         getChart().getData().clear();
 
         StatsLoader statsLoader = StatsLoader.getInstance();
         Map<String, ArrayHistory<StatsFlowStream>> streams = statsLoader.getFlowStatsHistoryMap();
         double time = statsLoader.getFlowStatsLastTime();
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
-        AtomicInteger streamIndex = new AtomicInteger(0);
         final Formatter formatter = new Formatter();
         synchronized (streams) {
-            streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
-                XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            for (final Map.Entry<Integer, String> entry : selectedPGIds.entrySet()) {
+                final String stream = String.valueOf(entry.getKey());
+                final ArrayHistory<StatsFlowStream> history = streams.get(String.valueOf(stream));
+                final XYChart.Series<Number, Number> series = new XYChart.Series<>();
                 series.setName(stream);
-                history.forEach((StatsFlowStream point) -> {
-                    Number value = calcValue(point);
-                    formatter.addValue(value);
-                    series.getData().add(new XYChart.Data<>(point.getTime() - time, value));
-                });
-
+                if (history != null) {
+                    history.forEach((final StatsFlowStream point) -> {
+                        Number value = calcValue(point);
+                        formatter.addValue(value);
+                        series.getData().add(new XYChart.Data<>(point.getTime() - time, value));
+                    });
+                }
+                setSeriesColor(series, entry.getValue());
                 seriesList.add(series);
-
-                streamIndex.getAndAdd(1);
-            });
+            }
         }
 
         seriesList.forEach((XYChart.Series<Number, Number> series) -> {

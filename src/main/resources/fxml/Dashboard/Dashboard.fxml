@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.BorderPane?>
 
 <?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsSelector?>
+<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardStreamsSelector?>
 <?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatistics?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts?>
 <?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency?>
@@ -31,11 +32,18 @@
     <left>
         <AnchorPane>
             <DashboardPortsSelector fx:id="portsSelector"
-                                    onFiltersChanged="#handleUpdate"
+                                    onFiltersChanged="#handleFiltersChanged"
                                     AnchorPane.leftAnchor="0.0"
                                     AnchorPane.rightAnchor="10.0"
                                     AnchorPane.topAnchor="11.0"
                                     AnchorPane.bottomAnchor="1.0"/>
+            <DashboardStreamsSelector fx:id="streamsSelector"
+                                      visible="false"
+                                      onFiltersChanged="#handleFiltersChanged"
+                                      AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.rightAnchor="10.0"
+                                      AnchorPane.topAnchor="11.0"
+                                      AnchorPane.bottomAnchor="1.0"/>
         </AnchorPane>
     </left>
     <center>
@@ -48,19 +56,19 @@
                      AnchorPane.topAnchor="5.0"
                      AnchorPane.bottomAnchor="0.0">
                 <Tab text="Ports"
-                     onSelectionChanged="#handleUpdate">
+                     onSelectionChanged="#handleTabChanged">
                     <DashboardTabPorts fx:id="ports"/>
                 </Tab>
                 <Tab text="Streams"
-                     onSelectionChanged="#handleUpdate">
+                     onSelectionChanged="#handleTabChanged">
                     <DashboardTabStreams fx:id="streams"/>
                 </Tab>
                 <Tab text="Latency"
-                     onSelectionChanged="#handleUpdate">
+                     onSelectionChanged="#handleTabChanged">
                     <DashboardTabLatency fx:id="latency"/>
                 </Tab>
                 <Tab text="Charts"
-                     onSelectionChanged="#handleUpdate">
+                     onSelectionChanged="#handleTabChanged">
                     <DashboardTabCharts fx:id="charts"/>
                 </Tab>
             </TabPane>

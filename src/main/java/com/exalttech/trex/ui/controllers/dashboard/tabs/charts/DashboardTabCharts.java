@@ -11,6 +11,8 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
+import java.util.Map;
+
 import com.exalttech.trex.util.Initialization;
 
 
@@ -60,11 +62,11 @@ public class DashboardTabCharts extends BorderPane {
         handleLayoutChanged(4);
     }
 
-    public void update() {
+    public void update(final Map<Integer, String> selectedPGIds) {
         LayoutConfiguration layoutConfiguration = layoutConfigurations[selectedConfigurationIndex];
         int size = layoutConfiguration.getColumnsCount()*layoutConfiguration.getRowsCount();
         for (int i = 0; i < size; ++i) {
-            charts[i].update();
+            charts[i].update(selectedPGIds);
         }
     }
 
