@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardFilters;
+import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsSelector;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts;
@@ -32,7 +32,7 @@ public class Dashboard extends DialogView implements Initializable {
     @FXML
     private BorderPane root;
     @FXML
-    private DashboardFilters portsFilter;
+    private DashboardPortsSelector portsSelector;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -66,7 +66,7 @@ public class Dashboard extends DialogView implements Initializable {
     @FXML
     public void handleUpdate(Event event) {
         String selectedTab = tabPane.getSelectionModel().getSelectedItem().getText();
-        Set<Integer> visiblePorts = portsFilter.getSelectedPortIndexes();
+        Set<Integer> visiblePorts = portsSelector.getSelectedPortIndexes();
         if (selectedTab.equals("Ports")) {
             ports.update(visiblePorts);
         }
