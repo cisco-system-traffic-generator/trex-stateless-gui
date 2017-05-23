@@ -70,16 +70,15 @@ public class Dashboard extends DialogView implements Initializable {
         if (selectedTab.equals("Ports")) {
             ports.update(visiblePorts);
         }
-        int streamsCount = portsFilter.getStreamsCount();
         switch (selectedTab) {
             case "Streams":
-                streams.update(streamsCount);
+                streams.update();
                 break;
             case "Latency":
-                latency.update(streamsCount);
+                latency.update();
                 break;
             case "Charts":
-                charts.update(streamsCount);
+                charts.update();
                 break;
         }
     }

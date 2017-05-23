@@ -18,8 +18,6 @@ public class DashboardFilters extends VBox {
     private ComboBox<String> portFilterSelector;
     @FXML
     private VBox portCheckBoxListContainer;
-    @FXML
-    private ComboBox<Integer> streamsCountSelector;
 
     private EventHandler<Event> onFiltersChanged;
     private Set<Integer> selectedPortIndexes = new HashSet<>();
@@ -40,10 +38,6 @@ public class DashboardFilters extends VBox {
 
     public Set<Integer> getSelectedPortIndexes() {
         return selectedPortIndexes;
-    }
-
-    public int getStreamsCount() {
-        return streamsCountSelector.getValue();
     }
 
     @FXML

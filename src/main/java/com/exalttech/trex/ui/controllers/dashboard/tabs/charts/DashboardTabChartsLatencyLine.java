@@ -16,18 +16,13 @@ public abstract class DashboardTabChartsLatencyLine extends DashboardTabChartsLi
         super(interval);
     }
 
-    public void update(int streamsCount) {
+    public void update() {
         getChart().getData().clear();
 
         Map<String, ArrayHistory<Number>> streams = getHistory();
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
-        AtomicInteger streamIndex = new AtomicInteger(0);
         synchronized (streams) {
             streams.forEach((String stream, ArrayHistory<Number> history) -> {
-                if (streamIndex.get() >= streamsCount) {
-                    return;
-                }
-
                 XYChart.Series series = new XYChart.Series();
                 series.setName(stream);
                 int size = history.size();
@@ -36,8 +31,6 @@ public abstract class DashboardTabChartsLatencyLine extends DashboardTabChartsLi
                 }
 
                 seriesList.add(series);
-
-                streamIndex.getAndAdd(1);
             });
         }
         getChart().getData().clear();

@@ -29,7 +29,6 @@ public class DashboardTabChartsContainer extends AnchorPane {
     private DashboardTabChartsUpdatable chart;
     private StringProperty chartType;
     private IntegerProperty interval;
-    private int lastStreamsCount;
 
     public DashboardTabChartsContainer(String selectedType, IntegerProperty interval) {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/DashboardTabChartsContainer.fxml");
@@ -56,9 +55,8 @@ public class DashboardTabChartsContainer extends AnchorPane {
         );
     }
 
-    public void update(int streamsCount) {
-        chart.update(streamsCount);
-        lastStreamsCount = streamsCount;
+    public void update() {
+        chart.update();
     }
 
     private MenuItem createContextMenuItem(String chartType) {
@@ -83,7 +81,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
         AnchorPane.setRightAnchor((Node) chart, 0.0);
         AnchorPane.setBottomAnchor((Node) chart, 0.0);
         AnchorPane.setLeftAnchor((Node) chart, 0.0);
-        chart.update(lastStreamsCount);
+        chart.update();
 
         root.getChildren().clear();
         root.getChildren().add((Node) chart);

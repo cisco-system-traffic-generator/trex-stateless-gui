@@ -35,8 +35,6 @@ public class DashboardTabLatency extends AnchorPane {
     @FXML
     private GridPane table;
 
-    private int lastStreamsCount;
-
     public DashboardTabLatency() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/latency/DashboardTabLatency.fxml");
 
@@ -46,23 +44,21 @@ public class DashboardTabLatency extends AnchorPane {
                 if (newValue == null) {
                     oldValue.setSelected(true);
                 } else {
-                    update(lastStreamsCount);
+                    update();
                 }
             }
         });
     }
 
-    public void update(int streamsCount) {
+    public void update() {
         if (((ToggleButton)toggleGroupMode.getSelectedToggle()).getText().equals("Window")) {
-            renderWindow(streamsCount);
+            renderWindow();
         } else {
-            renderHistogram(streamsCount);
+            renderHistogram();
         }
-
-        this.lastStreamsCount = streamsCount;
     }
 
-    private void renderWindow(int streamsCount) {
+    private void renderWindow() {
         table.getChildren().clear();
 
         int hCol = 0;
@@ -88,10 +84,6 @@ public class DashboardTabLatency extends AnchorPane {
             synchronized (maxLatencyByStreams) {
                 synchronized (flowStatsMap) {
                     latencyInfoMap.forEach((String stream, LatencyInfo latencyInfo) -> {
-                        if (rowIndex.get() > streamsCount) {
-                            return;
-                        }
-
                         final ArrayHistory<StatsFlowStream> flowStreamHistory = flowStatsMap.get(stream);
                         if (flowStreamHistory == null || flowStreamHistory.isEmpty()) {
                             return;
@@ -134,7 +126,7 @@ public class DashboardTabLatency extends AnchorPane {
         }
     }
 
-    private void renderHistogram(int streamsCount) {
+    private void renderHistogram() {
         table.getChildren().clear();
 
         final Map<String, LatencyInfo> latencyInfoMap = LatencyStatsLoader.getInstance().getLatencyInfoMap();
@@ -159,10 +151,6 @@ public class DashboardTabLatency extends AnchorPane {
                 synchronized (histogramKeys) {
                     synchronized (flowStatsMap) {
                         latencyInfoMap.forEach((final String stream, final LatencyInfo latencyInfo) -> {
-                            if (rowIndex.get() > streamsCount) {
-                                return;
-                            }
-
                             final ArrayHistory<StatsFlowStream> flowStreamHistory = flowStatsMap.get(stream);
                             if (flowStreamHistory == null || flowStreamHistory.isEmpty()) {
                                 return;

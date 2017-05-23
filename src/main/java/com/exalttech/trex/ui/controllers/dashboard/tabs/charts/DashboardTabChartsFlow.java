@@ -19,7 +19,7 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         super(interval);
     }
 
-    public void update(int streamsCount) {
+    public void update() {
         getChart().getData().clear();
 
         StatsLoader statsLoader = StatsLoader.getInstance();
@@ -30,10 +30,6 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         final Formatter formatter = new Formatter();
         synchronized (streams) {
             streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
-                if (streamIndex.get() >= streamsCount) {
-                    return;
-                }
-
                 XYChart.Series<Number, Number> series = new XYChart.Series<>();
                 series.setName(stream);
                 history.forEach((StatsFlowStream point) -> {
