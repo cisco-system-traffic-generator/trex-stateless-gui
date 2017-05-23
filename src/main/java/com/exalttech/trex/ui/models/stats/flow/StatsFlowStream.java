@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.AtomicDouble;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -128,40 +127,40 @@ public class StatsFlowStream {
         return time;
     }
 
-    public long calcTotalTxPkts(Set<Integer> visiblePorts) {
-        return calcTotalLong(txPkts, visiblePorts);
+    public long calcTotalTxPkts() {
+        return calcTotalLong(txPkts);
     }
 
-    public long calcTotalRxPkts(Set<Integer> visiblePorts) {
-        return calcTotalLong(rxPkts, visiblePorts);
+    public long calcTotalRxPkts() {
+        return calcTotalLong(rxPkts);
     }
 
-    public long calcTotalTxBytes(Set<Integer> visiblePorts) {
-        return calcTotalLong(txBytes, visiblePorts);
+    public long calcTotalTxBytes() {
+        return calcTotalLong(txBytes);
     }
 
-    public long calcTotalRxBytes(Set<Integer> visiblePorts) {
-        return calcTotalLong(rxBytes, visiblePorts);
+    public long calcTotalRxBytes() {
+        return calcTotalLong(rxBytes);
     }
 
-    public double calcTotalTxPps(Set<Integer> visiblePorts) {
-        return calcTotalDouble(txPps, visiblePorts);
+    public double calcTotalTxPps() {
+        return calcTotalDouble(txPps);
     }
 
-    public double calcTotalRxPps(Set<Integer> visiblePorts) {
-        return calcTotalDouble(rxPps, visiblePorts);
+    public double calcTotalRxPps() {
+        return calcTotalDouble(rxPps);
     }
 
-    public double calcTotalTxBpsL1(Set<Integer> visiblePorts) {
-        return calcTotalDouble(txBpsL1, visiblePorts);
+    public double calcTotalTxBpsL1() {
+        return calcTotalDouble(txBpsL1);
     }
 
-    public double calcTotalTxBpsL2(Set<Integer> visiblePorts) {
-        return calcTotalDouble(txBpsL2, visiblePorts);
+    public double calcTotalTxBpsL2() {
+        return calcTotalDouble(txBpsL2);
     }
 
-    public double calcTotalRxBps(Set<Integer> visiblePorts) {
-        return calcTotalDouble(rxBps, visiblePorts);
+    public double calcTotalRxBps() {
+        return calcTotalDouble(rxBps);
     }
 
     public StatsFlowStream getZeroCopy() {
@@ -198,22 +197,18 @@ public class StatsFlowStream {
         return Math.max((currValue - prevValue)/timeDelta, 0.0);
     }
 
-    private static long calcTotalLong(Map<Integer, Long> data, Set<Integer> visiblePorts) {
+    private static long calcTotalLong(Map<Integer, Long> data) {
         AtomicLong total = new AtomicLong(0);
         data.forEach((Integer port, Long value) -> {
-            if (visiblePorts == null || visiblePorts.contains(port)) {
-                total.getAndAdd(value);
-            }
+            total.getAndAdd(value);
         });
         return total.get();
     }
 
-    private static double calcTotalDouble(Map<Integer, Double> data, Set<Integer> visiblePorts) {
+    private static double calcTotalDouble(Map<Integer, Double> data) {
         AtomicDouble total = new AtomicDouble(0);
         data.forEach((Integer port, Double value) -> {
-            if (visiblePorts == null || visiblePorts.contains(port)) {
-                total.getAndAdd(value);
-            }
+            total.getAndAdd(value);
         });
         return total.get();
     }

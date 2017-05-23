@@ -13,8 +13,6 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.Set;
-
 import com.exalttech.trex.util.Initialization;
 
 
@@ -31,8 +29,6 @@ public class DashboardTabChartsContainer extends AnchorPane {
     private DashboardTabChartsUpdatable chart;
     private StringProperty chartType;
     private IntegerProperty interval;
-    private Set<Integer> lastVisiblePorts;
-    private Set<String> lastVisibleStreams;
     private int lastStreamsCount;
 
     public DashboardTabChartsContainer(String selectedType, IntegerProperty interval) {
@@ -60,10 +56,8 @@ public class DashboardTabChartsContainer extends AnchorPane {
         );
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
-        chart.update(visiblePorts, visibleStreams, streamsCount);
-        lastVisiblePorts = visiblePorts;
-        lastVisibleStreams = visibleStreams;
+    public void update(int streamsCount) {
+        chart.update(streamsCount);
         lastStreamsCount = streamsCount;
     }
 
@@ -89,7 +83,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
         AnchorPane.setRightAnchor((Node) chart, 0.0);
         AnchorPane.setBottomAnchor((Node) chart, 0.0);
         AnchorPane.setLeftAnchor((Node) chart, 0.0);
-        chart.update(lastVisiblePorts, lastVisibleStreams, lastStreamsCount);
+        chart.update(lastStreamsCount);
 
         root.getChildren().clear();
         root.getChildren().add((Node) chart);

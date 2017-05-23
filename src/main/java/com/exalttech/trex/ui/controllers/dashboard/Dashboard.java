@@ -12,8 +12,6 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -23,11 +21,9 @@ import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLate
 import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts;
 import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.DashboardTabStreams;
 import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.LatencyStatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
-import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
 
@@ -75,16 +71,15 @@ public class Dashboard extends DialogView implements Initializable {
             ports.update(visiblePorts);
         }
         int streamsCount = portsFilter.getStreamsCount();
-        Set<String> visibleStreams = getVisibleStream(visiblePorts);
         switch (selectedTab) {
             case "Streams":
-                streams.update(visiblePorts, visibleStreams, streamsCount);
+                streams.update(streamsCount);
                 break;
             case "Latency":
-                latency.update(visiblePorts, visibleStreams, streamsCount);
+                latency.update(streamsCount);
                 break;
             case "Charts":
-                charts.update(visiblePorts, visibleStreams, streamsCount);
+                charts.update(streamsCount);
                 break;
         }
     }
@@ -101,37 +96,5 @@ public class Dashboard extends DialogView implements Initializable {
             refreshingService.cancel();
         }
         ports.reset();
-    }
-
-    private static Set<String> getVisibleStream(Set<Integer> visiblePorts) {
-        if (visiblePorts == null) {
-            return null;
-        }
-
-        final Set<String> visibleStreams = new HashSet<>();
-
-        if (visiblePorts.isEmpty()) {
-            return visibleStreams;
-        }
-
-        final Map<String, ArrayHistory<StatsFlowStream>> flowStats = StatsLoader.getInstance().getFlowStatsHistoryMap();
-
-        flowStats.forEach((String stream, ArrayHistory<StatsFlowStream> streamHistory) -> {
-            final StatsFlowStream last = streamHistory.last();
-            if (last == null) {
-                return;
-            }
-
-            if (
-                    visiblePorts.stream().anyMatch(last.getTxPkts()::containsKey)
-                    || visiblePorts.stream().anyMatch(last.getTxBytes()::containsKey)
-                    || visiblePorts.stream().anyMatch(last.getRxPkts()::containsKey)
-                    || visiblePorts.stream().anyMatch(last.getRxBytes()::containsKey)
-            ) {
-                visibleStreams.add(stream);
-            }
-        });
-
-        return visibleStreams;
     }
 }

@@ -6,7 +6,6 @@ import javafx.scene.chart.XYChart;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.exalttech.trex.util.ArrayHistory;
@@ -17,19 +16,15 @@ public abstract class DashboardTabChartsLatencyLine extends DashboardTabChartsLi
         super(interval);
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
+    public void update(int streamsCount) {
         getChart().getData().clear();
-
-        if (visibleStreams != null && visibleStreams.isEmpty()) {
-            return;
-        }
 
         Map<String, ArrayHistory<Number>> streams = getHistory();
         List<XYChart.Series<Number, Number>> seriesList = new LinkedList<>();
         AtomicInteger streamIndex = new AtomicInteger(0);
         synchronized (streams) {
             streams.forEach((String stream, ArrayHistory<Number> history) -> {
-                if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                if (streamIndex.get() >= streamsCount) {
                     return;
                 }
 

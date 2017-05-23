@@ -25,13 +25,9 @@ public class DashboardTabChartsLatencyHistogram extends AnchorPane implements Da
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/DashboardTabChartsLatencyHistogram.fxml");
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
+    public void update(int streamsCount) {
         histogram.getData().clear();
         xAxis.setAutoRanging(true);
-
-        if (visibleStreams != null && visibleStreams.isEmpty()) {
-            return;
-        }
 
         final Map<String, Map<String, Long>> histogramMap = LatencyStatsLoader.getInstance().getHistogramMap();
         final String[] histogramKeys = LatencyStatsLoader.getInstance().getHistogramKeys(HISTOGRAM_SIZE);
@@ -40,7 +36,7 @@ public class DashboardTabChartsLatencyHistogram extends AnchorPane implements Da
         synchronized (histogramMap) {
             synchronized (histogramKeys) {
                 histogramMap.forEach((final String stream, final Map<String, Long> histogram) -> {
-                    if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                    if (streamIndex.get() >= streamsCount) {
                         return;
                     }
 

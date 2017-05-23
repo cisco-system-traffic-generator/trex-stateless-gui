@@ -6,7 +6,6 @@ import javafx.scene.chart.XYChart;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
@@ -20,12 +19,8 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         super(interval);
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
+    public void update(int streamsCount) {
         getChart().getData().clear();
-
-        if (visibleStreams != null && visibleStreams.isEmpty()) {
-            return;
-        }
 
         StatsLoader statsLoader = StatsLoader.getInstance();
         Map<String, ArrayHistory<StatsFlowStream>> streams = statsLoader.getFlowStatsHistoryMap();
@@ -35,14 +30,14 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
         final Formatter formatter = new Formatter();
         synchronized (streams) {
             streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
-                if (streamIndex.get() >= streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                if (streamIndex.get() >= streamsCount) {
                     return;
                 }
 
                 XYChart.Series<Number, Number> series = new XYChart.Series<>();
                 series.setName(stream);
                 history.forEach((StatsFlowStream point) -> {
-                    Number value = calcValue(visiblePorts, point);
+                    Number value = calcValue(point);
                     formatter.addValue(value);
                     series.getData().add(new XYChart.Data<>(point.getTime() - time, value));
                 });
@@ -68,7 +63,7 @@ public abstract class DashboardTabChartsFlow extends DashboardTabChartsLine {
 
     protected abstract String getYChartUnits();
 
-    protected abstract Number calcValue(Set<Integer> visiblePorts, StatsFlowStream point);
+    protected abstract Number calcValue(StatsFlowStream point);
 
     protected String getXChartLabel() {
         return "Time (s)";

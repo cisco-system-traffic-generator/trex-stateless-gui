@@ -35,8 +35,6 @@ public class DashboardTabLatency extends AnchorPane {
     @FXML
     private GridPane table;
 
-    private Set<Integer> lastVisiblePorts;
-    private Set<String> lastVisibleStreams;
     private int lastStreamsCount;
 
     public DashboardTabLatency() {
@@ -48,25 +46,23 @@ public class DashboardTabLatency extends AnchorPane {
                 if (newValue == null) {
                     oldValue.setSelected(true);
                 } else {
-                    update(lastVisiblePorts, lastVisibleStreams, lastStreamsCount);
+                    update(lastStreamsCount);
                 }
             }
         });
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
+    public void update(int streamsCount) {
         if (((ToggleButton)toggleGroupMode.getSelectedToggle()).getText().equals("Window")) {
-            renderWindow(visiblePorts, visibleStreams, streamsCount);
+            renderWindow(streamsCount);
         } else {
-            renderHistogram(visibleStreams, streamsCount);
+            renderHistogram(streamsCount);
         }
 
-        this.lastVisiblePorts = visiblePorts;
-        this.lastVisibleStreams = visibleStreams;
         this.lastStreamsCount = streamsCount;
     }
 
-    private void renderWindow(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
+    private void renderWindow(int streamsCount) {
         table.getChildren().clear();
 
         int hCol = 0;
@@ -92,7 +88,7 @@ public class DashboardTabLatency extends AnchorPane {
             synchronized (maxLatencyByStreams) {
                 synchronized (flowStatsMap) {
                     latencyInfoMap.forEach((String stream, LatencyInfo latencyInfo) -> {
-                        if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                        if (rowIndex.get() > streamsCount) {
                             return;
                         }
 
@@ -121,8 +117,8 @@ public class DashboardTabLatency extends AnchorPane {
 
                         int col = 0;
                         table.add(new HeaderCell(COLUMN_WIDTH, stream), rowIndex.get(), col++);
-                        table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalTxPkts(visiblePorts)), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
-                        table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalRxPkts(visiblePorts)), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                        table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalTxPkts()), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
+                        table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(flowStats.calcTotalRxPkts()), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
                         table.add(new StatisticLabelCell(String.format("%d \u00B5s", latencyInfo.getTotalMax()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
                         table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(latencyInfo.getAverage())), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex.get(), col++);
                         for (int i = 0; i < WINDOW_SIZE; ++i) {
@@ -138,7 +134,7 @@ public class DashboardTabLatency extends AnchorPane {
         }
     }
 
-    private void renderHistogram(Set<String> visibleStreams, int streamsCount) {
+    private void renderHistogram(int streamsCount) {
         table.getChildren().clear();
 
         final Map<String, LatencyInfo> latencyInfoMap = LatencyStatsLoader.getInstance().getLatencyInfoMap();
@@ -163,7 +159,7 @@ public class DashboardTabLatency extends AnchorPane {
                 synchronized (histogramKeys) {
                     synchronized (flowStatsMap) {
                         latencyInfoMap.forEach((final String stream, final LatencyInfo latencyInfo) -> {
-                            if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream))) {
+                            if (rowIndex.get() > streamsCount) {
                                 return;
                             }
 
