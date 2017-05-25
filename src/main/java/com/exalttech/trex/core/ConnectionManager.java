@@ -177,7 +177,7 @@ public class ConnectionManager {
         this.clientName = clientName;
         this.isReadOnly = isReadOnly;
 
-        trexClient = new TRexClient("tcp", ip, rpcPort, clientName);
+        trexClient = new TRexClient(ip, rpcPort, clientName);
         try {
             trexClient.connect();
         } catch (Exception ex) {
