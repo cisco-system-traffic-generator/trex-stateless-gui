@@ -16,9 +16,6 @@
 package com.exalttech.trex.packets;
 
 import com.exalttech.trex.ui.views.streams.builder.Payload;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import org.apache.log4j.Logger;
 import org.pcap4j.packet.AbstractPacket;
 import org.pcap4j.packet.IpV4Packet;
@@ -27,6 +24,10 @@ import org.pcap4j.packet.IpV4Rfc1349Tos;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.namednumber.IpNumber;
 import org.pcap4j.packet.namednumber.IpVersion;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  *
@@ -68,7 +69,7 @@ public class TrexIpV4Packet {
             this.tos = IpV4Rfc1349Tos.newInstance((byte) 0x00);
             this.totalLength = (short) 40;
             this.identification = (short) 0X04D2;
-            this.reservedFlag = true;
+            this.reservedFlag = false;
 
             this.ttl = 127;
             this.headerChecksum = (short) 0xEEEE;
