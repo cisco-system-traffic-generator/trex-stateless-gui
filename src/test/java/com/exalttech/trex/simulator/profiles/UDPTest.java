@@ -18,14 +18,9 @@ package com.exalttech.trex.simulator.profiles;
 import com.exalttech.trex.packets.TrexEthernetPacket;
 import com.exalttech.trex.packets.TrexIpV4Packet;
 import com.exalttech.trex.packets.TrexUdpPacket;
-import static com.exalttech.trex.simulator.profiles.AbstractIPV4Test.LOG;
 import com.exalttech.trex.simulator.models.PacketData;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.builder.Payload;
-import com.exalttech.trex.util.Util;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import org.pcap4j.core.NotOpenException;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.packet.IpV4Packet;
@@ -33,6 +28,10 @@ import org.pcap4j.packet.namednumber.IpNumber;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 
 /**
  * UDP profile tests
@@ -91,7 +90,6 @@ public class UDPTest extends AbstractIPV4Test {
         TrexUdpPacket udpPacket = new TrexUdpPacket();
         udpPacket.setSrcPort(packetData.getUdpData().getSrcPort());
         udpPacket.setDstPort(packetData.getUdpData().getDstPort());
-        udpPacket.setChecksum(Util.getShortFromString(packetData.getUdpData().getChecksum(), true));
         udpPacket.setLength(packetData.getUdpData().getLength());
         udpPacket.setPacketLength(packetLength);
         udpPacket.setPayload(payload);

@@ -36,12 +36,10 @@ public class UDPProtocolView extends AbstractProtocolView {
     CheckBox srcPortCB;
     CheckBox dstPortCB;
     CheckBox lengthCB;
-    CheckBox checksumCB;
 
     TextField srcPort;
     TextField dstPort;
     TextField length;
-    TextField checksum;
 
     /**
      * Constructor
@@ -77,13 +75,6 @@ public class UDPProtocolView extends AbstractProtocolView {
         length = new TextField();
         addInput(length, 80, 210, 220);
         length.disableProperty().bind(lengthCB.selectedProperty().not());
-
-        // add checksum
-        checksumCB = new CheckBox("Override checksum");
-        addCheckBox(checksumCB, 118, 10);
-        checksum = new TextField();
-        addInput(checksum, 115, 210, 220);
-        checksum.disableProperty().bind(checksumCB.selectedProperty().not());
     }
 
     /**
@@ -97,7 +88,6 @@ public class UDPProtocolView extends AbstractProtocolView {
         TrexUdpPacket udpPacket = new TrexUdpPacket();
         udpPacket.setSrcPort(Util.getPortValue(srcPort.getText()));
         udpPacket.setDstPort(Util.getPortValue(dstPort.getText()));
-        udpPacket.setChecksum(Util.getShortFromString(checksum.getText(), true));
         udpPacket.setLength(Util.getIntFromString(length.getText()));
         udpPacket.setPacketLength(packetLength);
         udpPacket.setPayload(payload);
@@ -112,7 +102,6 @@ public class UDPProtocolView extends AbstractProtocolView {
      */
     @Override
     protected void addInputValidation() {
-        checksum.setTextFormatter(Util.getHexFilter(4));
         srcPort.setTextFormatter(Util.getNumberFilter(5));
         dstPort.setTextFormatter(Util.getNumberFilter(5));
         length.setTextFormatter(Util.getNumberFilter(5));
@@ -130,8 +119,6 @@ public class UDPProtocolView extends AbstractProtocolView {
         dstPortCB.selectedProperty().bindBidirectional(udpDB.getOverrideDstPortProperty());
         length.textProperty().bindBidirectional(udpDB.getLengthProperty());
         lengthCB.selectedProperty().bindBidirectional(udpDB.getOverrideLengthProperty());
-        checksum.textProperty().bindBidirectional(udpDB.getChecksumProperty());
-        checksumCB.selectedProperty().bindBidirectional(udpDB.getOverrideChecksumProperty());
     }
 
 }

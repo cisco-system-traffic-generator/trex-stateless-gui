@@ -16,13 +16,14 @@
 package com.exalttech.trex.packets;
 
 import com.exalttech.trex.ui.views.streams.builder.Payload;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import org.pcap4j.packet.Packet;
 import org.pcap4j.packet.UdpPacket;
 import org.pcap4j.packet.UnknownPacket;
 import org.pcap4j.packet.namednumber.UdpPort;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  *
@@ -48,7 +49,7 @@ public class TrexUdpPacket {
     public TrexUdpPacket() {
         this.srcPort = UdpPort.getInstance((short) 0);
         this.dstPort = UdpPort.getInstance((short) 0);
-        this.checksum = (short) 0x7945;
+        this.checksum = (short) 0x0;
         this.length = (short) 12;
     }
 
@@ -78,7 +79,7 @@ public class TrexUdpPacket {
                 .dstAddr(dstAddr)
                 .length((short) calculatedLength)
                 .payloadBuilder(unknownb)
-                .correctChecksumAtBuild(true)
+                .checksum((short) 0)
                 .correctLengthAtBuild(false);
 
         this.packet = udpBuilder.build();
@@ -156,14 +157,6 @@ public class TrexUdpPacket {
      */
     public short getChecksum() {
         return checksum;
-    }
-
-    /**
-     *
-     * @param checksum
-     */
-    public void setChecksum(short checksum) {
-        this.checksum = checksum;
     }
 
     /**

@@ -20,16 +20,16 @@
  */
 package com.exalttech.trex.ui.views.streams.binders;
 
+import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.util.*;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public class BuilderDataBinding {
@@ -217,7 +217,6 @@ public class BuilderDataBinding {
             fieldsMap.put("sport", udpProtocolDB.getSrcPortProperty().getValue());
             fieldsMap.put("dport", udpProtocolDB.getDstPortProperty().getValue());
             fieldsMap.put("len", udpProtocolDB.getLengthProperty().getValue());
-            fieldsMap.put("chksum", "0x"+udpProtocolDB.getChecksumProperty().getValue());
             
             udpProto.add("fields", buildProtoFieldsFromMap(fieldsMap));
             model.getAsJsonArray("protocols").add(udpProto);
