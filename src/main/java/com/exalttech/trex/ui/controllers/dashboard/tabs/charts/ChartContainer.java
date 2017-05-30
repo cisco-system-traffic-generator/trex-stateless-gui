@@ -13,13 +13,10 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.exalttech.trex.util.Initialization;
 
 
-public class DashboardTabChartsContainer extends AnchorPane {
+public class ChartContainer extends AnchorPane {
     @FXML
     private AnchorPane root;
 
@@ -29,13 +26,12 @@ public class DashboardTabChartsContainer extends AnchorPane {
     }
 
     private ContextMenu contextMenu;
-    private DashboardTabChartsUpdatable chart;
+    private FlowChart chart;
     private StringProperty chartType;
     private IntegerProperty interval;
-    private Map<Integer, String> lastSelectedPGIds = new HashMap<>();
 
-    public DashboardTabChartsContainer(String selectedType, IntegerProperty interval) {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/DashboardTabChartsContainer.fxml");
+    public ChartContainer(String selectedType, IntegerProperty interval) {
+        Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/ChartContainer.fxml");
 
         this.interval = interval;
 
@@ -45,23 +41,22 @@ public class DashboardTabChartsContainer extends AnchorPane {
 
         contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.TX_PPS),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.RX_PPS),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.TX_BPS_L1),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.TX_BPS_L2),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.RX_BPS_L2),
+                createContextMenuItem(ChartsFactory.ChartTypes.TX_PPS),
+                createContextMenuItem(ChartsFactory.ChartTypes.RX_PPS),
+                createContextMenuItem(ChartsFactory.ChartTypes.TX_BPS_L1),
+                createContextMenuItem(ChartsFactory.ChartTypes.TX_BPS_L2),
+                createContextMenuItem(ChartsFactory.ChartTypes.RX_BPS_L2),
                 new SeparatorMenuItem(),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.MAX_LATENCY),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.AVG_LATENCY),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.JITTER_LATENCY),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.TEMPORARY_MAX_LATENCY),
-                createContextMenuItem(DashboardTabChartsFactory.ChartTypes.LATENCY_HISTOGRAM)
+                createContextMenuItem(ChartsFactory.ChartTypes.MAX_LATENCY),
+                createContextMenuItem(ChartsFactory.ChartTypes.AVG_LATENCY),
+                createContextMenuItem(ChartsFactory.ChartTypes.JITTER_LATENCY),
+                createContextMenuItem(ChartsFactory.ChartTypes.TEMPORARY_MAX_LATENCY),
+                createContextMenuItem(ChartsFactory.ChartTypes.LATENCY_HISTOGRAM)
         );
     }
 
-    public void update(final Map<Integer, String> selectedPGIds) {
-        chart.update(selectedPGIds);
-        lastSelectedPGIds = selectedPGIds;
+    public void setActive(final boolean isActive) {
+        chart.setActive(isActive);
     }
 
     private MenuItem createContextMenuItem(String chartType) {
@@ -73,6 +68,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
     private void handleContextMenuAction(ActionEvent event) {
         MenuItem source = (MenuItem) event.getSource();
         chartType.set(source.getText());
+        chart.setActive(true);
     }
 
     private void handleChartTypeChanged(
@@ -80,13 +76,12 @@ public class DashboardTabChartsContainer extends AnchorPane {
             String oldValue,
             String newValue
     ) {
-        chart = DashboardTabChartsFactory.create(newValue, interval);
+        chart = ChartsFactory.create(newValue, interval);
 
         AnchorPane.setTopAnchor((Node) chart, 0.0);
         AnchorPane.setRightAnchor((Node) chart, 0.0);
         AnchorPane.setBottomAnchor((Node) chart, 0.0);
         AnchorPane.setLeftAnchor((Node) chart, 0.0);
-        chart.update(lastSelectedPGIds);
 
         root.getChildren().clear();
         root.getChildren().add((Node) chart);

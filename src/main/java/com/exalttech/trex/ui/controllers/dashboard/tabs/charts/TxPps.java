@@ -2,11 +2,11 @@ package com.exalttech.trex.ui.controllers.dashboard.tabs.charts;
 
 import javafx.beans.property.IntegerProperty;
 
-import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
+import com.exalttech.trex.ui.models.stats.FlowStatPoint;
 
 
-public class DashboardTabChartsTxPps extends DashboardTabChartsFlow {
-    public DashboardTabChartsTxPps(IntegerProperty interval) {
+public class TxPps extends StreamLineChart {
+    public TxPps(final IntegerProperty interval) {
         super(interval);
     }
 
@@ -18,7 +18,7 @@ public class DashboardTabChartsTxPps extends DashboardTabChartsFlow {
         return "pkt/s";
     }
 
-    protected Number calcValue(StatsFlowStream point) {
-        return point.calcTotalTxPps();
+    protected Number getValue(final FlowStatPoint point) {
+        return point.getTps();
     }
 }

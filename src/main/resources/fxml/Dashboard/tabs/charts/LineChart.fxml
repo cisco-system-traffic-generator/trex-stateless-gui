@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.AnchorPane"
+         fx:id="root">
+    <LineChart fx:id="chart"
+               verticalGridLinesVisible="false"
+               animated="false"
+               createSymbols="false"
+               legendVisible="false"
+               styleClass="statistics-chart"
+               AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0"
+               AnchorPane.topAnchor="0.0"
+               AnchorPane.bottomAnchor="0.0">
+        <xAxis>
+            <NumberAxis fx:id="xAxis"
+                        label="Time (s)"
+                        forceZeroInRange="false"
+                        autoRanging="false"
+                        upperBound="0.0"
+                        minorTickVisible="false"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis fx:id="yAxis"
+                        forceZeroInRange="false"
+                        side="RIGHT"
+                        minorTickVisible="false"/>
+        </yAxis>
+    </LineChart>
+</fx:root>
