@@ -29,7 +29,6 @@ import javafx.scene.layout.AnchorPane;
 
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,11 +40,6 @@ public class ConsoleLogView extends AnchorPane {
 
     private TextArea logsContent;
     private MessageQueue queue = new MessageQueue(5);
-    private Consumer<Void> logUpdater = (e) -> Platform.runLater(() -> {
-        String text = queue.stream().collect(Collectors.joining("\n"));
-        logsContent.clear();
-        logsContent.appendText(text);
-    });
 
     /**
      *
@@ -78,7 +72,11 @@ public class ConsoleLogView extends AnchorPane {
         if (textToAppend != null) {
             String msg = String.format("%s %s %s", LogType.INFO.getDisplayedText(), Util.formatDate(new Date()), textToAppend);
             queue.add(msg);
-            logUpdater.accept(null);
+            String text = queue.stream().collect(Collectors.joining("\n"));
+            Platform.runLater(() -> {
+                logsContent.clear();
+                logsContent.appendText(text);
+            });
         }
     }
 
