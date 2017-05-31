@@ -15,13 +15,13 @@
  */
 package com.exalttech.trex.core;
 
+import com.cisco.trex.stateless.model.RPCResponse;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.remote.exceptions.TrafficException;
 import com.exalttech.trex.remote.models.TrafficResponse;
 import com.exalttech.trex.remote.models.apisync.ApiSyncResult;
-import com.exalttech.trex.remote.models.common.RPCResult;
 import com.exalttech.trex.remote.models.multiplier.Multiplier;
 import com.exalttech.trex.remote.models.params.*;
 import com.exalttech.trex.remote.models.profiles.Profile;
@@ -78,7 +78,7 @@ public class RPCMethods {
             String response = serverConnectionManager.sendRPCRequest(Constants.ACQUIRE_METHOD, acquireParams);
             response = Util.removeFirstBrackets(response);
 
-            RPCResult rpcResult = mapper.readValue(response, RPCResult.class);
+            RPCResponse rpcResult = mapper.readValue(response, RPCResponse.class);
             String handler = mapper.readValue(rpcResult.getResult(), String.class);
             connectionHandler.put(portID, handler);
             serverConnectionManager.propagatePortHandler(portID, handler);

@@ -1,5 +1,8 @@
 package com.exalttech.trex.core;
 
+import com.cisco.trex.stateless.model.stats.ActivePGIdsRPCResult;
+import com.cisco.trex.stateless.model.stats.PGIdStatsRPCResult;
+import com.cisco.trex.stateless.model.RPCResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -7,10 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.exalttech.trex.remote.models.common.RPCResult;
-import com.exalttech.trex.remote.models.stats.ActivePGIdsRPCResult;
-import com.exalttech.trex.remote.models.stats.PGIdStatsRPCResult;
 
 
 public class RPCCommands {
@@ -46,7 +45,7 @@ public class RPCCommands {
             stringParameters = jsonParameters.substring(1, jsonParameters.length() - 1);
         }
         final String jsonRPCResult = ConnectionManager.getInstance().sendRequest(command, stringParameters);
-        final RPCResult[] rpcResult = new ObjectMapper().readValue(jsonRPCResult, RPCResult[].class);
+        final RPCResponse[] rpcResult = new ObjectMapper().readValue(jsonRPCResult, RPCResponse[].class);
         return rpcResult[0].getResult();
     }
 }
