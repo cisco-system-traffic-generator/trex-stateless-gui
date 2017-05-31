@@ -687,6 +687,8 @@ public class ConnectionManager {
      * @param res
      */
     private void handleAsyncResponse(String res) {
+        LogsController.getInstance().appendConsoleViewText(res);
+
         if (res.contains(Constants.TREX_GLOBAL_TAG)) {
             AsyncResponseManager.getInstance().setTrexGlobalResponse(res);
         } else if (res.contains(Constants.TREX_EVENT)) {
