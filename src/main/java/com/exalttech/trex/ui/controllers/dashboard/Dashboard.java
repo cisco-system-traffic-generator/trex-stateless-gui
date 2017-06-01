@@ -30,6 +30,8 @@ import com.exalttech.trex.util.Initialization;
 
 
 public class Dashboard extends DialogView implements Initializable {
+    private static final String PORTS_TAB_LABEL = "Ports";
+
     @FXML
     private BorderPane root;
     @FXML
@@ -68,7 +70,7 @@ public class Dashboard extends DialogView implements Initializable {
 
     @FXML
     public void handleTabChanged(final Event event) {
-        final boolean isPortsTab = tabPane.getSelectionModel().getSelectedItem().getText().equals("Ports");
+        final boolean isPortsTab = tabPane.getSelectionModel().getSelectedItem().getText().equals(PORTS_TAB_LABEL);
         portsSelector.setVisible(isPortsTab);
         streamsSelector.setVisible(!isPortsTab);
     }
