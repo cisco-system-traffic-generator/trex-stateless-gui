@@ -31,11 +31,15 @@ public class ActivePGIDsService extends ScheduledService<Set<Integer>> {
                 Set<Integer> pgIDs = null;
                 try {
                     final ActivePGIdsRPCResult activePGIdsRPCResult = RPCCommands.getActivePGIds();
-                    final Integer[] flowStats = activePGIdsRPCResult.getIds().getFlowStats();
-                    final Integer[] latency = activePGIdsRPCResult.getIds().getLatency();
+                    final int[] flowStats = activePGIdsRPCResult.getIds().getFlowStats();
+                    final int[] latency = activePGIdsRPCResult.getIds().getLatency();
                     pgIDs = new HashSet<>();
-                    pgIDs.addAll(Arrays.asList(flowStats));
-                    pgIDs.addAll(Arrays.asList(latency));
+                    for (final int pgID : flowStats) {
+                        pgIDs.add(pgID);
+                    }
+                    for (final int pgID : latency) {
+                        pgIDs.add(pgID);
+                    }
                 } catch (Exception exc) {
                     LOG.error("Failed to get active PGIDs", exc);
                 }
