@@ -99,7 +99,6 @@ public class DashboardStreamsSelector extends GridPane {
         selectedStreamsContainer.getChildren().clear();
         streamsContainer.getChildren().clear();
 
-        int index = 0;
         for (final Map.Entry<Integer, String> entry : selectedPGIds.entrySet()) {
             final Integer pgid = entry.getKey();
             selectedStreamsContainer.getChildren().add(
