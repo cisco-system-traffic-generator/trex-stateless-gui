@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<?import java.lang.Integer?>
 <?import java.lang.String?>
 
 
@@ -19,11 +18,11 @@
          fx:id="root"
          minWidth="200.0"
          maxWidth="200.0"
-         styleClass="dashboardFilterPanel"
+         styleClass="dashboard-filter-panel"
          fillWidth="true">
     <HBox spacing="10.0"
           alignment="CENTER_LEFT"
-          styleClass="dashboardFilterPanelHeader">
+          styleClass="dashboard-filter-panel-border-bottom">
         <padding>
             <Insets top="10" right="10" bottom="10" left="10"/>
         </padding>
@@ -54,36 +53,4 @@
               fillWidth="true"
               spacing="10.0"/>
     </ScrollPane>
-    <HBox spacing="10.0"
-          alignment="CENTER_LEFT"
-          styleClass="dashboardFilterPanelFooter">
-        <padding>
-            <Insets top="10" right="10" bottom="10" left="10"/>
-        </padding>
-        <Label text="Streams Count:"/>
-        <AnchorPane HBox.hgrow="ALWAYS">
-            <ComboBox fx:id="streamsCountSelector"
-                      onAction="#handleStreamsCountSelectorUpdated"
-                      AnchorPane.topAnchor="0.0"
-                      AnchorPane.rightAnchor="0.0"
-                      AnchorPane.bottomAnchor="0.0"
-                      AnchorPane.leftAnchor="0.0">
-                <value>
-                    <Integer fx:value="8"/>
-                </value>
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <Integer fx:value="1"/>
-                        <Integer fx:value="2"/>
-                        <Integer fx:value="3"/>
-                        <Integer fx:value="4"/>
-                        <Integer fx:value="5"/>
-                        <Integer fx:value="6"/>
-                        <Integer fx:value="7"/>
-                        <Integer fx:value="8"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
-        </AnchorPane>
-    </HBox>
 </fx:root>

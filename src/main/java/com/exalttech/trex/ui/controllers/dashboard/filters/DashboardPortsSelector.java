@@ -13,19 +13,17 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.util.Initialization;
 
 
-public class DashboardFilters extends VBox {
+public class DashboardPortsSelector extends VBox {
     @FXML
     private ComboBox<String> portFilterSelector;
     @FXML
     private VBox portCheckBoxListContainer;
-    @FXML
-    private ComboBox<Integer> streamsCountSelector;
 
     private EventHandler<Event> onFiltersChanged;
     private Set<Integer> selectedPortIndexes = new HashSet<>();
 
-    public DashboardFilters() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/filters/DashboardFilters.fxml");
+    public DashboardPortsSelector() {
+        Initialization.initializeFXML(this, "/fxml/Dashboard/filters/DashboardPortsSelector.fxml");
 
         buildPortsList();
     }
@@ -40,10 +38,6 @@ public class DashboardFilters extends VBox {
 
     public Set<Integer> getSelectedPortIndexes() {
         return selectedPortIndexes;
-    }
-
-    public int getStreamsCount() {
-        return streamsCountSelector.getValue();
     }
 
     @FXML

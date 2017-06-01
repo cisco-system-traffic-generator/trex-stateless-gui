@@ -1373,15 +1373,54 @@ ToggleSwitch {
     -fx-background-color: #ffffff;
 }
 
-.dashboardFilterPanel {
+.dashboard-filter-panel {
     -fx-background-color: #ffffff;
     -fx-border-color: #bfbfbf;
 }
 
-.dashboardFilterPanelHeader {
-    -fx-border-color: transparent transparent #bfbfbf transparent;
+.dashboard-filter-panel-border-bottom {
+    -fx-border-color: #bfbfbf;
+    -fx-border-width: 0 0 1px 0;
 }
 
-.dashboardFilterPanelFooter {
-    -fx-border-color: #bfbfbf transparent transparent transparent;
+.dashboard-filter-panel-footer-border-top {
+    -fx-border-color: #bfbfbf;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.dashboard-filter-panel-header {
+    -fx-background-color: #f3f3f3;
+    -fx-border-color: #bfbfbf;
+    -fx-border-width: 0 0 1px 0;
+    -fx-font-weight: bold;
+}
+
+.dashboard-stream-legend {
+    -fx-border-radius: 50%;
+    -fx-border-width: 2px;
+}
+
+.add-icon {
+    -fx-background-image: url("/icons/add.png");
+    -fx-background-size: 12 12;
+    -fx-cursor: hand;
+}
+
+.add-icon:hover{
+    -fx-background-image: url("/icons/add_hovered.png");
+}
+
+.delete-icon {
+    -fx-background-image: url("/icons/delete.png");
+    -fx-background-size: 12 12;
+    -fx-cursor: hand;
+}
+
+.delete-icon:hover{
+    -fx-background-image: url("/icons/delete_hovered.png");
+}
+
+.error-icon {
+    -fx-background-image: url("/icons/error.png");
+    -fx-background-size: 12 12;
 }

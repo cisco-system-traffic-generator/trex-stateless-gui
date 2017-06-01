@@ -13,7 +13,8 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.exalttech.trex.util.Initialization;
 
@@ -31,9 +32,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
     private DashboardTabChartsUpdatable chart;
     private StringProperty chartType;
     private IntegerProperty interval;
-    private Set<Integer> lastVisiblePorts;
-    private Set<String> lastVisibleStreams;
-    private int lastStreamsCount;
+    private Map<Integer, String> lastSelectedPGIds = new HashMap<>();
 
     public DashboardTabChartsContainer(String selectedType, IntegerProperty interval) {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/DashboardTabChartsContainer.fxml");
@@ -60,11 +59,9 @@ public class DashboardTabChartsContainer extends AnchorPane {
         );
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
-        chart.update(visiblePorts, visibleStreams, streamsCount);
-        lastVisiblePorts = visiblePorts;
-        lastVisibleStreams = visibleStreams;
-        lastStreamsCount = streamsCount;
+    public void update(final Map<Integer, String> selectedPGIds) {
+        chart.update(selectedPGIds);
+        lastSelectedPGIds = selectedPGIds;
     }
 
     private MenuItem createContextMenuItem(String chartType) {
@@ -89,7 +86,7 @@ public class DashboardTabChartsContainer extends AnchorPane {
         AnchorPane.setRightAnchor((Node) chart, 0.0);
         AnchorPane.setBottomAnchor((Node) chart, 0.0);
         AnchorPane.setLeftAnchor((Node) chart, 0.0);
-        chart.update(lastVisiblePorts, lastVisibleStreams, lastStreamsCount);
+        chart.update(lastSelectedPGIds);
 
         root.getChildren().clear();
         root.getChildren().add((Node) chart);

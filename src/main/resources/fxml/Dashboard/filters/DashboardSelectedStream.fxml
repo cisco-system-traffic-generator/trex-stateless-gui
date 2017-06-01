@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.HBox"
+         alignment="CENTER_LEFT"
+         spacing="5.0">
+    <Pane fx:id="legend"
+          minWidth="12.0"
+          minHeight="12.0"
+          maxWidth="12.0"
+          maxHeight="12.0"
+          styleClass="dashboard-stream-legend"/>
+    <Label fx:id="label"/>
+    <Label fx:id="error"
+           minWidth="12.0"
+           minHeight="12.0"
+           maxWidth="12.0"
+           maxHeight="12.0"
+           visible="false"
+           styleClass="error-icon">
+        <tooltip>
+            <Tooltip text="PG ID was removed from the server"/>
+        </tooltip>
+    </Label>
+    <HBox alignment="CENTER_RIGHT"
+          HBox.hgrow="ALWAYS">
+        <Label minWidth="12.0"
+               minHeight="12.0"
+               maxWidth="12.0"
+               maxHeight="12.0"
+               styleClass="delete-icon"
+               onMouseClicked="#handleDeleteClicked"/>
+    </HBox>
+</fx:root>

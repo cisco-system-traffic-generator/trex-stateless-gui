@@ -5,7 +5,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
@@ -25,7 +24,7 @@ public class DashboardTabStreams extends AnchorPane {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/streams/DashboardTabStreams.fxml");
     }
 
-    public void update(Set<Integer> visiblePorts, Set<String> visibleStreams, int streamsCount) {
+    public void update(final Map<Integer, String> selectedPGIds) {
         StatsLoader statsLoader = StatsLoader.getInstance();
         Map<String, ArrayHistory<StatsFlowStream>> streams = statsLoader.getFlowStatsHistoryMap();
 
@@ -45,28 +44,30 @@ public class DashboardTabStreams extends AnchorPane {
         table.add(new StatisticLabelCell("Tx bytes", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 8);
         table.add(new StatisticLabelCell("Rx bytes", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 9);
 
-        AtomicInteger rowIndex = new AtomicInteger(1);
+        int rowIndex = 1;
 
         synchronized (streams) {
-            streams.forEach((String stream, ArrayHistory<StatsFlowStream> history) -> {
-                if (rowIndex.get() > streamsCount || (visibleStreams != null && !visibleStreams.contains(stream)) || history.isEmpty()) {
-                    return;
+            for (final Integer pgid : selectedPGIds.keySet()) {
+                final String stream = String.valueOf(pgid);
+                final ArrayHistory<StatsFlowStream> history = streams.get(String.valueOf(stream));
+                if (history == null || history.isEmpty()) {
+                    continue;
                 }
 
                 StatsFlowStream last = history.last();
-                table.add(new HeaderCell(secondHeaderWidth, stream), rowIndex.get(), 0);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxPps(visiblePorts))), true, "pkt/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 1);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxBpsL2(visiblePorts))), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 2);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxBpsL1(visiblePorts))), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 3);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalRxPps(visiblePorts))), true, "pkt/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 4);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalRxBps(visiblePorts))), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 5);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalTxPkts(visiblePorts)), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 6);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalRxPkts(visiblePorts)), true, "pkts"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 7);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalTxBytes(visiblePorts)), true, "B"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex.get(), 8);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalRxBytes(visiblePorts)), true, "B"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex.get(), 9);
+                table.add(new HeaderCell(secondHeaderWidth, stream), rowIndex, 0);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxPps())), true, "pkt/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 1);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxBpsL2())), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex, 2);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalTxBpsL1())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 3);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalRxPps())), true, "pkt/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex, 4);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(last.calcTotalRxBps())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 5);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalTxPkts()), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex, 6);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalRxPkts()), true, "pkts"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 7);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalTxBytes()), true, "B"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex, 8);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(last.calcTotalRxBytes()), true, "B"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 9);
 
-                rowIndex.addAndGet(1);
-            });
+                rowIndex++;
+            }
         }
     }
 
