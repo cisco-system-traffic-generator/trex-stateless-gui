@@ -68,17 +68,11 @@ public class DashboardStreamsSelector extends GridPane {
     private void handleStreamsReceived(final WorkerStateEvent event) {
         final Set<Integer> receivedPGIds = (Set<Integer>) event.getSource().getValue();
 
-        if (receivedPGIds == null) {
+        if (receivedPGIds == null || pgids.equals(receivedPGIds)) {
             return;
         }
 
-        synchronized (receivedPGIds) {
-            if (pgids.equals(receivedPGIds)) {
-                return;
-            }
-
-            pgids = new HashSet<>(receivedPGIds);
-        }
+        pgids = receivedPGIds;
 
         if (!pgids.isEmpty() && selectedPGIds == null) {
             selectedPGIds = new HashMap<>();
