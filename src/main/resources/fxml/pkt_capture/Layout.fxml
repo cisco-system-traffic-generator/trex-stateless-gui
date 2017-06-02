@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.cisco.trex.stl.gui.controllers.Recorders?>
+<?import com.cisco.trex.stl.gui.controllers.Monitor?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.layout.AnchorPane?>
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml"
+            style="-fx-background-color: #f0f0f0"
+            prefWidth="1200"
+            prefHeight="700"
+            fx:controller="com.cisco.trex.stl.gui.controllers.PacketCaptureDashboard"
+            fx:id="root">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <center>
+        <AnchorPane>
+            <TabPane
+                AnchorPane.bottomAnchor="5"
+                AnchorPane.leftAnchor="5"
+                AnchorPane.rightAnchor="5"
+                AnchorPane.topAnchor="5"
+                styleClass="statRightPaneContent, floating"
+            >
+                <Tab fx:id="monitorTab" text="Monitor" closable="false">
+                    <Monitor fx:id="monitor"/>
+                </Tab>
+                <Tab fx:id="recordersTab" text="Recorders" closable="false">
+                    <Recorders fx:id="recorders"/>
+                </Tab>
+            </TabPane>
+        </AnchorPane>
+    </center>
+</BorderPane>
