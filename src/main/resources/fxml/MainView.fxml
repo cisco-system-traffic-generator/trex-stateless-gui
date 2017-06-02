@@ -54,6 +54,13 @@
                               onAction="#handleStatMenuItemClicked"/>
                 </Menu>
                 <Menu mnemonicParsing="false"
+                      text="Capture">
+                    <MenuItem fx:id="captureMenuItem"
+                              mnemonicParsing="false"
+                              text="Open"
+                              onAction="#handleCaptureItemClicked"/>
+                </Menu>
+                <Menu mnemonicParsing="false"
                       text="Help">
                     <MenuItem mnemonicParsing="false"
                               text="About"
