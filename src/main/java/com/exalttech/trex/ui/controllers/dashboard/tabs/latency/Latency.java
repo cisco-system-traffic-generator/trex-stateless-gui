@@ -17,6 +17,7 @@ import com.cisco.trex.stateless.model.stats.LatencyStat;
 import com.cisco.trex.stateless.model.stats.LatencyStatErr;
 import com.cisco.trex.stateless.model.stats.LatencyStatLat;
 
+import com.exalttech.trex.ui.controllers.dashboard.FlowStatsAnchorPane;
 import com.exalttech.trex.ui.models.stats.FlowStatPoint;
 import com.exalttech.trex.ui.models.stats.LatencyStatPoint;
 import com.exalttech.trex.ui.views.statistics.cells.CellType;
@@ -29,7 +30,7 @@ import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class Latency extends AnchorPane {
+public class Latency extends FlowStatsAnchorPane {
     private static final int FIRST_COLUMN_WIDTH = 120;
     private static final int COLUMN_WIDTH = 150;
     private static final int WINDOW_SIZE = 10;
@@ -42,28 +43,11 @@ public class Latency extends AnchorPane {
     @FXML
     private GridPane table;
 
-    private boolean isActive = false;
-    private PGIDStatsStorage.StatsChangedListener statsChangedListener = this::render;
-
     public Latency() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/latency/Latency.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
 
         toggleGroupMode.selectedToggleProperty().addListener(this::typeChanged);
-    }
-
-    public void setActive(final boolean isActive) {
-        if (this.isActive == isActive) {
-            return;
-        }
-
-        this.isActive = isActive;
-        if (this.isActive) {
-            StatsStorage.getInstance().getPGIDStatsStorage().addStatsChangeListener(statsChangedListener);
-            render();
-        } else {
-            StatsStorage.getInstance().getPGIDStatsStorage().removeStatsChangeListener(statsChangedListener);
-        }
     }
 
     private void onWindowCloseRequest(final WindowEvent window) {
@@ -82,7 +66,8 @@ public class Latency extends AnchorPane {
         }
     }
 
-    private void render() {
+    @Override
+    protected void render() {
         if (((ToggleButton)toggleGroupMode.getSelectedToggle()).getText().equals("Window")) {
             renderWindow();
         } else {

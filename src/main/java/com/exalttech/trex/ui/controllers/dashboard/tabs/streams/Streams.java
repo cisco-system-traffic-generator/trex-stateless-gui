@@ -7,6 +7,7 @@ import javafx.stage.WindowEvent;
 
 import java.util.*;
 
+import com.exalttech.trex.ui.controllers.dashboard.FlowStatsAnchorPane;
 import com.exalttech.trex.ui.models.stats.FlowStatPoint;
 import com.exalttech.trex.ui.views.statistics.cells.CellType;
 import com.exalttech.trex.ui.views.statistics.cells.HeaderCell;
@@ -18,39 +19,23 @@ import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class Streams extends AnchorPane {
+public class Streams extends FlowStatsAnchorPane {
     @FXML
     private AnchorPane root;
     @FXML
     private GridPane table;
-
-    private boolean isActive = false;
-    private PGIDStatsStorage.StatsChangedListener statsChangedListener = this::render;
 
     public Streams() {
         Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/streams/Streams.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
     }
 
-    public void setActive(final boolean isActive) {
-        if (this.isActive == isActive) {
-            return;
-        }
-
-        this.isActive = isActive;
-        if (this.isActive) {
-            StatsStorage.getInstance().getPGIDStatsStorage().addStatsChangeListener(statsChangedListener);
-            render();
-        } else {
-            StatsStorage.getInstance().getPGIDStatsStorage().removeStatsChangeListener(statsChangedListener);
-        }
-    }
-
     private void onWindowCloseRequest(final WindowEvent window) {
         setActive(false);
     }
 
-    private void render() {
+    @Override
+    protected void render() {
         int firstColumnWidth = 120;
         int secondHeaderWidth = 150;
 
