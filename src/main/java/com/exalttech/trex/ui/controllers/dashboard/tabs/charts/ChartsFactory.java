@@ -3,7 +3,7 @@ package com.exalttech.trex.ui.controllers.dashboard.tabs.charts;
 import javafx.beans.property.IntegerProperty;
 
 
-public class DashboardTabChartsFactory {
+public class ChartsFactory {
     public static class ChartTypes {
         public static final String TX_PPS = "Tx pps";
         public static final String RX_PPS = "Rx pps";
@@ -17,28 +17,28 @@ public class DashboardTabChartsFactory {
         public static final String LATENCY_HISTOGRAM = "Latency Histogram";
     }
 
-    public static DashboardTabChartsUpdatable create(String chartType, IntegerProperty interval) {
+    public static FlowChart create(String chartType, IntegerProperty interval) {
         switch (chartType) {
             case ChartTypes.TX_PPS:
-                return new DashboardTabChartsTxPps(interval);
+                return new TxPps(interval);
             case ChartTypes.RX_PPS:
-                return new DashboardTabChartsRxPps(interval);
+                return new RxPps(interval);
             case ChartTypes.TX_BPS_L1:
-                return new DashboardTabChartsTxBpsL1(interval);
+                return new TxBpsL1(interval);
             case ChartTypes.TX_BPS_L2:
-                return new DashboardTabChartsTxBpsL2(interval);
+                return new TxBpsL2(interval);
             case ChartTypes.RX_BPS_L2:
-                return new DashboardTabChartsRxBps(interval);
+                return new RxBps(interval);
             case ChartTypes.MAX_LATENCY:
-                return new DashboardTabChartsMaxLatency(interval);
+                return new MaxLatency(interval);
             case ChartTypes.AVG_LATENCY:
-                return new DashboardTabChartsAvgLatency(interval);
+                return new AvgLatency(interval);
             case ChartTypes.JITTER_LATENCY:
-                return new DashboardTabChartsLatencyJitter(interval);
+                return new LatencyJitter(interval);
             case ChartTypes.TEMPORARY_MAX_LATENCY:
-                return new DashboardTabChartsTemporaryMaxLatency(interval);
+                return new TemporaryMaxLatency(interval);
             case ChartTypes.LATENCY_HISTOGRAM:
-                return new DashboardTabChartsLatencyHistogram();
+                return new LatencyHistogram();
         }
         throw new IllegalArgumentException(String.format("Unknown chart type: %s", chartType));
     }

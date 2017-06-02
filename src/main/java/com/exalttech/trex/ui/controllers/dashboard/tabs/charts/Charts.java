@@ -11,17 +11,15 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
-import java.util.Map;
-
 import com.exalttech.trex.util.Initialization;
 
 
-public class DashboardTabCharts extends BorderPane {
+public class Charts extends BorderPane {
     private static String[] defaultChartTypes = new String[]{
-            DashboardTabChartsFactory.ChartTypes.TX_PPS,
-            DashboardTabChartsFactory.ChartTypes.RX_PPS,
-            DashboardTabChartsFactory.ChartTypes.TX_BPS_L2,
-            DashboardTabChartsFactory.ChartTypes.RX_BPS_L2
+            ChartsFactory.ChartTypes.TX_PPS,
+            ChartsFactory.ChartTypes.RX_PPS,
+            ChartsFactory.ChartTypes.TX_BPS_L2,
+            ChartsFactory.ChartTypes.RX_BPS_L2
     };
 
     @FXML
@@ -37,16 +35,16 @@ public class DashboardTabCharts extends BorderPane {
 
     private LayoutConfiguration[] layoutConfigurations;
     private int selectedConfigurationIndex;
-    private DashboardTabChartsContainer[] charts;
+    private ChartContainer[] charts;
     private IntegerProperty interval;
 
-    public DashboardTabCharts() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/DashboardTabCharts.fxml");
-        charts = new DashboardTabChartsContainer[4];
+    public Charts() {
+        Initialization.initializeFXML(this, "/fxml/Dashboard/tabs/charts/Charts.fxml");
+        charts = new ChartContainer[4];
         interval = new SimpleIntegerProperty();
         interval.bind(intervalComboBox.valueProperty());
         initLayoutConfigurations();
-        handleLayoutChanged(1);
+        rebuildLayout(1);
     }
 
     @FXML
@@ -62,11 +60,11 @@ public class DashboardTabCharts extends BorderPane {
         handleLayoutChanged(4);
     }
 
-    public void update(final Map<Integer, String> selectedPGIds) {
+    public void setActive(final boolean isActive) {
         LayoutConfiguration layoutConfiguration = layoutConfigurations[selectedConfigurationIndex];
         int size = layoutConfiguration.getColumnsCount()*layoutConfiguration.getRowsCount();
         for (int i = 0; i < size; ++i) {
-            charts[i].update(selectedPGIds);
+            charts[i].setActive(isActive);
         }
     }
 
@@ -77,7 +75,13 @@ public class DashboardTabCharts extends BorderPane {
         layoutConfigurations[2] = new LayoutConfiguration(2, 2);
     }
 
-    private void handleLayoutChanged(int gridSize) {
+    private void handleLayoutChanged(final int gridSize) {
+        setActive(false);
+        rebuildLayout(gridSize);
+        setActive(true);
+    }
+
+    private void rebuildLayout(int gridSize) {
         switch (gridSize) {
             case 1:
                 layoutIcon1Label.setDisable(true);
@@ -113,9 +117,9 @@ public class DashboardTabCharts extends BorderPane {
         }
     }
 
-    private DashboardTabChartsContainer getChart(int index) {
+    private ChartContainer getChart(int index) {
         if (charts[index] == null) {
-            charts[index] = new DashboardTabChartsContainer(defaultChartTypes[index], interval);
+            charts[index] = new ChartContainer(defaultChartTypes[index], interval);
         }
         return charts[index];
     }
