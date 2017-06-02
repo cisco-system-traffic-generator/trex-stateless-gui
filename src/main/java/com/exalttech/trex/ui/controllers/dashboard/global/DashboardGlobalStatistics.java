@@ -1,5 +1,8 @@
 package com.exalttech.trex.ui.controllers.dashboard.global;
 
+import com.exalttech.trex.ui.views.storages.PGIDStatsStorage;
+import com.exalttech.trex.ui.views.storages.PGIDsStorage;
+import com.exalttech.trex.ui.views.storages.StatsStorage;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
@@ -90,8 +93,10 @@ public class DashboardGlobalStatistics extends GridPane {
         dropRate.setValue(Util.getFormatted(currentStatsList.get("m_rx_drop_bps"), true, "b/s"));
         queueFull.setValue(Util.getFormatted(queue, true, "pkts"));
 
-        final int streamsCount = StatsLoader.getInstance().getFlowStatsHistoryMap().keySet().size();
-        totalStream.setValue(String.valueOf(streamsCount));
+        final PGIDsStorage pgIdStatsStorage = StatsStorage.getInstance().getPGIDsStorage();
+        synchronized (pgIdStatsStorage.getDataLock()) {
+            totalStream.setValue(String.valueOf(pgIdStatsStorage.getPgIDs().size()));
+        }
     }
 
     private void onWindowCloseRequest(WindowEvent window) {

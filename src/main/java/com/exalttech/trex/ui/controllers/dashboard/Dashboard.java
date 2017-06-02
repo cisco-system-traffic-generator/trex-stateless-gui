@@ -1,5 +1,6 @@
 package com.exalttech.trex.ui.controllers.dashboard;
 
+import com.exalttech.trex.ui.views.storages.StatsStorage;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -12,41 +13,43 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 
-import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardFilters;
-import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts;
-import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency;
-import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts;
-import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.DashboardTabStreams;
+import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsSelector;
+import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardStreamsSelector;
+import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.Charts;
+import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.Latency;
+import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.Ports;
+import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.Streams;
 import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.models.stats.flow.StatsFlowStream;
 import com.exalttech.trex.ui.views.services.RefreshingService;
-import com.exalttech.trex.ui.views.statistics.LatencyStatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
-import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
 
 
 public class Dashboard extends DialogView implements Initializable {
+    private static final String PORTS_TAB_LABEL = "Ports";
+    private static final String STREAMS_TAB_LABEL = "Streams";
+    private static final String LATENCY_TAB_LABEL = "Latency";
+    private static final String CHARTS_TAB_LABEL = "Charts";
+
     @FXML
     private BorderPane root;
     @FXML
-    private DashboardFilters portsFilter;
+    private DashboardPortsSelector portsSelector;
+    @FXML
+    private DashboardStreamsSelector streamsSelector;
     @FXML
     private TabPane tabPane;
     @FXML
-    private DashboardTabPorts ports;
+    private Ports ports;
     @FXML
-    private DashboardTabStreams streams;
+    private Streams streams;
     @FXML
-    private DashboardTabLatency latency;
+    private Latency latency;
     @FXML
-    private DashboardTabCharts charts;
+    private Charts charts;
     @FXML
     private Button clearButton;
 
@@ -63,37 +66,71 @@ public class Dashboard extends DialogView implements Initializable {
     }
 
     @Override
-    public void onEnterKeyPressed(Stage stage) {
+    public void onEnterKeyPressed(final Stage stage) {
         // Nothing to do
     }
 
     @FXML
-    public void handleUpdate(Event event) {
-        String selectedTab = tabPane.getSelectionModel().getSelectedItem().getText();
-        Set<Integer> visiblePorts = portsFilter.getSelectedPortIndexes();
-        if (selectedTab.equals("Ports")) {
-            ports.update(visiblePorts);
+    public void handleTabChanged(final Event event) {
+        switch (tabPane.getSelectionModel().getSelectedItem().getText()) {
+            case PORTS_TAB_LABEL:
+                portsSelector.setVisible(true);
+                streamsSelector.setVisible(false);
+                if (streams != null) {
+                    streams.setActive(false);
+                }
+                if (latency != null) {
+                    latency.setActive(false);
+                }
+                if (charts != null) {
+                    charts.setActive(false);
+                }
+                break;
+            case STREAMS_TAB_LABEL:
+                portsSelector.setVisible(false);
+                streamsSelector.setVisible(true);
+                streams.setActive(true);
+                latency.setActive(false);
+                charts.setActive(false);
+                break;
+            case LATENCY_TAB_LABEL:
+                portsSelector.setVisible(false);
+                streamsSelector.setVisible(true);
+                streams.setActive(false);
+                latency.setActive(true);
+                charts.setActive(false);
+                break;
+            case CHARTS_TAB_LABEL:
+                portsSelector.setVisible(false);
+                streamsSelector.setVisible(true);
+                streams.setActive(false);
+                latency.setActive(false);
+                charts.setActive(true);
+                break;
         }
-        int streamsCount = portsFilter.getStreamsCount();
-        Set<String> visibleStreams = getVisibleStream(visiblePorts);
-        switch (selectedTab) {
-            case "Streams":
-                streams.update(visiblePorts, visibleStreams, streamsCount);
-                break;
-            case "Latency":
-                latency.update(visiblePorts, visibleStreams, streamsCount);
-                break;
-            case "Charts":
-                charts.update(visiblePorts, visibleStreams, streamsCount);
-                break;
-        }
+
+        final boolean isPortsTab = tabPane.getSelectionModel().getSelectedItem().getText().equals(PORTS_TAB_LABEL);
+        portsSelector.setVisible(isPortsTab);
+        streamsSelector.setVisible(!isPortsTab);
     }
 
     @FXML
-    public void handleClearCacheButtonClicked(ActionEvent event) {
-        StatsLoader.getInstance().reset();
-        LatencyStatsLoader.getInstance().reset();
+    public void handleFiltersChanged(final Event event) {
         handleUpdate(event);
+    }
+
+    @FXML
+    public void handleClearCacheButtonClicked(final ActionEvent event) {
+        StatsLoader.getInstance().reset();
+        StatsStorage.getInstance().getPGIDStatsStorage().reset();
+        handleUpdate(event);
+    }
+
+    private void handleUpdate(final Event event) {
+        final String selectedTab = tabPane.getSelectionModel().getSelectedItem().getText();
+        if (selectedTab.equals(PORTS_TAB_LABEL)) {
+            ports.update(portsSelector.getSelectedPortIndexes());
+        }
     }
 
     private void onWindowCloseRequest(WindowEvent window) {
@@ -101,37 +138,5 @@ public class Dashboard extends DialogView implements Initializable {
             refreshingService.cancel();
         }
         ports.reset();
-    }
-
-    private static Set<String> getVisibleStream(Set<Integer> visiblePorts) {
-        if (visiblePorts == null) {
-            return null;
-        }
-
-        final Set<String> visibleStreams = new HashSet<>();
-
-        if (visiblePorts.isEmpty()) {
-            return visibleStreams;
-        }
-
-        final Map<String, ArrayHistory<StatsFlowStream>> flowStats = StatsLoader.getInstance().getFlowStatsHistoryMap();
-
-        flowStats.forEach((String stream, ArrayHistory<StatsFlowStream> streamHistory) -> {
-            final StatsFlowStream last = streamHistory.last();
-            if (last == null) {
-                return;
-            }
-
-            if (
-                    visiblePorts.stream().anyMatch(last.getTxPkts()::containsKey)
-                    || visiblePorts.stream().anyMatch(last.getTxBytes()::containsKey)
-                    || visiblePorts.stream().anyMatch(last.getRxPkts()::containsKey)
-                    || visiblePorts.stream().anyMatch(last.getRxBytes()::containsKey)
-            ) {
-                visibleStreams.add(stream);
-            }
-        });
-
-        return visibleStreams;
     }
 }

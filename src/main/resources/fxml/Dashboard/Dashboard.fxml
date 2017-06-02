@@ -7,12 +7,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardFilters?>
+<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsSelector?>
+<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardStreamsSelector?>
 <?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatistics?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.DashboardTabCharts?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.DashboardTabLatency?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.DashboardTabPorts?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.DashboardTabStreams?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.Charts?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.Latency?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.Ports?>
+<?import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.Streams?>
 
 
 <BorderPane xmlns="http://javafx.com/javafx/8"
@@ -30,12 +31,18 @@
     </top>
     <left>
         <AnchorPane>
-            <DashboardFilters fx:id="portsFilter"
-                              onFiltersChanged="#handleUpdate"
-                              AnchorPane.leftAnchor="0.0"
-                              AnchorPane.rightAnchor="10.0"
-                              AnchorPane.topAnchor="11.0"
-                              AnchorPane.bottomAnchor="1.0"/>
+            <DashboardPortsSelector fx:id="portsSelector"
+                                    onFiltersChanged="#handleFiltersChanged"
+                                    AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="10.0"
+                                    AnchorPane.topAnchor="11.0"
+                                    AnchorPane.bottomAnchor="1.0"/>
+            <DashboardStreamsSelector fx:id="streamsSelector"
+                                      visible="false"
+                                      AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.rightAnchor="10.0"
+                                      AnchorPane.topAnchor="11.0"
+                                      AnchorPane.bottomAnchor="1.0"/>
         </AnchorPane>
     </left>
     <center>
@@ -48,20 +55,20 @@
                      AnchorPane.topAnchor="5.0"
                      AnchorPane.bottomAnchor="0.0">
                 <Tab text="Ports"
-                     onSelectionChanged="#handleUpdate">
-                    <DashboardTabPorts fx:id="ports"/>
+                     onSelectionChanged="#handleTabChanged">
+                    <Ports fx:id="ports"/>
                 </Tab>
                 <Tab text="Streams"
-                     onSelectionChanged="#handleUpdate">
-                    <DashboardTabStreams fx:id="streams"/>
+                     onSelectionChanged="#handleTabChanged">
+                    <Streams fx:id="streams"/>
                 </Tab>
                 <Tab text="Latency"
-                     onSelectionChanged="#handleUpdate">
-                    <DashboardTabLatency fx:id="latency"/>
+                     onSelectionChanged="#handleTabChanged">
+                    <Latency fx:id="latency"/>
                 </Tab>
                 <Tab text="Charts"
-                     onSelectionChanged="#handleUpdate">
-                    <DashboardTabCharts fx:id="charts"/>
+                     onSelectionChanged="#handleTabChanged">
+                    <Charts fx:id="charts"/>
                 </Tab>
             </TabPane>
             <Button fx:id="clearButton"

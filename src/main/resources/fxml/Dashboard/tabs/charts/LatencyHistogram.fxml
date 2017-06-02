@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.layout.AnchorPane"
+         fx:id="root">
+    <BarChart fx:id="histogram"
+              animated="false"
+              verticalGridLinesVisible="false"
+              legendVisible="false"
+              styleClass="statistics-chart"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0">
+        <xAxis>
+            <CategoryAxis fx:id="xAxis"
+                          label="Latency (µs)"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis label="Count"
+                        side="RIGHT"/>
+        </yAxis>
+    </BarChart>
+</fx:root>
