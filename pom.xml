@@ -86,7 +86,7 @@
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-java-sdk</artifactId>
-            <version>a37fe3b</version>
+            <version>d1160fc</version>
         </dependency>
         <dependency>
             <groupId>org.pcap4j</groupId>
