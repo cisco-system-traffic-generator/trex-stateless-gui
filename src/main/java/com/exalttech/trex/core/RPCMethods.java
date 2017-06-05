@@ -49,7 +49,7 @@ import java.util.logging.Level;
 public class RPCMethods {
 
     private static final Logger LOG = Logger.getLogger(RPCMethods.class.getName());
-    private static final int API_VERSION_MAJOR = 3;
+    private static final int API_VERSION_MAJOR = 4;
     private static final int API_VERSION_MINOR = 0;
     private static final String API_VERSION_TYPE = "core";
     private HashMap connectionHandler = new HashMap();
