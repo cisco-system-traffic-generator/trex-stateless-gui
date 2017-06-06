@@ -1,4 +1,4 @@
-package com.exalttech.trex.ui.views.storages;
+package com.cisco.trex.stateless.gui.storages;
 
 import javafx.concurrent.WorkerStateEvent;
 import javafx.util.Duration;
