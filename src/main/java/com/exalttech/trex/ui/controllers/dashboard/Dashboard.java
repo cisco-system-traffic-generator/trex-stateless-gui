@@ -1,6 +1,5 @@
 package com.exalttech.trex.ui.controllers.dashboard;
 
-import com.exalttech.trex.ui.views.storages.StatsStorage;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -14,6 +13,8 @@ import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.cisco.trex.stateless.gui.storages.StatsStorage;
 
 import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsSelector;
 import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardStreamsSelector;

@@ -1,7 +1,4 @@
-package com.exalttech.trex.ui.views.storages;
-
-import com.cisco.trex.stateless.gui.storages.PGIDStatsStorage;
-import com.cisco.trex.stateless.gui.storages.PGIDsStorage;
+package com.cisco.trex.stateless.gui.storages;
 
 
 public class StatsStorage {
