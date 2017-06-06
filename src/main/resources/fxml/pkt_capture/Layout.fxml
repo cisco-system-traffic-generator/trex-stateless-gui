@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.cisco.trex.stl.gui.controllers.Record?>
-<?import com.cisco.trex.stl.gui.controllers.Monitor?>
+<?import com.cisco.trex.stl.gui.controllers.pktcapture.Record?>
+<?import com.cisco.trex.stl.gui.controllers.pktcapture.Monitor?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -10,7 +10,7 @@
 <BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml"
             style="-fx-background-color: #f0f0f0"
-            fx:controller="com.cisco.trex.stl.gui.controllers.PacketCaptureDashboard"
+            fx:controller="com.cisco.trex.stl.gui.controllers.pktcapture.PacketCaptureDashboard"
             fx:id="root">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>

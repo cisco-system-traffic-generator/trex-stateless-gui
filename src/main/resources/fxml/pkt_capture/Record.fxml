@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.cisco.trex.stl.gui.controllers.PortFilter?>
+<?import com.cisco.trex.stl.gui.controllers.pktcapture.PortFilter?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
