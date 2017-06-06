@@ -19,24 +19,24 @@
                 AnchorPane.topAnchor="0"
                 AnchorPane.bottomAnchor="0">
             <HBox alignment="CENTER_LEFT" spacing="10">
-                <PortFilter />
-                <Button text="Start"/>
-                <Button text="Start in WireShark"/>
-                <Button text="Stop "/>
+                <PortFilter fx:id="portFilter" />
+                <Button fx:id="startBtn" styleClass="normalButton" text="Start"/>
+                <Button fx:id="startWSBtn" styleClass="normalButton" text="Start in WireShark"/>
+                <Button fx:id="stopBtn" styleClass="normalButton" text="Stop "/>
             </HBox>
 
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <TableView fx:id="capturedPkts" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="10" VBox.vgrow="ALWAYS">
+                <TableView fx:id="capturedPkts" id="capturedPkts" HBox.hgrow="ALWAYS">
                     <padding>
                         <Insets top="10" />
                     </padding>
                     <columns>
-                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Type" />
-                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Length" />
-                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Source MAC" />
-                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Destination MAC" />
-                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Source IP" />
-                        <TableColumn minWidth="130.0" maxWidth="Infinity" text="Destination IP" />
+                        <TableColumn fx:id="type" maxWidth="140.0" minWidth="140.0" text="Type" />
+                        <TableColumn fx:id="length" maxWidth="80.0" minWidth="80.0" text="Length" />
+                        <TableColumn fx:id="hwSrc"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Source MAC" />
+                        <TableColumn fx:id="hwDst"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Destination MAC" />
+                        <TableColumn fx:id="ipSrc"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Source IP" />
+                        <TableColumn fx:id="ipDst"  minWidth="140.0" maxWidth="Infinity" text="Destination IP" />
                     </columns>
                 </TableView>
             </HBox>
