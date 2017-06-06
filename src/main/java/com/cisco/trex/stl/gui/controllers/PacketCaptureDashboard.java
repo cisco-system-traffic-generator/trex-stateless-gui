@@ -9,7 +9,7 @@ public class PacketCaptureDashboard extends DialogView {
     private Monitor monitor;
     
     @FXML
-    private Recorders recorders;
+    private Recorders record;
 
     public PacketCaptureDashboard() {
         
