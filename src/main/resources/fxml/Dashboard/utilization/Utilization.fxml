@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:id="root"
+         type="javafx.scene.layout.AnchorPane">
+    <VBox spacing="10.0"
+          AnchorPane.leftAnchor="10.0"
+          AnchorPane.rightAnchor="10.0"
+          AnchorPane.topAnchor="10.0"
+          AnchorPane.bottomAnchor="10.0">
+        <HBox alignment="CENTER">
+            <fx:define>
+                <ToggleGroup fx:id="toggleGroupMode"/>
+            </fx:define>
+            <ToggleButton selected="true"
+                          text="CPU"
+                          toggleGroup="$toggleGroupMode"
+                          styleClass="custom-toggle-button-left"
+                          prefWidth="120"/>
+            <ToggleButton text="Mbuf"
+                          toggleGroup="$toggleGroupMode"
+                          styleClass="custom-toggle-button-right"
+                          prefWidth="120"/>
+        </HBox>
+        <ScrollPane styleClass="stats-table-container"
+                    VBox.vgrow="ALWAYS">
+            <AnchorPane>
+                <GridPane fx:id="table"
+                          styleClass="statsTable"
+                          AnchorPane.topAnchor="5.0"
+                          AnchorPane.rightAnchor="5.0"
+                          AnchorPane.bottomAnchor="5.0"
+                          AnchorPane.leftAnchor="5.0"/>
+            </AnchorPane>
+        </ScrollPane>
+    </VBox>
+</fx:root>

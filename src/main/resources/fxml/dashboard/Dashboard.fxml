@@ -12,6 +12,7 @@
 <?import com.cisco.trex.stl.gui.controllers.dashboard.latency.LatencyController?>
 <?import com.cisco.trex.stl.gui.controllers.dashboard.ports.PortsController?>
 <?import com.cisco.trex.stl.gui.controllers.dashboard.streams.StreamsController?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.utilization.UtilizationController?>
 
 
 <BorderPane xmlns="http://javafx.com/javafx/8"
@@ -34,6 +35,10 @@
                      AnchorPane.rightAnchor="0.0"
                      AnchorPane.topAnchor="5.0"
                      AnchorPane.bottomAnchor="0.0">
+                <Tab text="Utilization"
+                     onSelectionChanged="#handleTabChanged">
+                    <UtilizationController fx:id="utilization"/>
+                </Tab>
                 <Tab text="Ports"
                      onSelectionChanged="#handleTabChanged">
                     <PortsController fx:id="ports"/>

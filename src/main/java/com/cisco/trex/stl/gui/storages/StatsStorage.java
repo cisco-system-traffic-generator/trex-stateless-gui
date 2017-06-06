@@ -16,6 +16,7 @@ public class StatsStorage {
 
     private final PGIDsStorage pgIDsStorage = new PGIDsStorage();
     private final PGIDStatsStorage pgIDStatsStorage = new PGIDStatsStorage();
+    private final UtilizationStorage utilizationStorage = new UtilizationStorage();
 
     private StatsStorage() {
         pgIDsStorage.addPGIDsChangedListener(this::handleSelectedPGIDsChanged);
@@ -23,10 +24,13 @@ public class StatsStorage {
 
     public void startPolling() {
         pgIDsStorage.startPolling();
+        utilizationStorage.startPolling();
     }
 
     public void stopPolling() {
         pgIDsStorage.stopPolling();
+        utilizationStorage.stopPolling();
+
         if (pgIDStatsStorage.isRunning()) {
             pgIDStatsStorage.stopPolling();
         }
@@ -38,6 +42,10 @@ public class StatsStorage {
 
     public PGIDStatsStorage getPGIDStatsStorage() {
         return pgIDStatsStorage;
+    }
+
+    public UtilizationStorage getUtilizationStorage() {
+        return utilizationStorage;
     }
 
     private void handleSelectedPGIDsChanged() {
