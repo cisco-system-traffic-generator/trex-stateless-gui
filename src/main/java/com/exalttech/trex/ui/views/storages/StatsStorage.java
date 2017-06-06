@@ -1,5 +1,7 @@
 package com.exalttech.trex.ui.views.storages;
 
+import com.cisco.trex.stateless.gui.storages.PGIDsStorage;
+
 
 public class StatsStorage {
     private static StatsStorage instance;
