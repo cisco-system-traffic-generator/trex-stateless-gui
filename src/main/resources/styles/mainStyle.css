@@ -1430,3 +1430,7 @@ ToggleSwitch {
     -fx-background-image: url("/icons/error.png");
     -fx-background-size: 12 12;
 }
+
+#capturedPkts .table-cell {
+    -fx-alignment: CENTER;
+}
