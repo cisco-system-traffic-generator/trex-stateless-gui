@@ -1,6 +1,5 @@
-package com.exalttech.trex.ui.views.storages;
+package com.cisco.trex.stateless.gui.storages;
 
-import com.exalttech.trex.ui.models.stats.LatencyStatPoint;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.util.Duration;
 
@@ -10,8 +9,10 @@ import com.cisco.trex.stateless.model.stats.FlowStat;
 import com.cisco.trex.stateless.model.stats.LatencyStat;
 import com.cisco.trex.stateless.model.stats.PGIdStatsRPCResult;
 
-import com.exalttech.trex.ui.models.stats.FlowStatPoint;
-import com.exalttech.trex.ui.views.services.PGIDStatsService;
+import com.cisco.trex.stateless.gui.models.FlowStatPoint;
+import com.cisco.trex.stateless.gui.services.PGIDStatsService;
+
+import com.cisco.trex.stateless.gui.models.LatencyStatPoint;
 import com.exalttech.trex.util.ArrayHistory;
 
 

@@ -2,7 +2,7 @@ package com.exalttech.trex.ui.controllers.dashboard.tabs.charts;
 
 import javafx.beans.property.IntegerProperty;
 
-import com.exalttech.trex.ui.models.stats.FlowStatPoint;
+import com.cisco.trex.stateless.gui.models.FlowStatPoint;
 
 
 public class TxPps extends StreamLineChart {

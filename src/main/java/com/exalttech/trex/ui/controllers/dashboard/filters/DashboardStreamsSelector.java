@@ -9,8 +9,9 @@ import javafx.stage.WindowEvent;
 import java.util.Map;
 import java.util.Set;
 
-import com.exalttech.trex.ui.views.storages.PGIDsStorage;
-import com.exalttech.trex.ui.views.storages.StatsStorage;
+import com.cisco.trex.stateless.gui.storages.PGIDsStorage;
+import com.cisco.trex.stateless.gui.storages.StatsStorage;
+
 import com.exalttech.trex.util.Initialization;
 
 

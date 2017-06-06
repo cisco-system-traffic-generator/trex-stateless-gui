@@ -7,9 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.exalttech.trex.ui.models.stats.LatencyStatPoint;
-import com.exalttech.trex.ui.views.storages.PGIDStatsStorage;
-import com.exalttech.trex.ui.views.storages.StatsStorage;
+import com.cisco.trex.stateless.gui.storages.PGIDStatsStorage;
+import com.cisco.trex.stateless.gui.storages.StatsStorage;
+
+import com.cisco.trex.stateless.gui.models.LatencyStatPoint;
 import com.exalttech.trex.util.ArrayHistory;
 
 
