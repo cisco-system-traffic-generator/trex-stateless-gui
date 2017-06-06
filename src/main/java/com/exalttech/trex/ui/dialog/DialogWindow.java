@@ -1,22 +1,5 @@
-/**
- * *****************************************************************************
- * Copyright (c) 2016
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************
- */
 package com.exalttech.trex.ui.dialog;
 
-import com.exalttech.trex.application.TrexApp;
-import com.xored.javafx.packeteditor.view.FieldEditorView;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -27,40 +10,50 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
-/**
- * Class for control and generate dialog window
- *
- * @author GeorgeKh
- */
+import com.xored.javafx.packeteditor.view.FieldEditorView;
+
+import com.exalttech.trex.application.TrexApp;
+
+
 public class DialogWindow {
+    private FXMLLoader loader;
+    private Stage dialogStage;
+    private Pane rootPane;
 
-    String layoutFile;
-    FXMLLoader loader;
-    Stage dialogStage;
-    Pane rootPane;
-
-    /**
-     *
-     * @param layoutFile
-     * @param title
-     * @param parentXDistance
-     * @param parentYDistance
-     * @param resizable
-     * @param owner
-     * @throws IOException
-     */
-    public DialogWindow(String layoutFile, String title, double parentXDistance, double parentYDistance, boolean resizable, Stage owner) throws IOException {
-        this.layoutFile = layoutFile;
-        loader = TrexApp.injector.getInstance(FXMLLoader.class);
-        loader.setLocation(TrexApp.class.getResource("/fxml/" + layoutFile));
-        dialogStage = buildDialogWindow(title, parentXDistance, parentYDistance, resizable, owner);
+    public DialogWindow(
+            final String layoutFile,
+            final String title,
+            final double parentXDistance,
+            final double parentYDistance,
+            final boolean resizable,
+            final Stage owner
+    ) throws IOException {
+        this(layoutFile, title, parentXDistance, parentYDistance, -1.D, -1.D, resizable, owner);
     }
 
-    /**
-     * Show Dialog
-     *
-     * @param isLockParent
-     */
+    public DialogWindow(
+            final String layoutFile,
+            final String title,
+            final double parentXDistance,
+            final double parentYDistance,
+            final double minWidth,
+            final double minHeight,
+            final boolean resizable,
+            final Stage owner
+    ) throws IOException {
+        loader = TrexApp.injector.getInstance(FXMLLoader.class);
+        loader.setLocation(TrexApp.class.getResource("/fxml/" + layoutFile));
+
+        dialogStage = buildDialogWindow(title, parentXDistance, parentYDistance, minWidth, minHeight, resizable, owner);
+
+        if (minWidth != -1) {
+            dialogStage.setMinWidth(minWidth);
+        }
+        if (minHeight != -1) {
+            dialogStage.setMinHeight(minHeight);
+        }
+    }
+
     public void show(boolean isLockParent) {
         DialogKeyPressHandler controller = (DialogKeyPressHandler) getController();
         if (controller != null) {
@@ -76,22 +69,20 @@ public class DialogWindow {
         }
     }
 
-    /**
-     * Build dialog view
-     *
-     * @param title
-     * @param parentXDistance
-     * @param parentYDistance
-     * @return
-     * @throws IOException
-     */
-    private Stage buildDialogWindow(String title, double parentXDistance, double parentYDistance, boolean resizable, Stage owner) throws IOException {
-
+    private Stage buildDialogWindow(
+            String title,
+            double parentXDistance,
+            double parentYDistance,
+            double minWidth,
+            double minHeight,
+            boolean resizable,
+            Stage owner
+    ) throws IOException {
         rootPane = loader.load();
         Stage createdStage = new Stage();
         createdStage.setTitle(title);
         createdStage.initOwner(owner);
-        Scene scene = new Scene(rootPane);
+        Scene scene = new Scene(rootPane, minWidth, minHeight);
         scene.getStylesheets().add(TrexApp.class.getResource("/styles/mainStyle.css").toExternalForm());
 
         // Packet editor
@@ -109,32 +100,7 @@ public class DialogWindow {
         return createdStage;
     }
 
-    /**
-     * Return dialog controller
-     *
-     * @return
-     */
     public Object getController() {
         return loader.getController();
     }
-
-    /**
-     * Set min width & height for the displayed dialog
-     *
-     * @param width
-     * @param height
-     */
-    public void setMinSize(double width, double height) {
-        dialogStage.setMinWidth(width);
-        dialogStage.setMinHeight(height);
-    }
-
-    public Pane getRootPane() {
-        return rootPane;
-    }
-
-    public Stage getDialogStage() {
-        return dialogStage;
-    }
-
 }
