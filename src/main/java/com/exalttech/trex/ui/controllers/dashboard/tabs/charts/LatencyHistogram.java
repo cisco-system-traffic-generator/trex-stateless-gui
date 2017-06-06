@@ -16,7 +16,7 @@ import java.util.Map;
 import com.cisco.trex.stateless.gui.storages.PGIDStatsStorage;
 import com.cisco.trex.stateless.gui.storages.StatsStorage;
 
-import com.exalttech.trex.ui.models.stats.LatencyStatPoint;
+import com.cisco.trex.stateless.gui.models.LatencyStatPoint;
 import com.exalttech.trex.util.ArrayHistory;
 
 
