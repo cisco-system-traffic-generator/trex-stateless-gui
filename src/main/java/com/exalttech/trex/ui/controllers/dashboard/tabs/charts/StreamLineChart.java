@@ -10,7 +10,7 @@ import java.util.Map;
 import com.cisco.trex.stateless.gui.storages.PGIDStatsStorage;
 import com.cisco.trex.stateless.gui.storages.StatsStorage;
 
-import com.exalttech.trex.ui.models.stats.FlowStatPoint;
+import com.cisco.trex.stateless.gui.models.FlowStatPoint;
 import com.exalttech.trex.util.ArrayHistory;
 import com.exalttech.trex.util.Formatter;
 

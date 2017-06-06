@@ -9,9 +9,9 @@ import com.cisco.trex.stateless.model.stats.FlowStat;
 import com.cisco.trex.stateless.model.stats.LatencyStat;
 import com.cisco.trex.stateless.model.stats.PGIdStatsRPCResult;
 
+import com.cisco.trex.stateless.gui.models.FlowStatPoint;
 import com.cisco.trex.stateless.gui.services.PGIDStatsService;
 
-import com.exalttech.trex.ui.models.stats.FlowStatPoint;
 import com.exalttech.trex.ui.models.stats.LatencyStatPoint;
 import com.exalttech.trex.util.ArrayHistory;
 
