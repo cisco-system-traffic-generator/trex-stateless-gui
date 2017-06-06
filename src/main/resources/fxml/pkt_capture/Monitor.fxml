@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.cisco.trex.stl.gui.controllers.PortFilter?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:id="root"
+         type="javafx.scene.layout.AnchorPane">
+    <AnchorPane
+            AnchorPane.leftAnchor="10.0"
+            AnchorPane.rightAnchor="10.0"
+            AnchorPane.topAnchor="15.0"
+            AnchorPane.bottomAnchor="10.0">
+        <VBox   spacing="10"
+                AnchorPane.leftAnchor="0"
+                AnchorPane.rightAnchor="0"
+                AnchorPane.topAnchor="0"
+                AnchorPane.bottomAnchor="0">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <PortFilter />
+                <Button text="Start"/>
+                <Button text="Start in WireShark"/>
+                <Button text="Stop "/>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <TableView fx:id="capturedPkts" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets top="10" />
+                    </padding>
+                    <columns>
+                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Type" />
+                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Length" />
+                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Source MAC" />
+                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Destination MAC" />
+                        <TableColumn maxWidth="130.0" minWidth="130.0" prefWidth="130.0" text="Source IP" />
+                        <TableColumn minWidth="130.0" maxWidth="Infinity" text="Destination IP" />
+                    </columns>
+                </TableView>
+            </HBox>
+        </VBox>
+    </AnchorPane>
+</fx:root>
