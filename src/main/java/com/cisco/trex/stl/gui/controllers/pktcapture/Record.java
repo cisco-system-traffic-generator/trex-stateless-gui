@@ -1,4 +1,4 @@
-package com.cisco.trex.stl.gui.controllers;
+package com.cisco.trex.stl.gui.controllers.pktcapture;
 
 import com.cisco.trex.stl.gui.models.Recorder;
 import com.exalttech.trex.util.Initialization;
