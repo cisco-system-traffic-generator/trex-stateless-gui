@@ -53,12 +53,15 @@
                               text="Dashboard"
                               onAction="#handleStatMenuItemClicked"/>
                 </Menu>
-                <Menu mnemonicParsing="false"
-                      text="Capture">
+                <Menu mnemonicParsing="false" text="Capture">
                     <MenuItem fx:id="captureMenuItem"
                               mnemonicParsing="false"
                               text="Open"
                               onAction="#handleCaptureItemClicked"/>
+                    <MenuItem fx:id="captureSettingsMenuItem"
+                              mnemonicParsing="false"
+                              text="Settings"
+                              onAction="#handleCaptureSettingsItemClicked"/>
                 </Menu>
                 <Menu mnemonicParsing="false"
                       text="Help">

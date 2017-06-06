@@ -919,11 +919,19 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     true,
                     TrexApp.getPrimaryStage()
             );
-            statsWindow.setMinSize(1210, 740);
+            statsWindow.setMinSize(1000, 700);
             statsWindow.show(false);
         } catch (IOException ex) {
             LOG.error("Error opening dashboard view", ex);
         }
+    }
+    /**
+     * Handle stats menu item clicked
+     *
+     * @param event
+     */
+    @FXML
+    public void handleCaptureSettingsItemClicked(ActionEvent event) {
     }
 
     /**
