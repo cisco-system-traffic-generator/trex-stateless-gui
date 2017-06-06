@@ -125,6 +125,11 @@ public class PGIDStatsStorage {
     private void handlePGIDStatsReceived(final WorkerStateEvent event) {
         final PGIDStatsService service = (PGIDStatsService) event.getSource();
         final PGIdStatsRPCResult receivedPGIDStats = service.getValue();
+
+        if (receivedPGIDStats == null) {
+            return;
+        }
+
         final double time = System.currentTimeMillis() / 1000.0;
 
         final Map<String, FlowStat> flowStatMap = receivedPGIDStats.getFlowStats();
