@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsSelector?>
-<?import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardStreamsSelector?>
-<?import com.exalttech.trex.ui.controllers.dashboard.global.DashboardGlobalStatistics?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.charts.Charts?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.latency.Latency?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.ports.Ports?>
-<?import com.exalttech.trex.ui.controllers.dashboard.tabs.streams.Streams?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.charts.Charts?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.global.Global?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.latency.Latency?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.ports.Ports?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.ports.PortsSelector?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelector?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.streams.Streams?>
 
 
 <BorderPane xmlns="http://javafx.com/javafx/8"
@@ -21,28 +21,28 @@
             style="-fx-background-color: #f0f0f0"
             prefWidth="1200"
             prefHeight="700"
-            fx:controller="com.exalttech.trex.ui.controllers.dashboard.Dashboard"
+            fx:controller="com.cisco.trex.stl.gui.controllers.dashboard.Dashboard"
             fx:id="root">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
     <top>
-        <DashboardGlobalStatistics/>
+        <Global/>
     </top>
     <left>
         <AnchorPane>
-            <DashboardPortsSelector fx:id="portsSelector"
-                                    onFiltersChanged="#handleFiltersChanged"
-                                    AnchorPane.leftAnchor="0.0"
-                                    AnchorPane.rightAnchor="10.0"
-                                    AnchorPane.topAnchor="11.0"
-                                    AnchorPane.bottomAnchor="1.0"/>
-            <DashboardStreamsSelector fx:id="streamsSelector"
-                                      visible="false"
-                                      AnchorPane.leftAnchor="0.0"
-                                      AnchorPane.rightAnchor="10.0"
-                                      AnchorPane.topAnchor="11.0"
-                                      AnchorPane.bottomAnchor="1.0"/>
+            <PortsSelector fx:id="portsSelector"
+                           onFiltersChanged="#handleFiltersChanged"
+                           AnchorPane.leftAnchor="0.0"
+                           AnchorPane.rightAnchor="10.0"
+                           AnchorPane.topAnchor="11.0"
+                           AnchorPane.bottomAnchor="1.0"/>
+            <StreamsSelector fx:id="streamsSelector"
+                             visible="false"
+                             AnchorPane.leftAnchor="0.0"
+                             AnchorPane.rightAnchor="10.0"
+                             AnchorPane.topAnchor="11.0"
+                             AnchorPane.bottomAnchor="1.0"/>
         </AnchorPane>
     </left>
     <center>
