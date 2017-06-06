@@ -2,8 +2,8 @@ package com.exalttech.trex.ui.controllers.dashboard;
 
 import javafx.scene.layout.AnchorPane;
 
-import com.cisco.trex.stateless.gui.storages.PGIDStatsStorage;
-import com.cisco.trex.stateless.gui.storages.StatsStorage;
+import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
 
 
 public abstract class FlowStatsAnchorPane extends AnchorPane {

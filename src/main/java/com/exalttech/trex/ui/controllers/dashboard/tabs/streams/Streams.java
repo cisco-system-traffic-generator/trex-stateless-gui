@@ -7,9 +7,9 @@ import javafx.stage.WindowEvent;
 
 import java.util.*;
 
-import com.cisco.trex.stateless.gui.models.FlowStatPoint;
-import com.cisco.trex.stateless.gui.storages.PGIDStatsStorage;
-import com.cisco.trex.stateless.gui.storages.StatsStorage;
+import com.cisco.trex.stl.gui.models.FlowStatPoint;
+import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
 
 import com.exalttech.trex.ui.controllers.dashboard.FlowStatsAnchorPane;
 import com.exalttech.trex.ui.views.statistics.cells.CellType;

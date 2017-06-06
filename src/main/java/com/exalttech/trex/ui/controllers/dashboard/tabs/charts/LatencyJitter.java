@@ -2,7 +2,7 @@ package com.exalttech.trex.ui.controllers.dashboard.tabs.charts;
 
 import javafx.beans.property.IntegerProperty;
 
-import com.cisco.trex.stateless.gui.models.LatencyStatPoint;
+import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 
 
 public class LatencyJitter extends LatencyLineChart {

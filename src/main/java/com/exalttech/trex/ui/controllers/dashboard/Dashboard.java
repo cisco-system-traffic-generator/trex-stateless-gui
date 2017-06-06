@@ -14,7 +14,7 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.cisco.trex.stateless.gui.storages.StatsStorage;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
 
 import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardPortsSelector;
 import com.exalttech.trex.ui.controllers.dashboard.filters.DashboardStreamsSelector;

@@ -1,4 +1,4 @@
-package com.cisco.trex.stateless.gui.storages;
+package com.cisco.trex.stl.gui.storages;
 
 import javafx.concurrent.WorkerStateEvent;
 import javafx.util.Duration;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cisco.trex.stateless.gui.services.ActivePGIDsService;
+import com.cisco.trex.stl.gui.services.ActivePGIDsService;
 
 
 public class PGIDsStorage {

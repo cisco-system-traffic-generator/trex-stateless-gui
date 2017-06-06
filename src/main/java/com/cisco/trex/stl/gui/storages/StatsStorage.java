@@ -1,4 +1,4 @@
-package com.cisco.trex.stateless.gui.storages;
+package com.cisco.trex.stl.gui.storages;
 
 
 public class StatsStorage {

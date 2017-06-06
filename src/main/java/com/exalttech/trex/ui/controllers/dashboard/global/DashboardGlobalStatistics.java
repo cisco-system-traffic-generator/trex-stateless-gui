@@ -11,8 +11,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.cisco.trex.stateless.gui.storages.PGIDsStorage;
-import com.cisco.trex.stateless.gui.storages.StatsStorage;
+import com.cisco.trex.stl.gui.storages.PGIDsStorage;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
 
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.views.services.RefreshingService;

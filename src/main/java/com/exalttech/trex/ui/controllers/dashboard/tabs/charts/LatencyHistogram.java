@@ -13,10 +13,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.cisco.trex.stateless.gui.storages.PGIDStatsStorage;
-import com.cisco.trex.stateless.gui.storages.StatsStorage;
+import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
 
-import com.cisco.trex.stateless.gui.models.LatencyStatPoint;
+import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 import com.exalttech.trex.util.ArrayHistory;
 
 

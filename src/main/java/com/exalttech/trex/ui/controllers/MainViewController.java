@@ -51,7 +51,7 @@ import com.exalttech.trex.ui.views.services.CountdownService;
 import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
-import com.cisco.trex.stateless.gui.storages.StatsStorage;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.ProfileManager;
 import com.exalttech.trex.util.Util;

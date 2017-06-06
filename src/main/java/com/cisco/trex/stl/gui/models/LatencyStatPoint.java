@@ -1,4 +1,4 @@
-package com.cisco.trex.stateless.gui.models;
+package com.cisco.trex.stl.gui.models;
 
 import com.cisco.trex.stateless.model.stats.LatencyStat;
 
