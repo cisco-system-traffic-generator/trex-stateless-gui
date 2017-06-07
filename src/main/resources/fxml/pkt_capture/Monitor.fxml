@@ -4,42 +4,35 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
          fx:id="root"
-         type="javafx.scene.layout.AnchorPane">
-    <AnchorPane
-            AnchorPane.leftAnchor="10.0"
-            AnchorPane.rightAnchor="10.0"
-            AnchorPane.topAnchor="15.0"
-            AnchorPane.bottomAnchor="10.0">
-        <VBox   spacing="10"
-                AnchorPane.leftAnchor="0"
-                AnchorPane.rightAnchor="0"
-                AnchorPane.topAnchor="0"
-                AnchorPane.bottomAnchor="0">
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <PortFilter fx:id="portFilter" />
-                <Button fx:id="startBtn" styleClass="normalButton" text="Start"/>
-                <Button fx:id="startWSBtn" styleClass="normalButton" text="Start in WireShark"/>
-                <Button fx:id="stopBtn" styleClass="normalButton" text="Stop "/>
-            </HBox>
-
-            <HBox alignment="CENTER_LEFT" spacing="10" VBox.vgrow="ALWAYS">
-                <TableView fx:id="capturedPkts" id="capturedPkts" HBox.hgrow="ALWAYS">
-                    <padding>
-                        <Insets top="10" />
-                    </padding>
-                    <columns>
-                        <TableColumn fx:id="type" maxWidth="140.0" minWidth="140.0" text="Type" />
-                        <TableColumn fx:id="length" maxWidth="80.0" minWidth="80.0" text="Length" />
-                        <TableColumn fx:id="hwSrc"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Source MAC" />
-                        <TableColumn fx:id="hwDst"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Destination MAC" />
-                        <TableColumn fx:id="ipSrc"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Source IP" />
-                        <TableColumn fx:id="ipDst"  minWidth="140.0" maxWidth="Infinity" text="Destination IP" />
-                    </columns>
-                </TableView>
-            </HBox>
-        </VBox>
-    </AnchorPane>
+         type="javafx.scene.layout.BorderPane">
+    <padding>
+        <Insets top="10"  right="10"  bottom="10"  left="10" />
+    </padding>
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <padding>
+                <Insets bottom="10" />
+            </padding>
+            <PortFilter fx:id="portFilter" />
+            <Button fx:id="startBtn" styleClass="normalButton" text="Start"/>
+            <Button fx:id="startWSBtn" styleClass="normalButton" text="Start in WireShark"/>
+            <Button fx:id="stopBtn" styleClass="normalButton" text="Stop "/>
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="capturedPkts" id="capturedPkts" HBox.hgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="type" maxWidth="140.0" minWidth="140.0" text="Type" />
+                <TableColumn fx:id="length" maxWidth="80.0" minWidth="80.0" text="Length" />
+                <TableColumn fx:id="hwSrc"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Source MAC" />
+                <TableColumn fx:id="hwDst"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Destination MAC" />
+                <TableColumn fx:id="ipSrc"  maxWidth="140.0" minWidth="140.0" prefWidth="140.0" text="Source IP" />
+                <TableColumn fx:id="ipDst"  minWidth="140.0" maxWidth="Infinity" text="Destination IP" />
+            </columns>
+        </TableView>
+    </center>
 </fx:root>

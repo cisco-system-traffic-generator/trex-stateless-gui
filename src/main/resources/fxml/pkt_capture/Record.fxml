@@ -4,26 +4,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
          fx:id="root"
-         type="javafx.scene.layout.AnchorPane">
-    <AnchorPane
-            AnchorPane.leftAnchor="10.0"
-            AnchorPane.rightAnchor="10.0"
-            AnchorPane.topAnchor="15.0"
-            AnchorPane.bottomAnchor="10.0">
+         type="javafx.scene.layout.BorderPane">
+    <padding>
+        <Insets top="10"  right="10"  bottom="10"  left="10" />
+    </padding>
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <PortFilter fx:id="portFilter" />
+            <Label text="Limit:" />
+            <TextField fx:id="limit" text="1000" />
+            <Button styleClass="normalButton" text="Add Recorder"/>
+        </HBox>
+    </top>
+    <center>
         <VBox spacing="10"
               AnchorPane.leftAnchor="0"
               AnchorPane.rightAnchor="0"
               AnchorPane.topAnchor="0"
               AnchorPane.bottomAnchor="0">
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <PortFilter fx:id="portFilter" />
-                <Label text="Limit:" />
-                <TextField fx:id="limit" text="1000" />
-                <Button styleClass="normalButton" text="Add Recorder"/>
-            </HBox>
+
             <HBox alignment="CENTER_LEFT" spacing="10">
                 <padding>
                     <Insets top="15" />
@@ -45,5 +48,5 @@
                 </TableView>
             </HBox>
         </VBox>
-    </AnchorPane>
+    </center>
 </fx:root>

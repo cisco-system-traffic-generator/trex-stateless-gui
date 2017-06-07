@@ -4,12 +4,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import org.controlsfx.control.CheckComboBox?>
 <?import java.lang.*?>
+
 <fx:root xmlns="http://javafx.com/javafx/8"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:id="root"
-      type="javafx.scene.layout.HBox"
-      spacing="10"
-      alignment="CENTER">
+         xmlns:fx="http://javafx.com/fxml"
+         fx:id="root"
+         type="javafx.scene.layout.HBox"
+         spacing="10"
+         alignment="CENTER">
     <Label text="Rx:" />
     <CheckComboBox fx:id="rxFilter" minWidth="210" maxWidth="210">
         <items>
@@ -41,3 +42,4 @@
         </items>
     </CheckComboBox>
 </fx:root>
+
