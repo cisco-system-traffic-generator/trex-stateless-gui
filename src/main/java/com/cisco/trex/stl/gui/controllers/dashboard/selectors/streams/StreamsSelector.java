@@ -23,8 +23,6 @@ public class StreamsSelector extends GridPane {
     @FXML
     private VBox streamsContainer;
 
-    private PGIDsStorage.SelectedPGIDsInitializedListener selectedPGIDsInitializedListener = this::render;
-    private PGIDsStorage.SelectedPGIDsChangedListener selectedPGIDsChangedListener = this::render;
     private PGIDsStorage.PGIDsChangedListener pgIDsChangedListener = this::render;
 
     public StreamsSelector() {
@@ -36,8 +34,6 @@ public class StreamsSelector extends GridPane {
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
 
         final PGIDsStorage pgIDStorage = StatsStorage.getInstance().getPGIDsStorage();
-        pgIDStorage.addSelectedPGIDsInitializedListener(selectedPGIDsInitializedListener);
-        pgIDStorage.addSelectedPGIDsChangedListener(selectedPGIDsChangedListener);
         pgIDStorage.addPGIDsChangedListener(pgIDsChangedListener);
 
         render();
@@ -45,8 +41,6 @@ public class StreamsSelector extends GridPane {
 
     private void onWindowCloseRequest(final WindowEvent window) {
         final PGIDsStorage pgIDStorage = StatsStorage.getInstance().getPGIDsStorage();
-        pgIDStorage.removeSelectedPGIDsInitializedListener(selectedPGIDsInitializedListener);
-        pgIDStorage.removeSelectedPGIDsChangedListener(selectedPGIDsChangedListener);
         pgIDStorage.removePGIDsChangedListener(pgIDsChangedListener);
     }
 

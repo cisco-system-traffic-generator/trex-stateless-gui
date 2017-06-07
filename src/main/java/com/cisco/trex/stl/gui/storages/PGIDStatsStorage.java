@@ -106,6 +106,14 @@ public class PGIDStatsStorage {
             latencyStatPointHistoryMap.clear();
             latencyStatPointShadowMap.clear();
         }
+
+        handleStatsChanged();
+    }
+
+    public boolean isRunning() {
+        synchronized (pgIDStatsService) {
+            return pgIDStatsService.isRunning();
+        }
     }
 
     public void setPGIDs(final Set<Integer> pgIDs) {

@@ -19,14 +19,6 @@ public class PGIDsStorage {
         void pgIDsChanged();
     }
 
-    public interface SelectedPGIDsChangedListener {
-        void selectedPGIDsChanged();
-    }
-
-    public interface SelectedPGIDsInitializedListener {
-        void selectedPGIDsInitialized();
-    }
-
     private static final Duration POLLING_INTERVAL = Duration.seconds(1);
 
     private final Map<String, Boolean> legendColorMap = new LinkedHashMap<String, Boolean>(){{
@@ -45,8 +37,6 @@ public class PGIDsStorage {
     private Map<Integer, String> selectedPGIds = null;
     private final Object dataLock = new Object();
     private final List<PGIDsChangedListener> pgIDsChangedListeners = new ArrayList<>();
-    private final List<SelectedPGIDsChangedListener> selectedPGIDsChangedListeners = new ArrayList<>();
-    private final List<SelectedPGIDsInitializedListener> selectedPGIDsInitializedListeners = new ArrayList<>();
 
     public Object getDataLock() {
         return dataLock;
@@ -93,7 +83,7 @@ public class PGIDsStorage {
             selectedPGIds.put(pgID, holdColor());
         }
 
-        handleSelectedPGIDsChanged();
+        handlePGIDsChanged();
     }
 
     public void deselectPGID(final Integer pgID) {
@@ -106,19 +96,7 @@ public class PGIDsStorage {
             selectedPGIds.remove(pgID);
         }
 
-        handleSelectedPGIDsChanged();
-    }
-
-    public void addSelectedPGIDsChangedListener(final SelectedPGIDsChangedListener listener) {
-        synchronized (selectedPGIDsChangedListeners) {
-            selectedPGIDsChangedListeners.add(listener);
-        }
-    }
-
-    public void removeSelectedPGIDsChangedListener(final SelectedPGIDsChangedListener listener) {
-        synchronized (selectedPGIDsChangedListeners) {
-            selectedPGIDsChangedListeners.remove(listener);
-        }
+        handlePGIDsChanged();
     }
 
     public void addPGIDsChangedListener(final PGIDsChangedListener listener) {
@@ -133,18 +111,6 @@ public class PGIDsStorage {
         }
     }
 
-    public void addSelectedPGIDsInitializedListener(final SelectedPGIDsInitializedListener listener) {
-        synchronized (selectedPGIDsInitializedListeners) {
-            selectedPGIDsInitializedListeners.add(listener);
-        }
-    }
-
-    public void removeSelectedPGIDsInitializedListener(final SelectedPGIDsInitializedListener listener) {
-        synchronized (selectedPGIDsInitializedListeners) {
-            selectedPGIDsInitializedListeners.remove(listener);
-        }
-    }
-
     private void handlePGIDsReceived(final WorkerStateEvent event) {
         final ActivePGIDsService service = (ActivePGIDsService) event.getSource();
         final Set<Integer> receivedPGIds = service.getValue();
@@ -152,8 +118,6 @@ public class PGIDsStorage {
         if (receivedPGIds == null) {
             return;
         }
-
-        boolean selectedPGIDsInitialized = false;
 
         synchronized (dataLock) {
             if (pgIDs.equals(receivedPGIds)) {
@@ -171,32 +135,15 @@ public class PGIDsStorage {
                         break;
                     }
                 }
-                selectedPGIDsInitialized = true;
             }
         }
 
-        if (selectedPGIDsInitialized) {
-            handleSelectedPGIDsInitialized();
-        } else {
-            handlePGIDsChanged();
-        }
-    }
-
-    private void handleSelectedPGIDsChanged() {
-        synchronized (selectedPGIDsChangedListeners) {
-            selectedPGIDsChangedListeners.forEach(SelectedPGIDsChangedListener::selectedPGIDsChanged);
-        }
+        handlePGIDsChanged();
     }
 
     private void handlePGIDsChanged() {
         synchronized (pgIDsChangedListeners) {
             pgIDsChangedListeners.forEach(PGIDsChangedListener::pgIDsChanged);
-        }
-    }
-
-    private void handleSelectedPGIDsInitialized() {
-        synchronized (selectedPGIDsInitializedListeners) {
-            selectedPGIDsInitializedListeners.forEach(SelectedPGIDsInitializedListener::selectedPGIDsInitialized);
         }
     }
 
