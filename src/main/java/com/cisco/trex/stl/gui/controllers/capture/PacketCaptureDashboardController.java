@@ -11,10 +11,6 @@ public class PacketCaptureDashboardController extends DialogView {
     @FXML
     private RecordController recordController;
 
-    public PacketCaptureDashboardController() {
-        
-    }
-
     @Override
     public void onEnterKeyPressed(Stage stage) {
         // Nothing to do
