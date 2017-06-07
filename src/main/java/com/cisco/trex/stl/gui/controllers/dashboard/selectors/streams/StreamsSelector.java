@@ -30,7 +30,7 @@ public class StreamsSelector extends GridPane {
     public StreamsSelector() {
         Initialization.initializeFXML(
                 this,
-                "/fxml/Dashboard/selectors/streams/StreamsSelector.fxml"
+                "/fxml/dashboard/selectors/streams/StreamsSelector.fxml"
         );
 
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);

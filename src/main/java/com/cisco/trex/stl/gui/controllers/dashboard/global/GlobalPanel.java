@@ -23,7 +23,7 @@ public class GlobalPanel extends AnchorPane {
     }
 
     public GlobalPanel(@NamedArg("title") String title, @NamedArg("threshold") Double threshold) {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/global/GlobalPanel.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/global/GlobalPanel.fxml");
 
         this.threshold = threshold;
         if (this.threshold != null) {

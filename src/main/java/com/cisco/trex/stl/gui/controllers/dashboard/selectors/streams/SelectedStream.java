@@ -28,7 +28,7 @@ public class SelectedStream extends HBox {
             final boolean isDeleted,
             final EventHandler<Event> onDeleteClicked
     ) {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/selectors/streams/SelectedStream.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/selectors/streams/SelectedStream.fxml");
 
         this.pgid = pgid;
         this.onDeleteClicked = onDeleteClicked;

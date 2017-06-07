@@ -23,7 +23,7 @@ public class PortsSelector extends VBox {
     private Set<Integer> selectedPortIndexes = new HashSet<>();
 
     public PortsSelector() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/selectors/ports/PortsSelector.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/selectors/ports/PortsSelector.fxml");
 
         buildPortsList();
     }

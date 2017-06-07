@@ -910,7 +910,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             if (DialogManager.getInstance().getNumberOfOpenedDialog() < 4) {
                 DialogWindow statsWindow = new DialogWindow(
-                        "Dashboard/Dashboard.fxml",
+                        "dashboard/Dashboard.fxml",
                         "Dashboard",
                         50,
                         10,

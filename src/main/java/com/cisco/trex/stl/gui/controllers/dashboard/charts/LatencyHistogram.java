@@ -86,7 +86,7 @@ public class LatencyHistogram extends FlowChart {
 
     @Override
     protected String getResourceName() {
-        return "/fxml/Dashboard/charts/LatencyHistogram.fxml";
+        return "/fxml/dashboard/charts/LatencyHistogram.fxml";
     }
 
     @Override

@@ -18,7 +18,7 @@ public class Stream extends HBox {
     private final EventHandler<Event> onAddClicked;
 
     public Stream(final int pgid, final EventHandler<Event> onAddClicked) {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/selectors/streams/Stream.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/selectors/streams/Stream.fxml");
 
         this.pgid = pgid;
         this.onAddClicked = onAddClicked;

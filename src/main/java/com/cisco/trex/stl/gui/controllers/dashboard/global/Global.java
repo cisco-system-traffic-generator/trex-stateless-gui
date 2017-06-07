@@ -52,7 +52,7 @@ public class Global extends GridPane {
     PortsManager portManager;
 
     public Global() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/global/Global.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/global/Global.fxml");
 
         refreshingService = new RefreshingService();
         refreshingService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
