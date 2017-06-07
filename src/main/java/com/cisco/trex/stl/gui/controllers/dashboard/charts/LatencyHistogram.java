@@ -47,7 +47,7 @@ public class LatencyHistogram extends FlowChart {
 
         final List<XYChart.Series<String, Long>> seriesList = new LinkedList<>();
 
-        synchronized (pgIDStatsStorage.getLatencyLock()) {
+        synchronized (pgIDStatsStorage.getDataLock()) {
             latencyStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<LatencyStatPoint> history) -> {
                 if (history == null || history.isEmpty()) {
                     return;
