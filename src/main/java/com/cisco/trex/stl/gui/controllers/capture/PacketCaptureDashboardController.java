@@ -4,14 +4,14 @@ import com.exalttech.trex.ui.dialog.DialogView;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 
-public class PacketCaptureDashboard extends DialogView {
+public class PacketCaptureDashboardController extends DialogView {
     @FXML
-    private Monitor monitor;
+    private MonitorController monitorController;
     
     @FXML
-    private Record record;
+    private RecordController recordController;
 
-    public PacketCaptureDashboard() {
+    public PacketCaptureDashboardController() {
         
     }
 

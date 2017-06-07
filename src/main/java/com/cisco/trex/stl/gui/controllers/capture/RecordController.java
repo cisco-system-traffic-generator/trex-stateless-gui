@@ -8,10 +8,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 
-public class Record extends BorderPane {
+public class RecordController extends BorderPane {
 
     @FXML
-    private PortFilter portFilter;
+    private PortFilterController portFilterController;
     
     @FXML
     private TextField limit;
@@ -32,7 +32,7 @@ public class Record extends BorderPane {
     @FXML
     private TableColumn<Recorder, String> txFilter;
     
-    public Record() {
+    public RecordController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Record.fxml");
         
         id.setCellValueFactory(cellData -> cellData.getValue().idProperty().asString());

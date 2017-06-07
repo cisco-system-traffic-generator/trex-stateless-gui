@@ -7,7 +7,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 
-public class Monitor extends BorderPane {
+public class MonitorController extends BorderPane {
     
     @FXML
     private TableView<CapturedPkt> capturedPkts;
@@ -26,7 +26,7 @@ public class Monitor extends BorderPane {
     private TableColumn<CapturedPkt, String> ipDst;
     
     
-    public Monitor() {
+    public MonitorController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Monitor.fxml");
 
         type.setCellValueFactory(cellData -> cellData.getValue().typeProperty());
