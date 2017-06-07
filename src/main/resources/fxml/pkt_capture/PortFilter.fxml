@@ -12,7 +12,9 @@
          spacing="10"
          alignment="CENTER">
     <Label text="Rx:" />
-    <CheckComboBox fx:id="rxFilter" minWidth="210" maxWidth="210">
+    <CheckComboBox fx:id="rxFilter"
+                   minWidth="210"
+                   maxWidth="210">
         <items>
             <String fx:value="Port 0" />
             <String fx:value="Port 1" />
@@ -27,7 +29,9 @@
         </items>
     </CheckComboBox>
     <Label text="Tx :" />
-    <CheckComboBox fx:id="txFilter" minWidth="210" maxWidth="210">
+    <CheckComboBox fx:id="txFilter"
+                   minWidth="210"
+                   maxWidth="210">
         <items>
             <String fx:value="Port 0" />
             <String fx:value="Port 1" />
