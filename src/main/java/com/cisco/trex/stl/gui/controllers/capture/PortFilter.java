@@ -1,4 +1,4 @@
-package com.cisco.trex.stl.gui.controllers.pktcapture;
+package com.cisco.trex.stl.gui.controllers.capture;
 
 import com.exalttech.trex.util.Initialization;
 import javafx.fxml.FXML;
