@@ -21,12 +21,7 @@
         </HBox>
     </top>
     <center>
-        <VBox spacing="10"
-              AnchorPane.leftAnchor="0"
-              AnchorPane.rightAnchor="0"
-              AnchorPane.topAnchor="0"
-              AnchorPane.bottomAnchor="0">
-
+        <VBox spacing="10">
             <HBox alignment="CENTER_LEFT" spacing="10">
                 <padding>
                     <Insets top="15" />
