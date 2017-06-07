@@ -1,5 +1,8 @@
 package com.cisco.trex.stl.gui.storages;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class StatsStorage {
     private static StatsStorage instance;
@@ -15,8 +18,7 @@ public class StatsStorage {
     private final PGIDStatsStorage pgIDStatsStorage = new PGIDStatsStorage();
 
     private StatsStorage() {
-        pgIDsStorage.addSelectedPGIDsChangedListener(this::handleSelectedPGIDsChanged);
-        pgIDsStorage.addSelectedPGIDsInitializedListener(this::handleSelectedPGIDsInitialized);
+        pgIDsStorage.addPGIDsChangedListener(this::handleSelectedPGIDsChanged);
     }
 
     public void startPolling() {
@@ -25,7 +27,9 @@ public class StatsStorage {
 
     public void stopPolling() {
         pgIDsStorage.stopPolling();
-        pgIDStatsStorage.stopPolling();
+        if (pgIDStatsStorage.isRunning()) {
+            pgIDStatsStorage.stopPolling();
+        }
     }
 
     public PGIDsStorage getPGIDsStorage() {
@@ -38,12 +42,16 @@ public class StatsStorage {
 
     private void handleSelectedPGIDsChanged() {
         synchronized (pgIDsStorage.getDataLock()) {
-            pgIDStatsStorage.setPGIDs(pgIDsStorage.getSelectedPGIds().keySet());
+            final Set<Integer> pgIdsToRequest = new HashSet<>(pgIDsStorage.getSelectedPGIds().keySet());
+            pgIdsToRequest.retainAll(pgIDsStorage.getPgIDs());
+            if (!pgIdsToRequest.isEmpty()) {
+                pgIDStatsStorage.setPGIDs(pgIdsToRequest);
+                if (!pgIDStatsStorage.isRunning()) {
+                    pgIDStatsStorage.startPolling();
+                }
+            } else if (pgIDStatsStorage.isRunning()) {
+                pgIDStatsStorage.stopPolling();
+            }
         }
-    }
-
-    private void handleSelectedPGIDsInitialized() {
-        handleSelectedPGIDsChanged();
-        pgIDStatsStorage.startPolling();
     }
 }
