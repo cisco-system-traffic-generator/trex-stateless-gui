@@ -133,6 +133,13 @@ public class PGIDStatsStorage {
 
         final Map<String, Integer> verId = receivedPGIDStats.getVerId();
         if (verId == null) {
+            synchronized (dataLock) {
+                clearFlowStats();
+                clearLatencyStats();
+            }
+
+            handleStatsChanged();
+
             return;
         }
 
@@ -142,11 +149,15 @@ public class PGIDStatsStorage {
             final Map<String, FlowStat> flowStatMap = receivedPGIDStats.getFlowStats();
             if (flowStatMap != null) {
                 processFlowStats(receivedPGIDStats.getFlowStats(), verId, time);
+            } else {
+                clearFlowStats();
             }
 
             final Map<String, LatencyStat> latencyStatMap = receivedPGIDStats.getLatency();
             if (latencyStatMap != null) {
                 processLatencyStats(receivedPGIDStats.getLatency(), verId, time);
+            } else {
+                clearLatencyStats();
             }
 
             lastVerId = verId;
@@ -190,6 +201,11 @@ public class PGIDStatsStorage {
             flowStatPointHistoryMap.remove(pgID);
             flowStatPointShadowMap.remove(pgID);
         });
+    }
+
+    private void clearFlowStats() {
+        flowStatPointHistoryMap.clear();
+        flowStatPointShadowMap.clear();
     }
 
     private void resetFlowStats() {
@@ -246,6 +262,11 @@ public class PGIDStatsStorage {
             latencyStatPointHistoryMap.remove(pgID);
             latencyStatPointShadowMap.remove(pgID);
         });
+    }
+
+    private void clearLatencyStats() {
+        latencyStatPointHistoryMap.clear();
+        latencyStatPointShadowMap.clear();
     }
 
     private void resetLatencyStats() {
