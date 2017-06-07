@@ -62,6 +62,11 @@ public abstract class StreamLineChart extends LineFlowChart {
             });
         }
 
+        seriesList.forEach((final XYChart.Series<Double, Number> series) -> {
+            series.getData().forEach((final XYChart.Data<Double, Number> data) -> {
+                data.setYValue(formatter.getFormattedValue(data.getYValue()));
+            });
+        });
         getChart().getData().addAll(seriesList);
 
         getYAxis().setLabel(String.format("%s (%s%s)", getYChartName(), formatter.getUnitsPrefix(), getYChartUnits()));
