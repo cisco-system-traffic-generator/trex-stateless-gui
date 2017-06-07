@@ -13,7 +13,8 @@
         <Insets top="10"  right="10"  bottom="10"  left="10" />
     </padding>
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="10">
+        <HBox alignment="CENTER_LEFT"
+              spacing="10">
             <PortFilterController fx:id="portFilter" />
             <Label text="Limit:" />
             <TextField fx:id="limit"
@@ -24,7 +25,8 @@
     </top>
     <center>
         <VBox spacing="10">
-            <HBox alignment="CENTER_LEFT" spacing="10">
+            <HBox alignment="CENTER_LEFT"
+                  spacing="10">
                 <padding>
                     <Insets top="15" />
                 </padding>
@@ -35,8 +37,9 @@
                 <Button styleClass="normalButton"
                         text="Remove "/>
             </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="10" VBox.vgrow="ALWAYS">
-                <TableView fx:id="activeRecorders" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT"
+                  spacing="10">
+                <TableView fx:id="activeRecorders">
                     <columns>
                         <TableColumn fx:id="id"
                                      maxWidth="130.0"
