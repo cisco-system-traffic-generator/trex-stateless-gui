@@ -27,7 +27,7 @@ public class Streams extends FlowStatsAnchorPane {
     private GridPane table;
 
     public Streams() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/streams/Streams.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/streams/Streams.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
     }
 

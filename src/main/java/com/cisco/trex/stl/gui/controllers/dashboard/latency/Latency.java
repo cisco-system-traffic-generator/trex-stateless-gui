@@ -45,7 +45,7 @@ public class Latency extends FlowStatsAnchorPane {
     private GridPane table;
 
     public Latency() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/latency/Latency.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/latency/Latency.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
 
         toggleGroupMode.selectedToggleProperty().addListener(this::typeChanged);

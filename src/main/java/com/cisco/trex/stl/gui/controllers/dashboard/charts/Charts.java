@@ -39,7 +39,7 @@ public class Charts extends BorderPane {
     private IntegerProperty interval;
 
     public Charts() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/charts/Charts.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/charts/Charts.fxml");
         charts = new ChartContainer[4];
         interval = new SimpleIntegerProperty();
         interval.bind(intervalComboBox.valueProperty());

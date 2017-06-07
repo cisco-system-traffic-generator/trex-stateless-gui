@@ -26,7 +26,7 @@ public class Ports extends AnchorPane {
     private Set<Integer> lastVisiblePorts;
 
     public Ports() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/ports/Ports.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/ports/Ports.fxml");
 
         statsTableGenerator = new StatsTableGenerator();
         portManager = PortsManager.getInstance();

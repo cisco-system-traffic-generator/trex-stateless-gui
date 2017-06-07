@@ -31,7 +31,7 @@ public class ChartContainer extends AnchorPane {
     private IntegerProperty interval;
 
     public ChartContainer(String selectedType, IntegerProperty interval) {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/charts/ChartContainer.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/charts/ChartContainer.fxml");
 
         this.interval = interval;
 

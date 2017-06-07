@@ -21,7 +21,7 @@ public class PortCheckbox extends HBox {
     private EventHandler<Event> onSelectionChanged;
 
     public PortCheckbox(int portNumber, EventHandler<Event> onSelectionChanged) {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/selectors/ports/PortCheckBox.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/selectors/ports/PortCheckBox.fxml");
 
         this.portNumber = portNumber;
         this.label.setText(String.format("Port %d", portNumber));

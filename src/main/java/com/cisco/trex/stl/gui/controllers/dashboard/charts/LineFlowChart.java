@@ -25,7 +25,7 @@ public abstract class LineFlowChart extends FlowChart {
 
     @Override
     protected String getResourceName() {
-        return "/fxml/Dashboard/charts/LineChart.fxml";
+        return "/fxml/dashboard/charts/LineChart.fxml";
     }
 
     @Override
