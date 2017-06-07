@@ -914,10 +914,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         "Dashboard",
                         50,
                         10,
+                        1210,
+                        740,
                         true,
                         TrexApp.getPrimaryStage()
                 );
-                statsWindow.setMinSize(1210, 740);
                 statsWindow.show(false);
             }
         } catch (IOException ex) {

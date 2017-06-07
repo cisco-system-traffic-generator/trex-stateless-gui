@@ -1,5 +1,7 @@
 package com.cisco.trex.stl.gui.controllers.dashboard;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
