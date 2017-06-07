@@ -916,10 +916,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     "Packet Capture",
                     50,
                     10,
+                    1000,
+                    700,
                     true,
                     TrexApp.getPrimaryStage()
             );
-            statsWindow.setMinSize(1000, 700);
             statsWindow.show(false);
         } catch (IOException ex) {
             LOG.error("Error opening dashboard view", ex);
