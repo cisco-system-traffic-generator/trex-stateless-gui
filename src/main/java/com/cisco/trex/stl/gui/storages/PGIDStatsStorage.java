@@ -3,16 +3,22 @@ package com.cisco.trex.stl.gui.storages;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.util.Duration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.cisco.trex.stateless.model.stats.FlowStat;
 import com.cisco.trex.stateless.model.stats.LatencyStat;
 import com.cisco.trex.stateless.model.stats.PGIdStatsRPCResult;
 
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
+import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 import com.cisco.trex.stl.gui.services.PGIDStatsService;
 
-import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 import com.exalttech.trex.util.ArrayHistory;
 
 
@@ -21,28 +27,26 @@ public class PGIDStatsStorage {
         void flowStatsChanged();
     }
 
-    public interface LatencyStatsChangedListener {
-        void latencyStatsChanged();
-    }
-
     private static final Duration POLLING_INTERVAL = Duration.seconds(1);
     private static final int HISTORY_SIZE = 301;
 
     private final PGIDStatsService pgIDStatsService = new PGIDStatsService();
 
-    private final Object flowLock = new Object();
+    private final Object dataLock = new Object();
+
     private final Map<Integer, ArrayHistory<FlowStatPoint>> flowStatPointHistoryMap = new HashMap<>();
     private final Map<Integer, FlowStatPoint> flowStatPointShadowMap = new HashMap<>();
 
-    private final Object latencyLock = new Object();
     private final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyStatPointHistoryMap = new HashMap<>();
     private final Map<Integer, LatencyStatPoint> latencyStatPointShadowMap = new HashMap<>();
     private String[] histogramKeys = new String[0];
 
+    private Map<String, Integer> lastVerId = new HashMap<>();
+
     private final List<StatsChangedListener> statsChangedListeners = new ArrayList<>();
 
-    public Object getFlowLock() {
-        return flowLock;
+    public Object getDataLock() {
+        return dataLock;
     }
 
     public Map<Integer, ArrayHistory<FlowStatPoint>> getFlowStatPointHistoryMap() {
@@ -51,10 +55,6 @@ public class PGIDStatsStorage {
 
     public Map<Integer, FlowStatPoint> getFlowStatPointShadowMap() {
         return flowStatPointShadowMap;
-    }
-
-    public Object getLatencyLock() {
-        return latencyLock;
     }
 
     public Map<Integer, ArrayHistory<LatencyStatPoint>> getLatencyStatPointHistoryMap() {
@@ -99,12 +99,10 @@ public class PGIDStatsStorage {
             }
         }
 
-        synchronized (flowLock) {
+        synchronized (dataLock) {
             flowStatPointHistoryMap.clear();
             flowStatPointShadowMap.clear();
-        }
 
-        synchronized (latencyLock) {
             latencyStatPointHistoryMap.clear();
             latencyStatPointShadowMap.clear();
         }
@@ -117,8 +115,11 @@ public class PGIDStatsStorage {
     }
 
     public void reset() {
-        resetFlowStats();
-        resetLatencyStats();
+        synchronized (dataLock) {
+            resetFlowStats();
+            resetLatencyStats();
+        }
+
         handleStatsChanged();
     }
 
@@ -130,118 +131,133 @@ public class PGIDStatsStorage {
             return;
         }
 
-        final double time = System.currentTimeMillis() / 1000.0;
-
-        final Map<String, FlowStat> flowStatMap = receivedPGIDStats.getFlowStats();
-        if (flowStatMap != null) {
-            processFlowStats(receivedPGIDStats.getFlowStats(), time);
+        final Map<String, Integer> verId = receivedPGIDStats.getVerId();
+        if (verId == null) {
+            return;
         }
 
-        final Map<String, LatencyStat> latencyStatMap = receivedPGIDStats.getLatency();
-        if (latencyStatMap != null) {
-            processLatencyStats(receivedPGIDStats.getLatency(), time);
+        final double time = System.currentTimeMillis() / 1000.0;
+
+        synchronized (dataLock) {
+            final Map<String, FlowStat> flowStatMap = receivedPGIDStats.getFlowStats();
+            if (flowStatMap != null) {
+                processFlowStats(receivedPGIDStats.getFlowStats(), verId, time);
+            }
+
+            final Map<String, LatencyStat> latencyStatMap = receivedPGIDStats.getLatency();
+            if (latencyStatMap != null) {
+                processLatencyStats(receivedPGIDStats.getLatency(), verId, time);
+            }
+
+            lastVerId = verId;
         }
 
         handleStatsChanged();
     }
 
-    private void processFlowStats(final Map<String, FlowStat> flowStatMap, final double time) {
-        synchronized (flowLock) {
-            final Set<Integer> unvisitedStreams = new HashSet<>(flowStatPointHistoryMap.keySet());
+    private void processFlowStats(
+            final Map<String, FlowStat> flowStatMap,
+            final Map<String, Integer> verId,
+            final double time
+    ) {
+        final Set<Integer> unvisitedStreams = new HashSet<>(flowStatPointHistoryMap.keySet());
 
-            flowStatMap.forEach((final String pgID, final FlowStat flowStat) -> {
-                int intPGID;
-                try {
-                    intPGID = Integer.valueOf(pgID);
-                } catch (NumberFormatException exc) {
-                    return;
-                }
+        flowStatMap.forEach((final String pgID, final FlowStat flowStat) -> {
+            int intPGID;
+            try {
+                intPGID = Integer.valueOf(pgID);
+            } catch (NumberFormatException exc) {
+                return;
+            }
 
-                unvisitedStreams.remove(intPGID);
+            unvisitedStreams.remove(intPGID);
 
-                final FlowStatPoint statsFlowHistoryPoint = new FlowStatPoint(flowStat, time);
-                ArrayHistory<FlowStatPoint> history = flowStatPointHistoryMap.get(intPGID);
-                if (history == null) {
-                    history = new ArrayHistory<>(HISTORY_SIZE);
-                    flowStatPointHistoryMap.put(intPGID, history);
-                }
-                history.add(statsFlowHistoryPoint);
+            final FlowStatPoint statsFlowHistoryPoint = new FlowStatPoint(flowStat, time);
+            ArrayHistory<FlowStatPoint> history = flowStatPointHistoryMap.get(intPGID);
+            if (history == null) {
+                history = new ArrayHistory<>(HISTORY_SIZE);
+                flowStatPointHistoryMap.put(intPGID, history);
+            } else if (!verId.get(pgID).equals(lastVerId.get(pgID))) {
+                history.clear();
+                flowStatPointShadowMap.remove(intPGID);
+            }
+            history.add(statsFlowHistoryPoint);
 
-                flowStatPointShadowMap.putIfAbsent(intPGID, statsFlowHistoryPoint);
-            });
+            flowStatPointShadowMap.putIfAbsent(intPGID, statsFlowHistoryPoint);
+        });
 
-            unvisitedStreams.forEach((final Integer pgID) -> {
-                flowStatPointHistoryMap.remove(pgID);
-                flowStatPointShadowMap.remove(pgID);
-            });
-        }
+        unvisitedStreams.forEach((final Integer pgID) -> {
+            flowStatPointHistoryMap.remove(pgID);
+            flowStatPointShadowMap.remove(pgID);
+        });
     }
 
     private void resetFlowStats() {
-        synchronized (flowLock) {
-            flowStatPointShadowMap.clear();
-            flowStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<FlowStatPoint> history) -> {
-                if (!history.isEmpty()) {
-                    final FlowStatPoint last = history.last();
-                    flowStatPointShadowMap.put(pgID, history.last());
-                    history.clear();
-                    history.add(last);
-                }
-            });
-        }
+        flowStatPointShadowMap.clear();
+        flowStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<FlowStatPoint> history) -> {
+            if (!history.isEmpty()) {
+                final FlowStatPoint last = history.last();
+                flowStatPointShadowMap.put(pgID, history.last());
+                history.clear();
+                history.add(last);
+            }
+        });
     }
 
-    private void processLatencyStats(final Map<String, LatencyStat> latencyStatMap, final double time) {
-        synchronized (latencyLock) {
-            final Set<Integer> unvisitedStreams = new HashSet<>(latencyStatPointHistoryMap.keySet());
-            final Set<String> histogramKeysSet = new HashSet<>();
+    private void processLatencyStats(
+            final Map<String, LatencyStat> latencyStatMap,
+            final Map<String, Integer> verId,
+            final double time
+    ) {
+        final Set<Integer> unvisitedStreams = new HashSet<>(latencyStatPointHistoryMap.keySet());
+        final Set<String> histogramKeysSet = new HashSet<>();
 
-            latencyStatMap.forEach((final String pgID, final LatencyStat latencyStat) -> {
-                int intPGID;
-                try {
-                    intPGID = Integer.valueOf(pgID);
-                } catch (NumberFormatException exc) {
-                    return;
-                }
+        latencyStatMap.forEach((final String pgID, final LatencyStat latencyStat) -> {
+            int intPGID;
+            try {
+                intPGID = Integer.valueOf(pgID);
+            } catch (NumberFormatException exc) {
+                return;
+            }
 
-                unvisitedStreams.remove(intPGID);
+            unvisitedStreams.remove(intPGID);
 
-                final LatencyStatPoint statsFlowHistoryPoint = new LatencyStatPoint(latencyStat, time);
-                ArrayHistory<LatencyStatPoint> history = latencyStatPointHistoryMap.get(intPGID);
-                if (history == null) {
-                    history = new ArrayHistory<>(HISTORY_SIZE);
-                    latencyStatPointHistoryMap.put(intPGID, history);
-                }
-                history.add(statsFlowHistoryPoint);
+            final LatencyStatPoint statsFlowHistoryPoint = new LatencyStatPoint(latencyStat, time);
+            ArrayHistory<LatencyStatPoint> history = latencyStatPointHistoryMap.get(intPGID);
+            if (history == null) {
+                history = new ArrayHistory<>(HISTORY_SIZE);
+                latencyStatPointHistoryMap.put(intPGID, history);
+            } else if (!verId.get(pgID).equals(lastVerId.get(pgID))) {
+                history.clear();
+                latencyStatPointShadowMap.remove(intPGID);
+            }
+            history.add(statsFlowHistoryPoint);
 
-                histogramKeysSet.addAll(latencyStat.getLat().getHistogram().keySet());
+            histogramKeysSet.addAll(latencyStat.getLat().getHistogram().keySet());
 
-                latencyStatPointShadowMap.putIfAbsent(intPGID, statsFlowHistoryPoint);
-            });
+            latencyStatPointShadowMap.putIfAbsent(intPGID, statsFlowHistoryPoint);
+        });
 
-            histogramKeys = new String[histogramKeysSet.size()];
-            histogramKeysSet.toArray(histogramKeys);
-            Arrays.sort(histogramKeys, PGIDStatsStorage::compareHistogramKeys);
+        histogramKeys = new String[histogramKeysSet.size()];
+        histogramKeysSet.toArray(histogramKeys);
+        Arrays.sort(histogramKeys, PGIDStatsStorage::compareHistogramKeys);
 
-            unvisitedStreams.forEach((final Integer pgID) -> {
-                latencyStatPointHistoryMap.remove(pgID);
-                latencyStatPointShadowMap.remove(pgID);
-            });
-        }
+        unvisitedStreams.forEach((final Integer pgID) -> {
+            latencyStatPointHistoryMap.remove(pgID);
+            latencyStatPointShadowMap.remove(pgID);
+        });
     }
 
     private void resetLatencyStats() {
-        synchronized (latencyLock) {
-            latencyStatPointShadowMap.clear();
-            latencyStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<LatencyStatPoint> history) -> {
-                if (!history.isEmpty()) {
-                    final LatencyStatPoint last = history.last();
-                    latencyStatPointShadowMap.put(pgID, history.last());
-                    history.clear();
-                    history.add(last);
-                }
-            });
-        }
+        latencyStatPointShadowMap.clear();
+        latencyStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<LatencyStatPoint> history) -> {
+            if (!history.isEmpty()) {
+                final LatencyStatPoint last = history.last();
+                latencyStatPointShadowMap.put(pgID, history.last());
+                history.clear();
+                history.add(last);
+            }
+        });
     }
 
     private void handleStatsChanged() {

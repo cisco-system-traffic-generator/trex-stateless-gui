@@ -36,7 +36,7 @@ public abstract class LatencyLineChart extends LineFlowChart {
                 pgIDStatsStorage.getLatencyStatPointHistoryMap();
         final List<XYChart.Series<Double, Number>> seriesList = new LinkedList<>();
 
-        synchronized (pgIDStatsStorage.getLatencyLock()) {
+        synchronized (pgIDStatsStorage.getDataLock()) {
             latencyStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<LatencyStatPoint> history) -> {
                 if (history == null || history.isEmpty()) {
                     return;

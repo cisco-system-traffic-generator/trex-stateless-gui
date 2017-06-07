@@ -34,7 +34,7 @@ public abstract class StreamLineChart extends LineFlowChart {
         final List<XYChart.Series<Double, Number>> seriesList = new LinkedList<>();
         final Formatter formatter = new Formatter();
 
-        synchronized (pgIDStatsStorage.getFlowLock()) {
+        synchronized (pgIDStatsStorage.getDataLock()) {
             latencyStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<FlowStatPoint> history) -> {
                 if (history == null || history.isEmpty()) {
                     return;

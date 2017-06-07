@@ -61,7 +61,7 @@ public class Streams extends FlowStatsAnchorPane {
         final Map<Integer, FlowStatPoint> flowStatPointShadowMap =
                 pgIDStatsStorage.getFlowStatPointShadowMap();
 
-        synchronized (pgIDStatsStorage.getFlowLock()) {
+        synchronized (pgIDStatsStorage.getDataLock()) {
             for (final Map.Entry<Integer, ArrayHistory<FlowStatPoint>> entry : flowStatPointHistoryMap.entrySet()) {
                 final int pgID = entry.getKey();
                 final ArrayHistory<FlowStatPoint> history = entry.getValue();

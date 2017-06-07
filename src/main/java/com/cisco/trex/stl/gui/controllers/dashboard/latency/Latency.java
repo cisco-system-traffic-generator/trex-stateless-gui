@@ -103,69 +103,67 @@ public class Latency extends FlowStatsAnchorPane {
                 pgIDStatsStorage.getLatencyStatPointShadowMap();
 
         int rowIndex = 1;
-        synchronized (pgIDStatsStorage.getFlowLock()) {
-            synchronized (pgIDStatsStorage.getLatencyLock()) {
-                for (final Map.Entry<Integer, ArrayHistory<FlowStatPoint>> entry : flowStatPointHistoryMap.entrySet()) {
-                    final int pgID = entry.getKey();
+        synchronized (pgIDStatsStorage.getDataLock()) {
+            for (final Map.Entry<Integer, ArrayHistory<FlowStatPoint>> entry : flowStatPointHistoryMap.entrySet()) {
+                final int pgID = entry.getKey();
 
-                    final ArrayHistory<FlowStatPoint> flowHistory = entry.getValue();
-                    if (flowHistory == null || flowHistory.isEmpty()) {
-                        continue;
-                    }
-                    final FlowStatPoint flowStatPoint = flowHistory.last();
-
-                    final ArrayHistory<LatencyStatPoint> latencyHistory = latencyStatPointHistoryMap.get(pgID);
-                    if (latencyHistory == null || latencyHistory.isEmpty()) {
-                        continue;
-                    }
-                    final LatencyStat latencyStat = latencyHistory.last().getLatencyStat();
-
-                    final long[] window = new long[WINDOW_SIZE];
-                    for (int i = 0; i < WINDOW_SIZE; ++i) {
-                        window[i] = 0;
-                    }
-                    final int latencyHistorySize = latencyHistory.size();
-                    final int size = Math.min(latencyHistorySize, WINDOW_SIZE);
-                    for (int i = 0; i < size; i++) {
-                        window[i] = latencyHistory
-                                .get(latencyHistorySize - 1 - i)
-                                .getLatencyStat()
-                                .getLat()
-                                .getLastMax();
-                    }
-
-                    long tp = flowStatPoint.getTp();
-                    long rp = flowStatPoint.getRp();
-
-                    final FlowStatPoint flowShadow = flowStatPointShadowMap.get(pgID);
-                    if (flowShadow != null) {
-                        tp -= flowShadow.getTp();
-                        rp -= flowShadow.getRp();
-                    }
-
-                    long totalErr = latencyStat.getErr().getTotal();
-
-                    final LatencyStatPoint latencyShadow = latencyStatPointShadowMap.get(pgID);
-                    if (latencyShadow != null) {
-                        totalErr -= latencyShadow.getLatencyStat().getErr().getTotal();
-                    }
-
-                    final LatencyStatLat lat = latencyStat.getLat();
-
-                    int col = 0;
-                    table.add(new HeaderCell(COLUMN_WIDTH, String.valueOf(pgID)), rowIndex, col++);
-                    table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                    table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                    table.add(new StatisticLabelCell(String.format("%d \u00B5s", lat.getTotalMax()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                    table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(lat.getAverage())), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                    for (int i = 0; i < WINDOW_SIZE; ++i) {
-                        table.add(new StatisticLabelCell(String.valueOf(window[i]), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                    }
-                    table.add(new StatisticLabelCell(String.format("%d \u00B5s", lat.getJit()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                    table.add(new StatisticLabelCell(String.valueOf(totalErr), COLUMN_WIDTH, true, CellType.ERROR_CELL, true), rowIndex, col++);
-
-                    rowIndex++;
+                final ArrayHistory<FlowStatPoint> flowHistory = entry.getValue();
+                if (flowHistory == null || flowHistory.isEmpty()) {
+                    continue;
                 }
+                final FlowStatPoint flowStatPoint = flowHistory.last();
+
+                final ArrayHistory<LatencyStatPoint> latencyHistory = latencyStatPointHistoryMap.get(pgID);
+                if (latencyHistory == null || latencyHistory.isEmpty()) {
+                    continue;
+                }
+                final LatencyStat latencyStat = latencyHistory.last().getLatencyStat();
+
+                final long[] window = new long[WINDOW_SIZE];
+                for (int i = 0; i < WINDOW_SIZE; ++i) {
+                    window[i] = 0;
+                }
+                final int latencyHistorySize = latencyHistory.size();
+                final int size = Math.min(latencyHistorySize, WINDOW_SIZE);
+                for (int i = 0; i < size; i++) {
+                    window[i] = latencyHistory
+                            .get(latencyHistorySize - 1 - i)
+                            .getLatencyStat()
+                            .getLat()
+                            .getLastMax();
+                }
+
+                long tp = flowStatPoint.getTp();
+                long rp = flowStatPoint.getRp();
+
+                final FlowStatPoint flowShadow = flowStatPointShadowMap.get(pgID);
+                if (flowShadow != null) {
+                    tp -= flowShadow.getTp();
+                    rp -= flowShadow.getRp();
+                }
+
+                long totalErr = latencyStat.getErr().getTotal();
+
+                final LatencyStatPoint latencyShadow = latencyStatPointShadowMap.get(pgID);
+                if (latencyShadow != null) {
+                    totalErr -= latencyShadow.getLatencyStat().getErr().getTotal();
+                }
+
+                final LatencyStatLat lat = latencyStat.getLat();
+
+                int col = 0;
+                table.add(new HeaderCell(COLUMN_WIDTH, String.valueOf(pgID)), rowIndex, col++);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.format("%d \u00B5s", lat.getTotalMax()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(lat.getAverage())), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                for (int i = 0; i < WINDOW_SIZE; ++i) {
+                    table.add(new StatisticLabelCell(String.valueOf(window[i]), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                }
+                table.add(new StatisticLabelCell(String.format("%d \u00B5s", lat.getJit()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.valueOf(totalErr), COLUMN_WIDTH, true, CellType.ERROR_CELL, true), rowIndex, col++);
+
+                rowIndex++;
             }
         }
     }
@@ -192,7 +190,7 @@ public class Latency extends FlowStatsAnchorPane {
         table.add(new StatisticLabelCell("Seq To Low", FIRST_COLUMN_WIDTH, hCol%2 == 0, CellType.DEFAULT_CELL, false), 0, hCol);
 
         int rowIndex = 1;
-        synchronized (pgIDStatsStorage.getLatencyLock()) {
+        synchronized (pgIDStatsStorage.getDataLock()) {
             for (final Map.Entry<Integer, ArrayHistory<LatencyStatPoint>> entry : latencyStatPointHistoryMap.entrySet()) {
                 final int pgID = entry.getKey();
 
