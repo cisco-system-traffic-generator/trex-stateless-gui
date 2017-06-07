@@ -31,7 +31,8 @@
             <NumberAxis fx:id="yAxis"
                         forceZeroInRange="false"
                         side="RIGHT"
-                        minorTickVisible="false"/>
+                        minorTickVisible="false"
+                        autoRanging="true"/>
         </yAxis>
     </LineChart>
 </fx:root>
