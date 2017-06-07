@@ -5,9 +5,9 @@ import com.exalttech.trex.util.Initialization;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 
-public class Monitor extends AnchorPane {
+public class Monitor extends BorderPane {
     
     @FXML
     private TableView<CapturedPkt> capturedPkts;

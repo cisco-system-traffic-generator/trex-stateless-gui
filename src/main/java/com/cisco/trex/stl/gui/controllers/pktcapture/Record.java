@@ -6,9 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 
-public class Record extends AnchorPane {
+public class Record extends BorderPane {
 
     @FXML
     private PortFilter portFilter;
