@@ -10,14 +10,14 @@ import javafx.scene.layout.HBox;
 import com.exalttech.trex.util.Initialization;
 
 
-public class Stream extends HBox {
+public class StreamController extends HBox {
     @FXML
     private Label label;
 
     private final int pgid;
     private final EventHandler<Event> onAddClicked;
 
-    public Stream(final int pgid, final EventHandler<Event> onAddClicked) {
+    public StreamController(final int pgid, final EventHandler<Event> onAddClicked) {
         Initialization.initializeFXML(this, "/fxml/dashboard/selectors/streams/Stream.fxml");
 
         this.pgid = pgid;

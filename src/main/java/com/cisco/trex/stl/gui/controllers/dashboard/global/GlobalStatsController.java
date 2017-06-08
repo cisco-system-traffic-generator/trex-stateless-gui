@@ -22,37 +22,37 @@ import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class Global extends GridPane {
-    private static final Logger LOG = Logger.getLogger(Global.class.getName());
+public class GlobalStatsController extends GridPane {
+    private static final Logger LOG = Logger.getLogger(GlobalStatsController.class.getName());
 
     @FXML
     private GridPane root;
     @FXML
-    private GlobalPanel cpu;
+    private GlobalStatsPanelController cpu;
     @FXML
-    private GlobalPanel rxCpu;
+    private GlobalStatsPanelController rxCpu;
     @FXML
-    private GlobalPanel totalTx;
+    private GlobalStatsPanelController totalTx;
     @FXML
-    private GlobalPanel totalTxL1;
+    private GlobalStatsPanelController totalTxL1;
     @FXML
-    private GlobalPanel totalRx;
+    private GlobalStatsPanelController totalRx;
     @FXML
-    private GlobalPanel totalPps;
+    private GlobalStatsPanelController totalPps;
     @FXML
-    private GlobalPanel totalStream;
+    private GlobalStatsPanelController totalStream;
     @FXML
-    private GlobalPanel activePort;
+    private GlobalStatsPanelController activePort;
     @FXML
-    private GlobalPanel dropRate;
+    private GlobalStatsPanelController dropRate;
     @FXML
-    private GlobalPanel queueFull;
+    private GlobalStatsPanelController queueFull;
 
     private RefreshingService refreshingService;
     PortsManager portManager;
 
-    public Global() {
-        Initialization.initializeFXML(this, "/fxml/dashboard/global/Global.fxml");
+    public GlobalStatsController() {
+        Initialization.initializeFXML(this, "/fxml/dashboard/global/GlobalStats.fxml");
 
         refreshingService = new RefreshingService();
         refreshingService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));

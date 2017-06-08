@@ -7,18 +7,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.cisco.trex.stl.gui.models.FlowStatPoint;
+import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
 
 import com.exalttech.trex.util.ArrayHistory;
-import com.exalttech.trex.util.Formatter;
 
 
-public abstract class StreamLineChart extends LineFlowChart {
-    public StreamLineChart(final IntegerProperty interval) {
+public abstract class LatencyLineChartController extends LineFlowChartController {
+    public LatencyLineChartController(final IntegerProperty interval) {
         super(interval);
+
+        getYAxis().setLabel(getYChartLabel());
     }
+
+    protected abstract String getYChartLabel();
 
     @Override
     protected void render() {
@@ -29,13 +32,12 @@ public abstract class StreamLineChart extends LineFlowChart {
         final Map<Integer, String> selectedPGIDs = statsStorage.getPGIDsStorage().getSelectedPGIds();
 
         final PGIDStatsStorage pgIDStatsStorage = statsStorage.getPGIDStatsStorage();
-        final Map<Integer, ArrayHistory<FlowStatPoint>> latencyStatPointHistoryMap =
-                pgIDStatsStorage.getFlowStatPointHistoryMap();
+        final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyStatPointHistoryMap =
+                pgIDStatsStorage.getLatencyStatPointHistoryMap();
         final List<XYChart.Series<Double, Number>> seriesList = new LinkedList<>();
-        final Formatter formatter = new Formatter();
 
         synchronized (pgIDStatsStorage.getDataLock()) {
-            latencyStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<FlowStatPoint> history) -> {
+            latencyStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<LatencyStatPoint> history) -> {
                 if (history == null || history.isEmpty()) {
                     return;
                 }
@@ -51,30 +53,17 @@ public abstract class StreamLineChart extends LineFlowChart {
                 series.setName(String.valueOf(pgID));
                 int size = history.size();
                 for (int i = 0; i < size; ++i) {
-                    final FlowStatPoint point = history.get(i);
+                    final LatencyStatPoint point = history.get(i);
                     final double time = point.getTime();
-                    final Number value = getValue(point);
-                    formatter.addValue(value);
-                    series.getData().add(new XYChart.Data<>(time - lastTime, value));
+                    series.getData().add(new XYChart.Data<>(time - lastTime, getValue(point)));
                 }
                 setSeriesColor(series, color);
                 seriesList.add(series);
             });
         }
 
-        seriesList.forEach((final XYChart.Series<Double, Number> series) -> {
-            series.getData().forEach((final XYChart.Data<Double, Number> data) -> {
-                data.setYValue(formatter.getFormattedValue(data.getYValue()));
-            });
-        });
         getChart().getData().addAll(seriesList);
-
-        getYAxis().setLabel(String.format("%s (%s%s)", getYChartName(), formatter.getUnitsPrefix(), getYChartUnits()));
     }
 
-    protected abstract String getYChartName();
-
-    protected abstract String getYChartUnits();
-
-    protected abstract Number getValue(final FlowStatPoint point);
+    protected abstract Number getValue(final LatencyStatPoint point);
 }

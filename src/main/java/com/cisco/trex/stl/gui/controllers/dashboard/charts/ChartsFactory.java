@@ -17,28 +17,28 @@ public class ChartsFactory {
         public static final String LATENCY_HISTOGRAM = "Latency Histogram";
     }
 
-    public static FlowChart create(String chartType, IntegerProperty interval) {
+    public static FlowChartController create(String chartType, IntegerProperty interval) {
         switch (chartType) {
             case ChartTypes.TX_PPS:
-                return new TxPps(interval);
+                return new TxPpsController(interval);
             case ChartTypes.RX_PPS:
-                return new RxPps(interval);
+                return new RxPpsController(interval);
             case ChartTypes.TX_BPS_L1:
-                return new TxBpsL1(interval);
+                return new TxBpsL1Controller(interval);
             case ChartTypes.TX_BPS_L2:
-                return new TxBpsL2(interval);
+                return new TxBpsL2Controller(interval);
             case ChartTypes.RX_BPS_L2:
-                return new RxBps(interval);
+                return new RxBpsController(interval);
             case ChartTypes.MAX_LATENCY:
-                return new MaxLatency(interval);
+                return new MaxLatencyController(interval);
             case ChartTypes.AVG_LATENCY:
-                return new AvgLatency(interval);
+                return new AvgLatencyController(interval);
             case ChartTypes.JITTER_LATENCY:
-                return new LatencyJitter(interval);
+                return new LatencyJitterController(interval);
             case ChartTypes.TEMPORARY_MAX_LATENCY:
                 return new TemporaryMaxLatency(interval);
             case ChartTypes.LATENCY_HISTOGRAM:
-                return new LatencyHistogram();
+                return new LatencyHistogramController();
         }
         throw new IllegalArgumentException(String.format("Unknown chart type: %s", chartType));
     }

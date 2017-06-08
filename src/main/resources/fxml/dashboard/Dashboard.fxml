@@ -7,40 +7,40 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<?import com.cisco.trex.stl.gui.controllers.dashboard.charts.Charts?>
-<?import com.cisco.trex.stl.gui.controllers.dashboard.global.Global?>
-<?import com.cisco.trex.stl.gui.controllers.dashboard.latency.Latency?>
-<?import com.cisco.trex.stl.gui.controllers.dashboard.ports.Ports?>
-<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.ports.PortsSelector?>
-<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelector?>
-<?import com.cisco.trex.stl.gui.controllers.dashboard.streams.Streams?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.charts.ChartsController?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.global.GlobalStatsController?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.latency.LatencyController?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.ports.PortsController?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.ports.PortsSelectorController?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.streams.StreamsController?>
 
 
 <BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml"
             style="-fx-background-color: #f0f0f0"
-            fx:controller="com.cisco.trex.stl.gui.controllers.dashboard.Dashboard"
+            fx:controller="com.cisco.trex.stl.gui.controllers.dashboard.DashboardController"
             fx:id="root">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
     <top>
-        <Global/>
+        <GlobalStatsController/>
     </top>
     <left>
         <AnchorPane>
-            <PortsSelector fx:id="portsSelector"
-                           onFiltersChanged="#handleFiltersChanged"
-                           AnchorPane.leftAnchor="0.0"
-                           AnchorPane.rightAnchor="10.0"
-                           AnchorPane.topAnchor="11.0"
-                           AnchorPane.bottomAnchor="1.0"/>
-            <StreamsSelector fx:id="streamsSelector"
-                             visible="false"
-                             AnchorPane.leftAnchor="0.0"
-                             AnchorPane.rightAnchor="10.0"
-                             AnchorPane.topAnchor="11.0"
-                             AnchorPane.bottomAnchor="1.0"/>
+            <PortsSelectorController fx:id="portsSelector"
+                                     onFiltersChanged="#handleFiltersChanged"
+                                     AnchorPane.leftAnchor="0.0"
+                                     AnchorPane.rightAnchor="10.0"
+                                     AnchorPane.topAnchor="11.0"
+                                     AnchorPane.bottomAnchor="1.0"/>
+            <StreamsSelectorController fx:id="streamsSelector"
+                                       visible="false"
+                                       AnchorPane.leftAnchor="0.0"
+                                       AnchorPane.rightAnchor="10.0"
+                                       AnchorPane.topAnchor="11.0"
+                                       AnchorPane.bottomAnchor="1.0"/>
         </AnchorPane>
     </left>
     <center>
@@ -54,19 +54,19 @@
                      AnchorPane.bottomAnchor="0.0">
                 <Tab text="Ports"
                      onSelectionChanged="#handleTabChanged">
-                    <Ports fx:id="ports"/>
+                    <PortsController fx:id="ports"/>
                 </Tab>
                 <Tab text="Streams"
                      onSelectionChanged="#handleTabChanged">
-                    <Streams fx:id="streams"/>
+                    <StreamsController fx:id="streams"/>
                 </Tab>
                 <Tab text="Latency"
                      onSelectionChanged="#handleTabChanged">
-                    <Latency fx:id="latency"/>
+                    <LatencyController fx:id="latency"/>
                 </Tab>
                 <Tab text="Charts"
                      onSelectionChanged="#handleTabChanged">
-                    <Charts fx:id="charts"/>
+                    <ChartsController fx:id="charts"/>
                 </Tab>
             </TabPane>
             <Button fx:id="clearButton"

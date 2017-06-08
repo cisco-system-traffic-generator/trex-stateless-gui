@@ -16,7 +16,7 @@ import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class Ports extends AnchorPane {
+public class PortsController extends AnchorPane {
     @FXML
     private ScrollPane statTableContainer;
 
@@ -25,7 +25,7 @@ public class Ports extends AnchorPane {
     Map<String, String> currentStatsList = new HashMap<>();
     private Set<Integer> lastVisiblePorts;
 
-    public Ports() {
+    public PortsController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/ports/Ports.fxml");
 
         statsTableGenerator = new StatsTableGenerator();

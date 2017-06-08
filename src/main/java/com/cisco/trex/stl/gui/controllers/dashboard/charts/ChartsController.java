@@ -14,7 +14,7 @@ import javafx.scene.layout.RowConstraints;
 import com.exalttech.trex.util.Initialization;
 
 
-public class Charts extends BorderPane {
+public class ChartsController extends BorderPane {
     private static String[] defaultChartTypes = new String[]{
             ChartsFactory.ChartTypes.TX_PPS,
             ChartsFactory.ChartTypes.RX_PPS,
@@ -35,12 +35,12 @@ public class Charts extends BorderPane {
 
     private LayoutConfiguration[] layoutConfigurations;
     private int selectedConfigurationIndex;
-    private ChartContainer[] charts;
+    private ChartContainerController[] charts;
     private IntegerProperty interval;
 
-    public Charts() {
+    public ChartsController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/charts/Charts.fxml");
-        charts = new ChartContainer[4];
+        charts = new ChartContainerController[4];
         interval = new SimpleIntegerProperty();
         interval.bind(intervalComboBox.valueProperty());
         initLayoutConfigurations();
@@ -117,9 +117,9 @@ public class Charts extends BorderPane {
         }
     }
 
-    private ChartContainer getChart(int index) {
+    private ChartContainerController getChart(int index) {
         if (charts[index] == null) {
-            charts[index] = new ChartContainer(defaultChartTypes[index], interval);
+            charts[index] = new ChartContainerController(defaultChartTypes[index], interval);
         }
         return charts[index];
     }

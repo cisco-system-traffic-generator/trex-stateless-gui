@@ -11,7 +11,7 @@ import com.exalttech.trex.util.Initialization;
 import javafx.scene.layout.Pane;
 
 
-public class SelectedStream extends HBox {
+public class SelectedStreamController extends HBox {
     @FXML
     private Pane legend;
     @FXML
@@ -22,7 +22,7 @@ public class SelectedStream extends HBox {
     private final int pgid;
     private final EventHandler<Event> onDeleteClicked;
 
-    public SelectedStream(
+    public SelectedStreamController(
             final int pgid,
             final String color,
             final boolean isDeleted,

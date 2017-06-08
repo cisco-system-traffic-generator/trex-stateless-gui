@@ -9,7 +9,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.layout.AnchorPane;
 
 
-public abstract class LineFlowChart extends FlowChart {
+public abstract class LineFlowChartController extends FlowChartController {
     @FXML
     private AnchorPane root;
     @FXML
@@ -19,7 +19,7 @@ public abstract class LineFlowChart extends FlowChart {
     @FXML
     private NumberAxis yAxis;
 
-    public LineFlowChart(final IntegerProperty interval) {
+    public LineFlowChartController(final IntegerProperty interval) {
         xAxis.lowerBoundProperty().bind(interval.negate());
     }
 

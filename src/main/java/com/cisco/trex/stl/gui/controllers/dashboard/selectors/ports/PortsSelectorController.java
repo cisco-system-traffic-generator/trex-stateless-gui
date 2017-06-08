@@ -13,7 +13,7 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.util.Initialization;
 
 
-public class PortsSelector extends VBox {
+public class PortsSelectorController extends VBox {
     @FXML
     private ComboBox<String> portFilterSelector;
     @FXML
@@ -22,7 +22,7 @@ public class PortsSelector extends VBox {
     private EventHandler<Event> onFiltersChanged;
     private Set<Integer> selectedPortIndexes = new HashSet<>();
 
-    public PortsSelector() {
+    public PortsSelectorController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/selectors/ports/PortsSelector.fxml");
 
         buildPortsList();
@@ -63,7 +63,7 @@ public class PortsSelector extends VBox {
         final Set<Integer> portIndexes = getPortIndexes();
         portIndexes.forEach((Integer portIndex) -> {
             selectedPortIndexes.add(portIndex);
-            final PortCheckbox portCheckbox = new PortCheckbox(
+            final PortCheckboxController portCheckbox = new PortCheckboxController(
                     portIndex,
                     this::handlePortSelectionChanged
             );
@@ -74,7 +74,7 @@ public class PortsSelector extends VBox {
     }
 
     private void handlePortSelectionChanged(Event event) {
-        final PortCheckbox checkBox = (PortCheckbox) event.getSource();
+        final PortCheckboxController checkBox = (PortCheckboxController) event.getSource();
         if (checkBox.isSelected()) {
             selectedPortIndexes.add(checkBox.getPortNumber());
         } else {

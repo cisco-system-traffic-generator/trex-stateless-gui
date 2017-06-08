@@ -5,20 +5,20 @@ import javafx.beans.property.IntegerProperty;
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
 
 
-public class RxPps extends StreamLineChart {
-    public RxPps(final IntegerProperty interval) {
+public class RxBpsController extends StreamLineChartController {
+    public RxBpsController(final IntegerProperty interval) {
         super(interval);
     }
 
     protected String getYChartName() {
-        return "Rx pps";
+        return "Rx bps L2";
     }
 
     protected String getYChartUnits() {
-        return "pkt/s";
+        return "b/s";
     }
 
     protected Number getValue(final FlowStatPoint point) {
-        return point.getRps();
+        return point.getRbsL2();
     }
 }

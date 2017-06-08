@@ -8,7 +8,7 @@ import javafx.scene.layout.AnchorPane;
 import com.exalttech.trex.util.Initialization;
 
 
-public class GlobalPanel extends AnchorPane {
+public class GlobalStatsPanelController extends AnchorPane {
     @FXML
     private Label valueLabel;
     @FXML
@@ -18,12 +18,12 @@ public class GlobalPanel extends AnchorPane {
 
     private Double threshold;
 
-    public GlobalPanel(@NamedArg("title") String title) {
+    public GlobalStatsPanelController(@NamedArg("title") String title) {
         this(title, null);
     }
 
-    public GlobalPanel(@NamedArg("title") String title, @NamedArg("threshold") Double threshold) {
-        Initialization.initializeFXML(this, "/fxml/dashboard/global/GlobalPanel.fxml");
+    public GlobalStatsPanelController(@NamedArg("title") String title, @NamedArg("threshold") Double threshold) {
+        Initialization.initializeFXML(this, "/fxml/dashboard/global/GlobalStatsPanel.fxml");
 
         this.threshold = threshold;
         if (this.threshold != null) {

@@ -1,12 +1,9 @@
 package com.cisco.trex.stl.gui.controllers.dashboard;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -16,12 +13,12 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import com.cisco.trex.stl.gui.controllers.dashboard.charts.Charts;
-import com.cisco.trex.stl.gui.controllers.dashboard.latency.Latency;
-import com.cisco.trex.stl.gui.controllers.dashboard.ports.Ports;
-import com.cisco.trex.stl.gui.controllers.dashboard.selectors.ports.PortsSelector;
-import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelector;
-import com.cisco.trex.stl.gui.controllers.dashboard.streams.Streams;
+import com.cisco.trex.stl.gui.controllers.dashboard.charts.ChartsController;
+import com.cisco.trex.stl.gui.controllers.dashboard.latency.LatencyController;
+import com.cisco.trex.stl.gui.controllers.dashboard.ports.PortsController;
+import com.cisco.trex.stl.gui.controllers.dashboard.selectors.ports.PortsSelectorController;
+import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController;
+import com.cisco.trex.stl.gui.controllers.dashboard.streams.StreamsController;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
 
 import com.exalttech.trex.ui.dialog.DialogView;
@@ -31,7 +28,7 @@ import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
 
 
-public class Dashboard extends DialogView implements Initializable {
+public class DashboardController extends DialogView implements Initializable {
     private static final String PORTS_TAB_LABEL = "Ports";
     private static final String STREAMS_TAB_LABEL = "Streams";
     private static final String LATENCY_TAB_LABEL = "Latency";
@@ -40,23 +37,21 @@ public class Dashboard extends DialogView implements Initializable {
     @FXML
     private BorderPane root;
     @FXML
-    private PortsSelector portsSelector;
+    private PortsSelectorController portsSelector;
     @FXML
-    private StreamsSelector streamsSelector;
+    private StreamsSelectorController streamsSelector;
     @FXML
     private TabPane tabPane;
     @FXML
-    private Ports ports;
+    private PortsController ports;
     @FXML
-    private Streams streams;
+    private StreamsController streams;
     @FXML
-    private Latency latency;
+    private LatencyController latency;
     @FXML
-    private Charts charts;
-    @FXML
-    private Button clearButton;
+    private ChartsController charts;
 
-    RefreshingService refreshingService;
+    private RefreshingService refreshingService;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
