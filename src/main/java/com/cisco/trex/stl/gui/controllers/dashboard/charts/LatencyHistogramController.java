@@ -20,7 +20,7 @@ import com.cisco.trex.stl.gui.storages.StatsStorage;
 import com.exalttech.trex.util.ArrayHistory;
 
 
-public class LatencyHistogram extends FlowChart {
+public class LatencyHistogramController extends FlowChartController {
     private static final int HISTOGRAM_SIZE = 11;
 
     @FXML

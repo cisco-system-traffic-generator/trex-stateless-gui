@@ -15,7 +15,7 @@ import com.cisco.trex.stl.gui.storages.StatsStorage;
 import com.exalttech.trex.util.Initialization;
 
 
-public class StreamsSelector extends GridPane {
+public class StreamsSelectorController extends GridPane {
     @FXML
     private GridPane root;
     @FXML
@@ -25,7 +25,7 @@ public class StreamsSelector extends GridPane {
 
     private PGIDsStorage.PGIDsChangedListener pgIDsChangedListener = this::render;
 
-    public StreamsSelector() {
+    public StreamsSelectorController() {
         Initialization.initializeFXML(
                 this,
                 "/fxml/dashboard/selectors/streams/StreamsSelector.fxml"
@@ -57,7 +57,7 @@ public class StreamsSelector extends GridPane {
                 for (final Map.Entry<Integer, String> entry : selectedPGIDs.entrySet()) {
                     final Integer pgID = entry.getKey();
                     selectedStreamsContainer.getChildren().add(
-                            new SelectedStream(
+                            new SelectedStreamController(
                                     pgID,
                                     entry.getValue(),
                                     !pgIDs.contains(pgID),
@@ -69,7 +69,7 @@ public class StreamsSelector extends GridPane {
 
             for (final Integer pgID : pgIDs) {
                 if (selectedPGIDs == null || selectedPGIDs.get(pgID) == null) {
-                    streamsContainer.getChildren().add(new Stream(pgID, this::handleStreamAddClicked));
+                    streamsContainer.getChildren().add(new StreamController(pgID, this::handleStreamAddClicked));
                 }
             }
 
@@ -78,12 +78,12 @@ public class StreamsSelector extends GridPane {
     }
 
     private void handleStreamDeleteClicked(final Event event) {
-        final SelectedStream source = (SelectedStream) event.getSource();
+        final SelectedStreamController source = (SelectedStreamController) event.getSource();
         StatsStorage.getInstance().getPGIDsStorage().deselectPGID(source.getPGId());
     }
 
     private void handleStreamAddClicked(final Event event) {
-        final Stream source = (Stream) event.getSource();
+        final StreamController source = (StreamController) event.getSource();
         StatsStorage.getInstance().getPGIDsStorage().selectPGID(source.getPGId());
     }
 }

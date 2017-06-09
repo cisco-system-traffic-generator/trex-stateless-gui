@@ -17,7 +17,7 @@ import com.cisco.trex.stateless.model.stats.LatencyStat;
 import com.cisco.trex.stateless.model.stats.LatencyStatErr;
 import com.cisco.trex.stateless.model.stats.LatencyStatLat;
 
-import com.cisco.trex.stl.gui.controllers.dashboard.FlowStatsAnchorPane;
+import com.cisco.trex.stl.gui.controllers.dashboard.FlowStatsBaseController;
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
 import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
@@ -31,7 +31,7 @@ import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class Latency extends FlowStatsAnchorPane {
+public class LatencyController extends FlowStatsBaseController {
     private static final int FIRST_COLUMN_WIDTH = 120;
     private static final int COLUMN_WIDTH = 150;
     private static final int WINDOW_SIZE = 10;
@@ -44,7 +44,7 @@ public class Latency extends FlowStatsAnchorPane {
     @FXML
     private GridPane table;
 
-    public Latency() {
+    public LatencyController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/latency/Latency.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
 

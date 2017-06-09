@@ -5,7 +5,7 @@ import javafx.beans.property.IntegerProperty;
 import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 
 
-public class TemporaryMaxLatency extends LatencyLineChart {
+public class TemporaryMaxLatency extends LatencyLineChartController {
     public TemporaryMaxLatency(final IntegerProperty interval) {
         super(interval);
     }

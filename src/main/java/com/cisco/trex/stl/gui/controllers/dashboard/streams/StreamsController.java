@@ -7,7 +7,7 @@ import javafx.stage.WindowEvent;
 
 import java.util.*;
 
-import com.cisco.trex.stl.gui.controllers.dashboard.FlowStatsAnchorPane;
+import com.cisco.trex.stl.gui.controllers.dashboard.FlowStatsBaseController;
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
 import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
@@ -20,13 +20,13 @@ import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class Streams extends FlowStatsAnchorPane {
+public class StreamsController extends FlowStatsBaseController {
     @FXML
     private AnchorPane root;
     @FXML
     private GridPane table;
 
-    public Streams() {
+    public StreamsController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/streams/Streams.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
     }

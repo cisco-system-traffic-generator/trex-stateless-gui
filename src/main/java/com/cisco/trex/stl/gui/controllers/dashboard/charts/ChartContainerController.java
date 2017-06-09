@@ -16,7 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import com.exalttech.trex.util.Initialization;
 
 
-public class ChartContainer extends AnchorPane {
+public class ChartContainerController extends AnchorPane {
     @FXML
     private AnchorPane root;
 
@@ -26,11 +26,11 @@ public class ChartContainer extends AnchorPane {
     }
 
     private ContextMenu contextMenu;
-    private FlowChart chart;
+    private FlowChartController chart;
     private StringProperty chartType;
     private IntegerProperty interval;
 
-    public ChartContainer(String selectedType, IntegerProperty interval) {
+    public ChartContainerController(String selectedType, IntegerProperty interval) {
         Initialization.initializeFXML(this, "/fxml/dashboard/charts/ChartContainer.fxml");
 
         this.interval = interval;

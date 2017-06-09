@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import com.exalttech.trex.util.Initialization;
 
 
-public class PortCheckbox extends HBox {
+public class PortCheckboxController extends HBox {
     @FXML
     private CheckBox checkBox;
     @FXML
@@ -20,7 +20,7 @@ public class PortCheckbox extends HBox {
     private int portNumber;
     private EventHandler<Event> onSelectionChanged;
 
-    public PortCheckbox(int portNumber, EventHandler<Event> onSelectionChanged) {
+    public PortCheckboxController(int portNumber, EventHandler<Event> onSelectionChanged) {
         Initialization.initializeFXML(this, "/fxml/dashboard/selectors/ports/PortCheckBox.fxml");
 
         this.portNumber = portNumber;

@@ -6,7 +6,7 @@ import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
 
 
-public abstract class FlowStatsAnchorPane extends AnchorPane {
+public abstract class FlowStatsBaseController extends AnchorPane {
     private boolean isActive = false;
     private PGIDStatsStorage.StatsChangedListener statsChangedListener = this::render;
 

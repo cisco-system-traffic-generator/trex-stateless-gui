@@ -5,8 +5,8 @@ import javafx.beans.property.IntegerProperty;
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
 
 
-public class TxBpsL2 extends StreamLineChart {
-    public TxBpsL2(final IntegerProperty interval) {
+public class TxBpsL2Controller extends StreamLineChartController {
+    public TxBpsL2Controller(final IntegerProperty interval) {
         super(interval);
     }
 
