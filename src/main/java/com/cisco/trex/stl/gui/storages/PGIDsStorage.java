@@ -135,6 +135,8 @@ public class PGIDsStorage {
                         break;
                     }
                 }
+            } else {
+                selectedPGIds.keySet().removeIf((final Integer port) -> !pgIDs.contains(port));
             }
         }
 
