@@ -2,7 +2,9 @@ package com.exalttech.trex.ui.views.statistics;
 
 import javafx.beans.value.ObservableValue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.exalttech.trex.core.AsyncResponseManager;
@@ -10,6 +12,10 @@ import com.exalttech.trex.util.Util;
 
 
 public class StatsLoader {
+    public interface GlobalStatsChangedListener {
+        void globalStatsChanged();
+    }
+
     private static StatsLoader instance;
 
     public static StatsLoader getInstance() {
@@ -18,6 +24,8 @@ public class StatsLoader {
         }
         return instance;
     }
+
+    private final List<GlobalStatsChangedListener> globalStatsChangedListeners = new ArrayList<>();
 
     private Map<String, String> loadedStatsList = new HashMap<>();
     private Map<String, String> previousStatsList = new HashMap<>();
@@ -50,11 +58,27 @@ public class StatsLoader {
         }
         shadowStatsList = null;
 
+        handleGlobalStatsChanged();
+
         AsyncResponseManager.getInstance().getTrexGlobalProperty().addListener(this::handleGlobalPropertyChanged);
     }
 
     public void reset() {
         shadowStatsList = loadedStatsList;
+
+        handleGlobalStatsChanged();
+    }
+
+    public void addGlobalStatsChangedListener(final GlobalStatsChangedListener listener) {
+        synchronized (globalStatsChangedListeners) {
+            globalStatsChangedListeners.add(listener);
+        }
+    }
+
+    public void removeGlobalStatsChangedListener(final GlobalStatsChangedListener listener) {
+        synchronized (globalStatsChangedListeners) {
+            globalStatsChangedListeners.remove(listener);
+        }
     }
 
     private void handleGlobalPropertyChanged(
@@ -76,6 +100,14 @@ public class StatsLoader {
 
         if (shadowStatsList == null) {
             shadowStatsList = loadedStatsList;
+        }
+
+        handleGlobalStatsChanged();
+    }
+
+    private void handleGlobalStatsChanged() {
+        synchronized (globalStatsChangedListeners) {
+            globalStatsChangedListeners.forEach(GlobalStatsChangedListener::globalStatsChanged);
         }
     }
 }

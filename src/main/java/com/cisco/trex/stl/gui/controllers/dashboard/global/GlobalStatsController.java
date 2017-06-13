@@ -1,32 +1,29 @@
 package com.cisco.trex.stl.gui.controllers.dashboard.global;
 
-import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.WindowEvent;
-import javafx.util.Duration;
 
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.cisco.trex.stl.gui.controllers.dashboard.GlobalStatsBaseController;
 import com.cisco.trex.stl.gui.storages.PGIDsStorage;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
 
 import com.exalttech.trex.ui.PortsManager;
-import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
-import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.Util;
 
 
-public class GlobalStatsController extends GridPane {
+public class GlobalStatsController extends GlobalStatsBaseController {
     private static final Logger LOG = Logger.getLogger(GlobalStatsController.class.getName());
 
     @FXML
-    private GridPane root;
+    private AnchorPane root;
     @FXML
     private GlobalStatsPanelController cpu;
     @FXML
@@ -48,23 +45,13 @@ public class GlobalStatsController extends GridPane {
     @FXML
     private GlobalStatsPanelController queueFull;
 
-    private RefreshingService refreshingService;
-    PortsManager portManager;
-
     public GlobalStatsController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/global/GlobalStats.fxml");
-
-        refreshingService = new RefreshingService();
-        refreshingService.setPeriod(Duration.seconds(Constants.REFRESH_ONE_INTERVAL_SECONDS));
-        refreshingService.setOnSucceeded(this::onRefreshSucceeded);
-        refreshingService.start();
-
-        portManager = PortsManager.getInstance();
-
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
     }
 
-    private void onRefreshSucceeded(WorkerStateEvent event) {
+    @Override
+    protected void render() {
         Map<String, String> currentStatsList = StatsLoader.getInstance().getLoadedStatsList();
 
         String cpuData = currentStatsList.get("m_cpu_util");
@@ -89,7 +76,7 @@ public class GlobalStatsController extends GridPane {
         totalTxL1.setValue(Util.getFormatted(String.valueOf(l1_tx_bps), true, "b/s"));
         totalRx.setValue(Util.getFormatted(currentStatsList.get("m_rx_bps"), true, "b/s"));
         totalPps.setValue(Util.getFormatted(String.valueOf(m_tx_pps), true, "pkt/s"));
-        activePort.setValue(portManager.getActivePort());
+        activePort.setValue(PortsManager.getInstance().getActivePort());
         dropRate.setValue(Util.getFormatted(currentStatsList.get("m_rx_drop_bps"), true, "b/s"));
         queueFull.setValue(Util.getFormatted(queue, true, "pkts"));
 
@@ -100,9 +87,7 @@ public class GlobalStatsController extends GridPane {
     }
 
     private void onWindowCloseRequest(WindowEvent window) {
-        if (refreshingService.isRunning()) {
-            refreshingService.cancel();
-        }
+        setActive(false);
     }
 
     private static String getQueue(Map<String, String> currentStatsList) {

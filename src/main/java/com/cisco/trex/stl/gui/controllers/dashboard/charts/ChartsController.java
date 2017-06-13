@@ -6,15 +6,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 
 import com.exalttech.trex.util.Initialization;
 
 
-public class ChartsController extends BorderPane {
+public class ChartsController extends HBox {
     private static String[] defaultChartTypes = new String[]{
             ChartsFactory.ChartTypes.TX_PPS,
             ChartsFactory.ChartTypes.RX_PPS,
