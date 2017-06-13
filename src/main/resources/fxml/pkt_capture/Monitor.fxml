@@ -13,7 +13,8 @@
         <Insets top="10"  right="10"  bottom="10"  left="10" />
     </padding>
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="10">
+        <HBox alignment="CENTER_LEFT"
+              spacing="10">
             <padding>
                 <Insets bottom="10" />
             </padding>
@@ -29,7 +30,9 @@
         </HBox>
     </top>
     <center>
-        <TableView fx:id="capturedPkts" id="capturedPkts" HBox.hgrow="ALWAYS">
+        <TableView fx:id="capturedPkts"
+                   id="capturedPkts"
+                   HBox.hgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="type"
                              maxWidth="140.0"
