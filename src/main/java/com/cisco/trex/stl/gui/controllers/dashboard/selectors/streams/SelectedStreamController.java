@@ -4,6 +4,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 
@@ -25,7 +26,7 @@ public class SelectedStreamController extends HBox {
     public SelectedStreamController(
             final int pgid,
             final String color,
-            final boolean isDeleted,
+            final String warningMessage,
             final EventHandler<Event> onDeleteClicked
     ) {
         Initialization.initializeFXML(this, "/fxml/dashboard/selectors/streams/SelectedStream.fxml");
@@ -35,7 +36,11 @@ public class SelectedStreamController extends HBox {
 
         legend.setStyle(String.format("-fx-border-color: %s;", color));
         label.setText(String.format("PG ID - %d", pgid));
-        error.setVisible(isDeleted);
+
+        if (warningMessage != null) {
+            error.setVisible(true);
+            error.setTooltip(new Tooltip(warningMessage));
+        }
     }
 
     public int getPGId() {
