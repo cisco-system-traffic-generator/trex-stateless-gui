@@ -12,9 +12,6 @@
             style="-fx-background-color: #f0f0f0"
             fx:controller="com.cisco.trex.stl.gui.controllers.capture.PacketCaptureDashboardController"
             fx:id="root">
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
     <TabPane AnchorPane.bottomAnchor="5"
              AnchorPane.leftAnchor="5"
              AnchorPane.rightAnchor="5"
