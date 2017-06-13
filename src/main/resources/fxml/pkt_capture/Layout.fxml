@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.cisco.trex.stl.gui.controllers.capture.RecordController?>
+<?import com.cisco.trex.stl.gui.controllers.capture.MonitorController?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml"
+            style="-fx-background-color: #f0f0f0"
+            fx:controller="com.cisco.trex.stl.gui.controllers.capture.PacketCaptureDashboardController"
+            fx:id="root">
+    <TabPane AnchorPane.bottomAnchor="5"
+             AnchorPane.leftAnchor="5"
+             AnchorPane.rightAnchor="5"
+             AnchorPane.topAnchor="5"
+             styleClass="statRightPaneContent, floating">
+        <Tab fx:id="monitorTab"
+             text="Monitor"
+             closable="false">
+            <MonitorController fx:id="monitorController"/>
+        </Tab>
+        <Tab fx:id="recordersTab"
+             text="Recorders"
+             closable="false">
+            <RecordController fx:id="recorders"/>
+        </Tab>
+    </TabPane>
+</AnchorPane>

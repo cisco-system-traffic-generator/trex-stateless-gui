@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import org.controlsfx.control.CheckComboBox?>
+<?import java.lang.*?>
+
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:id="root"
+         type="javafx.scene.layout.HBox"
+         spacing="10"
+         alignment="CENTER">
+    <Label text="Rx:" />
+    <CheckComboBox fx:id="rxFilter"
+                   minWidth="210"
+                   maxWidth="210">
+        <items>
+            <String fx:value="Port 0" />
+            <String fx:value="Port 1" />
+            <String fx:value="Port 2" />
+            <String fx:value="Port 3" />
+            <String fx:value="Port 4" />
+            <String fx:value="Port 5" />
+            <String fx:value="Port 6" />
+            <String fx:value="Port 7" />
+            <String fx:value="Port 8" />
+            <String fx:value="Port 9" />
+        </items>
+    </CheckComboBox>
+    <Label text="Tx :" />
+    <CheckComboBox fx:id="txFilter"
+                   minWidth="210"
+                   maxWidth="210">
+        <items>
+            <String fx:value="Port 0" />
+            <String fx:value="Port 1" />
+            <String fx:value="Port 2" />
+            <String fx:value="Port 3" />
+            <String fx:value="Port 4" />
+            <String fx:value="Port 5" />
+            <String fx:value="Port 6" />
+            <String fx:value="Port 7" />
+            <String fx:value="Port 8" />
+            <String fx:value="Port 9" />
+        </items>
+    </CheckComboBox>
+</fx:root>

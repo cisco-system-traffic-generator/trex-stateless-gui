@@ -904,6 +904,38 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     }
 
     /**
+     * Handle stats menu item clicked
+     *
+     * @param event
+     */
+    @FXML
+    public void handleCaptureItemClicked(ActionEvent event) {
+        try {
+            DialogWindow statsWindow = new DialogWindow(
+                    "pkt_capture/Layout.fxml",
+                    "Packet Capture",
+                    50,
+                    10,
+                    1000,
+                    700,
+                    true,
+                    TrexApp.getPrimaryStage()
+            );
+            statsWindow.show(false);
+        } catch (IOException ex) {
+            LOG.error("Error opening dashboard view", ex);
+        }
+    }
+    /**
+     * Handle stats menu item clicked
+     *
+     * @param event
+     */
+    @FXML
+    public void handleCaptureSettingsItemClicked(ActionEvent event) {
+    }
+
+    /**
      * Open statistic dashboard view
      */
     private void openStateDialog() {

@@ -490,6 +490,12 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 .table-view .table-row-cell {
     -fx-border-width: 1;
 }
+.table-view .column-header-background .filler {
+    -fx-background-color: #32b4ea;
+    -fx-padding: 0 0 0 5;
+    -fx-border-color:  #cfcfcf transparent #cfcfcf #cfcfcf;
+    -fx-pref-height: 32px;
+}
 .table-view .column-header {
     -fx-background-color: #32b4ea;
     -fx-font-weight: bold; 
@@ -1423,4 +1429,8 @@ ToggleSwitch {
 .error-icon {
     -fx-background-image: url("/icons/error.png");
     -fx-background-size: 12 12;
+}
+
+#capturedPkts .table-cell {
+    -fx-alignment: CENTER;
 }
