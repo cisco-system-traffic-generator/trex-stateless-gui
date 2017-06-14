@@ -41,6 +41,7 @@ import javafx.concurrent.Task;
 import org.apache.log4j.Logger;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
+import zmq.ZError;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -819,10 +820,17 @@ public class ConnectionManager {
                 try {
                     success = requester.send(finalRequest);
                 } catch (ZMQException e){
-                    if (e.getErrorCode() == 156384763) {
+                    if (e.getErrorCode() == ZError.EFSM) {
+                        /**
+                         * For unknown reason requester became in invalid state. After sucessfull recv it keeps flag of
+                         * receiving state as true. And this state provokes ZError.EFSM for all further requests.
+                         */
+                        LOG.error("Unexpected state of ZMQSocket detected.", e);
+                        LogsController.getInstance().appendText(LogType.ERROR, "Unexpected connection state detected. Trying to reconnect.");
                         requester.close();
                         requester = buildRequester();
                         requester.connect(connectionString);
+                        LogsController.getInstance().appendText(LogType.INFO, "Connected.");
                         success = requester.send(finalRequest);
                     } else {
                         throw e;
