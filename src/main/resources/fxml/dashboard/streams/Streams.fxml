@@ -17,7 +17,7 @@
           AnchorPane.rightAnchor="10.0"
           AnchorPane.topAnchor="10.0"
           AnchorPane.bottomAnchor="10.0">
-        <StreamsSelectorController/>
+        <StreamsSelectorController fx:id="streamSelector"/>
         <ScrollPane styleClass="stats-table-container"
                     HBox.hgrow="ALWAYS">
             <AnchorPane>

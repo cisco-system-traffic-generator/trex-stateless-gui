@@ -20,7 +20,7 @@
           AnchorPane.rightAnchor="10.0"
           AnchorPane.topAnchor="10.0"
           AnchorPane.bottomAnchor="10.0">
-        <StreamsSelectorController/>
+        <StreamsSelectorController fx:id="streamsSelector"/>
         <VBox spacing="10.0"
               HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER">

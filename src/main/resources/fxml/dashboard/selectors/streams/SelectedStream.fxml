@@ -24,7 +24,11 @@
            maxWidth="12.0"
            maxHeight="12.0"
            visible="false"
-           styleClass="error-icon"/>
+           styleClass="error-icon">
+        <tooltip>
+            <Tooltip/>
+        </tooltip>
+    </Label>
     <HBox alignment="CENTER_RIGHT"
           HBox.hgrow="ALWAYS">
         <Label minWidth="12.0"

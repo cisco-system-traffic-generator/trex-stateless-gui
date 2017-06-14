@@ -37,14 +37,20 @@ public class SelectedStreamController extends HBox {
         legend.setStyle(String.format("-fx-border-color: %s;", color));
         label.setText(String.format("PG ID - %d", pgid));
 
-        if (warningMessage != null) {
-            error.setVisible(true);
-            error.setTooltip(new Tooltip(warningMessage));
-        }
+        setWarning(warningMessage);
     }
 
     public int getPGId() {
         return pgid;
+    }
+
+    public void setWarning(final String warningMessage) {
+        if (warningMessage != null) {
+            error.setVisible(true);
+            error.getTooltip().setText(warningMessage);
+        } else {
+            error.setVisible(false);
+        }
     }
 
     @FXML

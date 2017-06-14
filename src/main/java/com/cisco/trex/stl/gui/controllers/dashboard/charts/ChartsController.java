@@ -11,6 +11,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 
+import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController;
+
 import com.exalttech.trex.util.Initialization;
 
 
@@ -22,6 +24,8 @@ public class ChartsController extends HBox {
             ChartsFactory.ChartTypes.RX_BPS_L2
     };
 
+    @FXML
+    private StreamsSelectorController streamsSelector;
     @FXML
     private ComboBox<Integer> intervalComboBox;
     @FXML
@@ -61,6 +65,8 @@ public class ChartsController extends HBox {
     }
 
     public void setActive(final boolean isActive) {
+        streamsSelector.setActive(isActive);
+
         LayoutConfiguration layoutConfiguration = layoutConfigurations[selectedConfigurationIndex];
         int size = layoutConfiguration.getColumnsCount()*layoutConfiguration.getRowsCount();
         for (int i = 0; i < size; ++i) {
