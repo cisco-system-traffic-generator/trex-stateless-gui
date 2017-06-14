@@ -40,6 +40,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import org.apache.log4j.Logger;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQException;
+import zmq.ZError;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -68,6 +70,7 @@ public class ConnectionManager {
     private final static String ASYNC_PASS_STATUS = "Pass";
 
     private final String MAGIC_STRING = "ABE85CEA";
+    private Object sendRequestMonitor = new Object();
 
     /**
      *
@@ -199,10 +202,9 @@ public class ConnectionManager {
         connectionString = "tcp://" + ip + ":" + rpcPort;
         try {
             context = ZMQ.context(1);
-            setRequester(context.socket(ZMQ.REQ));
-            getRequester().setReceiveTimeOut(3000);
             LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex server: " + connectionString);
-            getRequester().connect(connectionString);
+            requester = buildRequester();
+            requester.connect(connectionString);
             LogsController.getInstance().appendText(LogType.INFO, "Connected");
         } catch (Exception ex) {
             LOG.error("Invalid hostname", ex);
@@ -213,6 +215,12 @@ public class ConnectionManager {
         scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
 
         return true;
+    }
+
+    private ZMQ.Socket buildRequester() {
+        ZMQ.Socket s = context.socket(ZMQ.REQ);
+        s.setReceiveTimeOut(3000);
+        return s;
     }
 
     /**
@@ -793,7 +801,7 @@ public class ConnectionManager {
      * @param request
      * @return
      */
-    synchronized private byte[] getServerRPCResponse(String request) {
+    private byte[] getServerRPCResponse(String request) {
         try {
             // prepare compression header
             ByteBuffer headerByteBuffer = ByteBuffer.allocate(8);
@@ -806,11 +814,38 @@ public class ConnectionManager {
             // compress request
             byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
             byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
-            requester.send(finalRequest);
-            byte[] serverResponse = requester.recv(0);
+            byte[] serverResponse = null;
+            boolean success = false;
+            synchronized (sendRequestMonitor) {
+                try {
+                    success = requester.send(finalRequest);
+                } catch (ZMQException e){
+                    if (e.getErrorCode() == ZError.EFSM) {
+                        /**
+                         * For unknown reason requester became in invalid state. After sucessfull recv it keeps flag of
+                         * receiving state as true. And this state provokes ZError.EFSM for all further requests.
+                         */
+                        LOG.error("Unexpected state of ZMQSocket detected.", e);
+                        LogsController.getInstance().appendText(LogType.ERROR, "Unexpected connection state detected. Trying to reconnect.");
+                        requester.close();
+                        requester = buildRequester();
+                        requester.connect(connectionString);
+                        LogsController.getInstance().appendText(LogType.INFO, "Connected.");
+                        success = requester.send(finalRequest);
+                    } else {
+                        throw e;
+                    }
+                }
+
+                if (success) {
+                    serverResponse = requester.recv(0);
+                }
+            }
             // decompressed response
             if (serverResponse != null) {
                 return getDecompressedString(serverResponse).getBytes();
+            } else {
+                LOG.error("Error sending request");
             }
         } catch (IOException ex) {
             LOG.error("Error sending request", ex);
