@@ -101,6 +101,7 @@ public class LatencyController extends FlowStatsBaseController {
                 pgIDStatsStorage.getLatencyStatPointHistoryMap();
         final Map<Integer, LatencyStatPoint> latencyStatPointShadowMap =
                 pgIDStatsStorage.getLatencyStatPointShadowMap();
+        final Map<Integer, Long> maxLatencyMap = pgIDStatsStorage.getMaxLatencyMap();
 
         int rowIndex = 1;
         synchronized (pgIDStatsStorage.getDataLock()) {
@@ -155,7 +156,7 @@ public class LatencyController extends FlowStatsBaseController {
                 table.add(new HeaderCell(COLUMN_WIDTH, String.valueOf(pgID)), rowIndex, col++);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(String.format("%d \u00B5s", lat.getTotalMax()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.format("%d \u00B5s", maxLatencyMap.get(pgID)), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
                 table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(lat.getAverage())), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
                 for (int i = 0; i < WINDOW_SIZE; ++i) {
                     table.add(new StatisticLabelCell(String.valueOf(window[i]), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
