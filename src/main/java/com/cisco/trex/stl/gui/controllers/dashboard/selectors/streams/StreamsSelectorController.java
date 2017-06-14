@@ -60,7 +60,7 @@ public class StreamsSelectorController extends GridPane {
                             new SelectedStreamController(
                                     pgID,
                                     entry.getValue(),
-                                    !pgIDs.contains(pgID),
+                                    null,
                                     this::handleStreamDeleteClicked
                             )
                     );
