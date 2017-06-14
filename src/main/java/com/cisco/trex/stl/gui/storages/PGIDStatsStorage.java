@@ -35,6 +35,7 @@ public class PGIDStatsStorage {
     private final Object dataLock = new Object();
 
     private final Map<Integer, ArrayHistory<FlowStatPoint>> flowStatPointHistoryMap = new HashMap<>();
+    private final Set<Integer> stoppedPGIds = new HashSet<>();
     private final Map<Integer, FlowStatPoint> flowStatPointShadowMap = new HashMap<>();
 
     private final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyStatPointHistoryMap = new HashMap<>();
@@ -52,6 +53,10 @@ public class PGIDStatsStorage {
 
     public Map<Integer, ArrayHistory<FlowStatPoint>> getFlowStatPointHistoryMap() {
         return flowStatPointHistoryMap;
+    }
+
+    public Set<Integer> getStoppedPGIds() {
+        return stoppedPGIds;
     }
 
     public Map<Integer, FlowStatPoint> getFlowStatPointShadowMap() {
@@ -104,16 +109,7 @@ public class PGIDStatsStorage {
             }
         }
 
-        synchronized (dataLock) {
-            flowStatPointHistoryMap.clear();
-            flowStatPointShadowMap.clear();
-
-            latencyStatPointHistoryMap.clear();
-            maxLatencyMap.clear();
-            latencyStatPointShadowMap.clear();
-        }
-
-        handleStatsChanged();
+        clearStats();
     }
 
     public boolean isRunning() {
@@ -137,6 +133,15 @@ public class PGIDStatsStorage {
         handleStatsChanged();
     }
 
+    private void clearStats() {
+        synchronized (dataLock) {
+            clearFlowStats();
+            clearLatencyStats();
+        }
+
+        handleStatsChanged();
+    }
+
     private void handlePGIDStatsReceived(final WorkerStateEvent event) {
         final PGIDStatsService service = (PGIDStatsService) event.getSource();
         final PGIdStatsRPCResult receivedPGIDStats = service.getValue();
@@ -147,13 +152,7 @@ public class PGIDStatsStorage {
 
         final Map<String, Integer> verId = receivedPGIDStats.getVerId();
         if (verId == null) {
-            synchronized (dataLock) {
-                clearFlowStats();
-                clearLatencyStats();
-            }
-
-            handleStatsChanged();
-
+            clearStats();
             return;
         }
 
@@ -204,7 +203,15 @@ public class PGIDStatsStorage {
                 flowStatPointHistoryMap.put(intPGID, history);
             } else if (!verId.get(pgID).equals(lastVerId.get(pgID))) {
                 history.clear();
+                stoppedPGIds.remove(intPGID);
                 flowStatPointShadowMap.remove(intPGID);
+            } else if (!history.isEmpty()) {
+                final FlowStatPoint last = history.last();
+                if (last.getTp() == statsFlowHistoryPoint.getTp()) {
+                    stoppedPGIds.add(intPGID);
+                } else {
+                    stoppedPGIds.remove(intPGID);
+                }
             }
             history.add(statsFlowHistoryPoint);
 
@@ -213,12 +220,14 @@ public class PGIDStatsStorage {
 
         unvisitedStreams.forEach((final Integer pgID) -> {
             flowStatPointHistoryMap.remove(pgID);
+            stoppedPGIds.remove(pgID);
             flowStatPointShadowMap.remove(pgID);
         });
     }
 
     private void clearFlowStats() {
         flowStatPointHistoryMap.clear();
+        stoppedPGIds.clear();
         flowStatPointShadowMap.clear();
     }
 
@@ -288,6 +297,7 @@ public class PGIDStatsStorage {
 
     private void clearLatencyStats() {
         latencyStatPointHistoryMap.clear();
+        maxLatencyMap.clear();
         latencyStatPointShadowMap.clear();
     }
 
