@@ -12,12 +12,14 @@ import javafx.stage.WindowEvent;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.cisco.trex.stateless.model.stats.LatencyStat;
 import com.cisco.trex.stateless.model.stats.LatencyStatErr;
 import com.cisco.trex.stateless.model.stats.LatencyStatLat;
 
 import com.cisco.trex.stl.gui.controllers.dashboard.FlowStatsBaseController;
+import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController;
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
 import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
@@ -40,6 +42,8 @@ public class LatencyController extends FlowStatsBaseController {
     @FXML
     private AnchorPane root;
     @FXML
+    private StreamsSelectorController streamsSelector;
+    @FXML
     private ToggleGroup toggleGroupMode;
     @FXML
     private GridPane table;
@@ -49,6 +53,12 @@ public class LatencyController extends FlowStatsBaseController {
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
 
         toggleGroupMode.selectedToggleProperty().addListener(this::typeChanged);
+    }
+
+    @Override
+    public void setActive(final boolean isActive) {
+        super.setActive(isActive);
+        streamsSelector.setActive(isActive);
     }
 
     private void onWindowCloseRequest(final WindowEvent window) {
@@ -102,6 +112,7 @@ public class LatencyController extends FlowStatsBaseController {
         final Map<Integer, LatencyStatPoint> latencyStatPointShadowMap =
                 pgIDStatsStorage.getLatencyStatPointShadowMap();
         final Map<Integer, Long> maxLatencyMap = pgIDStatsStorage.getMaxLatencyMap();
+        final Set<Integer> stoppedPGIds = pgIDStatsStorage.getStoppedPGIds();
 
         int rowIndex = 1;
         synchronized (pgIDStatsStorage.getDataLock()) {
@@ -152,17 +163,19 @@ public class LatencyController extends FlowStatsBaseController {
 
                 final LatencyStatLat lat = latencyStat.getLat();
 
+                final boolean isStopped = stoppedPGIds.contains(pgID);
+
                 int col = 0;
-                table.add(new HeaderCell(COLUMN_WIDTH, String.valueOf(pgID)), rowIndex, col++);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(String.format("%d \u00B5s", maxLatencyMap.get(pgID)), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(lat.getAverage())), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                table.add(new HeaderCell(COLUMN_WIDTH, String.valueOf(pgID), isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.format("%d \u00B5s", maxLatencyMap.get(pgID)), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.format(Locale.US, "%.2f \u00B5s", round(lat.getAverage())), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
                 for (int i = 0; i < WINDOW_SIZE; ++i) {
-                    table.add(new StatisticLabelCell(String.valueOf(window[i]), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                    table.add(new StatisticLabelCell(String.valueOf(window[i]), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
                 }
-                table.add(new StatisticLabelCell(String.format("%d \u00B5s", lat.getJit()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(String.valueOf(totalErr), COLUMN_WIDTH, true, CellType.ERROR_CELL, true), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.format("%d \u00B5s", lat.getJit()), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.valueOf(totalErr), COLUMN_WIDTH, true, CellType.ERROR_CELL, true, isStopped), rowIndex, col++);
 
                 rowIndex++;
             }
@@ -178,6 +191,7 @@ public class LatencyController extends FlowStatsBaseController {
         final Map<Integer, LatencyStatPoint> latencyStatPointShadowMap =
                 pgIDStatsStorage.getLatencyStatPointShadowMap();
         final String[] histogramKeys = pgIDStatsStorage.getHistogramKeys(HISTOGRAM_SIZE);
+        final Set<Integer> stoppedPGIds = pgIDStatsStorage.getStoppedPGIds();
 
         int hCol = 0;
         table.add(new HeaderCell(FIRST_COLUMN_WIDTH, "PG ID"), 0, hCol++);
@@ -225,18 +239,20 @@ public class LatencyController extends FlowStatsBaseController {
                     shadowHistogram = new HashMap<>();
                 }
 
+                final boolean isStopped = stoppedPGIds.contains(pgID);
+
                 int col = 0;
-                table.add(new HeaderCell(COLUMN_WIDTH, String.valueOf(pgID)), rowIndex, col++);
+                table.add(new HeaderCell(COLUMN_WIDTH, String.valueOf(pgID), isStopped), rowIndex, col++);
                 for (final String key : histogramKeys) {
                     final long value = histogram.getOrDefault(key, 0L);
                     final long shadowValue = shadowHistogram.getOrDefault(key, 0L);
-                    table.add(new StatisticLabelCell(String.valueOf(value - shadowValue), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true), rowIndex, col++);
+                    table.add(new StatisticLabelCell(String.valueOf(value - shadowValue), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
                 }
-                table.add(new StatisticLabelCell(String.valueOf(drp), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(String.valueOf(dup), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(String.valueOf(ooo), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(String.valueOf(sth), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex, col++);
-                table.add(new StatisticLabelCell(String.valueOf(stl), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true), rowIndex, col);
+                table.add(new StatisticLabelCell(String.valueOf(drp), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true, isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.valueOf(dup), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true, isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.valueOf(ooo), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true, isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.valueOf(sth), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true, isStopped), rowIndex, col++);
+                table.add(new StatisticLabelCell(String.valueOf(stl), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true, isStopped), rowIndex, col);
 
                 rowIndex++;
             }

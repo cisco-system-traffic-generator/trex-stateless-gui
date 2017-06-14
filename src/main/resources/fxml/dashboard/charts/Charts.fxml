@@ -21,7 +21,7 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-    <StreamsSelectorController/>
+    <StreamsSelectorController fx:id="streamsSelector"/>
     <BorderPane HBox.hgrow="ALWAYS">
         <top>
             <HBox>
