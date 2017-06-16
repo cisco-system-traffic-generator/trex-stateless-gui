@@ -63,44 +63,14 @@ Now it is easy to manage port attributes, configure port layer mode and see hard
 
 ![Port Attributes](https://cloud.githubusercontent.com/assets/2825175/25737935/93aaad6e-31a4-11e7-8d27-b51b3dd3d8c2.png)
 
-## Build a Native App
+##  Builds 
 
-This section describes how to build a native application bundle (EXE for Windows and DMG for Mac).
+Latest build version 3.2 with release notes is available on [here](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/tag/v3.2)
 
-1. `mvn clean jfx:native` (generates the native packaging using Maven).
-2. Look for the the installer, DMG, or EXE in `(project)\target\jfx\native`.
-
-This will build an installer for whatever platform you are building on. Building on a Mac will produce a Mac app. Building on a Windows PC will produce a Windows app.
-
-## Building a Windows Installer and Native Application EXE
-
-Building a Mac DMG or Windows EXE works straight of the box. However, Windows requires either WiX for MSI creation or Inno Setup for an EXE-based installer (both install an EXE for the JavaFX application along with a packaged JRE).
-
-Both don't need to be installed, just whichever one gets you to your desired installer format.
-
-### Build an EXE Installer with Inno Setup
-
-Follow the steps below to create an EXE-based installer with Inno Setup and the JavaFX Maven plugin.
-
-1. Download from [Inno Setup's site](http://www.jrsoftware.org/isinfo.php)
-2. Install it (I defaulted most of the installation options)
-3. Add `C:\Program Files (x86)\Inno Setup 5` to your system `Path` variable.
-
-Once done, run `mvn jfx:native` to create an EXE based installer at `(project)\target\jfx\native`.
-
-By running the EXE installer, it installs the JavaFX application to the user's local app data folder, as well as an uninstaller entry in the `Programs and Features` control panel. The application is also launched immediately following installation.
-
-### Build an MSI with WiX
-
-To install WiX and have the JavaFX Maven plugin use it during a build, do the following:
-
-1. Download from [WiX's site](http://wixtoolset.org/)
-2. Install it.
-3. Add `C:\Program Files (x86)\WiX Toolset v3.10\bin` to your system `Path` variable.
-
-Once that is complete, `mvn jfx:native` will create an MSI file in `(project)\target\jfx\native\bundles`.
-
-Running the MSI installs the application to `C:\Program Files (x86)\(project name)` without prompt. Additionally, it creates an uninstaller listing in the `Programs and Features` control panel.
+You can also download installers directly from here:
+ - Windows: [trex-stateless-gui3.2.exe](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui3.2.exe)
+ - Mac OS: [trex-stateless-gui-3.2.dmg](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui-3.2.dmg) and [trex-stateless-gui-3.2.pkg](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui-3.2.pkg)
+ - Compiled binary: [trex-stateless-gui-3.2.tgz](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui-3.2.tgz)
 
 ## YouTrack
 
@@ -113,20 +83,6 @@ Follow us on [TRex traffic generator google group](https://groups.google.com/for
 ##  Questions
 
 You can use our [TRex forum](https://groups.google.com/forum/#!forum/trex-tgn) if you have any question.
-
-##  Installer 
-
-###  Windows Installer 
-
-You can find our Windows Beta installer in the Release Tab.
-
-###  Mac OS Installer 
-
-You can find our Mac Beta installer in the Release Tab.
-
-###  Linux RPM Installer 
-
-You can find our Linux RPM Beta installer in the Release Tab.
 
 ## Automation
 
