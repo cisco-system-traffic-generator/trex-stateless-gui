@@ -65,7 +65,7 @@ Now it is easy to manage port attributes, configure port layer mode and see hard
 
 ##  Builds 
 
-Latest build version 3.2 with release notes is available on [here](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/tag/v3.2)
+Latest build version 3.2 with release notes is available [here](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/tag/v3.2)
 
 You can also download installers directly from here:
  - Windows: [trex-stateless-gui3.2.exe](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui3.2.exe)
@@ -83,38 +83,6 @@ Follow us on [TRex traffic generator google group](https://groups.google.com/for
 ##  Questions
 
 You can use our [TRex forum](https://groups.google.com/forum/#!forum/trex-tgn) if you have any question.
-
-## Automation
-
-TRex has infrastructure for two kinds of automation, UI automation and JUnit/TestNG automation. The sections below provide more information about each type:
-
-### UI Automation:
-TRex uses  [testFX](https://github.com/TestFX/TestFX "testFX") version 4  library which is  based on JUnit testing framework and supports Java 8.
-
-The tests are located in :
-
-`src/test/java/com/exalttech/trex/ui`
-
-Tests can be run using maven command:
-
-`mvn clean test -P Run-UI-TRex-Suite`
-
-
-### JUnit/TestNG Automation
-
-TRex integrates uses [TestNG](http://testng.org/doc/index.html "TestNG") framework.
-
-The tests are located in :
-
-`src/test/java/com/exalttech/trex/simulator`
-
-Tests can be run using maven command:
-
-`mvn clean test -P Run-TRex-Suite`
-
-As part of the unit tests use TRex Simulator (stl-sim), you need to make sure that it is accessible from the machine used for testing.
-
-
 
 
 
