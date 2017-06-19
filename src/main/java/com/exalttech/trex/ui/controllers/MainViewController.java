@@ -16,6 +16,8 @@
 package com.exalttech.trex.ui.controllers;
 
 import com.cisco.trex.stateless.TRexClient;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
+import com.cisco.trex.stl.gui.util.RunningConfiguration;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.AsyncResponseManager;
 import com.exalttech.trex.core.ConnectionManager;
@@ -25,6 +27,7 @@ import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.remote.exceptions.TrafficException;
+import com.exalttech.trex.remote.models.profiles.FlowStats;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.remote.models.validate.StreamValidation;
 import com.exalttech.trex.ui.MultiplierType;
@@ -42,7 +45,10 @@ import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
-import com.exalttech.trex.ui.views.*;
+import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
+import com.exalttech.trex.ui.views.MultiplierView;
+import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
+import com.exalttech.trex.ui.views.PacketTableView;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
@@ -51,7 +57,6 @@ import com.exalttech.trex.ui.views.services.CountdownService;
 import com.exalttech.trex.ui.views.services.RefreshingService;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import com.exalttech.trex.ui.views.statistics.StatsTableGenerator;
-import com.cisco.trex.stl.gui.storages.StatsStorage;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.ProfileManager;
 import com.exalttech.trex.util.Util;
@@ -78,7 +83,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.WindowEvent;
@@ -103,6 +111,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     private static final Logger LOG = Logger.getLogger(MainViewController.class.getName());
     private final RPCMethods serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
+    private final RunningConfiguration runningConfiguration = TrexApp.injector.getInstance(RunningConfiguration.class);
     private static final String DISABLED_MULTIPLIER_MSG = "Multiplier is disabled because all streams have latency enabled";
 
     @FXML
@@ -718,24 +727,38 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @param fileName
      */
     private void loadStreamTable(String fileName) {
-        try {
-            File selectedFile = new File(ProfileManager.getInstance().getProfileFilePath(fileName));
-            loadedProfiles = tableView.loadStreamTable(selectedFile);
-
+        if (loadProfile(fileName)) {
             allStreamWithLatency = false;
+            boolean flowStatsEnabled = false;
+            boolean latencyEnabled = false;
             if (loadedProfiles.length > 0) {
                 allStreamWithLatency = true;
                 for (Profile profile : loadedProfiles) {
-                    allStreamWithLatency = allStreamWithLatency && profile.getStream().getFlowStats().isEnabled();
+                    FlowStats flowStats = profile.getStream().getFlowStats();
+                    allStreamWithLatency = allStreamWithLatency && flowStats.isLatencyEnabled();
+                    flowStatsEnabled = flowStatsEnabled || flowStats.getEnabled();
+                    latencyEnabled = latencyEnabled || flowStats.isLatencyEnabled();
                 }
             }
+            runningConfiguration.flowStatsEnabledProperty().set(flowStatsEnabled);
+            runningConfiguration.latencyEnabledProperty().set(latencyEnabled);
             multiplierView.setDisable(allStreamWithLatency);
             notificationPanelHolder.setVisible(allStreamWithLatency);
-        } catch (Exception ex) {
-            LOG.error("Error loading stream table", ex);
         }
     }
 
+    private boolean loadProfile(String fileName) {
+        try {
+            File selectedFile = new File(ProfileManager.getInstance().getProfileFilePath(fileName));
+            loadedProfiles = tableView.loadStreamTable(selectedFile);
+            return true;
+        } catch (Exception e) {
+            LOG.error("Error loading stream table", e);
+            LogsController.getInstance().appendText(LogType.ERROR, "Unable to load profile "+ fileName);
+            return false;
+        }
+    }
+    
     /**
      * Initialize in-line built component
      */
