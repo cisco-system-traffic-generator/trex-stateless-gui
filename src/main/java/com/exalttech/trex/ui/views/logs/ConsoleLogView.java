@@ -71,8 +71,11 @@ public class ConsoleLogView extends AnchorPane {
 
         if (textToAppend != null) {
             String msg = String.format("%s %s %s", LogType.INFO.getDisplayedText(), Util.formatDate(new Date()), textToAppend);
-            queue.add(msg);
-            String text = queue.stream().collect(Collectors.joining("\n"));
+            String text;
+            synchronized (queue) {
+                queue.add(msg);
+                text = queue.stream().collect(Collectors.joining("\n"));
+            }
             Platform.runLater(() -> {
                 logsContent.clear();
                 logsContent.appendText(text);
@@ -112,7 +115,7 @@ public class ConsoleLogView extends AnchorPane {
         }
         
         public void add(String element) {
-            if (queue.size() == size) {
+            if (queue.size() >= size) {
                 queue.removeFirst();
             }
             queue.addLast(element);
