@@ -1,25 +1,16 @@
 package com.cisco.trex.stl.gui.storages;
 
-import javafx.concurrent.WorkerStateEvent;
-import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.cisco.trex.stateless.model.stats.FlowStat;
 import com.cisco.trex.stateless.model.stats.LatencyStat;
 import com.cisco.trex.stateless.model.stats.PGIdStatsRPCResult;
-
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
 import com.cisco.trex.stl.gui.models.LatencyStatPoint;
 import com.cisco.trex.stl.gui.services.PGIDStatsService;
-
 import com.exalttech.trex.util.ArrayHistory;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.util.Duration;
+
+import java.util.*;
 
 
 public class PGIDStatsStorage {
@@ -94,6 +85,9 @@ public class PGIDStatsStorage {
     public void startPolling() {
         synchronized (pgIDStatsService) {
             if (!pgIDStatsService.isRunning()) {
+                Set<Integer> savedPgIDs = pgIDStatsService.getPgIDs();
+                pgIDStatsService.reset();
+                pgIDStatsService.setPGIDs(savedPgIDs);
                 pgIDStatsService.setPeriod(POLLING_INTERVAL);
                 pgIDStatsService.setOnSucceeded(this::handlePGIDStatsReceived);
                 pgIDStatsService.start();
@@ -105,7 +99,6 @@ public class PGIDStatsStorage {
         synchronized (pgIDStatsService) {
             if (pgIDStatsService.isRunning()) {
                 pgIDStatsService.cancel();
-                pgIDStatsService.reset();
             }
         }
 
