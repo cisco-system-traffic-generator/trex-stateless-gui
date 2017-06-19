@@ -81,12 +81,12 @@
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-packet-editor</artifactId>
-            <version>47d4825</version>
+            <version>a5151a7</version>
         </dependency>
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-java-sdk</artifactId>
-            <version>76009c3</version>
+            <version>5c3094a</version>
         </dependency>
         <dependency>
             <groupId>org.pcap4j</groupId>
@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.zeromq</groupId>
             <artifactId>jeromq</artifactId>
-            <version>0.3.5</version>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
