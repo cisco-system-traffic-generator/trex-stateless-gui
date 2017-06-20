@@ -826,7 +826,7 @@ public class ConnectionManager {
                     success = requester.send(finalRequest);
                 } catch (ZMQException e) {
                     if (e.getErrorCode() == ZError.EFSM) {
-                        resend(finalRequest);
+                        success = resend(finalRequest);
                     } else {
                         throw e;
                     }
@@ -848,6 +848,9 @@ public class ConnectionManager {
                             LOG.error("Error sending request");
                         }
                     }
+                } else {
+                    LOG.error("Error sending request");
+                    return null;
                 }
             }
             return getDecompressedString(serverResponse).getBytes();
@@ -858,11 +861,11 @@ public class ConnectionManager {
         }
     }
     
-    private void resend(byte[] msg) {
+    private boolean resend(byte[] msg) {
         context.destroySocket(requester);
         requester = buildRequester();
         requester.connect(connectionString);
-        requester.send(msg);
+        return requester.send(msg);
     }
     
     private byte[] concatByteArrays(byte[] firstDataArray, byte[] secondDataArray) {
