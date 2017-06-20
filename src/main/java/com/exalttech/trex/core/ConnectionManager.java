@@ -827,8 +827,9 @@ public class ConnectionManager {
                 } catch (ZMQException e) {
                     if (e.getErrorCode() == ZError.EFSM) {
                         resend(finalRequest);
+                    } else {
+                        throw e;
                     }
-                    throw e;
                 }
                 if (success) {
                     serverResponse = requester.recv(0);
