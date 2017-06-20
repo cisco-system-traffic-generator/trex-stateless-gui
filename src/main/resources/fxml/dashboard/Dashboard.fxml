@@ -11,8 +11,6 @@
 <?import com.cisco.trex.stl.gui.controllers.dashboard.global.GlobalStatsController?>
 <?import com.cisco.trex.stl.gui.controllers.dashboard.latency.LatencyController?>
 <?import com.cisco.trex.stl.gui.controllers.dashboard.ports.PortsController?>
-<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.ports.PortsSelectorController?>
-<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController?>
 <?import com.cisco.trex.stl.gui.controllers.dashboard.streams.StreamsController?>
 
 
@@ -25,24 +23,8 @@
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
     <top>
-        <GlobalStatsController/>
+        <GlobalStatsController active="true"/>
     </top>
-    <left>
-        <AnchorPane>
-            <PortsSelectorController fx:id="portsSelector"
-                                     onFiltersChanged="#handleFiltersChanged"
-                                     AnchorPane.leftAnchor="0.0"
-                                     AnchorPane.rightAnchor="10.0"
-                                     AnchorPane.topAnchor="11.0"
-                                     AnchorPane.bottomAnchor="1.0"/>
-            <StreamsSelectorController fx:id="streamsSelector"
-                                       visible="false"
-                                       AnchorPane.leftAnchor="0.0"
-                                       AnchorPane.rightAnchor="10.0"
-                                       AnchorPane.topAnchor="11.0"
-                                       AnchorPane.bottomAnchor="1.0"/>
-        </AnchorPane>
-    </left>
     <center>
         <AnchorPane>
             <TabPane fx:id="tabPane"

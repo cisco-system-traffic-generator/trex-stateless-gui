@@ -1,18 +1,15 @@
 package com.cisco.trex.stl.gui.services;
 
+import com.cisco.trex.stateless.model.stats.PGIdStatsRPCResult;
+import com.exalttech.trex.core.ConnectionManager;
+import com.exalttech.trex.core.RPCCommands;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
-
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.cisco.trex.stateless.model.stats.PGIdStatsRPCResult;
-
-import com.exalttech.trex.core.ConnectionManager;
-import com.exalttech.trex.core.RPCCommands;
 
 
 public class PGIDStatsService extends ScheduledService<PGIdStatsRPCResult> {
@@ -25,6 +22,10 @@ public class PGIDStatsService extends ScheduledService<PGIdStatsRPCResult> {
         synchronized (lock) {
             this.pgIDs = pgIDs != null ? new HashSet<>(pgIDs) : null;
         }
+    }
+
+    public Set<Integer> getPgIDs() {
+        return pgIDs;
     }
 
     @Override

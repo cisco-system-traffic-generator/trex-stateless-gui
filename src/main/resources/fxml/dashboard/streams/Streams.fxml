@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+
+<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController?>
 
 
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.AnchorPane"
-         fx:id="root"
-         AnchorPane.leftAnchor="0.0"
-         AnchorPane.rightAnchor="0.0"
-         AnchorPane.topAnchor="0.0"
-         AnchorPane.bottomAnchor="0.0">
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
-    <ScrollPane AnchorPane.leftAnchor="0.0"
-                AnchorPane.rightAnchor="0.0"
-                AnchorPane.topAnchor="0.0"
-                AnchorPane.bottomAnchor="0.0">
-        <GridPane fx:id="table"
-                  styleClass="statsTable"/>
-    </ScrollPane>
+         fx:id="root">
+    <HBox spacing="10.0"
+          AnchorPane.leftAnchor="10.0"
+          AnchorPane.rightAnchor="10.0"
+          AnchorPane.topAnchor="10.0"
+          AnchorPane.bottomAnchor="10.0">
+        <StreamsSelectorController fx:id="streamSelector"/>
+        <ScrollPane styleClass="stats-table-container"
+                    HBox.hgrow="ALWAYS">
+            <AnchorPane>
+                <GridPane fx:id="table"
+                          styleClass="statsTable"
+                          AnchorPane.topAnchor="5.0"
+                          AnchorPane.rightAnchor="5.0"
+                          AnchorPane.bottomAnchor="5.0"
+                          AnchorPane.leftAnchor="5.0"/>
+            </AnchorPane>
+        </ScrollPane>
+    </HBox>
 </fx:root>

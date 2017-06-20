@@ -8,6 +8,7 @@ import javafx.stage.WindowEvent;
 import java.util.*;
 
 import com.cisco.trex.stl.gui.controllers.dashboard.FlowStatsBaseController;
+import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController;
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
 import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
@@ -24,11 +25,19 @@ public class StreamsController extends FlowStatsBaseController {
     @FXML
     private AnchorPane root;
     @FXML
+    private StreamsSelectorController streamSelector;
+    @FXML
     private GridPane table;
 
     public StreamsController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/streams/Streams.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
+    }
+
+    @Override
+    public void setActive(final boolean isActive) {
+        super.setActive(isActive);
+        streamSelector.setActive(isActive);
     }
 
     private void onWindowCloseRequest(final WindowEvent window) {
@@ -60,6 +69,7 @@ public class StreamsController extends FlowStatsBaseController {
                 pgIDStatsStorage.getFlowStatPointHistoryMap();
         final Map<Integer, FlowStatPoint> flowStatPointShadowMap =
                 pgIDStatsStorage.getFlowStatPointShadowMap();
+        final Set<Integer> stoppedPGIds = pgIDStatsStorage.getStoppedPGIds();
 
         synchronized (pgIDStatsStorage.getDataLock()) {
             for (final Map.Entry<Integer, ArrayHistory<FlowStatPoint>> entry : flowStatPointHistoryMap.entrySet()) {
@@ -84,16 +94,18 @@ public class StreamsController extends FlowStatsBaseController {
                     rb -= shadow.getRb();
                 }
 
-                table.add(new HeaderCell(secondHeaderWidth, String.valueOf(pgID)), rowIndex, 0);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getTps())), true, "pkt/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 1);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getTbsL2())), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex, 2);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getTbsL1())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 3);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRps())), true, "pkt/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex, 4);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRbsL2())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 5);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tp), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex, 6);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 7);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tb), true, "B"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true), rowIndex, 8);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rb), true, "B"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true), rowIndex, 9);
+                final boolean isStopped = stoppedPGIds.contains(pgID);
+
+                table.add(new HeaderCell(secondHeaderWidth, String.valueOf(pgID), isStopped), rowIndex, 0);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getTps())), true, "pkt/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 1);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getTbsL2())), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 2);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getTbsL1())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 3);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRps())), true, "pkt/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 4);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRbsL2())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 5);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tp), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 6);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 7);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tb), true, "B"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 8);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rb), true, "B"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 9);
 
                 rowIndex++;
             }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
@@ -9,37 +8,46 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController?>
+
 
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
          fx:id="root"
          type="javafx.scene.layout.AnchorPane">
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
-    <VBox fillWidth="true"
-          spacing="10.0"
-          AnchorPane.leftAnchor="0.0"
-          AnchorPane.rightAnchor="0.0"
-          AnchorPane.topAnchor="0.0"
-          AnchorPane.bottomAnchor="0.0">
-        <HBox alignment="CENTER">
-            <fx:define>
-                <ToggleGroup fx:id="toggleGroupMode"/>
-            </fx:define>
-            <ToggleButton selected="true"
-                          text="Window"
-                          toggleGroup="$toggleGroupMode"
-                          styleClass="custom-toggle-button-left"
-                          prefWidth="120"/>
-            <ToggleButton text="Histogram"
-                          toggleGroup="$toggleGroupMode"
-                          styleClass="custom-toggle-button-right"
-                          prefWidth="120"/>
-        </HBox>
-        <ScrollPane VBox.vgrow="ALWAYS">
-            <GridPane fx:id="table"
-                      styleClass="statsTable"/>
-        </ScrollPane>
-    </VBox>
+    <HBox spacing="10.0"
+          AnchorPane.leftAnchor="10.0"
+          AnchorPane.rightAnchor="10.0"
+          AnchorPane.topAnchor="10.0"
+          AnchorPane.bottomAnchor="10.0">
+        <StreamsSelectorController fx:id="streamsSelector"/>
+        <VBox spacing="10.0"
+              HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER">
+                <fx:define>
+                    <ToggleGroup fx:id="toggleGroupMode"/>
+                </fx:define>
+                <ToggleButton selected="true"
+                              text="Window"
+                              toggleGroup="$toggleGroupMode"
+                              styleClass="custom-toggle-button-left"
+                              prefWidth="120"/>
+                <ToggleButton text="Histogram"
+                              toggleGroup="$toggleGroupMode"
+                              styleClass="custom-toggle-button-right"
+                              prefWidth="120"/>
+            </HBox>
+            <ScrollPane styleClass="stats-table-container"
+                        VBox.vgrow="ALWAYS">
+                <AnchorPane>
+                    <GridPane fx:id="table"
+                              styleClass="statsTable"
+                              AnchorPane.topAnchor="5.0"
+                              AnchorPane.rightAnchor="5.0"
+                              AnchorPane.bottomAnchor="5.0"
+                              AnchorPane.leftAnchor="5.0"/>
+                </AnchorPane>
+            </ScrollPane>
+        </VBox>
+    </HBox>
 </fx:root>

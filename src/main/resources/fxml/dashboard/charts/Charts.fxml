@@ -10,67 +10,73 @@
 
 <?import java.lang.Integer?>
 
+<?import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController?>
+
 
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
-         type="javafx.scene.layout.BorderPane"
-         fx:id="root">
+         type="javafx.scene.layout.HBox"
+         fx:id="root"
+         spacing="10">
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-    <top>
-        <HBox>
-            <padding>
-                <Insets bottom="10"/>
-            </padding>
-            <HBox alignment="CENTER_LEFT"
-                  spacing="10.0"
-                  HBox.hgrow="ALWAYS">
-                <Label text="Interval:"/>
-                <ComboBox fx:id="intervalComboBox"
-                          prefWidth="120.0">
-                    <value>
-                        <Integer fx:value="60"/>
-                    </value>
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
+    <StreamsSelectorController fx:id="streamsSelector"/>
+    <BorderPane HBox.hgrow="ALWAYS">
+        <top>
+            <HBox>
+                <padding>
+                    <Insets bottom="10"/>
+                </padding>
+                <HBox alignment="CENTER_LEFT"
+                      spacing="10.0"
+                      HBox.hgrow="ALWAYS">
+                    <Label text="Interval:"/>
+                    <ComboBox fx:id="intervalComboBox"
+                              prefWidth="120.0">
+                        <value>
                             <Integer fx:value="60"/>
-                            <Integer fx:value="90"/>
-                            <Integer fx:value="120"/>
-                            <Integer fx:value="300"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
+                        </value>
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <Integer fx:value="60"/>
+                                <Integer fx:value="90"/>
+                                <Integer fx:value="120"/>
+                                <Integer fx:value="300"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+                <HBox alignment="CENTER_RIGHT"
+                      spacing="5.0">
+                    <Label fx:id="layoutIcon1Label"
+                           minWidth="24.0"
+                           minHeight="24.0"
+                           maxWidth="24.0"
+                           maxHeight="24.0"
+                           styleClass="layoutIcon1"
+                           onMouseClicked="#handleLayoutIcon1LabelClicked"/>
+                    <Label fx:id="layoutIcon2Label"
+                           minWidth="24.0"
+                           minHeight="24.0"
+                           maxWidth="24.0"
+                           maxHeight="24.0"
+                           styleClass="layoutIcon2"
+                           onMouseClicked="#handleLayoutIcon2LabelClicked"/>
+                    <Label fx:id="layoutIcon4Label"
+                           minWidth="24.0"
+                           minHeight="24.0"
+                           maxWidth="24.0"
+                           maxHeight="24.0"
+                           styleClass="layoutIcon4"
+                           onMouseClicked="#handleLayoutIcon4LabelClicked"/>
+                </HBox>
             </HBox>
-            <HBox alignment="CENTER_RIGHT"
-                  spacing="5.0">
-                <Label fx:id="layoutIcon1Label"
-                       minWidth="24.0"
-                       minHeight="24.0"
-                       maxWidth="24.0"
-                       maxHeight="24.0"
-                       styleClass="layoutIcon1"
-                       onMouseClicked="#handleLayoutIcon1LabelClicked"/>
-                <Label fx:id="layoutIcon2Label"
-                       minWidth="24.0"
-                       minHeight="24.0"
-                       maxWidth="24.0"
-                       maxHeight="24.0"
-                       styleClass="layoutIcon2"
-                       onMouseClicked="#handleLayoutIcon2LabelClicked"/>
-                <Label fx:id="layoutIcon4Label"
-                       minWidth="24.0"
-                       minHeight="24.0"
-                       maxWidth="24.0"
-                       maxHeight="24.0"
-                       styleClass="layoutIcon4"
-                       onMouseClicked="#handleLayoutIcon4LabelClicked"/>
-            </HBox>
-        </HBox>
-    </top>
-    <center>
-        <GridPane fx:id="gridPane"
-                  hgap="10.0"
-                  vgap="10.0"/>
-    </center>
+        </top>
+        <center>
+            <GridPane fx:id="gridPane"
+                      hgap="10.0"
+                      vgap="10.0"/>
+        </center>
+    </BorderPane>
 </fx:root>

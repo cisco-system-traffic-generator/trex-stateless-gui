@@ -6,15 +6,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+
+import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSelectorController;
 
 import com.exalttech.trex.util.Initialization;
 
 
-public class ChartsController extends BorderPane {
+public class ChartsController extends HBox {
     private static String[] defaultChartTypes = new String[]{
             ChartsFactory.ChartTypes.TX_PPS,
             ChartsFactory.ChartTypes.RX_PPS,
@@ -22,6 +24,8 @@ public class ChartsController extends BorderPane {
             ChartsFactory.ChartTypes.RX_BPS_L2
     };
 
+    @FXML
+    private StreamsSelectorController streamsSelector;
     @FXML
     private ComboBox<Integer> intervalComboBox;
     @FXML
@@ -61,6 +65,8 @@ public class ChartsController extends BorderPane {
     }
 
     public void setActive(final boolean isActive) {
+        streamsSelector.setActive(isActive);
+
         LayoutConfiguration layoutConfiguration = layoutConfigurations[selectedConfigurationIndex];
         int size = layoutConfiguration.getColumnsCount()*layoutConfiguration.getRowsCount();
         for (int i = 0; i < size; ++i) {
