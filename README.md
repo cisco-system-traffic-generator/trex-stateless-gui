@@ -65,12 +65,12 @@ Now it is easy to manage port attributes, configure port layer mode and see hard
 
 ##  Builds 
 
-Latest build version 3.2 with release notes is available [here](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/tag/v3.2)
+Latest build version 4.0 with release notes is available [here](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/tag/v4.0)
 
 You can also download installers directly from here:
- - Windows: [trex-stateless-gui3.2.exe](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui3.2.exe)
- - Mac OS: [trex-stateless-gui-3.2.dmg](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui-3.2.dmg) and [trex-stateless-gui-3.2.pkg](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui-3.2.pkg)
- - Compiled binary: [trex-stateless-gui-3.2.tgz](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v3.2/trex-stateless-gui-3.2.tgz)
+ - Windows: [trex-stateless-gui-4.0.exe](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v4.0/trex-stateless-gui4.0.exe)
+ - Mac OS: [trex-stateless-gui-4.0.dmg](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v4.0/trex-stateless-gui-4.0.dmg) and [trex-stateless-gui-4.0.pkg](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v4.0/trex-stateless-gui-1.0.pkg)
+ - Compiled binary: [trex-stateless-gui-4.0.tgz](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v4.0/trex-stateless-gui.tgz)
 
 ## YouTrack
 
