@@ -1700,7 +1700,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             if (reverting || lastLoadedPortPtofileIndex != prevViewvedPortPtofileIndex) {
                 return;
             }
-            if (!isAllowed()) {
+            
+            if (!resetAppInProgress && !isAllowed()) {
                 reverting = true;
                 Platform.runLater(() -> {
                     selectionModel.select(oldValue);
@@ -1708,7 +1709,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 });
                 return;
             }
-
+            
             try {
                 doAssignProfile = true;
                 String profileName = String.valueOf(newValue);
