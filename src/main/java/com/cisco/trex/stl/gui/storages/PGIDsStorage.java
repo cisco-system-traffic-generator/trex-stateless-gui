@@ -5,6 +5,7 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.util.Duration;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class PGIDsStorage {
@@ -129,7 +130,11 @@ public class PGIDsStorage {
                     }
                 }
             } else {
-                selectedPGIds.keySet().removeIf((final Integer port) -> !pgIDs.contains(port));
+                List<Integer> outdatedPG_IDS = selectedPGIds.keySet()
+                                                            .stream()
+                                                            .filter((final Integer port) -> !pgIDs.contains(port))
+                                                            .collect(Collectors.toList());
+                outdatedPG_IDS.forEach(pgID -> deselectPGID(pgID));
             }
         }
 
