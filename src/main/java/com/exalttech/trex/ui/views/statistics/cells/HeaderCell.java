@@ -35,6 +35,13 @@ public class HeaderCell extends Label implements StatisticCell{
         setText(value);
     }
 
+    public HeaderCell(final double width, final String value, final boolean isStopped) {
+        this(width, value);
+        if (isStopped) {
+            getStyleClass().add("stats-table-marked-cell");
+        }
+    }
+
     public HeaderCell(String value){
         setAlignment(Pos.CENTER);
         setText(value);

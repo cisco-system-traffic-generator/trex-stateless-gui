@@ -1,17 +1,11 @@
 package com.cisco.trex.stl.gui.storages;
 
+import com.cisco.trex.stl.gui.services.ActivePGIDsService;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.cisco.trex.stl.gui.services.ActivePGIDsService;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class PGIDsStorage {
@@ -53,6 +47,7 @@ public class PGIDsStorage {
     public void startPolling() {
         synchronized (activePGIDsService) {
             if (!activePGIDsService.isRunning()) {
+                activePGIDsService.reset();
                 activePGIDsService.setPeriod(POLLING_INTERVAL);
                 activePGIDsService.setOnSucceeded(this::handlePGIDsReceived);
                 activePGIDsService.start();
@@ -64,7 +59,6 @@ public class PGIDsStorage {
         synchronized (activePGIDsService) {
             if (activePGIDsService.isRunning()) {
                 activePGIDsService.cancel();
-                activePGIDsService.reset();
             }
         }
 
@@ -135,6 +129,12 @@ public class PGIDsStorage {
                         break;
                     }
                 }
+            } else {
+                List<Integer> outdatedPG_IDS = selectedPGIds.keySet()
+                                                            .stream()
+                                                            .filter((final Integer port) -> !pgIDs.contains(port))
+                                                            .collect(Collectors.toList());
+                outdatedPG_IDS.forEach(pgID -> deselectPGID(pgID));
             }
         }
 

@@ -15,19 +15,16 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.remote.models.profiles.Mode;
+import com.exalttech.trex.remote.models.profiles.Profile;
+import com.exalttech.trex.remote.models.profiles.Rate;
+import com.exalttech.trex.ui.components.NumberField;
+import com.exalttech.trex.util.Util;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -38,12 +35,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
-
-import com.exalttech.trex.remote.models.profiles.Mode;
-import com.exalttech.trex.remote.models.profiles.Profile;
-import com.exalttech.trex.remote.models.profiles.Rate;
-import com.exalttech.trex.ui.components.NumberField;
-import com.exalttech.trex.util.Util;
 
 
 public class StreamPropertiesViewController implements Initializable, EventHandler<KeyEvent> {
@@ -113,6 +104,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
     @FXML
     private CheckBox rxEnableCB;
     @FXML
+    private CheckBox rxLatencyCB;
+    @FXML
     private TextField rxStreamID;
     @FXML
     private Label rxStreamIDLabel;
@@ -172,6 +165,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         // bind RX fields with rx enable property
         rxStreamID.disableProperty().bind(rxEnableCB.selectedProperty().not());
         rxStreamIDLabel.disableProperty().bind(rxEnableCB.selectedProperty().not());
+        rxLatencyCB.disableProperty().bind(rxEnableCB.selectedProperty().not());
 
         // add key press event to allow digits only
         numOfPacketTB.addEventFilter(KeyEvent.KEY_TYPED, this);
@@ -318,6 +312,7 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
 
         rxStreamID.setText(String.valueOf(selectedProfile.getStream().getFlowStats().getStreamID()));
         rxEnableCB.setSelected(selectedProfile.getStream().getFlowStats().getEnabled());
+        rxLatencyCB.setSelected(selectedProfile.getStream().getFlowStats().isLatencyEnabled());
 
         fillGotoStreamOption(currentSelectedIndex);
         stopRG.setSelected(true);
@@ -366,15 +361,16 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         selectedProfile.getStream().setEnabled(enabledCB.isSelected());
         selectedProfile.getStream().setSelfStart(selfStartCB.isSelected());
 
+        String ruleType = null;
         // update rx
         selectedProfile.getStream().getFlowStats().setEnabled(rxEnableCB.isSelected());
-        selectedProfile.getStream().getFlowStats().setStreamID(Util.getIntFromString(rxStreamID.getText()));
-
-        String ruleType = null;
         if (rxEnableCB.isSelected()) {
-            ruleType = "latency";
+            selectedProfile.getStream().getFlowStats().setStreamID(Util.getIntFromString(rxStreamID.getText()));
+            
+            ruleType = rxLatencyCB.isSelected() ? "latency": "stats";
+            selectedProfile.getStream().getFlowStats().setRuleType(ruleType);
         }
-        selectedProfile.getStream().getFlowStats().setRuleType(ruleType);
+
 
         switch ((StreamMode) streamModeGroup.getUserData()) {
             case CONTINUOUS:

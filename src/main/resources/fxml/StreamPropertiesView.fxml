@@ -291,10 +291,10 @@
                    layoutY="57.0"
                    prefWidth="120.0"
                    text="1"/>
-        <CheckBox disable="true"
+        <CheckBox fx:id="rxLatencyCB"
                   layoutX="483.0"
                   mnemonicParsing="false"
-                  selected="true"
+                  selected="false"
                   text="Latency enabled"
                   AnchorPane.topAnchor="60.0"
                   AnchorPane.leftAnchor="352.0"/>

@@ -26,7 +26,7 @@
            visible="false"
            styleClass="error-icon">
         <tooltip>
-            <Tooltip text="PG ID was removed from the server"/>
+            <Tooltip/>
         </tooltip>
     </Label>
     <HBox alignment="CENTER_RIGHT"
