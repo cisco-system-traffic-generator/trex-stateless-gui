@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -9,65 +10,70 @@
 
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
-         type="javafx.scene.layout.GridPane"
+         type="javafx.scene.layout.AnchorPane"
          fx:id="root"
          minHeight="130.0"
-         maxHeight="130.0"
-         hgap="10"
-         vgap="10">
-    <columnConstraints>
-        <ColumnConstraints percentWidth="20"/>
-        <ColumnConstraints percentWidth="20"/>
-        <ColumnConstraints percentWidth="20"/>
-        <ColumnConstraints percentWidth="20"/>
-        <ColumnConstraints percentWidth="20"/>
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints prefHeight="60"/>
-        <RowConstraints prefHeight="60"/>
-    </rowConstraints>
-    <GlobalStatsPanelController fx:id="cpu"
-                                threshold="85.0"
-                                title="CPU"
-                                GridPane.columnIndex="0"
-                                GridPane.rowIndex="0"/>
-    <GlobalStatsPanelController fx:id="totalTx"
-                                title="Total Tx L2"
-                                GridPane.columnIndex="1"
-                                GridPane.rowIndex="0"/>
-    <GlobalStatsPanelController fx:id="totalTxL1"
-                                title="Total Tx L1"
-                                GridPane.columnIndex="2"
-                                GridPane.rowIndex="0"/>
-    <GlobalStatsPanelController fx:id="totalPps"
-                                title="Total PPS"
-                                GridPane.columnIndex="3"
-                                GridPane.rowIndex="0"/>
-    <GlobalStatsPanelController fx:id="dropRate"
-                                threshold="0.0"
-                                title="Drop Rate"
-                                GridPane.columnIndex="4"
-                                GridPane.rowIndex="0"/>
-    <GlobalStatsPanelController fx:id="rxCpu"
-                                threshold="85.0"
-                                title="Rx CPU"
-                                GridPane.columnIndex="0"
-                                GridPane.rowIndex="1"/>
-    <GlobalStatsPanelController fx:id="totalRx"
-                                title="Total Rx L2"
-                                GridPane.columnIndex="1"
-                                GridPane.rowIndex="1"/>
-    <GlobalStatsPanelController fx:id="totalStream"
-                                title="Total Stream"
-                                GridPane.columnIndex="2"
-                                GridPane.rowIndex="1"/>
-    <GlobalStatsPanelController fx:id="activePort"
-                                title="Active Ports"
-                                GridPane.columnIndex="3"
-                                GridPane.rowIndex="1"/>
-    <GlobalStatsPanelController fx:id="queueFull"
-                                threshold="0.0"
-                                title="Queue Full"
-                                GridPane.columnIndex="4"
-                                GridPane.rowIndex="1"/>
+         maxHeight="130.0">
+    <GridPane hgap="10"
+              vgap="10"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0"
+              AnchorPane.bottomAnchor="0.0">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="20"/>
+            <ColumnConstraints percentWidth="20"/>
+            <ColumnConstraints percentWidth="20"/>
+            <ColumnConstraints percentWidth="20"/>
+            <ColumnConstraints percentWidth="20"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints prefHeight="60"/>
+            <RowConstraints prefHeight="60"/>
+        </rowConstraints>
+        <GlobalStatsPanelController fx:id="cpu"
+                                    threshold="85.0"
+                                    title="CPU"
+                                    GridPane.columnIndex="0"
+                                    GridPane.rowIndex="0"/>
+        <GlobalStatsPanelController fx:id="totalTx"
+                                    title="Total Tx L2"
+                                    GridPane.columnIndex="1"
+                                    GridPane.rowIndex="0"/>
+        <GlobalStatsPanelController fx:id="totalTxL1"
+                                    title="Total Tx L1"
+                                    GridPane.columnIndex="2"
+                                    GridPane.rowIndex="0"/>
+        <GlobalStatsPanelController fx:id="totalPps"
+                                    title="Total PPS"
+                                    GridPane.columnIndex="3"
+                                    GridPane.rowIndex="0"/>
+        <GlobalStatsPanelController fx:id="dropRate"
+                                    threshold="0.0"
+                                    title="Drop Rate"
+                                    GridPane.columnIndex="4"
+                                    GridPane.rowIndex="0"/>
+        <GlobalStatsPanelController fx:id="rxCpu"
+                                    threshold="85.0"
+                                    title="Rx CPU"
+                                    GridPane.columnIndex="0"
+                                    GridPane.rowIndex="1"/>
+        <GlobalStatsPanelController fx:id="totalRx"
+                                    title="Total Rx L2"
+                                    GridPane.columnIndex="1"
+                                    GridPane.rowIndex="1"/>
+        <GlobalStatsPanelController fx:id="totalStream"
+                                    title="Total Stream"
+                                    GridPane.columnIndex="2"
+                                    GridPane.rowIndex="1"/>
+        <GlobalStatsPanelController fx:id="activePort"
+                                    title="Active Ports"
+                                    GridPane.columnIndex="3"
+                                    GridPane.rowIndex="1"/>
+        <GlobalStatsPanelController fx:id="queueFull"
+                                    threshold="0.0"
+                                    title="Queue Full"
+                                    GridPane.columnIndex="4"
+                                    GridPane.rowIndex="1"/>
+    </GridPane>
 </fx:root>

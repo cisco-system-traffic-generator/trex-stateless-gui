@@ -1,5 +1,6 @@
 package com.exalttech.trex.application.guice;
 
+import com.cisco.trex.stl.gui.util.RunningConfiguration;
 import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.ui.views.streams.builder.ProtocolDataView;
 import com.google.common.eventbus.EventBus;
@@ -12,6 +13,7 @@ public class StatelessGUIModule extends AbstractModule {
     protected void configure() {
         bind(EventBus.class).in(Singleton.class);
         bind(RPCMethods.class).in(Singleton.class);
+        bind(RunningConfiguration.class).in(Singleton.class);
         bind(ProtocolDataView.class).toProvider(ProtocolDataViewProvider.class);
     }
 }

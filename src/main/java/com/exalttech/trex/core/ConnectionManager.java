@@ -39,7 +39,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import org.apache.log4j.Logger;
+import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQException;
+import org.zeromq.ZPoller;
+import zmq.ZError;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -68,6 +72,7 @@ public class ConnectionManager {
     private final static String ASYNC_PASS_STATUS = "Pass";
 
     private final String MAGIC_STRING = "ABE85CEA";
+    private Object sendRequestMonitor = new Object();
 
     /**
      *
@@ -93,13 +98,16 @@ public class ConnectionManager {
     private ZMQ.Socket requester = null;
     private boolean isReadOnly;
     private Task task;
-    ZMQ.Context context;
+    ZContext context;
+    ZPoller poller;
     private String connectionString;
 
     /**
      *
      */
     protected ConnectionManager() {
+        context = new ZContext();
+        poller = new ZPoller(context);
         bindLogProperty();
 
         try {
@@ -198,11 +206,10 @@ public class ConnectionManager {
     private boolean connectToZMQ() {
         connectionString = "tcp://" + ip + ":" + rpcPort;
         try {
-            context = ZMQ.context(1);
-            setRequester(context.socket(ZMQ.REQ));
-            getRequester().setReceiveTimeOut(3000);
             LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex server: " + connectionString);
-            getRequester().connect(connectionString);
+            requester = buildRequester();
+            requester.connect(connectionString);
+            poller.register(requester, ZMQ.Poller.POLLIN);
             LogsController.getInstance().appendText(LogType.INFO, "Connected");
         } catch (Exception ex) {
             LOG.error("Invalid hostname", ex);
@@ -213,6 +220,12 @@ public class ConnectionManager {
         scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
 
         return true;
+    }
+
+    private ZMQ.Socket buildRequester() {
+        ZMQ.Socket s = context.createSocket(ZMQ.REQ);
+        s.setReceiveTimeOut(3000);
+        return s;
     }
 
     /**
@@ -540,7 +553,7 @@ public class ConnectionManager {
         try {
             runAndWait(() -> {
                 try {
-                    ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
+                    ZMQ.Socket subscriber = context.createSocket(ZMQ.SUB);
                     subscriber.setReceiveTimeOut(5000);
                     subscriber.connect("tcp://" + ip + ":" + asyncPort);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
@@ -585,7 +598,7 @@ public class ConnectionManager {
             @Override
             protected Void call() throws Exception {
                 try {
-                    ZMQ.Socket subscriber = context.socket(ZMQ.SUB);
+                    ZMQ.Socket subscriber = context.createSocket(ZMQ.SUB);
                     subscriber.setReceiveTimeOut(5000);
                     subscriber.connect("tcp://" + ip + ":" + asyncPort);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
@@ -793,7 +806,7 @@ public class ConnectionManager {
      * @param request
      * @return
      */
-    synchronized private byte[] getServerRPCResponse(String request) {
+    private byte[] getServerRPCResponse(String request) {
         try {
             // prepare compression header
             ByteBuffer headerByteBuffer = ByteBuffer.allocate(8);
@@ -806,19 +819,55 @@ public class ConnectionManager {
             // compress request
             byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
             byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
-            requester.send(finalRequest);
-            byte[] serverResponse = requester.recv(0);
-            // decompressed response
-            if (serverResponse != null) {
-                return getDecompressedString(serverResponse).getBytes();
+            byte[] serverResponse = null;
+            boolean success = false;
+            synchronized (sendRequestMonitor) {
+                try {
+                    success = requester.send(finalRequest);
+                } catch (ZMQException e) {
+                    if (e.getErrorCode() == ZError.EFSM) {
+                        success = resend(finalRequest);
+                    } else {
+                        throw e;
+                    }
+                }
+                if (success) {
+                    serverResponse = requester.recv(0);
+                    if (serverResponse == null) {
+                        if (requester.base().errno() == ZError.EAGAIN) {
+                            int retries = 5;
+                            while (serverResponse == null && retries > 0) {
+                                retries--;
+                                serverResponse = requester.recv(0);
+                            }
+                            if (retries == 0) {
+                                resend(finalRequest);
+                                serverResponse = requester.recv(0);
+                            }
+                        } else {
+                            LOG.error("Error sending request");
+                        }
+                    }
+                } else {
+                    LOG.error("Error sending request");
+                    return null;
+                }
             }
+            return getDecompressedString(serverResponse).getBytes();
+            // decompressed response
         } catch (IOException ex) {
             LOG.error("Error sending request", ex);
             return null;
         }
-        return null;
     }
-
+    
+    private boolean resend(byte[] msg) {
+        context.destroySocket(requester);
+        requester = buildRequester();
+        requester.connect(connectionString);
+        return requester.send(msg);
+    }
+    
     private byte[] concatByteArrays(byte[] firstDataArray, byte[] secondDataArray) {
         byte[] concatedDataArray = new byte[firstDataArray.length + secondDataArray.length];
         System.arraycopy(firstDataArray, 0, concatedDataArray, 0, firstDataArray.length);

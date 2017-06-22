@@ -34,6 +34,13 @@ public class StatisticLabelCell extends Label implements StatisticCell {
         updateItem(null, value);
     }
 
+    public StatisticLabelCell(String value, double width, boolean odd, CellType type, boolean isRightPosition, boolean isStopped) {
+        this(value, width, odd, type, isRightPosition);
+        if (isStopped) {
+            getStyleClass().add("stats-table-marked-cell");
+        }
+    }
+
     public StatisticLabelCell(double width, boolean odd, CellType type, boolean isRightPosition) {
         this.type = type;
         setPrefSize(width, 25);
