@@ -1437,10 +1437,10 @@ ToggleSwitch {
     -fx-background-size: 12 12;
 }
 
-.stats-table-marked-cell {
-    -fx-opacity: 0.5;
-}
-
 #capturedPkts .table-cell {
     -fx-alignment: CENTER;
+}
+
+.stats-table-marked-cell {
+    -fx-opacity: 0.5;
 }
