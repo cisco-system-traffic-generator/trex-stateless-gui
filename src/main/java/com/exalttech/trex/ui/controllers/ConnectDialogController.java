@@ -15,6 +15,12 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.core.ConnectionManager;
+import com.exalttech.trex.ui.dialog.DialogView;
+import com.exalttech.trex.ui.models.datastore.Connection;
+import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
+import com.exalttech.trex.util.Util;
+import com.exalttech.trex.util.files.XMLFileManager;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,34 +32,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-
 import javafx.stage.WindowEvent;
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Consumer;
-
-import com.exalttech.trex.core.ConnectionManager;
-import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.models.datastore.Connection;
-import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
-import com.exalttech.trex.util.files.XMLFileManager;
-import com.exalttech.trex.util.Util;
 
 /**
  * FXML Controller class for connect dialog
@@ -91,9 +81,14 @@ public class ConnectDialogController extends DialogView implements Initializable
         public Void call() {
             final ConnectionManager connectionManager = ConnectionManager.getInstance();
             String error = null;
-            if (!connectionManager.initializeConnection(ip, rpcPort, asyncPort, scapyPort, name, isReadOnly)) {
-                error = "TRex Hostname or IP address are not valid";
-            } else if (!connectionManager.testConnection(false) || !connectionManager.testConnection(true)) {
+            boolean connected = false;
+            try {
+                connected = connectionManager.initializeConnection(ip, rpcPort, asyncPort, scapyPort, name, isReadOnly);
+            } catch (Exception e){
+                error = e.getMessage();
+            }
+            
+            if (connected && !connectionManager.testConnection(false) || !connectionManager.testConnection(true)) {
                 error = "Failed to connect to TRex - make sure the server is up";
             }
             acceptCallback(error);
