@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.CheckComboBox;
 
+import java.util.List;
+
 public class PortFilterController extends HBox {
     
     @FXML
@@ -15,5 +17,12 @@ public class PortFilterController extends HBox {
 
     public PortFilterController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/PortFilter.fxml");
+    }
+
+    public List<Integer> getRxPorts() {
+        return rxFilter.getCheckModel().getCheckedIndices();
+    }
+    public List<Integer> getTxPorts() {
+        return txFilter.getCheckModel().getCheckedIndices();
     }
 }
