@@ -16,6 +16,7 @@
 package com.exalttech.trex.core;
 
 import com.cisco.trex.stateless.TRexClient;
+import com.cisco.trex.stateless.exception.TRexConnectionException;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
@@ -177,7 +178,7 @@ public class ConnectionManager {
      * @param isReadOnly
      * @return
      */
-    public boolean initializeConnection(String ip, String rpcPort, String asyncPort, String scapyPort, String clientName, boolean isReadOnly) {
+    public boolean initializeConnection(String ip, String rpcPort, String asyncPort, String scapyPort, String clientName, boolean isReadOnly) throws TRexConnectionException {
         this.ip = ip;
         this.rpcPort = rpcPort;
         this.asyncPort = asyncPort;
@@ -186,12 +187,7 @@ public class ConnectionManager {
         this.isReadOnly = isReadOnly;
 
         trexClient = new TRexClient(ip, rpcPort, clientName);
-        try {
-            trexClient.connect();
-        } catch (Exception ex) {
-            return false;
-        }
-        
+        trexClient.connect();
         // connect to zmq
         return connectToZMQ();
     }
