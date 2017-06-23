@@ -22,7 +22,11 @@
             <Button fx:id="startBtn"
                     styleClass="normalButton"
                     text="Start"/>
-            <Button fx:id="startWSBtn" styleClass="normalButton"
+            <Button fx:id="clearBtn"
+                    styleClass="normalButton"
+                    text="Clear"/>
+            <Button fx:id="startWSBtn"
+                    styleClass="normalButton"
                     text="Start in WireShark"/>
             <Button fx:id="stopBtn"
                     styleClass="normalButton"
