@@ -2,7 +2,7 @@ package com.cisco.trex.stl.gui.models;
 
 import javafx.beans.property.*;
 
-public class CapturedPkt {
+public class CapturedPktModel {
     private IntegerProperty number = new SimpleIntegerProperty();
     private IntegerProperty port = new SimpleIntegerProperty();
     private StringProperty mode = new SimpleStringProperty();
@@ -13,7 +13,7 @@ public class CapturedPkt {
     private IntegerProperty length = new SimpleIntegerProperty();
     private StringProperty info = new SimpleStringProperty();
 
-    public CapturedPkt(Integer number, Integer port, String mode, Double time, String ipDst, String ipSrc, String type, Integer length, String info) {
+    public CapturedPktModel(Integer number, Integer port, String mode, Double time, String ipDst, String ipSrc, String type, Integer length, String info) {
         this.number.set(number);
         this.port.set(port);
         this.mode.set(mode);
