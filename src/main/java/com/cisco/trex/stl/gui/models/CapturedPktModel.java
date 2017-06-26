@@ -2,24 +2,24 @@ package com.cisco.trex.stl.gui.models;
 
 import javafx.beans.property.*;
 
-public class CapturedPkt {
+public class CapturedPktModel {
     private IntegerProperty number = new SimpleIntegerProperty();
     private IntegerProperty port = new SimpleIntegerProperty();
     private StringProperty mode = new SimpleStringProperty();
     private StringProperty time = new SimpleStringProperty();
-    private StringProperty ipDst = new SimpleStringProperty();
-    private StringProperty ipSrc = new SimpleStringProperty();
+    private StringProperty dst = new SimpleStringProperty();
+    private StringProperty src = new SimpleStringProperty();
     private StringProperty type = new SimpleStringProperty();
     private IntegerProperty length = new SimpleIntegerProperty();
     private StringProperty info = new SimpleStringProperty();
 
-    public CapturedPkt(Integer number, Integer port, String mode, Double time, String ipDst, String ipSrc, String type, Integer length, String info) {
+    public CapturedPktModel(Integer number, Integer port, String mode, Double time, String dst, String src, String type, Integer length, String info) {
         this.number.set(number);
         this.port.set(port);
         this.mode.set(mode);
         this.time.set(String.format("%f", time));
-        this.ipDst.set(ipDst);
-        this.ipSrc.set(ipSrc);
+        this.dst.set(dst);
+        this.src.set(src);
         this.type.set(type);
         this.length.set(length);
         this.info.set(info);
@@ -73,28 +73,28 @@ public class CapturedPkt {
         this.time.set(String.format("%f", time));
     }
 
-    public String getIpDst() {
-        return ipDst.get();
+    public String getDst() {
+        return dst.get();
     }
 
-    public StringProperty ipDstProperty() {
-        return ipDst;
+    public StringProperty dstProperty() {
+        return dst;
     }
 
-    public void setIpDst(String ipDst) {
-        this.ipDst.set(ipDst);
+    public void setdst(String dst) {
+        this.dst.set(dst);
     }
 
-    public String getIpSrc() {
-        return ipSrc.get();
+    public String getsrc() {
+        return src.get();
     }
 
-    public StringProperty ipSrcProperty() {
-        return ipSrc;
+    public StringProperty srcProperty() {
+        return src;
     }
 
-    public void setIpSrc(String ipSrc) {
-        this.ipSrc.set(ipSrc);
+    public void setSrc(String src) {
+        this.src.set(src);
     }
 
     public String getType() {
