@@ -93,4 +93,9 @@ public class Recorder {
     public void setTxFilter(String txFilter) {
         this.txFilter.set(txFilter);
     }
+    
+    public boolean isFull() {
+        String[] packets = getPackets().split("/");
+        return packets[0].equals(packets[1]);
+    }
 }
