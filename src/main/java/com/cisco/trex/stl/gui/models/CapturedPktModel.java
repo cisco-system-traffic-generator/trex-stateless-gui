@@ -17,9 +17,10 @@ public class CapturedPktModel {
     private StringProperty type = new SimpleStringProperty();
     private IntegerProperty length = new SimpleIntegerProperty();
     private StringProperty info = new SimpleStringProperty();
-    private static DecimalFormat decimalFormatter = new DecimalFormat(".##");
+    private byte[] bytes;
+    private static DecimalFormat decimalFormatter = new DecimalFormat("####.##");
     
-    public CapturedPktModel(Integer number, Integer port, String mode, Double time, String dst, String src, String type, Integer length, String info) {
+    public CapturedPktModel(Integer number, Integer port, String mode, Double time, String dst, String src, String type, Integer length, String info, byte[] bytes) {
         this.number.set(number);
         this.port.set(port);
         this.mode.set(mode);
@@ -29,8 +30,13 @@ public class CapturedPktModel {
         this.type.set(type);
         this.length.set(length);
         this.info.set(info);
+        this.bytes = bytes; 
     }
 
+    public byte[] getBytes() {
+        return bytes;
+    }
+    
     public int getNumber() {
         return number.get();
     }
