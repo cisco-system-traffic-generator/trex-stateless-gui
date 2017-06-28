@@ -32,7 +32,6 @@ public class Preferences {
     private String loadLocation = "";
     private String savedLocation = "";
     private String templatesLocation = "";
-    private boolean javaConsoleLogging = true;
 
     /**
      *

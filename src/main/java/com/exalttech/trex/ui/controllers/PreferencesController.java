@@ -25,7 +25,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
@@ -48,8 +47,6 @@ public class PreferencesController extends DialogView implements Initializable {
     TextField savedLocation;
     @FXML
     TextField templatesLocation;
-    @FXML
-    CheckBox checkboxToggleJavaConsoleLog;
 
     DirectoryChooser chooser;
 
