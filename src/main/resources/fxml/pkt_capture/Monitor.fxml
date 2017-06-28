@@ -42,7 +42,7 @@
                 <TableColumn fx:id="time"
                              maxWidth="140.0"
                              minWidth="140.0"
-                             text="IPG" />
+                             text="Time" />
                 <TableColumn fx:id="port"
                              maxWidth="100.0"
                              minWidth="40.0"
