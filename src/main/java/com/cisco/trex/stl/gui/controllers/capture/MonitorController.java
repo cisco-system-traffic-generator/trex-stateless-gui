@@ -90,23 +90,20 @@ public class MonitorController extends BorderPane {
     }
 
     private void handleOnPktsReceived(WorkerStateEvent workerStateEvent) {
-        synchronized (capturedPkts) {
-            if (starTs == 0) {
-                starTs = pktCaptureService.getValue().getStartTimeStamp();
-            }
-            pktCaptureService.getValue().getPkts().stream()
-                                        .map(this::toModel)
-                                        .filter(Objects::nonNull)
-                                        .forEach(pktModel -> capturedPkts.getItems().add(pktModel));
+        if (starTs == 0) {
+            starTs = pktCaptureService.getValue().getStartTimeStamp();
         }
+        pktCaptureService.getValue().getPkts().stream()
+                .map(this::toModel)
+                .filter(Objects::nonNull)
+                .forEach(pktModel -> capturedPkts.getItems().add(pktModel));
     }
 
-    public void handleStartStopMonitorAction(ActionEvent event) {
+    synchronized public void handleStartStopMonitorAction(ActionEvent event) {
         try {
             if(monitorId != 0) {
                 pktCaptureService.stopMonitor();
                 pktCaptureService.cancel();
-                starTs = 0;
                 startStopBtn.setText("Start");
                 portFilter.setDisable(false);
                 monitorId = 0;
@@ -120,6 +117,7 @@ public class MonitorController extends BorderPane {
                 }
                 
                 pktCaptureService.reset();
+                starTs = 0;
                 monitorId = pktCaptureService.startMonitor(rxPorts, txPorts);
                 portFilter.setDisable(true);
                 startStopBtn.setText("Stop");
