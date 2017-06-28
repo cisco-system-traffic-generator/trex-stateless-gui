@@ -36,15 +36,15 @@
                    HBox.hgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="number"
-                             maxWidth="100.0"
-                             minWidth="40.0"
-                             text="#" />
+                             maxWidth="45.0"
+                             minWidth="45.0"
+                             text="No." />
                 <TableColumn fx:id="time"
-                             maxWidth="140.0"
-                             minWidth="140.0"
+                             maxWidth="95.0"
+                             minWidth="55.0"
                              text="Time" />
                 <TableColumn fx:id="port"
-                             maxWidth="100.0"
+                             maxWidth="40.0"
                              minWidth="40.0"
                              text="Port" />
                 <TableColumn fx:id="mode"
@@ -61,15 +61,15 @@
                              prefWidth="140.0"
                              text="Source" />
                 <TableColumn fx:id="type"
-                             maxWidth="100.0"
-                             minWidth="100.0"
+                             maxWidth="45.0"
+                             minWidth="45.0"
                              text="Type" />
                 <TableColumn fx:id="length"
                              maxWidth="80.0"
                              minWidth="80.0"
                              text="Length" />
                 <TableColumn fx:id="info"
-                             minWidth="80.0"
+                             minWidth="500.0"
                              maxWidth="Infinity"
                              text="Info" />
             </columns>
