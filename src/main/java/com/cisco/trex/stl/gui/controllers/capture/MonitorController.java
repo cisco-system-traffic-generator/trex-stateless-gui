@@ -4,23 +4,35 @@ import com.cisco.trex.stateless.model.capture.CapturedPkt;
 import com.cisco.trex.stl.gui.models.CapturedPktModel;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureService;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
+import com.exalttech.trex.ui.models.datastore.Preferences;
 import com.exalttech.trex.util.Initialization;
+import com.exalttech.trex.util.PreferencesManager;
+import com.exalttech.trex.util.files.FileManager;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import org.apache.log4j.Logger;
+import org.pcap4j.core.*;
 import org.pcap4j.packet.*;
 import org.pcap4j.packet.namednumber.ArpOperation;
+import org.pcap4j.packet.namednumber.DataLinkType;
 import org.pcap4j.packet.namednumber.EtherType;
 import org.pcap4j.packet.namednumber.IpNumber;
+import org.testng.util.Strings;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
 
 public class MonitorController extends BorderPane {
+
+    public static final String TMP_PKTS_PCAP_FILE = "tmp-pkts.pcap";
+    private static Logger LOG = Logger.getLogger(MonitorController  .class);
 
     @FXML
     private Button startStopBtn;
@@ -30,6 +42,9 @@ public class MonitorController extends BorderPane {
     
     @FXML
     private Button clearBtn;
+    
+    @FXML
+    private Button startWSBtn;
     
     @FXML
     private PortFilterController portFilter;
@@ -87,8 +102,67 @@ public class MonitorController extends BorderPane {
         
         startStopBtn.setOnAction(this::handleStartStopMonitorAction);
         clearBtn.setOnAction(this::handleClearMonitorAction);
+        startWSBtn.setOnAction(this::handleOpenWireSharkAction);
+        
     }
 
+    private void handleOpenWireSharkAction(ActionEvent actionEvent) {
+
+        Preferences preferences = PreferencesManager.getInstance().getPreferences();
+
+        if (preferences == null) {
+            showError("Failed to get Wireshark executable location from Preferences. Please check Preferences values.");
+            return;
+        }
+        String wireSharkLocation = preferences.getWireSharkLocation();
+        if (!checkWiresharkLocation(wireSharkLocation)) {
+            showError("Failed to initialize Wireshark executable. Please check it's location in Preferences.");
+            return;
+        }
+        
+        if (capturedPkts.getItems().size() == 0) {
+            showError("Zero packets has been captured. Need at least one to open WireShark.");
+            return;
+        }
+        String fileName = FileManager.getLocalFilePath()+TMP_PKTS_PCAP_FILE;
+        try{
+            PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
+            PcapDumper dumper = handle.dumpOpen(fileName);
+            capturedPkts.getItems().stream()
+                                   .map(row -> toEtherPkt(row.getBytes()))
+                                   .forEach(ethPkt -> {
+                                       try {
+                                           dumper.dump(ethPkt);
+                                       } catch (NotOpenException e) {
+                                           LOG.error("Unable to dump pkt.", e);
+                                       }
+                                   });
+            dumper.close();
+            handle.close();
+
+            Process exec = Runtime.getRuntime().exec(new String[]{wireSharkLocation, "-r", fileName});
+        } catch (PcapNativeException | NotOpenException e) {
+            LOG.error("Unable to save temp pcap file.", e);
+        } catch (IOException e) {
+            LOG.error("Unable to open WireShark.", e);
+        }
+    }
+
+    private boolean checkWiresharkLocation(String filename) {
+        return !Strings.isNullOrEmpty(filename) && new File(filename).exists();
+    }
+
+    private EthernetPacket toEtherPkt(byte[] pkt) {
+        EthernetPacket ethPkt = null;
+        try {
+            ethPkt = EthernetPacket.newPacket(pkt, 0, pkt.length);
+        } catch (IllegalRawDataException e) {
+            LOG.error("Save PCAP. Unable to parse pkt from server.", e);
+            return null;
+        }
+        return ethPkt;
+    }
+    
     private void handleOnPktsReceived(WorkerStateEvent workerStateEvent) {
         if (starTs == 0) {
             starTs = pktCaptureService.getValue().getStartTimeStamp();
@@ -171,7 +245,8 @@ public class MonitorController extends BorderPane {
                                         (String) info.get("src"),
                                         headers.peek(),
                                         pktBin.length,
-                                        (String) info.get("info"));
+                                        (String) info.get("info"),
+                                        pktBin);
         } catch (Exception e) {
             return null;
         }
