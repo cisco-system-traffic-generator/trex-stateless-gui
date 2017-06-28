@@ -8,9 +8,7 @@ import com.exalttech.trex.util.Initialization;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.pcap4j.packet.*;
 import org.pcap4j.packet.namednumber.ArpOperation;
@@ -70,8 +68,6 @@ public class MonitorController extends BorderPane {
     
     private double starTs = 0;
     
-    private Map<Integer, Double> prevPktTs = new HashMap<>();
-
     private int monitorId = 0;
     
     public MonitorController() {
@@ -115,8 +111,16 @@ public class MonitorController extends BorderPane {
                 portFilter.setDisable(false);
                 monitorId = 0;
             } else {
+                List<Integer> rxPorts = portFilter.getRxPorts();
+                List<Integer> txPorts = portFilter.getTxPorts();
+                
+                if (rxPorts.isEmpty() && txPorts.isEmpty()) {
+                    showError("Zero ports selected. To capture packets please specify ports.");
+                    return;
+                }
+                
                 pktCaptureService.reset();
-                monitorId = pktCaptureService.startMonitor(portFilter.getRxPorts(), portFilter.getTxPorts());
+                monitorId = pktCaptureService.startMonitor(rxPorts, txPorts);
                 portFilter.setDisable(true);
                 startStopBtn.setText("Stop");
             }
@@ -159,10 +163,7 @@ public class MonitorController extends BorderPane {
                 info = parseIP(headers, (IpV6Packet) etherPkt.getPayload());
             }
             
-            prevPktTs.computeIfAbsent(pkt.getPort(), val -> pkt.getTimeStamp());
-            
-            Double time = abs(prevPktTs.get(pkt.getPort()) - pkt.getTimeStamp());
-            prevPktTs.put(pkt.getPort(), pkt.getTimeStamp());
+            Double time = abs(starTs - pkt.getTimeStamp());
             
             return new CapturedPktModel(pkt.getIndex(),
                                         pkt.getPort(),
@@ -271,5 +272,11 @@ public class MonitorController extends BorderPane {
         String info = String.format("Source port: %s Destination port: %s", pkt.getHeader().getSrcPort().toString(), pkt.getHeader().getDstPort().toString());
         result.put("info", info);
         return result;
+    }
+
+    private void showError(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+        alert.showAndWait();
+
     }
 }
