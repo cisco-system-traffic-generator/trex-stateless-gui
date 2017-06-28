@@ -28,6 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -47,8 +48,12 @@ public class PreferencesController extends DialogView implements Initializable {
     TextField savedLocation;
     @FXML
     TextField templatesLocation;
+    @FXML
+    TextField wiresharkLocation;
 
-    DirectoryChooser chooser;
+    DirectoryChooser chooser = new DirectoryChooser();
+    
+    FileChooser fileChooser = new FileChooser();
 
     /**
      * Initializes the controller class.
@@ -58,7 +63,6 @@ public class PreferencesController extends DialogView implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        chooser = new DirectoryChooser();
         // initialize locations
         loadPreferences();
     }
@@ -80,7 +84,7 @@ public class PreferencesController extends DialogView implements Initializable {
      */
     private void savePreferences(Stage current) {
         // update prefernces file
-        Preferences pref = new Preferences(loadLocation.getText(), savedLocation.getText(), templatesLocation.getText());
+        Preferences pref = new Preferences(loadLocation.getText(), savedLocation.getText(), templatesLocation.getText(), wiresharkLocation.getText());
         
         PreferencesManager.getInstance().savePreferences(pref);
 
@@ -93,6 +97,7 @@ public class PreferencesController extends DialogView implements Initializable {
     private void loadPreferences() {
         Preferences pref = PreferencesManager.getInstance().getPreferences();
         if (pref != null) {
+            wiresharkLocation.setText(pref.getWireSharkLocation());
             loadLocation.setText(pref.getLoadLocation());
             savedLocation.setText(pref.getSavedLocation());
             templatesLocation.setText(pref.getTemplatesLocation());
@@ -151,6 +156,24 @@ public class PreferencesController extends DialogView implements Initializable {
         File location = chooser.showDialog(((Button) (event.getSource())).getScene().getWindow());
         if (location != null) {
             templatesLocation.setText(location.getAbsolutePath());
+        }
+    }
+
+    /**
+     * Select save location choose button click handler
+     *
+     * @param event
+     */
+    @FXML
+    public void selectWireSharkLocation(ActionEvent event) {
+        fileChooser.setTitle("Wireshark executable");
+        File templatesDirectory = new File(wiresharkLocation.getText());
+        if (!Util.isNullOrEmpty(wiresharkLocation.getText()) && templatesDirectory.exists()) {
+            fileChooser.setInitialDirectory(new File(wiresharkLocation.getText()));
+        }
+        File location = fileChooser.showOpenDialog(((Button) (event.getSource())).getScene().getWindow());
+        if (location != null) {
+            wiresharkLocation.setText(location.getAbsolutePath());
         }
     }
 
