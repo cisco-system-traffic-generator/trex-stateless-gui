@@ -41,12 +41,12 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
         };
     }
     
-    public boolean startMonitor(List<Integer> rx, List<Integer> tx) throws PktCaptureServiceException {
+    public int startMonitor(List<Integer> rx, List<Integer> tx) throws PktCaptureServiceException {
         TRexClientResult<CaptureMonitor> result = tRexClient.captureMonitorStart(rx, tx);
         guardNotFailed(result);
         currentActiveMonitorId = result.get().getCaptureId();
         start();
-        return true;
+        return currentActiveMonitorId;
     }
 
     synchronized public void stopMonitor() {
