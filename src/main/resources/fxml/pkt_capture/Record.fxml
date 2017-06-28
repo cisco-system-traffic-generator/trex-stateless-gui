@@ -19,8 +19,10 @@
             <Label text="Limit:" />
             <TextField fx:id="limit"
                        text="1000" />
-            <Button styleClass="normalButton"
-                    text="Add Recorder"/>
+            
+            <Button fx:id="startRecorderBtn"
+                    styleClass="normalButton"
+                    text="Start Recorder"/>
         </HBox>
     </top>
     <center>
@@ -30,12 +32,19 @@
                 <padding>
                     <Insets top="15" />
                 </padding>
-                <Button styleClass="normalButton"
+                
+                <Button fx:id="exportBtn"
+                        styleClass="normalButton"
+                        text="Export to PCAP" />
+                
+                <Button fx:id="stopRecorderBtn"
+                        styleClass="normalButton"
                         text="Stop"/>
-                <Button styleClass="normalButton"
-                        text="Save"/>
-                <Button styleClass="normalButton"
+                
+                <Button fx:id="removeRecorderBtn"
+                        styleClass="normalButton"
                         text="Remove "/>
+                
             </HBox>
             <HBox alignment="CENTER_LEFT"
                   spacing="10">
@@ -60,16 +69,16 @@
                                      maxWidth="130.0"
                                      minWidth="130.0"
                                      text="Bytes" />
+
+                        <TableColumn fx:id="rxFilter"
+                                     minWidth="130.0"
+                                     maxWidth="Infinity"
+                                     text="RX Ports" />
                         
                         <TableColumn fx:id="txFilter"
                                      maxWidth="130.0"
                                      minWidth="130.0"
                                      text="TX Ports" />
-                        
-                        <TableColumn fx:id="rxFilter"
-                                     minWidth="130.0"
-                                     maxWidth="Infinity"
-                                     text="RX Ports" />
                     </columns>
                 </TableView>
             </HBox>
