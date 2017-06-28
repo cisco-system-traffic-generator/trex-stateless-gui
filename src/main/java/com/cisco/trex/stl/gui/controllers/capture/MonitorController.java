@@ -25,10 +25,11 @@ import static java.lang.Math.abs;
 public class MonitorController extends BorderPane {
 
     @FXML
-    private Button startBtn;
+    private Button startStopBtn;
     
     @FXML
     private Button stopBtn;
+    
     @FXML
     private Button clearBtn;
     
@@ -68,8 +69,10 @@ public class MonitorController extends BorderPane {
     private PktCaptureService pktCaptureService = new PktCaptureService();
     
     private double starTs = 0;
-    private Map<Integer, Double> prevPktTs = new HashMap<>();
     
+    private Map<Integer, Double> prevPktTs = new HashMap<>();
+
+    private int monitorId = 0;
     
     public MonitorController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Monitor.fxml");
@@ -86,8 +89,7 @@ public class MonitorController extends BorderPane {
         
         pktCaptureService.setOnSucceeded(this::handleOnPktsReceived);
         
-        startBtn.setOnAction(this::handleStartMonitorAction);
-        stopBtn.setOnAction(this::handleStopMonitorAction);
+        startStopBtn.setOnAction(this::handleStartStopMonitorAction);
         clearBtn.setOnAction(this::handleClearMonitorAction);
     }
 
@@ -103,19 +105,25 @@ public class MonitorController extends BorderPane {
         }
     }
 
-    public void handleStartMonitorAction(ActionEvent event) {
+    public void handleStartStopMonitorAction(ActionEvent event) {
         try {
-            pktCaptureService.reset();
-            pktCaptureService.startMonitor(portFilter.getRxPorts(), portFilter.getTxPorts());
+            if(monitorId != 0) {
+                pktCaptureService.stopMonitor();
+                pktCaptureService.cancel();
+                starTs = 0;
+                startStopBtn.setText("Start");
+                portFilter.setDisable(false);
+                monitorId = 0;
+            } else {
+                pktCaptureService.reset();
+                monitorId = pktCaptureService.startMonitor(portFilter.getRxPorts(), portFilter.getTxPorts());
+                portFilter.setDisable(true);
+                startStopBtn.setText("Stop");
+            }
+            
         } catch (PktCaptureServiceException e) {
             // TODO: logger
         }
-    }
-    
-    public void handleStopMonitorAction(ActionEvent event) {
-        pktCaptureService.stopMonitor();
-        pktCaptureService.cancel();
-        starTs = 0;
     }
     
     public void handleClearMonitorAction(ActionEvent event) {
