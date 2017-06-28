@@ -4,13 +4,16 @@ import com.cisco.trex.stateless.TRexClient;
 import com.cisco.trex.stateless.model.TRexClientResult;
 import com.cisco.trex.stateless.model.capture.CaptureInfo;
 import com.cisco.trex.stateless.model.capture.CaptureMonitor;
+import com.cisco.trex.stateless.model.capture.CaptureMonitorStop;
 import com.cisco.trex.stateless.model.capture.CapturedPackets;
 import com.exalttech.trex.core.ConnectionManager;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PktCaptureService extends ScheduledService<CapturedPackets> {
     private static Logger LOG = Logger.getLogger(PktCaptureService.class);
@@ -51,6 +54,15 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
         tRexClient.captureMonitorRemove(currentActiveMonitorId);
     }
 
+    public CaptureMonitorStop stopRecorder(int caputureId) throws PktCaptureServiceException {
+        TRexClientResult<CaptureMonitorStop> result = tRexClient.captureMonitorStop(caputureId);
+        if (result.isFailed()) {
+            LOG.error("Unable to stop monitor. "+result.getError());
+            throw new PktCaptureServiceException(result.getError());
+        }
+        return result.get();
+    }
+
     synchronized public CapturedPackets fetchCapturedPkts(int captureId, int chunkSize) throws PktCaptureServiceException {
         TRexClientResult<CapturedPackets> result = tRexClient.captureFetchPkts(captureId, chunkSize);
         guardNotFailed(result);
@@ -63,9 +75,14 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
         return result.get();
     }
     
-    public void getActiveCaptures() throws PktCaptureServiceException {
+    public boolean removeRecorder(int recorderId) {
+        return tRexClient.captureMonitorRemove(recorderId);
+    }
+    
+    public List<CaptureInfo> getActiveCaptures() throws PktCaptureServiceException {
         TRexClientResult<CaptureInfo[]> result = tRexClient.getActiveCaptures();
         guardNotFailed(result);
+        return Arrays.stream(result.get()).collect(Collectors.toList());
     }
     
     private void guardNotFailed(TRexClientResult<?> result) throws PktCaptureServiceException {
