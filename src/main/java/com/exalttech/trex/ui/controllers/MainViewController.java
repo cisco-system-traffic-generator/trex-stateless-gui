@@ -939,7 +939,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     "Packet Capture",
                     50,
                     10,
-                    1000,
+                    1200,
                     700,
                     true,
                     TrexApp.getPrimaryStage()
@@ -1400,7 +1400,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void openPreferencesWindow() {
         try {
-            DialogWindow statsWindow = new DialogWindow("Preferences.fxml", "Preferences", 100, 50, false, TrexApp.getPrimaryStage());
+            DialogWindow statsWindow = new DialogWindow("Preferences.fxml", "Preferences", 100, 50, true, TrexApp.getPrimaryStage());
             statsWindow.show(true);
         } catch (IOException ex) {
             LOG.error("Error opening preferences window", ex);
