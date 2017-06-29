@@ -16,6 +16,7 @@ import javafx.scene.layout.BorderPane;
 import org.apache.log4j.Logger;
 import org.pcap4j.core.*;
 import org.pcap4j.packet.*;
+import org.pcap4j.packet.ArpPacket.ArpHeader;
 import org.pcap4j.packet.namednumber.ArpOperation;
 import org.pcap4j.packet.namednumber.DataLinkType;
 import org.pcap4j.packet.namednumber.EtherType;
@@ -223,7 +224,9 @@ public class MonitorController extends BorderPane {
             EtherType l3Type = etherPkt.getHeader().getType();
             if(l3Type.equals(EtherType.ARP)) {
                 headers.push("ARP");
-                info = parseARP((EthernetPacket) etherPkt.getPayload());
+                info.put("src", etherPkt.getHeader().getSrcAddr().toString());
+                info.put("dst", etherPkt.getHeader().getDstAddr().toString());
+                info.putAll(parseARP((ArpPacket) etherPkt.getPayload()));
             } else if (l3Type.equals(EtherType.DOT1Q_VLAN_TAGGED_FRAMES)) {
                 headers.push("Dot1Q");
                 info = parseDot1Q(headers, (Dot1qVlanTagPacket) etherPkt.getPayload());
@@ -233,6 +236,10 @@ public class MonitorController extends BorderPane {
             } else if (l3Type.equals(EtherType.IPV6)) {
                 headers.push("IPv6");
                 info = parseIP(headers, (IpV6Packet) etherPkt.getPayload());
+            } else {
+                info.put("dst", etherPkt.getHeader().getDstAddr().toString());
+                info.put("src", etherPkt.getHeader().getSrcAddr().toString());
+                info.put("info", "Unknown or malformed packet");
             }
             
             Double time = abs(starTs - pkt.getTimeStamp());
@@ -252,12 +259,10 @@ public class MonitorController extends BorderPane {
         }
     }
     
-    private Map<String, Object> parseARP(EthernetPacket pkt) {
+    private Map<String, Object> parseARP(ArpPacket pkt) {
         Map<String, Object> pktInfo = new HashMap<>();
 
-        pktInfo.put("src", pkt.getHeader().getSrcAddr().toString());
-        pktInfo.put("dst", pkt.getHeader().getDstAddr().toString());
-        ArpPacket.ArpHeader arp = (ArpPacket.ArpHeader) pkt.getPayload().getHeader();
+        ArpHeader arp = pkt.getHeader();
         if (arp.getOperation().equals(ArpOperation.REQUEST)) {
             pktInfo.put("info", String.format("[Request] Who has %s tell %s", arp.getDstProtocolAddr().toString().substring(1), arp.getSrcProtocolAddr().toString().substring(1)));
         } else if (arp.getOperation().equals(ArpOperation.REPLY)) {
