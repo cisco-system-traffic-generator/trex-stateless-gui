@@ -59,8 +59,8 @@ dependencies {
 
     compile project(':trex-packet-editor')
     compile project(':trex-java-sdk')
-    compile group: 'org.pcap4j', name: 'pcap4j-core', version:'1.6.1'
-    compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version:'1.6.1'
+    compile group: 'org.pcap4j', name: 'pcap4j-core', version:'1.7.0'
+    compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version:'1.7.0'
     compile group: 'com.aquafx-project', name: 'aquafx', version:'0.1'
     compile group: 'com.guigarage', name: 'flatter', version:'0.7'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version:'2.6.0'
