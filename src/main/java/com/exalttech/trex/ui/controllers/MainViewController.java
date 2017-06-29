@@ -142,6 +142,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     ImageView serverStatusIcon;
     @FXML
     MenuItem statsMenuItem;
+    @FXML
+    MenuItem captureMenuItem;
 
     @FXML
     AnchorPane multiplierOptionContainer;
@@ -352,6 +354,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 connectDixconnectTooltip.setText("Disconnect from TRex server");
                 connectMenuItem.setText(DISCONNECT_MENU_ITEM_TITLE);
                 statsMenuItem.setDisable(false);
+                captureMenuItem.setDisable(false);
                 clearCache.setDisable(false);
                 logsContainer.setDisable(false);
                 copyToClipboardBtn.setDisable(false);
@@ -570,6 +573,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
         connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
         statsMenuItem.setDisable(true);
+        captureMenuItem.setDisable(true);
         dashboardIcon.setDisable(true);
         serverStatusIcon.setImage(new Image("/icons/offline.png"));
         serverStatusLabel.setText("Disconnected");
@@ -939,7 +943,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     "Packet Capture",
                     50,
                     10,
-                    1000,
+                    1200,
                     700,
                     true,
                     TrexApp.getPrimaryStage()
@@ -1400,7 +1404,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void openPreferencesWindow() {
         try {
-            DialogWindow statsWindow = new DialogWindow("Preferences.fxml", "Preferences", 100, 50, false, TrexApp.getPrimaryStage());
+            DialogWindow statsWindow = new DialogWindow("Preferences.fxml", "Preferences", 100, 50, true, TrexApp.getPrimaryStage());
             statsWindow.show(true);
         } catch (IOException ex) {
             LOG.error("Error opening preferences window", ex);

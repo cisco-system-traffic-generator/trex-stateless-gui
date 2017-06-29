@@ -4,19 +4,27 @@ import com.cisco.trex.stateless.model.capture.CapturedPkt;
 import com.cisco.trex.stl.gui.models.CapturedPktModel;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureService;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
+import com.exalttech.trex.ui.models.datastore.Preferences;
 import com.exalttech.trex.util.Initialization;
+import com.exalttech.trex.util.PreferencesManager;
+import com.exalttech.trex.util.files.FileManager;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import org.apache.log4j.Logger;
+import org.pcap4j.core.*;
 import org.pcap4j.packet.*;
+import org.pcap4j.packet.ArpPacket.ArpHeader;
 import org.pcap4j.packet.namednumber.ArpOperation;
+import org.pcap4j.packet.namednumber.DataLinkType;
 import org.pcap4j.packet.namednumber.EtherType;
 import org.pcap4j.packet.namednumber.IpNumber;
+import org.testng.util.Strings;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,13 +32,20 @@ import static java.lang.Math.abs;
 
 public class MonitorController extends BorderPane {
 
+    public static final String TMP_PKTS_PCAP_FILE = "tmp-pkts.pcap";
+    private static Logger LOG = Logger.getLogger(MonitorController  .class);
+
     @FXML
-    private Button startBtn;
+    private Button startStopBtn;
     
     @FXML
     private Button stopBtn;
+    
     @FXML
     private Button clearBtn;
+    
+    @FXML
+    private Button startWSBtn;
     
     @FXML
     private PortFilterController portFilter;
@@ -68,8 +83,8 @@ public class MonitorController extends BorderPane {
     private PktCaptureService pktCaptureService = new PktCaptureService();
     
     private double starTs = 0;
-    private Map<Integer, Double> prevPktTs = new HashMap<>();
     
+    private int monitorId = 0;
     
     public MonitorController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Monitor.fxml");
@@ -86,36 +101,107 @@ public class MonitorController extends BorderPane {
         
         pktCaptureService.setOnSucceeded(this::handleOnPktsReceived);
         
-        startBtn.setOnAction(this::handleStartMonitorAction);
-        stopBtn.setOnAction(this::handleStopMonitorAction);
+        startStopBtn.setOnAction(this::handleStartStopMonitorAction);
         clearBtn.setOnAction(this::handleClearMonitorAction);
+        startWSBtn.setOnAction(this::handleOpenWireSharkAction);
+        
     }
 
-    private void handleOnPktsReceived(WorkerStateEvent workerStateEvent) {
-        synchronized (capturedPkts) {
-            if (starTs == 0) {
-                starTs = pktCaptureService.getValue().getStartTimeStamp();
-            }
-            pktCaptureService.getValue().getPkts().stream()
-                                        .map(this::toModel)
-                                        .filter(Objects::nonNull)
-                                        .forEach(pktModel -> capturedPkts.getItems().add(pktModel));
+    private void handleOpenWireSharkAction(ActionEvent actionEvent) {
+
+        Preferences preferences = PreferencesManager.getInstance().getPreferences();
+
+        if (preferences == null) {
+            showError("Failed to get Wireshark executable location from Preferences. Please check Preferences values.");
+            return;
+        }
+        String wireSharkLocation = preferences.getWireSharkLocation();
+        if (!checkWiresharkLocation(wireSharkLocation)) {
+            showError("Failed to initialize Wireshark executable. Please check it's location in Preferences.");
+            return;
+        }
+        
+        if (capturedPkts.getItems().size() == 0) {
+            showError("Zero packets has been captured. Need at least one to open WireShark.");
+            return;
+        }
+        String fileName = FileManager.getLocalFilePath()+TMP_PKTS_PCAP_FILE;
+        try{
+            PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
+            PcapDumper dumper = handle.dumpOpen(fileName);
+            capturedPkts.getItems().stream()
+                                   .map(row -> toEtherPkt(row.getBytes()))
+                                   .forEach(ethPkt -> {
+                                       try {
+                                           dumper.dump(ethPkt);
+                                       } catch (NotOpenException e) {
+                                           LOG.error("Unable to dump pkt.", e);
+                                       }
+                                   });
+            dumper.close();
+            handle.close();
+
+            Process exec = Runtime.getRuntime().exec(new String[]{wireSharkLocation, "-r", fileName});
+        } catch (PcapNativeException | NotOpenException e) {
+            LOG.error("Unable to save temp pcap file.", e);
+        } catch (IOException e) {
+            LOG.error("Unable to open WireShark.", e);
         }
     }
 
-    public void handleStartMonitorAction(ActionEvent event) {
+    private boolean checkWiresharkLocation(String filename) {
+        return !Strings.isNullOrEmpty(filename) && new File(filename).exists();
+    }
+
+    private EthernetPacket toEtherPkt(byte[] pkt) {
+        EthernetPacket ethPkt = null;
         try {
-            pktCaptureService.reset();
-            pktCaptureService.startMonitor(portFilter.getRxPorts(), portFilter.getTxPorts());
-        } catch (PktCaptureServiceException e) {
-            // TODO: logger
+            ethPkt = EthernetPacket.newPacket(pkt, 0, pkt.length);
+        } catch (IllegalRawDataException e) {
+            LOG.error("Save PCAP. Unable to parse pkt from server.", e);
+            return null;
         }
+        return ethPkt;
     }
     
-    public void handleStopMonitorAction(ActionEvent event) {
-        pktCaptureService.stopMonitor();
-        pktCaptureService.cancel();
-        starTs = 0;
+    private void handleOnPktsReceived(WorkerStateEvent workerStateEvent) {
+        if (starTs == 0) {
+            starTs = pktCaptureService.getValue().getStartTimeStamp();
+        }
+        pktCaptureService.getValue().getPkts().stream()
+                .map(this::toModel)
+                .filter(Objects::nonNull)
+                .forEach(pktModel -> capturedPkts.getItems().add(pktModel));
+    }
+
+    synchronized public void handleStartStopMonitorAction(ActionEvent event) {
+        try {
+            if(monitorId != 0) {
+                pktCaptureService.stopMonitor();
+                pktCaptureService.cancel();
+                startStopBtn.setText("Start");
+                portFilter.setDisable(false);
+                monitorId = 0;
+            } else {
+                List<Integer> rxPorts = portFilter.getRxPorts();
+                List<Integer> txPorts = portFilter.getTxPorts();
+                
+                if (rxPorts.isEmpty() && txPorts.isEmpty()) {
+                    showError("Zero ports selected. To capture packets please specify ports.");
+                    return;
+                }
+                
+                pktCaptureService.reset();
+                starTs = 0;
+                monitorId = pktCaptureService.startMonitor(rxPorts, txPorts);
+                portFilter.setDisable(true);
+                startStopBtn.setText("Stop");
+            }
+            
+        } catch (PktCaptureServiceException e) {
+            LOG.error("Unable to start/stop monitor.", e);
+            showError("Unalble to Start or Stop monitor.");
+        }
     }
     
     public void handleClearMonitorAction(ActionEvent event) {
@@ -139,7 +225,9 @@ public class MonitorController extends BorderPane {
             EtherType l3Type = etherPkt.getHeader().getType();
             if(l3Type.equals(EtherType.ARP)) {
                 headers.push("ARP");
-                info = parseARP((EthernetPacket) etherPkt.getPayload());
+                info.put("src", etherPkt.getHeader().getSrcAddr().toString());
+                info.put("dst", etherPkt.getHeader().getDstAddr().toString());
+                info.putAll(parseARP((ArpPacket) etherPkt.getPayload()));
             } else if (l3Type.equals(EtherType.DOT1Q_VLAN_TAGGED_FRAMES)) {
                 headers.push("Dot1Q");
                 info = parseDot1Q(headers, (Dot1qVlanTagPacket) etherPkt.getPayload());
@@ -149,12 +237,13 @@ public class MonitorController extends BorderPane {
             } else if (l3Type.equals(EtherType.IPV6)) {
                 headers.push("IPv6");
                 info = parseIP(headers, (IpV6Packet) etherPkt.getPayload());
+            } else {
+                info.put("dst", etherPkt.getHeader().getDstAddr().toString());
+                info.put("src", etherPkt.getHeader().getSrcAddr().toString());
+                info.put("info", "Unknown or malformed packet");
             }
             
-            prevPktTs.computeIfAbsent(pkt.getPort(), val -> pkt.getTimeStamp());
-            
-            Double time = abs(prevPktTs.get(pkt.getPort()) - pkt.getTimeStamp());
-            prevPktTs.put(pkt.getPort(), pkt.getTimeStamp());
+            Double time = abs(starTs - pkt.getTimeStamp());
             
             return new CapturedPktModel(pkt.getIndex(),
                                         pkt.getPort(),
@@ -164,18 +253,17 @@ public class MonitorController extends BorderPane {
                                         (String) info.get("src"),
                                         headers.peek(),
                                         pktBin.length,
-                                        (String) info.get("info"));
+                                        (String) info.get("info"),
+                                        pktBin);
         } catch (Exception e) {
             return null;
         }
     }
     
-    private Map<String, Object> parseARP(EthernetPacket pkt) {
+    private Map<String, Object> parseARP(ArpPacket pkt) {
         Map<String, Object> pktInfo = new HashMap<>();
 
-        pktInfo.put("src", pkt.getHeader().getSrcAddr().toString());
-        pktInfo.put("dst", pkt.getHeader().getDstAddr().toString());
-        ArpPacket.ArpHeader arp = (ArpPacket.ArpHeader) pkt.getPayload().getHeader();
+        ArpHeader arp = pkt.getHeader();
         if (arp.getOperation().equals(ArpOperation.REQUEST)) {
             pktInfo.put("info", String.format("[Request] Who has %s tell %s", arp.getDstProtocolAddr().toString().substring(1), arp.getSrcProtocolAddr().toString().substring(1)));
         } else if (arp.getOperation().equals(ArpOperation.REPLY)) {
@@ -263,5 +351,11 @@ public class MonitorController extends BorderPane {
         String info = String.format("Source port: %s Destination port: %s", pkt.getHeader().getSrcPort().toString(), pkt.getHeader().getDstPort().toString());
         result.put("info", info);
         return result;
+    }
+
+    private void showError(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
+        alert.showAndWait();
+
     }
 }

@@ -32,7 +32,7 @@ public class Preferences {
     private String loadLocation = "";
     private String savedLocation = "";
     private String templatesLocation = "";
-    private boolean javaConsoleLogging = true;
+    private String wireSharkLocation = "";
 
     /**
      *
@@ -47,10 +47,11 @@ public class Preferences {
      * @param savedLocation
      * @param templatesLocation
      */
-    public Preferences(String loadLocation, String savedLocation, String templatesLocation) {
+    public Preferences(String loadLocation, String savedLocation, String templatesLocation, String wireSharkLocation) {
         this.loadLocation = loadLocation;
         this.savedLocation = savedLocation;
         this.templatesLocation = templatesLocation;
+        this.wireSharkLocation = wireSharkLocation;
     }
 
     /**
@@ -100,4 +101,12 @@ public class Preferences {
         this.templatesLocation = templatesLocation;
     }
 
+    @XmlElement(name = "wireshark_location")
+    public String getWireSharkLocation() {
+        return wireSharkLocation;
+    }
+
+    public void setWireSharkLocation(String wireSharkLocation) {
+        this.wireSharkLocation = wireSharkLocation;
+    }
 }

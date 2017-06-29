@@ -1,6 +1,11 @@
 package com.cisco.trex.stl.gui.models;
 
-import javafx.beans.property.*;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+import java.text.DecimalFormat;
 
 public class CapturedPktModel {
     private IntegerProperty number = new SimpleIntegerProperty();
@@ -12,19 +17,26 @@ public class CapturedPktModel {
     private StringProperty type = new SimpleStringProperty();
     private IntegerProperty length = new SimpleIntegerProperty();
     private StringProperty info = new SimpleStringProperty();
-
-    public CapturedPktModel(Integer number, Integer port, String mode, Double time, String dst, String src, String type, Integer length, String info) {
+    private byte[] bytes;
+    private static DecimalFormat decimalFormatter = new DecimalFormat("####.##");
+    
+    public CapturedPktModel(Integer number, Integer port, String mode, Double time, String dst, String src, String type, Integer length, String info, byte[] bytes) {
         this.number.set(number);
         this.port.set(port);
         this.mode.set(mode);
-        this.time.set(String.format("%f", time));
+        this.time.set(decimalFormatter.format(time)+" s.");
         this.dst.set(dst);
         this.src.set(src);
         this.type.set(type);
         this.length.set(length);
         this.info.set(info);
+        this.bytes = bytes; 
     }
 
+    public byte[] getBytes() {
+        return bytes;
+    }
+    
     public int getNumber() {
         return number.get();
     }
