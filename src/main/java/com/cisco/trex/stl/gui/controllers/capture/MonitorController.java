@@ -199,7 +199,8 @@ public class MonitorController extends BorderPane {
             }
             
         } catch (PktCaptureServiceException e) {
-            // TODO: logger
+            LOG.error("Unable to start/stop monitor.", e);
+            showError("Unalble to Start or Stop monitor.");
         }
     }
     
