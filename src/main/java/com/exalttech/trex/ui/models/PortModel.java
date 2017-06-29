@@ -7,8 +7,8 @@ import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
+import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableBooleanValue;
 import org.testng.util.Strings;
 
 import java.util.HashMap;
@@ -192,9 +192,11 @@ public class PortModel {
             }
             com.cisco.trex.stateless.model.PortStatus status = trexClient.serviceMode(portIndex, newValue);
             if (!newValue.equals(status.service)) {
-                guiLogger.appendText(LogType.ERROR, "Filed to set service mode for port " + portIndex);
+                guiLogger.appendText(LogType.ERROR, "Filed to change service mode for port " + portIndex+". Check active capturing mode or enabled rx queues.");
+                Platform.runLater(() -> serviceModeProperty.set(oldValue));
+            } else {
+                port.setService(status.service);
             }
-            port.setService(status.service);
         });
     }
 
