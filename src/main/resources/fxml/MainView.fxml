@@ -56,12 +56,9 @@
                 <Menu mnemonicParsing="false" text="Capture">
                     <MenuItem fx:id="captureMenuItem"
                               mnemonicParsing="false"
-                              text="Open"
+                              disable="true"
+                              text="Open Monitor"
                               onAction="#handleCaptureItemClicked"/>
-                    <MenuItem fx:id="captureSettingsMenuItem"
-                              mnemonicParsing="false"
-                              text="Settings"
-                              onAction="#handleCaptureSettingsItemClicked"/>
                 </Menu>
                 <Menu mnemonicParsing="false"
                       text="Help">
