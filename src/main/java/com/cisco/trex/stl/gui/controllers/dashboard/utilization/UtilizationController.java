@@ -74,7 +74,7 @@ public class UtilizationController extends AnchorPane {
     private UtilizationStorage.UtilizationChangedListener utilizationChangedListener = this::render;
 
     public UtilizationController() {
-        Initialization.initializeFXML(this, "/fxml/Dashboard/utilization/Utilization.fxml");
+        Initialization.initializeFXML(this, "/fxml/dashboard/utilization/Utilization.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
 
         toggleGroupMode.selectedToggleProperty().addListener(this::typeChanged);
