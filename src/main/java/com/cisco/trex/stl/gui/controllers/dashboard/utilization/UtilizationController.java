@@ -1,27 +1,40 @@
 package com.cisco.trex.stl.gui.controllers.dashboard.utilization;
 
+import com.cisco.trex.stateless.model.stats.Utilization;
+import com.cisco.trex.stl.gui.models.UtilizationCPUModel;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
+import com.cisco.trex.stl.gui.storages.UtilizationStorage;
+import com.exalttech.trex.util.Initialization;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
 
-import com.cisco.trex.stl.gui.storages.UtilizationStorage;
-import com.cisco.trex.stl.gui.storages.StatsStorage;
-
-import com.exalttech.trex.util.Initialization;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 public class UtilizationController extends AnchorPane {
     @FXML
     private AnchorPane root;
+    
     @FXML
     private ToggleGroup toggleGroupMode;
+    
     @FXML
-    private GridPane table;
+    private BorderPane cpuUtil;
+    
+    @FXML
+    private TableView<UtilizationCPUModel> cpuUtilTable;
+    
+    private boolean cpuUtilTableInitialized = false;
+    
+    @FXML
+    private BorderPane memoryUtil;
 
     private boolean isActive = false;
     private UtilizationStorage.UtilizationChangedListener utilizationChangedListener = this::render;
@@ -73,10 +86,59 @@ public class UtilizationController extends AnchorPane {
     }
 
     private void renderCPU() {
-        table.getChildren().clear();
+        UtilizationStorage utilizationStorage = StatsStorage.getInstance().getUtilizationStorage();
+        synchronized (utilizationStorage.getDataLock()) {
+            List<UtilizationCPUModel> cpuUtilsModels = utilizationStorage.getCpuUtilsModels();
+            if (!cpuUtilTableInitialized) {
+                initCPUUtilTable(cpuUtilsModels);
+                cpuUtilTableInitialized = true;
+            }
+            cpuUtilTable.getItems().clear();
+            cpuUtilTable.getItems().addAll(cpuUtilsModels);
+            
+        }
+    }
+
+    private void initCPUUtilTable(List<UtilizationCPUModel> cpuUtilsModels) {
+        if (cpuUtilsModels.isEmpty()) {
+            return;
+        }
+        UtilizationCPUModel model = cpuUtilsModels.get(0);
+        
+        TableColumn<UtilizationCPUModel, String> threadColumn = new TableColumn<>();
+        threadColumn.setText("Thread");
+        threadColumn.setCellValueFactory(cellData -> cellData.getValue().threadProperty());
+
+        TableColumn<UtilizationCPUModel, String> avgColumn = new TableColumn<>();
+        avgColumn.setText("Avg");
+        avgColumn.setCellValueFactory(cellData -> cellData.getValue().avgProperty().asString());
+
+        Iterator<IntegerProperty> iterator = model.getHistory().iterator();
+        iterator.next();
+        
+        TableColumn<UtilizationCPUModel, String> latestColumn = new TableColumn<>();
+        latestColumn.setText("Latest");
+        latestColumn.setCellValueFactory(cellData -> cellData.getValue().getHistory(0).asString());
+
+        cpuUtilTable.getColumns().addAll(threadColumn, avgColumn, latestColumn);
+        
+        for(int i = 1; i < model.getHistory().size(); i++) {
+            final int idx = i;
+            TableColumn<UtilizationCPUModel, String> historyColumn = new TableColumn<>();
+            historyColumn.setText(String.valueOf(-idx));
+            historyColumn.setCellValueFactory(cellData -> cellData.getValue().getHistory(idx).asString());
+            cpuUtilTable.getColumns().add(historyColumn);
+        }
+
+        
     }
 
     private void renderMbuf() {
-        table.getChildren().clear();
+        UtilizationStorage utilizationStorage = StatsStorage.getInstance().getUtilizationStorage();
+        synchronized (utilizationStorage.getDataLock()) {
+            Utilization utilization = utilizationStorage.getUtilization();
+            Map<String, Map<String, List<Integer>>> mbufStats = utilization.getMbufStats();
+            
+        }
     }
 }
