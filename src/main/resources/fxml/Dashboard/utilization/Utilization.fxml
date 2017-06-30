@@ -10,6 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 
 
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.TableView?>
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
          fx:id="root"
@@ -35,13 +37,25 @@
         </HBox>
         <ScrollPane styleClass="stats-table-container"
                     VBox.vgrow="ALWAYS">
-            <AnchorPane>
-                <GridPane fx:id="table"
-                          styleClass="statsTable"
-                          AnchorPane.topAnchor="5.0"
-                          AnchorPane.rightAnchor="5.0"
-                          AnchorPane.bottomAnchor="5.0"
-                          AnchorPane.leftAnchor="5.0"/>
+            <AnchorPane fx:id="utilizationContent" >
+                <BorderPane fx:id="cpuUtil"
+                            AnchorPane.topAnchor="5.0"
+                            AnchorPane.bottomAnchor="5.0"
+                            AnchorPane.leftAnchor="5.0"
+                            maxWidth="888">
+                    <center>
+                        <TableView fx:id="cpuUtilTable" />
+                    </center>
+                </BorderPane>
+                <BorderPane fx:id="memoryUtil"
+                            AnchorPane.topAnchor="5.0"
+                            AnchorPane.rightAnchor="5.0"
+                            AnchorPane.bottomAnchor="5.0"
+                            AnchorPane.leftAnchor="5.0">
+                    <center>
+                        
+                    </center>
+                </BorderPane>
             </AnchorPane>
         </ScrollPane>
     </VBox>
