@@ -35,10 +35,6 @@
                      AnchorPane.rightAnchor="0.0"
                      AnchorPane.topAnchor="5.0"
                      AnchorPane.bottomAnchor="0.0">
-                <Tab text="Utilization"
-                     onSelectionChanged="#handleTabChanged">
-                    <UtilizationController fx:id="utilization"/>
-                </Tab>
                 <Tab text="Ports"
                      onSelectionChanged="#handleTabChanged">
                     <PortsController fx:id="ports"/>
@@ -54,6 +50,10 @@
                 <Tab text="Charts"
                      onSelectionChanged="#handleTabChanged">
                     <ChartsController fx:id="charts"/>
+                </Tab>
+                <Tab text="Utilization"
+                     onSelectionChanged="#handleTabChanged">
+                    <UtilizationController fx:id="utilization"/>
                 </Tab>
             </TabPane>
             <Button fx:id="clearButton"
