@@ -79,6 +79,16 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>4.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna-platform</artifactId>
+            <version>4.4.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-packet-editor</artifactId>
             <version>a5151a7</version>
