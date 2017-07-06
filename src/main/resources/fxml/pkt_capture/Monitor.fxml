@@ -27,7 +27,7 @@
                     text="Clear"/>
             <Button fx:id="startWSBtn"
                     styleClass="normalButton"
-                    text="Open in WireShark"/>
+                    text="Start WireShark"/>
         </HBox>
     </top>
     <center>

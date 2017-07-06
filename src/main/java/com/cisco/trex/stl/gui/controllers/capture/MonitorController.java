@@ -1,40 +1,51 @@
 package com.cisco.trex.stl.gui.controllers.capture;
 
+import com.cisco.trex.stateless.model.capture.CapturedPackets;
 import com.cisco.trex.stateless.model.capture.CapturedPkt;
 import com.cisco.trex.stl.gui.models.CapturedPktModel;
-import com.cisco.trex.stl.gui.services.capture.PktCaptureService;
-import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
+import com.cisco.trex.stl.gui.services.capture.*;
+import com.exalttech.trex.ui.PortsManager;
+import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.datastore.Preferences;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.PreferencesManager;
-import com.exalttech.trex.util.files.FileManager;
+import javafx.application.Platform;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
-import org.pcap4j.core.*;
 import org.pcap4j.packet.*;
 import org.pcap4j.packet.ArpPacket.ArpHeader;
 import org.pcap4j.packet.namednumber.ArpOperation;
-import org.pcap4j.packet.namednumber.DataLinkType;
 import org.pcap4j.packet.namednumber.EtherType;
 import org.pcap4j.packet.namednumber.IpNumber;
 import org.testng.util.Strings;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
+import static java.lang.Thread.sleep;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 public class MonitorController extends BorderPane {
 
-    public static final String TMP_PKTS_PCAP_FILE = "tmp-pkts.pcap";
-    private static Logger LOG = Logger.getLogger(MonitorController  .class);
+    private static Logger LOG = Logger.getLogger(MonitorController.class);
 
+    private Base64.Decoder decoder = Base64.getDecoder();
+    
+    private ExecutorService executorService = Executors.newCachedThreadPool();
+    
     @FXML
     private Button startStopBtn;
     
@@ -85,7 +96,7 @@ public class MonitorController extends BorderPane {
     private double starTs = 0;
     
     private int monitorId = 0;
-    
+
     public MonitorController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Monitor.fxml");
 
@@ -103,65 +114,144 @@ public class MonitorController extends BorderPane {
         
         startStopBtn.setOnAction(this::handleStartStopMonitorAction);
         clearBtn.setOnAction(this::handleClearMonitorAction);
-        startWSBtn.setOnAction(this::handleOpenWireSharkAction);
+        startWSBtn.setOnAction(this::handleStartStopWireSharkAction);
         
     }
 
-    private void handleOpenWireSharkAction(ActionEvent actionEvent) {
+    private void handleStartStopWireSharkAction(ActionEvent actionEvent) {
+        final List<Integer> rxPorts = portFilter.getRxPorts();
+        final List<Integer> txPorts = portFilter.getTxPorts();
 
+        List<Integer> portsWithDisabledSM = guardEnabledServiceMode(rxPorts, txPorts);
+        if (!portsWithDisabledSM.isEmpty()) {
+            String msg = "Unable to start record due to disabled service mode on following ports: "
+                    + portsWithDisabledSM.stream().map(Objects::toString).collect(joining(", "));
+            showError(msg);
+            return;
+        }
+        
+        if (rxPorts.isEmpty() && txPorts.isEmpty()) {
+            showError("Please specify ports in a filter.");
+            return;
+        }
+        if (!checkWiresharkLocation()) {
+            return;
+        }
+
+        startWSBtn.setDisable(true);
+        startWSBtn.setText("Starting...");
+
+        final String wireSharkLocation = PreferencesManager.getInstance().getPreferences().getWireSharkLocation();
+        
+        executorService.submit(() -> {
+            PktDumpService dumpService;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                dumpService = new WindowsPktDumpService();
+            } else {
+                dumpService = new UnixPktDumpService();
+            }
+            try {
+                final int wsMonitorId = pktCaptureService.startMonitor(rxPorts, txPorts, false);
+
+                Process wiresharkProcess = dumpService.init(wireSharkLocation);
+
+                Platform.runLater(() -> {
+                    startWSBtn.setText("Start WireShark");
+                    startWSBtn.setDisable(false);
+                });
+
+                while (wiresharkProcess.isAlive()) {
+                    CapturedPackets capturedPackets = pktCaptureService.fetchCapturedPkts(wsMonitorId, 500);
+                    dumpService.dump(capturedPackets);
+                }
+                pktCaptureService.stopMonitor(wsMonitorId);
+            } catch (PktCaptureServiceException e) {
+                String msg = "Unable to start monitor.";
+                LOG.error(msg, e);
+                showError(msg);
+            } catch (PktDumpServiceInitException e) {
+                LOG.error("Unable to initialize pkt dump service", e);
+                Platform.runLater(() -> showError(e.getMessage()));
+            } catch (PktDumpServiceException e) {
+                LOG.error("Unable to dump packet.", e);
+            } finally {
+                Platform.runLater(() -> startWSBtn.setText("Start in WireShark"));
+                dumpService.close();
+            }
+        });
+    }
+
+    private List<Integer> guardEnabledServiceMode(List<Integer> rxPorts, List<Integer> txPorts) {
+        Set<Integer> invalidPorts = new HashSet<>();
+
+        invalidPorts.addAll(filterPortsWihtDisabledSM(rxPorts));
+        invalidPorts.addAll(filterPortsWihtDisabledSM(txPorts));
+
+        return new ArrayList<>(invalidPorts);
+    }
+
+    private List<Integer> filterPortsWihtDisabledSM(List<Integer> portIndexes) {
+        return portIndexes.stream()
+                .map(portIndex -> PortsManager.getInstance().getPortModel(portIndex))
+                .filter(portModel -> !portModel.getServiceMode())
+                .map(PortModel::getIndex)
+                .collect(toList());
+    }
+
+    private boolean checkWiresharkLocation() {
         Preferences preferences = PreferencesManager.getInstance().getPreferences();
-
-        if (preferences == null) {
-            showError("Failed to get Wireshark executable location from Preferences. Please check Preferences values.");
-            return;
-        }
-        String wireSharkLocation = preferences.getWireSharkLocation();
-        if (!checkWiresharkLocation(wireSharkLocation)) {
-            showError("Failed to initialize Wireshark executable. Please check it's location in Preferences.");
-            return;
+        if (preferences != null && !Strings.isNullOrEmpty(preferences.getWireSharkLocation())) {
+            String executablePath = preferences.getWireSharkLocation();
+            return !Strings.isNullOrEmpty(executablePath) && new File(executablePath).exists();
         }
         
-        if (capturedPkts.getItems().size() == 0) {
-            showError("Zero packets has been captured. Need at least one to open WireShark.");
-            return;
+        boolean wsinstalled = locateWireshark();
+        if (!wsinstalled) {
+            showError("Could not find Wireshark in default installation path.\n" +
+                    "Please install it first to proceed with this action.\n" +
+                    "You can download it from https://www.wireshark.org\n" +
+                    "Or you can specify location manually in preferences");
         }
-        String fileName = FileManager.getLocalFilePath()+TMP_PKTS_PCAP_FILE;
-        try{
-            PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
-            PcapDumper dumper = handle.dumpOpen(fileName);
-            capturedPkts.getItems().stream()
-                                   .map(row -> toEtherPkt(row.getBytes()))
-                                   .forEach(ethPkt -> {
-                                       try {
-                                           dumper.dump(ethPkt);
-                                       } catch (NotOpenException e) {
-                                           LOG.error("Unable to dump pkt.", e);
-                                       }
-                                   });
-            dumper.close();
-            handle.close();
-
-            Process exec = Runtime.getRuntime().exec(new String[]{wireSharkLocation, "-r", fileName});
-        } catch (PcapNativeException | NotOpenException e) {
-            LOG.error("Unable to save temp pcap file.", e);
-        } catch (IOException e) {
-            LOG.error("Unable to open WireShark.", e);
-        }
+        return wsinstalled;
     }
 
-    private boolean checkWiresharkLocation(String filename) {
-        return !Strings.isNullOrEmpty(filename) && new File(filename).exists();
-    }
-
-    private EthernetPacket toEtherPkt(byte[] pkt) {
-        EthernetPacket ethPkt = null;
+    private boolean locateWireshark() {
         try {
-            ethPkt = EthernetPacket.newPacket(pkt, 0, pkt.length);
-        } catch (IllegalRawDataException e) {
-            LOG.error("Save PCAP. Unable to parse pkt from server.", e);
-            return null;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                String defaultInstallationPath = "C:\\Program Files\\Wireshark\\wireshark.exe";
+                File exec = new File(defaultInstallationPath);
+                if (exec.exists() && exec.canExecute()) {
+                    PreferencesManager.getInstance().getPreferences().setWireSharkLocation(defaultInstallationPath);
+                    return true;
+                }
+                return false;
+            } else {
+                Process p = new ProcessBuilder(new String[]{"which", "wireshark"}).start();
+                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                try {
+                    String line;
+                    int attempts = 10;
+                    while(attempts > 0) {
+                        attempts--;
+                        line = input.readLine();
+                        if(line != null) {
+                            PreferencesManager.getInstance().getPreferences().setWireSharkLocation(line);
+                            return true;
+                        }
+                        try {
+                            sleep(200);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+                } finally {
+                    input.close();
+                }
+            }
+        } catch (IOException e) {
+            LOG.error("Unable to locate Wireshark due to: " + e.getMessage());
         }
-        return ethPkt;
+        return false;
     }
     
     private void handleOnPktsReceived(WorkerStateEvent workerStateEvent) {
@@ -176,8 +266,9 @@ public class MonitorController extends BorderPane {
 
     synchronized public void handleStartStopMonitorAction(ActionEvent event) {
         try {
-            if(monitorId != 0) {
-                pktCaptureService.stopMonitor();
+            
+            if(monitorId != 0 ) {
+                pktCaptureService.stopMonitor(monitorId);
                 pktCaptureService.cancel();
                 startStopBtn.setText("Start");
                 portFilter.setDisable(false);
@@ -193,7 +284,7 @@ public class MonitorController extends BorderPane {
                 
                 pktCaptureService.reset();
                 starTs = 0;
-                monitorId = pktCaptureService.startMonitor(rxPorts, txPorts);
+                monitorId = pktCaptureService.startMonitor(rxPorts, txPorts, true);
                 portFilter.setDisable(true);
                 startStopBtn.setText("Stop");
             }

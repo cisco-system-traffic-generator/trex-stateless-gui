@@ -41,17 +41,23 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
         };
     }
     
-    public int startMonitor(List<Integer> rx, List<Integer> tx) throws PktCaptureServiceException {
+    public int startMonitor(List<Integer> rx, List<Integer> tx, boolean serviceEnable) throws PktCaptureServiceException {
         TRexClientResult<CaptureMonitor> result = tRexClient.captureMonitorStart(rx, tx);
         guardNotFailed(result);
-        currentActiveMonitorId = result.get().getCaptureId();
-        start();
-        return currentActiveMonitorId;
+        int captureId = result.get().getCaptureId();
+        if (serviceEnable) {
+            currentActiveMonitorId = captureId;
+            start();
+        }
+        return captureId;
     }
 
-    synchronized public void stopMonitor() {
-        tRexClient.captureMonitorStop(currentActiveMonitorId);
-        tRexClient.captureMonitorRemove(currentActiveMonitorId);
+    synchronized public void stopMonitor(int captureId) {
+        if (currentActiveMonitorId == captureId) {
+            currentActiveMonitorId = 0;
+        }
+        tRexClient.captureMonitorStop(captureId);
+        tRexClient.captureMonitorRemove(captureId);
     }
 
     public CaptureMonitorStop stopRecorder(int caputureId) throws PktCaptureServiceException {
