@@ -42,7 +42,8 @@ public class PreferencesManager {
         }
         return instance;
     }
-    Preferences preferences;
+    
+    Preferences preferences = new Preferences();
 
     /**
      *
