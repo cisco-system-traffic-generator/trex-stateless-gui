@@ -1,7 +1,6 @@
 package com.cisco.trex.stl.gui.services.capture;
 
 import com.cisco.trex.stateless.model.capture.CapturedPackets;
-import com.sun.jna.platform.win32.WinNT;
 import org.apache.log4j.Logger;
 import org.pcap4j.core.*;
 import org.pcap4j.packet.EthernetPacket;
@@ -33,9 +32,11 @@ public class UnixPktDumpService implements PktDumpService {
     public Process init(String wireSharkExecPath) throws PktDumpServiceInitException {
         createPipe();
         try {
+            wiresharkProcess = new ProcessBuilder(new String[]{wireSharkExecPath, "-k", "-i", pipeName}).start();
             handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
             dumper = handle.dumpOpen(pipeName);
-            return wiresharkProcess = new ProcessBuilder(new String[]{wireSharkExecPath, "-k", "-i", pipeName}).start();
+            initalized = true;
+            return wiresharkProcess;
         } catch (IOException e) {
             LOG.error("Unable to start WireShark", e);
             destroyPipe();
