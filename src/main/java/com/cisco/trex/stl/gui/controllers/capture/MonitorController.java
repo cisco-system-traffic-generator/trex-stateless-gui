@@ -3,32 +3,28 @@ package com.cisco.trex.stl.gui.controllers.capture;
 import com.cisco.trex.stateless.model.capture.CapturedPackets;
 import com.cisco.trex.stateless.model.capture.CapturedPkt;
 import com.cisco.trex.stl.gui.models.CapturedPktModel;
-import com.cisco.trex.stl.gui.services.capture.PktCaptureService;
-import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
+import com.cisco.trex.stl.gui.services.capture.*;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.datastore.Preferences;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.PreferencesManager;
-import com.exalttech.trex.util.files.FileManager;
 import javafx.application.Platform;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
-import org.pcap4j.core.*;
 import org.pcap4j.packet.*;
 import org.pcap4j.packet.ArpPacket.ArpHeader;
 import org.pcap4j.packet.namednumber.ArpOperation;
-import org.pcap4j.packet.namednumber.DataLinkType;
 import org.pcap4j.packet.namednumber.EtherType;
 import org.pcap4j.packet.namednumber.IpNumber;
 import org.testng.util.Strings;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,9 +36,7 @@ import static java.util.stream.Collectors.toList;
 
 public class MonitorController extends BorderPane {
 
-    public static final String TMP_PKTS_PCAP_FILE = "tmp-pkts.pipe";
-
-    private static Logger LOG = Logger.getLogger(MonitorController  .class);
+    private static Logger LOG = Logger.getLogger(MonitorController.class);
 
     private Base64.Decoder decoder = Base64.getDecoder();
     
@@ -98,7 +92,7 @@ public class MonitorController extends BorderPane {
     private double starTs = 0;
     
     private int monitorId = 0;
-    
+
     public MonitorController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Monitor.fxml");
 
@@ -142,74 +136,49 @@ public class MonitorController extends BorderPane {
             showError("Failed to get Wireshark executable location from Preferences. Please check Preferences values.");
             return;
         }
-        String wireSharkLocation = preferences.getWireSharkLocation();
+        final String wireSharkLocation = preferences.getWireSharkLocation();
         if (!checkWiresharkLocation(wireSharkLocation)) {
             showError("Failed to initialize Wireshark executable. Please check it's location in Preferences.");
             return;
         }
 
-        final String fileName = FileManager.getLocalFilePath()+TMP_PKTS_PCAP_FILE + System.currentTimeMillis();
-        File pipe = new File(fileName);
-        if (!pipe.exists()) {
-            if (!createPipe(fileName)){
-                LOG.error("Unable to create a pipe.");
-                return;
-            }
-        }
         startWSBtn.setDisable(true);
         startWSBtn.setText("Starting...");
 
-        executorService.submit(() ->{
-            final Process wireshark;
-            final int wsMonitorId;
-            try {
-                wireshark = new ProcessBuilder(new String[]{wireSharkLocation, "-k", "-i", fileName}).start();
-            } catch (IOException e) {
-                LOG.error("Unable to open WireShark.", e);
-                return;
-            }
-            PcapHandle handle;
-            PcapDumper dumper;
-            try {
-                handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
-                dumper = handle.dumpOpen(fileName);
-            } catch (PcapNativeException | NotOpenException e) {
-                LOG.error("Unable to open the pipe.", e);
-                return;
+        executorService.submit(() -> {
+            PktDumpService dumpService;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                dumpService = new WindowsPktDumpService();
+            } else {
+                dumpService = new UnixPktDumpService();
             }
             try {
-                wsMonitorId = pktCaptureService.startMonitor(rxPorts, txPorts, false);
+                final int wsMonitorId = pktCaptureService.startMonitor(rxPorts, txPorts, false);
+
+                Process wiresharkProcess = dumpService.init(wireSharkLocation);
+
                 Platform.runLater(() -> {
                     startWSBtn.setText("Start WireShark");
                     startWSBtn.setDisable(false);
                 });
-                while (wireshark.isAlive()) {
-                    try {
-                        CapturedPackets capturedPackets = pktCaptureService.fetchCapturedPkts(wsMonitorId, 1000);
-                        capturedPackets.getPkts().stream()
-                                .map(pkt -> toEtherPkt(decoder.decode(pkt.getBinary())))
-                                .forEach(ethPkt -> {
-                                    try {
-                                        dumper.dump(ethPkt);
-                                        dumper.flush();
-                                    } catch (NotOpenException | PcapNativeException e) {
-                                        LOG.error("Unable to dump pkt.", e);
-                                    }
-                                });
-                    } catch (PktCaptureServiceException e) {
-                        LOG.error("Unable to fetch chunk of packets.", e);
-                    }
+
+                while (wiresharkProcess.isAlive()) {
+                    CapturedPackets capturedPackets = pktCaptureService.fetchCapturedPkts(wsMonitorId, 500);
+                    dumpService.dump(capturedPackets);
                 }
                 pktCaptureService.stopMonitor(wsMonitorId);
-                Platform.runLater(() -> startWSBtn.setText("Start in WireShark"));
             } catch (PktCaptureServiceException e) {
                 String msg = "Unable to start monitor.";
                 LOG.error(msg, e);
                 showError(msg);
+            } catch (PktDumpServiceInitException e) {
+                LOG.error("Unable to initialize pkt dump service", e);
+                Platform.runLater(() -> showError(e.getMessage()));
+            } catch (PktDumpServiceException e) {
+                LOG.error("Unable to dump packet.", e);
             } finally {
-                dumper.close();
-                handle.close();
-                deletePipe(fileName);
+                Platform.runLater(() -> startWSBtn.setText("Start in WireShark"));
+                dumpService.close();
             }
         });
     }
@@ -230,44 +199,11 @@ public class MonitorController extends BorderPane {
                 .map(PortModel::getIndex)
                 .collect(toList());
     }
-    
-    private boolean createPipe(String fileName) {
-        String[] command = new String[] {"mkfifo", fileName};
-        try {
-            Process mkfifo = new ProcessBuilder(command).inheritIO().start();
-            mkfifo.waitFor();
-            return true;
-        } catch (InterruptedException | IOException e) {
-            return false;
-        }
-    }
 
-    private boolean deletePipe(String fileName) {
-        String[] command = new String[] {"unlink", fileName};
-        try {
-            Process unlink = new ProcessBuilder(command).inheritIO().start();
-            unlink.waitFor();
-            return true;
-        } catch (InterruptedException | IOException e) {
-            return false;
-        }
-    }
-    
     private boolean checkWiresharkLocation(String filename) {
         return !Strings.isNullOrEmpty(filename) && new File(filename).exists();
     }
 
-    private EthernetPacket toEtherPkt(byte[] pkt) {
-        EthernetPacket ethPkt = null;
-        try {
-            ethPkt = EthernetPacket.newPacket(pkt, 0, pkt.length);
-        } catch (IllegalRawDataException e) {
-            LOG.error("Save PCAP. Unable to parse pkt from server.", e);
-            return null;
-        }
-        return ethPkt;
-    }
-    
     private void handleOnPktsReceived(WorkerStateEvent workerStateEvent) {
         if (starTs == 0) {
             starTs = pktCaptureService.getValue().getStartTimeStamp();
