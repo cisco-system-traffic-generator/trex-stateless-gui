@@ -24,7 +24,10 @@ import org.pcap4j.packet.namednumber.EtherType;
 import org.pcap4j.packet.namednumber.IpNumber;
 import org.testng.util.Strings;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -130,21 +133,15 @@ public class MonitorController extends BorderPane {
             showError("Please specify ports in a filter.");
             return;
         }
-        
-        Preferences preferences = PreferencesManager.getInstance().getPreferences();
-        if (preferences == null) {
-            showError("Failed to get Wireshark executable location from Preferences. Please check Preferences values.");
-            return;
-        }
-        final String wireSharkLocation = preferences.getWireSharkLocation();
-        if (!checkWiresharkLocation(wireSharkLocation)) {
-            showError("Failed to initialize Wireshark executable. Please check it's location in Preferences.");
+        if (!checkWiresharkLocation()) {
             return;
         }
 
         startWSBtn.setDisable(true);
         startWSBtn.setText("Starting...");
 
+        final String wireSharkLocation = PreferencesManager.getInstance().getPreferences().getWireSharkLocation();
+        
         executorService.submit(() -> {
             PktDumpService dumpService;
             if (SystemUtils.IS_OS_WINDOWS) {
@@ -200,10 +197,55 @@ public class MonitorController extends BorderPane {
                 .collect(toList());
     }
 
-    private boolean checkWiresharkLocation(String filename) {
-        return !Strings.isNullOrEmpty(filename) && new File(filename).exists();
+    private boolean checkWiresharkLocation() {
+        Preferences preferences = PreferencesManager.getInstance().getPreferences();
+        if (preferences != null && !Strings.isNullOrEmpty(preferences.getWireSharkLocation())) {
+            String executablePath = preferences.getWireSharkLocation();
+            return !Strings.isNullOrEmpty(executablePath) && new File(executablePath).exists();
+        }
+        
+        boolean wsinstalled = locateWireshark();
+        if (!wsinstalled) {
+            showError("Could not find Wireshark in default installation path.\n" +
+                    "Please install it first to proceed with this action.\n" +
+                    "You can download it from https://www.wireshark.org\n" +
+                    "Or you can specify location manually in preferences");
+        }
+        return wsinstalled;
     }
 
+    private boolean locateWireshark() {
+        try {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                String defaultInstallationPath = "C:\\Program Files\\Wireshark\\wireshark.exe";
+                File exec = new File(defaultInstallationPath);
+                if (exec.exists() && exec.canExecute()) {
+                    PreferencesManager.getInstance().getPreferences().setWireSharkLocation(defaultInstallationPath);
+                    return true;
+                }
+                return false;
+            } else {
+                Process p = new ProcessBuilder(new String[]{"which", "wireshark"}).start();
+                BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                try {
+                    String line;
+                    while(true) {
+                        line = input.readLine();
+                        if(line != null) {
+                            PreferencesManager.getInstance().getPreferences().setWireSharkLocation(line);
+                            return true;
+                        }
+                    }
+                } finally {
+                    input.close();
+                }
+            }
+        } catch (IOException e) {
+            LOG.error("Unable to locate Wireshark due to: " + e.getMessage());
+        }
+        return false;
+    }
+    
     private void handleOnPktsReceived(WorkerStateEvent workerStateEvent) {
         if (starTs == 0) {
             starTs = pktCaptureService.getValue().getStartTimeStamp();
