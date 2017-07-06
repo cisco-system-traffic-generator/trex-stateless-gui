@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
+import static java.lang.Thread.sleep;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -229,11 +230,18 @@ public class MonitorController extends BorderPane {
                 BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 try {
                     String line;
-                    while(true) {
+                    int attempts = 10;
+                    while(attempts > 0) {
+                        attempts--;
                         line = input.readLine();
                         if(line != null) {
                             PreferencesManager.getInstance().getPreferences().setWireSharkLocation(line);
                             return true;
+                        }
+                        try {
+                            sleep(200);
+                        } catch (InterruptedException e) {
+                            break;
                         }
                     }
                 } finally {
