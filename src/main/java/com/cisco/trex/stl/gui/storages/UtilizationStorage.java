@@ -2,27 +2,25 @@ package com.cisco.trex.stl.gui.storages;
 
 import com.cisco.trex.stateless.model.stats.Utilization;
 import com.cisco.trex.stateless.model.stats.UtilizationCPU;
+import com.cisco.trex.stl.gui.models.CpuUtilStatPoint;
 import com.cisco.trex.stl.gui.models.MemoryUtilizationModel;
 import com.cisco.trex.stl.gui.models.UtilizationCPUModel;
 import com.cisco.trex.stl.gui.services.UtilizationService;
+import com.exalttech.trex.util.ArrayHistory;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summingInt;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 
 public class UtilizationStorage {
     private List<UtilizationCPUModel> cpuUtilsModels = new ArrayList<>();
     private List<MemoryUtilizationModel> memUtilsModels = new ArrayList<>();
     private Object utilizationStatsMonitor = new Object();
+    private Map<String, ArrayHistory<CpuUtilStatPoint>> cpuUtilizationHistoryMap = new HashMap<>();
 
     public interface UtilizationChangedListener {
         void utilizationChanged();
@@ -46,6 +44,10 @@ public class UtilizationStorage {
 
     public List<UtilizationCPUModel> getCpuUtilsModels() {
         return cpuUtilsModels;
+    }
+
+    public Map<String, ArrayHistory<CpuUtilStatPoint>> getCpuUtilizationHistoryMap() {
+        return cpuUtilizationHistoryMap;
     }
 
     public List<MemoryUtilizationModel> getMemUtilsModels() {
@@ -95,6 +97,35 @@ public class UtilizationStorage {
             return;
         }
         synchronized (utilizationStatsMonitor) {
+            synchronized (dataLock) {
+                List<UtilizationCPU> cpuUtilizationStats = receivedUtilization.getCpu();
+                int idx = 0;
+                for (UtilizationCPU cpuUtilizationStat : cpuUtilizationStats) {
+                    String ports = cpuUtilizationStat.getPorts().stream()
+                                                                .map(Objects::toString)
+                                                                .collect(joining(", "));
+                    
+                    String key = String.format("Socket %s (%s)", idx, ports);
+                    String socketKey = String.format("Socket %s", idx);
+                    
+                    Optional<Map.Entry<String, ArrayHistory<CpuUtilStatPoint>>> entryOptional = cpuUtilizationHistoryMap.entrySet()
+                                                                                                                 .stream()
+                                                                                                                 .filter(entry -> entry.getKey().startsWith(socketKey))
+                                                                                                                 .findFirst();
+                    ArrayHistory<CpuUtilStatPoint> history;
+                    if (entryOptional.isPresent()) {
+                        history = entryOptional.get().getValue();
+                        cpuUtilizationHistoryMap.remove(entryOptional.get().getKey());
+                    } else {
+                        history = new ArrayHistory<>(303);
+                    }
+                    int value = cpuUtilizationStat.getHistory().get(0);
+                    double time = System.currentTimeMillis() / 1000.0;
+                    history.add(new CpuUtilStatPoint(value, time));
+                    cpuUtilizationHistoryMap.put(key, history);
+                    idx++;
+                }
+            }
             cpuUtilsModels = toCPUUtilModel(receivedUtilization.getCpu());
             memUtilsModels.clear();
             memUtilsModels.add(totalMemUtilization(receivedUtilization.getMbufStats()));
@@ -103,6 +134,12 @@ public class UtilizationStorage {
         }
 
         handleUtilizationChanged();
+    }
+
+    private ArrayHistory<Integer> toArrayHistory(List<Integer> utilizationHistory) {
+        ArrayHistory<Integer> result = new ArrayHistory<>(utilizationHistory.size());
+        utilizationHistory.forEach(result::add);
+        return result;
     }
 
     private MemoryUtilizationModel percentageMemUtilization(Map<String, Map<String, List<Integer>>> mbufStats) {
