@@ -1,5 +1,6 @@
 package com.cisco.trex.stl.gui.controllers.dashboard.utilization;
 
+import com.cisco.trex.stl.gui.controllers.dashboard.charts.CPUUtilizationChartController;
 import com.cisco.trex.stl.gui.models.MemoryUtilizationModel;
 import com.cisco.trex.stl.gui.models.UtilizationCPUModel;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
@@ -10,7 +11,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.WindowEvent;
 
 import java.util.Iterator;
@@ -25,7 +26,7 @@ public class UtilizationController extends AnchorPane {
     private ToggleGroup toggleGroupMode;
     
     @FXML
-    private BorderPane cpuUtil;
+    private CPUUtilizationChartController cpuUtilChart;
     
     @FXML
     private TableView<UtilizationCPUModel> cpuUtilTable;
@@ -33,7 +34,10 @@ public class UtilizationController extends AnchorPane {
     private boolean cpuUtilTableInitialized = false;
     
     @FXML
-    private BorderPane memoryUtil;
+    private Pane cpuUtil;
+    
+    @FXML
+    private Pane memoryUtil;
     
     @FXML
     private TableView<MemoryUtilizationModel> memoryUtilTable;
@@ -71,6 +75,7 @@ public class UtilizationController extends AnchorPane {
     private boolean memoryUtilTableInitialized = false;
 
     private boolean isActive = false;
+    
     private UtilizationStorage.UtilizationChangedListener utilizationChangedListener = this::render;
 
     public UtilizationController() {
@@ -124,8 +129,8 @@ public class UtilizationController extends AnchorPane {
 
     private void render() {
         if (((ToggleButton)toggleGroupMode.getSelectedToggle()).getText().equals("CPU")) {
-            memoryUtil.setVisible(false);
             cpuUtil.setVisible(true);
+            memoryUtil.setVisible(false);
             renderCPU();
         } else {
             cpuUtil.setVisible(false);
@@ -137,14 +142,7 @@ public class UtilizationController extends AnchorPane {
     private void renderCPU() {
         UtilizationStorage utilizationStorage = StatsStorage.getInstance().getUtilizationStorage();
         synchronized (utilizationStorage.getDataLock()) {
-            List<UtilizationCPUModel> cpuUtilsModels = utilizationStorage.getCpuUtilsModels();
-            if (!cpuUtilTableInitialized) {
-                initCPUUtilTable(cpuUtilsModels);
-                cpuUtilTableInitialized = true;
-            }
-            cpuUtilTable.getItems().clear();
-            cpuUtilTable.getItems().addAll(cpuUtilsModels);
-            
+            cpuUtilChart.render(utilizationStorage.getCpuUtilizationHistoryMap());
         }
     }
 
