@@ -1,5 +1,13 @@
 package com.cisco.trex.stl.gui.controllers.dashboard;
 
+import com.cisco.trex.stl.gui.controllers.dashboard.charts.ChartsController;
+import com.cisco.trex.stl.gui.controllers.dashboard.latency.LatencyController;
+import com.cisco.trex.stl.gui.controllers.dashboard.ports.PortsController;
+import com.cisco.trex.stl.gui.controllers.dashboard.streams.StreamsController;
+import com.cisco.trex.stl.gui.controllers.dashboard.utilization.UtilizationController;
+import com.cisco.trex.stl.gui.storages.StatsStorage;
+import com.exalttech.trex.ui.dialog.DialogView;
+import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -9,16 +17,6 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import com.cisco.trex.stl.gui.controllers.dashboard.charts.ChartsController;
-import com.cisco.trex.stl.gui.controllers.dashboard.latency.LatencyController;
-import com.cisco.trex.stl.gui.controllers.dashboard.ports.PortsController;
-import com.cisco.trex.stl.gui.controllers.dashboard.streams.StreamsController;
-import com.cisco.trex.stl.gui.controllers.dashboard.utilization.UtilizationController;
-import com.cisco.trex.stl.gui.storages.StatsStorage;
-
-import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.views.statistics.StatsLoader;
 
 
 public class DashboardController extends DialogView implements Initializable {
@@ -55,6 +53,13 @@ public class DashboardController extends DialogView implements Initializable {
     public void handleTabChanged(final Event event) {
         switch (tabPane.getSelectionModel().getSelectedItem().getText()) {
             case UTILIZATION_TAB_LABEL:
+                utilization.setActive(true);
+                ports.setActive(false);
+                streams.setActive(false);
+                latency.setActive(false);
+                charts.setActive(false);
+                break;
+            case PORTS_TAB_LABEL:
                 if (utilization != null) {
                     utilization.setActive(true);
                 }
@@ -70,13 +75,6 @@ public class DashboardController extends DialogView implements Initializable {
                 if (charts != null) {
                     charts.setActive(false);
                 }
-                break;
-            case PORTS_TAB_LABEL:
-                utilization.setActive(false);
-                ports.setActive(true);
-                streams.setActive(false);
-                latency.setActive(false);
-                charts.setActive(false);
                 break;
             case STREAMS_TAB_LABEL:
                 ports.setActive(false);
