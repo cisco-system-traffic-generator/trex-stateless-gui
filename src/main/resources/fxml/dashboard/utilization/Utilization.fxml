@@ -3,6 +3,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import com.cisco.trex.stl.gui.controllers.dashboard.charts.CPUUtilizationChartController?>
 <fx:root xmlns="http://javafx.com/javafx/8"
          xmlns:fx="http://javafx.com/fxml"
          fx:id="root"
@@ -26,41 +27,46 @@
                           styleClass="custom-toggle-button-right"
                           prefWidth="120"/>
         </HBox>
-        <ScrollPane styleClass="stats-table-container"
+        <BorderPane styleClass="stats-table-container"
                     VBox.vgrow="ALWAYS">
-            <AnchorPane fx:id="utilizationContent" >
-                <BorderPane fx:id="cpuUtil"
-                            AnchorPane.topAnchor="5.0"
+            <center>
+                <AnchorPane AnchorPane.topAnchor="5.0"
                             AnchorPane.bottomAnchor="5.0"
                             AnchorPane.leftAnchor="5.0"
-                            maxWidth="888">
-                    <center>
-                        <TableView fx:id="cpuUtilTable" />
-                    </center>
-                </BorderPane>
-                <BorderPane fx:id="memoryUtil"
-                            AnchorPane.topAnchor="5.0"
-                            AnchorPane.bottomAnchor="5.0"
-                            AnchorPane.leftAnchor="5.0"
-                            maxWidth="888">
-                    <center>
-                        <TableView fx:id="memoryUtilTable">
-                            <columns>
-                                <TableColumn fx:id="memTableTitle" text="" />
-                                <TableColumn fx:id="memTable64b" text="64b" />
-                                <TableColumn fx:id="memTable128b" text="128b" />
-                                <TableColumn fx:id="memTable256b" text="256b" />
-                                <TableColumn fx:id="memTable512b" text="512b" />
-                                <TableColumn fx:id="memTable1024b" text="1024b" />
-                                <TableColumn fx:id="memTable2048b" text="2048b" />
-                                <TableColumn fx:id="memTable4096b" text="4096b" />
-                                <TableColumn fx:id="memTable9kb" text="9kb" />
-                                <TableColumn fx:id="memTableRam" text="RAM(MB)" />
-                            </columns>
-                        </TableView>
-                    </center>
-                </BorderPane>
-            </AnchorPane>
-        </ScrollPane>
+                            AnchorPane.rightAnchor="5.0">
+                    <BorderPane fx:id="cpuUtil"
+                                AnchorPane.topAnchor="5.0"
+                                AnchorPane.bottomAnchor="5.0"
+                                AnchorPane.leftAnchor="5.0"
+                                AnchorPane.rightAnchor="5.0">
+                        <center>
+                            <CPUUtilizationChartController fx:id="cpuUtilChart"/>
+                        </center>
+                    </BorderPane>
+                    <BorderPane fx:id="memoryUtil"
+                                AnchorPane.leftAnchor="5.0"
+                                AnchorPane.topAnchor="5.0"
+                                AnchorPane.bottomAnchor="5.0"
+                                visible="false">
+                        <center>
+                            <TableView fx:id="memoryUtilTable">
+                                <columns>
+                                    <TableColumn fx:id="memTableTitle" text="" />
+                                    <TableColumn fx:id="memTable64b" text="64b" />
+                                    <TableColumn fx:id="memTable128b" text="128b" />
+                                    <TableColumn fx:id="memTable256b" text="256b" />
+                                    <TableColumn fx:id="memTable512b" text="512b" />
+                                    <TableColumn fx:id="memTable1024b" text="1024b" />
+                                    <TableColumn fx:id="memTable2048b" text="2048b" />
+                                    <TableColumn fx:id="memTable4096b" text="4096b" />
+                                    <TableColumn fx:id="memTable9kb" text="9kb" />
+                                    <TableColumn fx:id="memTableRam" text="RAM(MB)" />
+                                </columns>
+                            </TableView>
+                        </center>
+                    </BorderPane>
+                </AnchorPane>
+            </center>
+        </BorderPane>
     </VBox>
 </fx:root>
