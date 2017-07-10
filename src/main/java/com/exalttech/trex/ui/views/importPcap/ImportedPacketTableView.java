@@ -15,14 +15,6 @@ import com.exalttech.trex.ui.views.streams.builder.VMInstructionBuilder.Instruct
 import com.exalttech.trex.ui.views.streams.viewer.PacketParser;
 import com.exalttech.trex.util.TrafficProfile;
 import com.exalttech.trex.util.Util;
-import java.io.EOFException;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -30,11 +22,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
@@ -46,6 +34,11 @@ import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.Packet;
+
+import java.io.EOFException;
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 
 public class ImportedPacketTableView extends AnchorPane {
@@ -259,7 +252,9 @@ public class ImportedPacketTableView extends AnchorPane {
                         profile.getStream().getPacket().setBinary(trafficProfile.encodeBinaryFromHexString(hexDataString));
 
                         // add vm
-                        profile.getStream().setAdditionalProperties(getVm(current));
+                        if (propertiesBinder.isDestinationEnabled() || propertiesBinder.isSourceEnabled()) {
+                            profile.getStream().setAdditionalProperties(getVm(current));
+                        }
                         // update pps/ISG
                         defineISG_PPSValues(profile, getIpg(diffTimeStamp, firstStream));
                         if (firstStream) {
