@@ -4,7 +4,9 @@ import com.cisco.trex.stateless.model.capture.CapturedPackets;
 import com.cisco.trex.stateless.model.capture.CapturedPkt;
 import com.cisco.trex.stl.gui.models.CapturedPktModel;
 import com.cisco.trex.stl.gui.services.capture.*;
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.ui.PortsManager;
+import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.datastore.Preferences;
 import com.exalttech.trex.util.Initialization;
@@ -96,7 +98,7 @@ public class MonitorController extends BorderPane {
     private double starTs = 0;
     
     private int monitorId = 0;
-
+    
     public MonitorController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Monitor.fxml");
 
@@ -115,7 +117,39 @@ public class MonitorController extends BorderPane {
         startStopBtn.setOnAction(this::handleStartStopMonitorAction);
         clearBtn.setOnAction(this::handleClearMonitorAction);
         startWSBtn.setOnAction(this::handleStartStopWireSharkAction);
+
+        capturedPkts.setRowFactory( tv -> {
+            TableRow<CapturedPktModel> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    CapturedPktModel rowData = row.getItem();
+                    try {
+                        openPacketViewer(rowData);
+                    } catch (IOException e) {
+                        String msg = "Unable to open packet.";
+                        LOG.error(msg, e);
+                        showError(msg);
+                    }
+                }
+            });
+            return row ;
+        });
         
+    }
+
+    private void openPacketViewer(CapturedPktModel rowData) throws IOException {
+        DialogWindow dialogWindow = new DialogWindow("pkt_capture/PacketViewerLayout.fxml",
+                "Packet viewer",
+                10, 
+                50,
+                800,
+                700,
+                false,
+                TrexApp.getPrimaryStage());
+        PacketViewerController controller = (PacketViewerController) dialogWindow.getController();
+        controller.getPacketViewer().showPkt(rowData.getBytes());
+        
+        dialogWindow.show(false);
     }
 
     private void handleStartStopWireSharkAction(ActionEvent actionEvent) {
