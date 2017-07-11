@@ -1,6 +1,7 @@
 package com.cisco.trex.stl.gui.services;
 
 import com.cisco.trex.stateless.model.stats.Utilization;
+import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCCommands;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -16,6 +17,9 @@ public class UtilizationService extends ScheduledService<Utilization> {
             @Override
             protected Utilization call() {
                 try {
+                    if (ConnectionManager.getInstance().getApiH() == null) {
+                        return null;
+                    }
                     return RPCCommands.getUtilization();
                 } catch (Exception exc) {
                     LOG.error("Failed to get utilization", exc);
