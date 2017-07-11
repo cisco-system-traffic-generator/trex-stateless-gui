@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-packet-editor</artifactId>
-            <version>a5151a7</version>
+            <version>13e5752</version>
         </dependency>
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
