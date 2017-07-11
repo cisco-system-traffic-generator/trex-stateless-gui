@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml/1"
+         fx:id="root"
+         type="javafx.scene.layout.BorderPane"
+         id="pcapEditorTopPane"
+         styleClass="fieldenginetoppane">
+    <top>
+        <FlowPane xmlns:fx="http://javafx.com/fxml/1"
+                  fx:id="fieldEditorTopPane"
+                  styleClass="fieldeditortoppane">
+        </FlowPane>
+    </top>
+    <center>
+        <ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+                    fx:id="fieldEditorScrollPane"
+                    styleClass="fieldeditorscrollpane">
+            <StackPane xmlns:fx="http://javafx.com/fxml/1"
+                       fx:id="fieldEditorCenterPane"
+                       prefWidth="800"
+                       styleClass="stackpane"
+            />
+        </ScrollPane>
+    </center>
+    <stylesheets>
+        <URL value="@../../styles/packetBuilderStyle.css"/>
+    </stylesheets>
+</fx:root>
