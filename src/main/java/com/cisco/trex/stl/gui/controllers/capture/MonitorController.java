@@ -415,6 +415,7 @@ public class MonitorController extends BorderPane {
     private <T extends IpPacket> Map<String, Object> parseIP(Stack<String> headers, T pkt) {
         headers.push(pkt instanceof IpV4Packet ? "IPv4" : "IPv6");
         Map<String, Object> result = new HashMap<>();
+        result.put("info", "");
         String src = pkt.getHeader().getSrcAddr().toString();
         String dst = pkt.getHeader().getDstAddr().toString();
         result.put("src", pkt instanceof IpV4Packet ? src.substring(1) : src);
