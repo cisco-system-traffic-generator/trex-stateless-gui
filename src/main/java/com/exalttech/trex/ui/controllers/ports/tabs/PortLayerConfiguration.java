@@ -1,6 +1,10 @@
 package com.exalttech.trex.ui.controllers.ports.tabs;
 
+import com.cisco.trex.stateless.IPv6NeighborDiscoveryService;
 import com.cisco.trex.stateless.TRexClient;
+import com.cisco.trex.stateless.exception.ServiceModeRequiredException;
+import com.cisco.trex.stateless.model.Ipv6Node;
+import com.cisco.trex.stl.gui.models.IPv6Host;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.AsyncResponseManager;
 import com.exalttech.trex.core.ConnectionManager;
@@ -12,13 +16,19 @@ import com.exalttech.trex.ui.views.logs.LogsController;
 import com.exalttech.trex.util.Initialization;
 import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import org.apache.log4j.Logger;
 import org.pcap4j.packet.EthernetPacket;
 import org.pcap4j.packet.IcmpV4CommonPacket;
@@ -27,10 +37,14 @@ import org.pcap4j.packet.namednumber.IcmpV4Type;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
-public class PortLayerConfiguration extends BorderPane {
+public class PortLayerConfiguration extends AnchorPane {
     @FXML
     private AnchorPane root;
     @FXML
@@ -60,6 +74,12 @@ public class PortLayerConfiguration extends BorderPane {
     private Button saveBtn;
 
     @FXML
+    private Button startScanIpv6Btn;
+
+    @FXML
+    private Button clearIpv6HostsBtn;
+
+    @FXML
     private Label arpStatus;
 
     @FXML
@@ -70,11 +90,32 @@ public class PortLayerConfiguration extends BorderPane {
 
     @FXML
     RadioButton l3Mode;
+
+    @FXML
+    private TableView<IPv6Host> ipv6Hosts;
+
+    @FXML
+    private Label ipv6HostsPlaceholder;
+    private Label ipv6HostsDefaultPlaceholder;
+
+    @FXML
+    private TableColumn<IPv6Host, String> macColumn;
+    
+    @FXML
+    private TableColumn<IPv6Host, String> ipv6Column;
+
+    private IPv6NeighborDiscoveryService iPv6NDService;
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    Clipboard clipboard = Clipboard.getSystemClipboard();
+    
     private PortModel model;
     private LogsController guiLogger = LogsController.getInstance();
     private RPCMethods serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
     private static final Logger logger = Logger.getLogger(PortLayerConfiguration.class);
     private ChangeListener<ConfigurationMode> configurationModeChangeListener = (observable, prevMode, mode) -> updateControlsState();
+    private Label ipv6HostsNotFoundPlaceholder = new Label("Zero IPv6 hosts found. Try to scan once again.");
 
     private void updateControlsState() {
         Arrays.asList(l2Source, l2Destination, l3Source, l3Destination).forEach(textField -> {
@@ -91,9 +132,6 @@ public class PortLayerConfiguration extends BorderPane {
             l2Mode.setSelected(true);
             arpStatus.setVisible(false);
             arpLabel.setVisible(false);
-            pingLabel.setVisible(false);
-            pingDestination.setVisible(false);
-            pingCommandBtn.setVisible(false);
         } else {
             l3Source.setVisible(true);
             l3Destination.setVisible(true);
@@ -103,9 +141,6 @@ public class PortLayerConfiguration extends BorderPane {
             l3Mode.setSelected(true);
             arpLabel.setVisible(true);
             arpStatus.setVisible(true);
-            pingLabel.setVisible(true);
-            pingDestination.setVisible(true);
-            pingCommandBtn.setVisible(true);
         }
     }
 
@@ -119,6 +154,122 @@ public class PortLayerConfiguration extends BorderPane {
         pingCommandBtn.setOnAction(this::runPingCmd);
         
         saveBtn.setOnAction(this::saveConfiguration);
+        
+        macColumn.setCellValueFactory(cellData -> cellData.getValue().macAddressProperty());
+
+        ipv6Column.setCellValueFactory(cellData -> cellData.getValue().ipAddressProperty());
+
+        ipv6Hosts.setRowFactory( tv -> {
+            TableRow<IPv6Host> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    IPv6Host rowData = row.getItem();
+                    this.setAsL2DstAction(rowData);
+                }
+            });
+            ContextMenu ctxMenu = new ContextMenu();
+            
+            ctxMenu.getItems().addAll(createMenuItems(row));
+            row.setContextMenu(ctxMenu);
+
+            row.contextMenuProperty().bind(
+                    Bindings.when(Bindings.isNotNull(row.itemProperty()))
+                            .then(ctxMenu)
+                            .otherwise((ContextMenu)null));
+            return row;
+        });
+        
+        startScanIpv6Btn.setOnAction(this::handleStartIPv6Scan);
+        
+        clearIpv6HostsBtn.setOnAction(e -> {
+            ipv6Hosts.getItems().clear();
+            ipv6Hosts.setPlaceholder(ipv6HostsDefaultPlaceholder);
+        });
+
+        ipv6HostsDefaultPlaceholder = ipv6HostsPlaceholder;
+    }
+
+    private ObservableList<MenuItem> createMenuItems(TableRow<IPv6Host> row) {
+        ObservableList<MenuItem> ctxMenuItems = FXCollections.observableArrayList();
+        
+        MenuItem setAsL2DstMenuItem = new MenuItem("Set as L2 destination");
+        setAsL2DstMenuItem.setOnAction(e -> setAsL2DstAction(row.getItem()));
+
+        MenuItem copyMacMenuItem = new MenuItem("Copy MAC");
+        copyMacMenuItem.setOnAction(e -> {
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString(row.getItem().getMacAddress());
+            clipboard.setContent(clipboardContent);
+        });
+        MenuItem copyIPMenuItem = new MenuItem("Copy IP");
+        copyIPMenuItem.setOnAction(e -> {
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString(row.getItem().getIpAddress());
+            clipboard.setContent(clipboardContent);
+        });
+
+        
+        
+        ctxMenuItems.addAll(setAsL2DstMenuItem, copyMacMenuItem, copyIPMenuItem);
+        
+        return ctxMenuItems;
+    }
+
+    private void setAsL2DstAction(IPv6Host iPv6Host) {
+        l2Mode.setSelected(true);
+        model.setLayerMode(ConfigurationMode.L2);
+        l2Destination.setText(iPv6Host.getMacAddress());
+    }
+
+
+    private void handleStartIPv6Scan(ActionEvent actionEvent) {
+        LogsController.getInstance().appendText(LogType.INFO, "Start scanning IPv6 neighbor hosts.");
+        AsyncResponseManager.getInstance().muteLogger();
+        AsyncResponseManager.getInstance().suppressIncomingEvents(true);
+        if (iPv6NDService == null) {
+            iPv6NDService = new IPv6NeighborDiscoveryService(ConnectionManager.getInstance().getTrexClient());
+        }
+        startScanIpv6Btn.setDisable(true);
+        ipv6Hosts.getItems().clear();
+        ipv6Hosts.setPlaceholder(new Label("Scanning in progress..."));
+        Task<Optional<Map<String, Ipv6Node>>> scanIpv6NeighborsTask = new Task<Optional<Map<String, Ipv6Node>>>() {
+            @Override
+            public Optional<Map<String, Ipv6Node>> call(){
+                try {
+                    return Optional.of(iPv6NDService.scan(model.getIndex(), 10));
+                } catch (ServiceModeRequiredException e) {
+                    AsyncResponseManager.getInstance().unmuteLogger();
+                    AsyncResponseManager.getInstance().suppressIncomingEvents(false);
+                    Platform.runLater(() -> {
+                        ipv6Hosts.setPlaceholder(ipv6HostsDefaultPlaceholder);
+                        LogsController.getInstance().appendText(LogType.ERROR, "Service mode is not enabled for port: " + model.getIndex() + ". Enable Service Mode in Control tab.");
+                    });
+                }
+                return Optional.empty();
+            }
+        };
+        scanIpv6NeighborsTask.setOnSucceeded(e -> {
+            AsyncResponseManager.getInstance().unmuteLogger();
+            AsyncResponseManager.getInstance().suppressIncomingEvents(false);
+            startScanIpv6Btn.setDisable(false);
+            
+            Optional<Map<String, Ipv6Node>> result = scanIpv6NeighborsTask.getValue();
+            result.ifPresent((hosts) -> {
+                ipv6Hosts.getItems().addAll(
+                        hosts.entrySet().stream()
+                                .map(entry -> new IPv6Host(entry.getValue().getMac(), entry.getValue().getIp()))
+                                .collect(Collectors.toList())
+                );
+                
+                if (hosts.isEmpty()) {
+                    ipv6Hosts.setPlaceholder(ipv6HostsNotFoundPlaceholder);
+                }
+                LogsController.getInstance().appendText(LogType.INFO, "Found " + hosts.size() + " nodes.");
+                LogsController.getInstance().appendText(LogType.INFO, "Scanning complete.");
+            });
+        });
+        
+        executorService.submit(scanIpv6NeighborsTask);
     }
 
     private void saveConfiguration(Event event) {

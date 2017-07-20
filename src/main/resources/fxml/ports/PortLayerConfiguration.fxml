@@ -1,61 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 <fx:root fx:id="rootPortInfoTabConfig"
          xmlns:fx="http://javafx.com/fxml"
-         type="javafx.scene.layout.BorderPane">
-    <center>
-        <GridPane fx:id="gridPanePortInfoTabConfig"
-                  alignment="top_center"
-                  hgap="10" vgap="10" >
-            <fx:define>
-                <Rectangle fx:id="s" width="12" height="12"/>
-            </fx:define>
-            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+         type="javafx.scene.layout.AnchorPane">
+    <BorderPane AnchorPane.topAnchor="15"
+                AnchorPane.leftAnchor="15"
+                AnchorPane.bottomAnchor="15"
+                AnchorPane.rightAnchor="15">
+        <center>
+            <GridPane>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="35.0" />
+                    <ColumnConstraints hgrow="ALWAYS" percentWidth="65.0" />
+                </columnConstraints>
 
-            <Label text="Mode:"   GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <HBox GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="2" >
-                <RadioButton fx:id="l2Mode" selected="false" text="L2">
-                    <padding><Insets right="10"/></padding>
-                    <toggleGroup>
-                        <ToggleGroup fx:id="layerMode" />
-                    </toggleGroup>
-                </RadioButton>
-                <RadioButton fx:id="l3Mode" id="l3Mode" selected="false" text="L3" toggleGroup="$layerMode" />
-            </HBox>
+                <VBox GridPane.columnIndex="0"
+                      GridPane.rowIndex="0"
+                      GridPane.halignment="CENTER">
+                    <GridPane fx:id="gridPanePortInfoTabConfig"
+                              hgap="10" vgap="10">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="ALWAYS"
+                                               maxWidth="110"/>
+                            <ColumnConstraints hgrow="ALWAYS"/>
+                        </columnConstraints>
+                        <fx:define>
+                            <Rectangle fx:id="s" width="12" height="12"/>
+                        </fx:define>
+                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
 
-            <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <HBox GridPane.rowSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
-                <TextField fx:id="l2Source" disable="true" minWidth="${16 * s.width}" />
-                <TextField fx:id="l3Source" minWidth="${16 * s.width}" />
-            </HBox>
+                        <Label text="Mode:"
+                               GridPane.columnIndex="0"
+                               GridPane.rowIndex="1" />
+                        <HBox GridPane.columnIndex="1"
+                              GridPane.rowIndex="1"
+                              GridPane.columnSpan="2" >
+                            <RadioButton fx:id="l2Mode" selected="false" text="L2">
+                                <padding><Insets right="10"/></padding>
+                                <toggleGroup>
+                                    <ToggleGroup fx:id="layerMode" />
+                                </toggleGroup>
+                            </RadioButton>
+                            <RadioButton fx:id="l3Mode" id="l3Mode" selected="false" text="L3" toggleGroup="$layerMode" />
+                        </HBox>
 
-            <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-            <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2">
-                <TextField fx:id="l2Destination" id="l2Destination" text="" minWidth="${16 * s.width}" />
-                <TextField fx:id="l3Destination" id="l3Destination" text="" minWidth="${16 * s.width}" />
-            </HBox>
-            <Label fx:id="arpLabel" text="ARP resolution:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-            <Label fx:id="arpStatus" id="arpStatus" text="" minWidth="${16 * s.width}" GridPane.columnIndex="1" GridPane.rowIndex="5"  GridPane.columnSpan="2" />
+                        <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                        <HBox GridPane.rowSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
+                            <TextField fx:id="l2Source" disable="true" minWidth="${16 * s.width}" />
+                            <TextField fx:id="l3Source" minWidth="${16 * s.width}" />
+                        </HBox>
 
-            <Label fx:id="pingLabel" text="Ping:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-            <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="6">
-                <TextField fx:id="pingDestination" text="" promptText="Destination address" minWidth="${16 * s.width}" />
-                <Button fx:id="pingCommandBtn" text="Ping" />
-            </HBox>
-        </GridPane>
-    </center>
-    <bottom>
-        <BorderPane>
-            <center>
-                <Button fx:id="saveBtn" id="applyBtn" text="Apply" styleClass="normalButton" />
-            </center>
-            <padding>
-                <Insets bottom="10" />
-            </padding>
-        </BorderPane>
-    </bottom>
+                        <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                        <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2">
+                            <TextField fx:id="l2Destination" id="l2Destination" text="" minWidth="${16 * s.width}" />
+                            <TextField fx:id="l3Destination" id="l3Destination" text="" minWidth="${16 * s.width}" />
+                        </HBox>
+                        <Label fx:id="arpLabel"
+                               text="ARP resolution:"
+                               GridPane.columnIndex="0"
+                               GridPane.rowIndex="5" />
+                        <Label fx:id="arpStatus"
+                               id="arpStatus" text=""
+                               minWidth="${16 * s.width}"
+                               GridPane.columnIndex="1"
+                               GridPane.rowIndex="5"
+                               GridPane.columnSpan="2" />
+                        <Button fx:id="saveBtn"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="6"
+                                GridPane.columnSpan="3"
+                                GridPane.halignment="CENTER"
+                                id="applyBtn"
+                                text="Apply"
+                                styleClass="normalButton" />
+                    </GridPane>
+                </VBox>
+                <VBox GridPane.columnIndex="1"
+                      GridPane.rowIndex="0"
+                      GridPane.halignment="CENTER"
+                      spacing="5"
+                      alignment="CENTER">
+                    <AnchorPane>
+                        <padding><Insets top="10" left="15"/></padding>
+                        <GridPane AnchorPane.topAnchor="0"
+                                  AnchorPane.rightAnchor="0"
+                                  AnchorPane.leftAnchor="0"
+                                  AnchorPane.bottomAnchor="0"
+                                  hgap="10"
+                                  vgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints maxWidth="120.0" />
+                                <ColumnConstraints hgrow="ALWAYS"
+                                                   percentWidth="75.0" />
+                                <ColumnConstraints hgrow="ALWAYS"
+                                                   percentWidth="10.0" />
+                            </columnConstraints>
+                            <Label fx:id="pingLabel"
+                                   GridPane.columnIndex="0"
+                                   GridPane.rowIndex="0"
+                                   text="Ping host:"/>
+                            <HBox GridPane.columnIndex="1"
+                                  GridPane.rowIndex="0"
+                                  spacing="5">
+
+                                <TextField fx:id="pingDestination"
+                                           promptText="Destination address" />
+                                <Button fx:id="pingCommandBtn"
+                                        text="Ping"
+                                        styleClass="normalButton"/>
+                            </HBox>
+                            <Label GridPane.columnIndex="0"
+                                   GridPane.rowIndex="1"
+                                   GridPane.valignment="TOP"
+                                   text="IPv6 hosts:"/>
+                            <TableView fx:id="ipv6Hosts"
+                                       GridPane.columnIndex="1"
+                                       GridPane.rowIndex="1"
+                                       prefWidth="395"
+                                       style="-fx-border-width: 1px;
+                                              -fx-border-color: #BFBFBF">
+                                <placeholder>
+                                    <Label fx:id="ipv6HostsPlaceholder" text="Click on Scan button to start scanning IPv6 neighbors." />
+                                </placeholder>
+                                <columns>
+                                    <TableColumn fx:id="macColumn"
+                                                 prefWidth="180"
+                                                 text="MAC address" />
+                                    <TableColumn fx:id="ipv6Column"
+                                                 prefWidth="220"
+                                                 text="IP address" />
+                                </columns>
+                            </TableView>
+                            <VBox GridPane.columnIndex="2"
+                                  GridPane.rowIndex="1"
+                                  GridPane.valignment="TOP"
+                                  spacing="10">
+                                <Button fx:id="startScanIpv6Btn"
+                                        text="Scan"
+                                        prefWidth="55"
+                                        styleClass="normalButton"/>
+                                <Button fx:id="clearIpv6HostsBtn"
+                                        text="Clear"
+                                        prefWidth="55"
+                                        styleClass="normalButton"/>
+                            </VBox>
+                        </GridPane>
+                    </AnchorPane>
+                </VBox>
+            </GridPane>
+        </center>
+    </BorderPane>
 </fx:root>
