@@ -38,6 +38,7 @@ public class AsyncResponseManager {
     private static AsyncResponseManager instance = null;
     private boolean muteLogger = false;
     private Gson gson = new Gson();
+    private boolean eventHandlingDisable;
 
     /**
      *
@@ -164,6 +165,9 @@ public class AsyncResponseManager {
      * @param event
      */
     public void handleAsyncEvent(String event) {
+        if (eventHandlingDisable) {
+            return;
+        }
         setAsyncEvent(event);
         if (!event.contains("trex-event")) {
             return;
@@ -204,5 +208,9 @@ public class AsyncResponseManager {
 
     public void unmuteLogger() {
         muteLogger = false;
+    }
+
+    public void suppressIncomingEvents(boolean disable) {
+        this.eventHandlingDisable = disable;
     }
 }
