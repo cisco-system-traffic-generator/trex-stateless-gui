@@ -105,23 +105,27 @@ public class RecordController extends BorderPane {
     }
 
     private void handleOnRecorderReceived(WorkerStateEvent workerStateEvent) {
-        List<CaptureInfo> recorders = recorderService.getValue();
+        List<CaptureInfo> monitors = recorderService.getValue();
         ObservableList<Recorder> currentRecorders = activeRecorders.getItems();
-        recorders.stream().map(this::captureInfo2Recorder).collect(toList()).forEach(newRecorder -> {
-            Optional<Recorder> existed = currentRecorders.stream()
-                                                       .filter(recorder -> recorder.getId() == newRecorder.getId())
-                                                       .findFirst();
-            if(existed.isPresent()) {
-                Recorder recorder = existed.get();
-                recorder.setBytes(newRecorder.getBytes());
-                recorder.setPackets(newRecorder.getPackets());
-                recorder.setStatus(newRecorder.getStatus());
-            } else {
-                currentRecorders.add(newRecorder);
-            }
-        });
+        monitors.stream()
+                .filter(monitor -> monitor.getMode() != null && monitor.getMode().equalsIgnoreCase("fixed"))
+                .map(this::captureInfo2Recorder)
+                .collect(toList()).forEach(newRecorder -> {
+                    Optional<Recorder> existed =
+                            currentRecorders.stream()
+                                            .filter(recorder -> recorder.getId() == newRecorder.getId())
+                                            .findFirst();
+                    if(existed.isPresent()) {
+                        Recorder recorder = existed.get();
+                        recorder.setBytes(newRecorder.getBytes());
+                        recorder.setPackets(newRecorder.getPackets());
+                        recorder.setStatus(newRecorder.getStatus());
+                    } else {
+                        currentRecorders.add(newRecorder);
+                    }
+                });
         currentRecorders.removeIf(recorder ->
-                !recorders.stream().anyMatch(newRecorder -> newRecorder.getId() == recorder.getId())
+                !monitors.stream().anyMatch(newRecorder -> newRecorder.getId() == recorder.getId())
         );
     }
 
