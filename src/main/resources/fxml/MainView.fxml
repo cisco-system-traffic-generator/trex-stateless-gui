@@ -234,6 +234,14 @@
                                                                         AnchorPane.rightAnchor="0.0"
                                                                         AnchorPane.topAnchor="0.0"/>
                                                         </AnchorPane>
+                                                        <Label fx:id="serviceModeLabel"
+                                                               AnchorPane.rightAnchor="0.0"
+                                                               AnchorPane.topAnchor="5.0"
+                                                               text="Service Mode"
+                                                               visible="false"
+                                                               style="-fx-font-size: 18pt;
+                                                                      -fx-text-fill: red;
+                                                               "/>
                                                         <PortView fx:id="portView"
                                                                   AnchorPane.topAnchor="0.0"
                                                                   AnchorPane.bottomAnchor="0.0"

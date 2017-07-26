@@ -33,11 +33,17 @@ import java.util.stream.Collectors;
  */
 public class PortsManager {
 
+    public interface PortServiceModeChangedListener {
+        void serviceModeChanged();
+    }
+
     private static final Logger logger = Logger.getLogger(PortsManager.class);
     
     private static PortsManager instance = null;
 
     ObjectMapper mapper = new ObjectMapper();
+    
+    private List<PortServiceModeChangedListener> portServiceModeChangedListeners = new ArrayList<>();
     
     /**
      * Return instance of Port manager
@@ -63,10 +69,17 @@ public class PortsManager {
         // constructor
     }
 
+    public void addPortServiceModeChangedListener(PortServiceModeChangedListener listener) {
+        portServiceModeChangedListeners.add(listener);
+    }
+    
     public PortModel getPortModel(int portIndex) {
         PortModel model = portModels.get(portIndex);
         if (model == null) {
             model = PortModel.createModelFrom(portList.get(portIndex));
+            model.serviceModeProperty().addListener((observable, oldVal, newVal) -> {
+                portServiceModeChangedListeners.forEach(PortServiceModeChangedListener::serviceModeChanged);
+            });
             portModels.put(portIndex, model);
         }
         return model;
@@ -111,7 +124,7 @@ public class PortsManager {
      * Force request to update port state
      */
     public void updatePortForce() {
-        updatedPorts(portList.stream().map(port -> port.getIndex()).collect(Collectors.toList()));
+        updatedPorts(portList.stream().map(Port::getIndex).collect(Collectors.toList()));
     }
     
     public void updatedPorts(List<Integer> portIndexes) {

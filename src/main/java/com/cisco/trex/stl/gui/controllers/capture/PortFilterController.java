@@ -1,6 +1,7 @@
 package com.cisco.trex.stl.gui.controllers.capture;
 
 import com.exalttech.trex.ui.PortsManager;
+import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.util.Initialization;
 import javafx.fxml.FXML;
 import javafx.scene.layout.HBox;
@@ -20,13 +21,24 @@ public class PortFilterController extends HBox {
 
     public PortFilterController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/PortFilter.fxml");
+        PortsManager.getInstance().addPortServiceModeChangedListener(this::updateFilters);
+        updateFilters();
+    }
 
-        List<String> choices = PortsManager.getInstance().getPortList().stream().map(port -> String.format("Port %s", port.getIndex())).collect(toList());
-        
+    private void updateFilters() {
+        rxFilter.getItems().clear();
+        txFilter.getItems().clear();
+        List<String> choices = PortsManager.getInstance()
+                .getPortList()
+                .stream()
+                .filter(Port::getServiceMode)
+                .map(port -> String.format("Port %s", port.getIndex()))
+                .collect(toList());
+
         rxFilter.getItems().addAll(choices);
         txFilter.getItems().addAll(choices);
     }
-
+    
     public List<Integer> getRxPorts() {
         return rxFilter.getCheckModel().getCheckedIndices();
     }
