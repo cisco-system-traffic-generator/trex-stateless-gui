@@ -204,6 +204,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     @FXML
     PortView portView;
     
+    @FXML
+    Label serviceModeLabel;
+    
     BooleanProperty portViewVisibilityProperty = new SimpleBooleanProperty(false);
     BooleanProperty systemInfoVisibilityProperty = new SimpleBooleanProperty(true);
     
@@ -487,6 +490,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 hideShowStatTable(true);
                 portViewVisibilityProperty.setValue(false);
                 systemInfoVisibilityProperty.setValue(false);
+                serviceModeLabel.visibleProperty().unbind();
+                serviceModeLabel.setVisible(false);
                 switch (selected.getTreeItemType()) {
                     case DEVICES:
                         systemInfoVisibilityProperty.setValue(true);
@@ -545,13 +550,36 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         int portId = getSelectedPortIndex();
         if (portId != -1) {
             Port port = portManager.getPortList().get(portId);
-            // enable acquire option if port not owned
-            rightClickPortMenu.getItems().get(0).setDisable(!Util.isNullOrEmpty(port.getOwner()));
-            // enable release option if port owned by loggin-user    
-            rightClickPortMenu.getItems().get(2).setDisable(!port.getOwner().equals(ConnectionManager.getInstance().getClientName()));
+            
+            boolean isOwned = port.getOwner().equals(ConnectionManager.getInstance().getClientName());
+            
+            setDisableContextMenuItem("Acquire", !Util.isNullOrEmpty(port.getOwner()));
+            setDisableContextMenuItem("Release Acquire", !isOwned);
+            
+            boolean enableServiceMenuItemDisabled = true;
+            boolean disableServiceMenuItemDisabled = true;
+            if (isOwned) {
+                enableServiceMenuItemDisabled = port.getServiceMode();
+                disableServiceMenuItemDisabled = !port.getServiceMode();
+            }
+            setDisableContextMenuItem("Enable Service Mode", enableServiceMenuItemDisabled);
+            setDisableContextMenuItem("Disable Service Mode", disableServiceMenuItemDisabled);
+            
         }
     }
+    
+    private void setDisableContextMenuItem(String item, boolean disable) {
+        Optional<MenuItem> disableServiceModeOptional = getItemByName(rightClickPortMenu, item);
+        disableServiceModeOptional.ifPresent(menuItem -> menuItem.setDisable(disable));
+    }
 
+    private Optional<MenuItem> getItemByName(ContextMenu menu, String text) {
+        return menu.getItems()
+                   .stream()
+                   .filter(menuItem -> menuItem.getText().equalsIgnoreCase(text))
+                   .findFirst();
+    }
+    
     /**
      * Reset the application to initial state
      */
@@ -631,6 +659,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void loadPortModel() {
         PortModel model = portManager.getPortModel(getSelectedPortIndex());
+
+        serviceModeLabel.visibleProperty().bind(model.serviceModeProperty());
+        
         portManager.updatedPorts(Arrays.asList(getSelectedPortIndex()));
         Optional<Integer> optional = portManager.getOwnedPortIndexes().stream().filter(idx -> idx.equals(getSelectedPortIndex())).findFirst();
         optional.ifPresent(val -> model.setIsOwned(true));
@@ -797,6 +828,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         addMenuItem(rightClickPortMenu, "Acquire", ContextMenuClickType.ACQUIRE, false);
         addMenuItem(rightClickPortMenu, "Force Acquire", ContextMenuClickType.FORCE_ACQUIRE, false);
         addMenuItem(rightClickPortMenu, "Release Acquire", ContextMenuClickType.RELEASE_ACQUIRE, false);
+        addMenuItem(rightClickPortMenu, "Enable Service Mode", ContextMenuClickType.ENABLE_SERVICE, false);
+        addMenuItem(rightClickPortMenu, "Disable Service Mode", ContextMenuClickType.DISABLE_SERVICE, false);
 
         rightClickProfileMenu = new ContextMenu();
         addMenuItem(rightClickProfileMenu, "Play", ContextMenuClickType.PLAY, false);
@@ -937,20 +970,32 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleCaptureItemClicked(ActionEvent event) {
-        try {
-            DialogWindow statsWindow = new DialogWindow(
-                    "pkt_capture/Layout.fxml",
-                    "Packet Capture",
-                    50,
-                    10,
-                    1200,
-                    700,
-                    true,
-                    TrexApp.getPrimaryStage()
-            );
-            statsWindow.show(false);
-        } catch (IOException ex) {
-            LOG.error("Error opening dashboard view", ex);
+        final String currentUser = ConnectionManager.getInstance().getClientName();
+        Optional<Port> atLeastOneEnabledServiceMode = PortsManager.getInstance()
+                                                                  .getPortList()
+                                                                  .stream()
+                                                                  .filter(port -> port.getOwner().equalsIgnoreCase(currentUser) && port.getServiceMode())
+                                                                  .findAny();
+        if (atLeastOneEnabledServiceMode.isPresent()) {
+            try {
+                DialogWindow statsWindow = new DialogWindow(
+                        "pkt_capture/Layout.fxml",
+                        "Packet Capture",
+                        50,
+                        10,
+                        1200,
+                        700,
+                        true,
+                        TrexApp.getPrimaryStage()
+                );
+                statsWindow.show(false);
+            } catch (IOException ex) {
+                LOG.error("Error opening dashboard view", ex);
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("At least one port with enabled service mode should be acquired.");
+            alert.show();
         }
     }
     /**
@@ -1151,7 +1196,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void handleContextMenuItemCLicked(ContextMenuClickType type) {
         try {
             Integer portIndex = getSelectedPortIndex();
+            PortModel portModel = PortsManager.getInstance().getPortModel(portIndex);
             switch (type) {
+                case ENABLE_SERVICE:
+                    portModel.serviceModeProperty().set(true);
+                    break;
+                case DISABLE_SERVICE:
+                    portModel.serviceModeProperty().set(false);
+                    break;
                 case ACQUIRE:
                     acquirePort();
                     break;
@@ -1649,6 +1701,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         ACQUIRE,
         FORCE_ACQUIRE,
         RELEASE_ACQUIRE,
+        ENABLE_SERVICE,
+        DISABLE_SERVICE,
         PLAY,
         STOP,
         UNLOAD_PROFILE,
