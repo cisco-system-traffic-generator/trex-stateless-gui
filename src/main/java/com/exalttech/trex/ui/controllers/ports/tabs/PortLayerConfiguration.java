@@ -32,8 +32,10 @@ import javafx.scene.layout.AnchorPane;
 import org.apache.log4j.Logger;
 import org.pcap4j.packet.EthernetPacket;
 import org.pcap4j.packet.IcmpV4CommonPacket;
+import org.pcap4j.packet.IcmpV6CommonPacket;
 import org.pcap4j.packet.IpV4Packet;
 import org.pcap4j.packet.namednumber.IcmpV4Type;
+import org.pcap4j.packet.namednumber.IcmpV6Type;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -226,8 +228,14 @@ public class PortLayerConfiguration extends AnchorPane {
         LogsController.getInstance().appendText(LogType.INFO, "Start scanning IPv6 neighbor hosts.");
         AsyncResponseManager.getInstance().muteLogger();
         AsyncResponseManager.getInstance().suppressIncomingEvents(true);
+
+        TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
+        boolean promiscuousEnabled = model.getPromiscuousMode();
+        if (!promiscuousEnabled) {
+            model.promiscuousModeProperty().setValue(true);
+        }
         if (iPv6NDService == null) {
-            iPv6NDService = new IPv6NeighborDiscoveryService(ConnectionManager.getInstance().getTrexClient());
+            iPv6NDService = new IPv6NeighborDiscoveryService(trexClient);
         }
         startScanIpv6Btn.setDisable(true);
         ipv6Hosts.getItems().clear();
@@ -236,7 +244,7 @@ public class PortLayerConfiguration extends AnchorPane {
             @Override
             public Optional<Map<String, Ipv6Node>> call(){
                 try {
-                    return Optional.of(iPv6NDService.scan(model.getIndex(), 10));
+                    return Optional.of(iPv6NDService.scan(model.getIndex(), 10, "ff02::1"));
                 } catch (ServiceModeRequiredException e) {
                     AsyncResponseManager.getInstance().unmuteLogger();
                     AsyncResponseManager.getInstance().suppressIncomingEvents(false);
@@ -267,6 +275,10 @@ public class PortLayerConfiguration extends AnchorPane {
                 LogsController.getInstance().appendText(LogType.INFO, "Found " + hosts.size() + " nodes.");
                 LogsController.getInstance().appendText(LogType.INFO, "Scanning complete.");
             });
+
+            if (!promiscuousEnabled) {
+                model.promiscuousModeProperty().setValue(false);
+            }
         });
         
         executorService.submit(scanIpv6NeighborsTask);
@@ -375,7 +387,8 @@ public class PortLayerConfiguration extends AnchorPane {
             guiLogger.appendText(LogType.ERROR, "Empty ping destination address.");
             return;
         }
-        if (!model.getL3LayerConfiguration().getState().equalsIgnoreCase("resolved")) {
+        final String targetIP = pingDestination.getText();
+        if (!targetIP.contains(":") && !model.getL3LayerConfiguration().getState().equalsIgnoreCase("resolved")) {
             guiLogger.appendText(LogType.ERROR, "ARP resolution required. Configure L3 mode properly.");
             return;
         }
@@ -387,35 +400,58 @@ public class PortLayerConfiguration extends AnchorPane {
             public Void call(){
                 TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
                 trexClient.serviceMode(model.getIndex(), true);
-                String savedPingIPv4 = pingDestination.getText();
-                guiLogger.appendText(LogType.PING, " Start ping " + savedPingIPv4 + ":");
+                guiLogger.appendText(LogType.PING, " Start ping " + targetIP);
                 
                 AsyncResponseManager.getInstance().muteLogger();
+                AsyncResponseManager.getInstance().suppressIncomingEvents(true);
                 try {
                     int icmp_id = new Random().nextInt(100);
                     for(int icmp_sec = 1; icmp_sec < 6; icmp_sec++) {
-                        EthernetPacket reply = trexClient.sendIcmpEcho(model.getIndex(), savedPingIPv4, icmp_id, icmp_sec, 1000);
-                        if (reply != null) {
-                            IpV4Packet ip = reply.get(IpV4Packet.class);
-                            String ttl = String.valueOf(ip.getHeader().getTtlAsInt());
-                            IcmpV4CommonPacket echoReplyPacket = reply.get(IcmpV4CommonPacket.class);
-                            IcmpV4Type replyType = echoReplyPacket.getHeader().getType();
-                            if (IcmpV4Type.ECHO_REPLY.equals(replyType)) {
-                                guiLogger.appendText(LogType.PING, " Reply from " + savedPingIPv4 + " size=" + reply.getRawData().length + " ttl=" + ttl + " icmp_sec=" + icmp_sec);
-                            } else if (IcmpV4Type.DESTINATION_UNREACHABLE.equals(replyType)) {
-                                guiLogger.appendText(LogType.PING, " Destination host unreachable");
+                        EthernetPacket reply = null;
+                        if (targetIP.contains(":")) {
+                            // IPv6
+                            reply = trexClient.sendIcmpV6Echo(model.getIndex(), targetIP, icmp_id, icmp_sec, 2);
+                            if (reply != null) {
+                                IcmpV6CommonPacket icmpV6CommonPacket = reply.get(IcmpV6CommonPacket.class);
+                                IcmpV6Type icmpReplyType = icmpV6CommonPacket.getHeader().getType();
+                                String msg = null;
+                                if (IcmpV6Type.ECHO_REPLY.equals(icmpReplyType)) {
+                                    msg =" Reply from " + targetIP + " size=" + reply.getRawData().length + " icmp_sec=" + icmp_sec;
+                                } else if (IcmpV6Type.DESTINATION_UNREACHABLE.equals(icmpReplyType)) {
+                                    msg = " Destination host unreachable";
+                                }
+                                guiLogger.appendText(LogType.PING, msg);
+                            } else {
+                                guiLogger.appendText(LogType.PING, "Request timeout.");
                             }
                         } else {
-                            guiLogger.appendText(LogType.PING, " Request timeout for icmp_seq " + icmp_sec);
+                            // IPv4
+                            reply = trexClient.sendIcmpEcho(model.getIndex(), targetIP, icmp_id, icmp_sec, 1000);
+                            if (reply != null) {
+                                IpV4Packet ip = reply.get(IpV4Packet.class);
+                                String ttl = String.valueOf(ip.getHeader().getTtlAsInt());
+                                IcmpV4CommonPacket echoReplyPacket = reply.get(IcmpV4CommonPacket.class);
+                                IcmpV4Type replyType = echoReplyPacket.getHeader().getType();
+                                if (IcmpV4Type.ECHO_REPLY.equals(replyType)) {
+                                    guiLogger.appendText(LogType.PING, " Reply from " + targetIP + " size=" + reply.getRawData().length + " ttl=" + ttl + " icmp_sec=" + icmp_sec);
+                                } else if (IcmpV4Type.DESTINATION_UNREACHABLE.equals(replyType)) {
+                                    guiLogger.appendText(LogType.PING, " Destination host unreachable");
+                                }
+                            } else {
+                                guiLogger.appendText(LogType.PING, " Request timeout for icmp_seq " + icmp_sec);
+                            }
                         }
                     }
                     guiLogger.appendText(LogType.PING, " Ping finished.");
                 } catch (UnknownHostException e) {
                     guiLogger.appendText(LogType.PING, " Unknown host");
+                } catch (ServiceModeRequiredException e) {
+                    e.printStackTrace();
                 } finally {
                     pingCommandBtn.setDisable(false);
                     trexClient.serviceMode(model.getIndex(), false);
                     AsyncResponseManager.getInstance().unmuteLogger();
+                    AsyncResponseManager.getInstance().suppressIncomingEvents(false);
                 }
                 return null;
             }
