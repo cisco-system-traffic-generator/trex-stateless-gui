@@ -109,7 +109,8 @@
                                   spacing="5">
 
                                 <TextField fx:id="pingDestination"
-                                           promptText="Destination address" />
+                                           promptText="Destination address"
+                                           minWidth="${20 * s.width}"/>
                                 <Button fx:id="pingCommandBtn"
                                         text="Ping"
                                         styleClass="normalButton"/>
