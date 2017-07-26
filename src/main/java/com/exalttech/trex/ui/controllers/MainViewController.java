@@ -593,6 +593,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         // hide all right side views
         statTableWrapper.setVisible(false);
         profileContainer.setVisible(false);
+        serviceModeLabel.visibleProperty().unbind();
+        serviceModeLabel.setVisible(false);
 
         // close all open dialog
         DialogManager.getInstance().closeAll();
