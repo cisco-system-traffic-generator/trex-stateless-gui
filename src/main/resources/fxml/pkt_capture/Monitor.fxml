@@ -19,21 +19,17 @@
                 <Insets bottom="10" />
             </padding>
             <PortFilterController fx:id="portFilter" />
-            <Button fx:id="startStopBtn"
+            <Button fx:id="applyFilterBtn"
                     styleClass="normalButton"
-                    text="Start"/>
-            <Button fx:id="clearBtn"
-                    styleClass="normalButton"
-                    text="Clear"/>
-            <Button fx:id="startWSBtn"
-                    styleClass="normalButton"
-                    text="Start WireShark"/>
+                    disable="true"
+                    text="Apply"/>
         </HBox>
     </top>
     <center>
         <TableView fx:id="capturedPkts"
                    id="capturedPkts"
-                   HBox.hgrow="ALWAYS">
+                   HBox.hgrow="ALWAYS"
+                   styleClass="captureTable">
             <columns>
                 <TableColumn fx:id="number"
                              maxWidth="45.0"

@@ -49,16 +49,7 @@ public class MonitorController extends BorderPane {
     private ExecutorService executorService = Executors.newCachedThreadPool();
     
     @FXML
-    private Button startStopBtn;
-    
-    @FXML
-    private Button stopBtn;
-    
-    @FXML
-    private Button clearBtn;
-    
-    @FXML
-    private Button startWSBtn;
+    private Button applyFilterBtn;
     
     @FXML
     private PortFilterController portFilter;
@@ -114,10 +105,6 @@ public class MonitorController extends BorderPane {
         
         pktCaptureService.setOnSucceeded(this::handleOnPktsReceived);
         
-        startStopBtn.setOnAction(this::handleStartStopMonitorAction);
-        clearBtn.setOnAction(this::handleClearMonitorAction);
-        startWSBtn.setOnAction(this::handleStartStopWireSharkAction);
-
         capturedPkts.setRowFactory( tv -> {
             TableRow<CapturedPktModel> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -172,8 +159,8 @@ public class MonitorController extends BorderPane {
             return;
         }
 
-        startWSBtn.setDisable(true);
-        startWSBtn.setText("Starting...");
+//        startWSBtn.setDisable(true);
+//        startWSBtn.setText("Starting...");
 
         final String wireSharkLocation = PreferencesManager.getInstance().getPreferences().getWireSharkLocation();
         
@@ -189,10 +176,10 @@ public class MonitorController extends BorderPane {
 
                 Process wiresharkProcess = dumpService.init(wireSharkLocation);
 
-                Platform.runLater(() -> {
-                    startWSBtn.setText("Start WireShark");
-                    startWSBtn.setDisable(false);
-                });
+//                Platform.runLater(() -> {
+//                    startWSBtn.setText("Start WireShark");
+//                    startWSBtn.setDisable(false);
+//                });
 
                 while (wiresharkProcess.isAlive()) {
                     CapturedPackets capturedPackets = pktCaptureService.fetchCapturedPkts(wsMonitorId, 500);
@@ -209,7 +196,7 @@ public class MonitorController extends BorderPane {
             } catch (PktDumpServiceException e) {
                 LOG.error("Unable to dump packet.", e);
             } finally {
-                Platform.runLater(() -> startWSBtn.setText("Start in WireShark"));
+//                Platform.runLater(() -> startWSBtn.setText("Start in WireShark"));
                 dumpService.close();
             }
         });
@@ -304,7 +291,7 @@ public class MonitorController extends BorderPane {
             if(monitorId != 0 ) {
                 pktCaptureService.stopMonitor(monitorId);
                 pktCaptureService.cancel();
-                startStopBtn.setText("Start");
+//                startStopBtn.setText("Start");
                 portFilter.setDisable(false);
                 monitorId = 0;
             } else {
@@ -320,7 +307,7 @@ public class MonitorController extends BorderPane {
                 starTs = 0;
                 monitorId = pktCaptureService.startMonitor(rxPorts, txPorts, true);
                 portFilter.setDisable(true);
-                startStopBtn.setText("Stop");
+//                startStopBtn.setText("Stop");
             }
             
         } catch (PktCaptureServiceException e) {

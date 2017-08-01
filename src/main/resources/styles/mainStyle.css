@@ -239,6 +239,24 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-background-size: 24 24;
     -fx-cursor: hand;
 }
+
+.startWsIcon{
+    -fx-background-image: url("/icons/wireshark-icon.png");
+    -fx-background-size: 24 24;
+    -fx-cursor: hand;
+}
+.startRecordIcon{
+    -fx-background-image: url("/icons/record.png");
+    -fx-background-size: 24 24;
+    -fx-cursor: hand;
+}
+.recordActionBtn:hover{
+    -fx-cursor: hand;
+}
+.captureTable{
+    -fx-border-width: 1px;
+    -fx-border-color: #BFBFBF
+}
 .stopIcon:hover{
     -fx-background-image: url("/icons/stop_hover.png");
 }

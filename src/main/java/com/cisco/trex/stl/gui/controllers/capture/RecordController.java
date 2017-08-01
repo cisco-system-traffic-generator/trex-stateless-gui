@@ -15,9 +15,13 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import org.apache.log4j.Logger;
@@ -75,6 +79,8 @@ public class RecordController extends BorderPane {
     
     @FXML
     private TableColumn<Recorder, String> txFilter;
+    @FXML
+    private TableColumn<Recorder, String> actions;
     
     private PktCaptureService pktCaptureService = new PktCaptureService();
     
@@ -91,16 +97,50 @@ public class RecordController extends BorderPane {
         bytes.setCellValueFactory(cellData -> cellData.getValue().bytesProperty().asString());
         rxFilter.setCellValueFactory(cellData -> cellData.getValue().rxFilterProperty());
         txFilter.setCellValueFactory(cellData -> cellData.getValue().txFilterProperty());
+        actions.setCellValueFactory(new PropertyValueFactory<>(""));
+        actions.setCellFactory((column) -> new TableCell<Recorder, String>() {
+
+            ImageView removeIcon = new ImageView("icons/delete_record.png");
+            ImageView stopIcon = new ImageView("icons/stop_record.png");
+            ImageView saveIcon = new ImageView("icons/export_recorder.png");
+            
+            HBox recordActionsPane = new HBox(10, saveIcon, stopIcon, removeIcon);
+            
+            {
+                removeIcon.getStyleClass().addAll("recordActionBtn");
+                stopIcon.getStyleClass().addAll("recordActionBtn");
+                saveIcon.getStyleClass().addAll("recordActionBtn");
+                
+                recordActionsPane.setPadding(new Insets(3));
+            }
+            
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                if (empty) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+
+                    Recorder recorder = getTableView().getItems().get(getIndex());
+
+                    removeIcon.setOnMouseClicked(e -> pktCaptureService.removeRecorder(recorder.getId()));
+                    
+                    saveIcon.setOnMouseClicked(e -> handleSavePkts((recorder.getId())));
+                    
+                    stopIcon.setOnMouseClicked(e -> handleStopRecorder(recorder.getId()));
+                    
+                    setGraphic(recordActionsPane);
+                    setText(null);
+                }
+            }
+        });
 
         recorderService.setOnSucceeded(this::handleOnRecorderReceived);
         recorderService.setPeriod(new Duration(1000));
         recorderService.start();
 
-        startRecorderBtn.setOnAction(this::handleStartRecorder);
-        stopRecorderBtn.setOnAction(this::handleStopRecorder);
-        removeRecorderBtn.setOnAction(this::handleRemoveRecorer);
-        exportBtn.setOnAction(this::handleSavePkts);
-        
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Pcap Files", "*.pcap", "*.cap"));
     }
 
@@ -185,13 +225,9 @@ public class RecordController extends BorderPane {
         
     }
     
-    private void handleStopRecorder(ActionEvent actionEvent) {
-        Recorder selectedRecorder = activeRecorders.getSelectionModel().getSelectedItem();
-        if (selectedRecorder == null) {
-            return;
-        }
+    private void handleStopRecorder(int monitorId) {
         try {
-            pktCaptureService.stopRecorder(selectedRecorder.getId());
+            pktCaptureService.stopRecorder(monitorId);
         } catch (PktCaptureServiceException e) {
             LOG.error("Unable to stop recorder.", e);
             showError("Unable to stop recorder.");
@@ -215,16 +251,12 @@ public class RecordController extends BorderPane {
                 .collect(toList());
     }
 
-    public void handleSavePkts(ActionEvent event) {
-        Recorder selectedRecorder = activeRecorders.getSelectionModel().getSelectedItem();
-        if (selectedRecorder == null) {
-            return;
-        }
+    public void handleSavePkts(int monitorId) {
         List<CapturedPkt> capturedPkts = new ArrayList<>();
         int pendingPkts = 1;
         while (pendingPkts > 0) {
             try {
-                CapturedPackets capturedPackets = pktCaptureService.fetchCapturedPkts(selectedRecorder.getId(), 1000);
+                CapturedPackets capturedPackets = pktCaptureService.fetchCapturedPkts(monitorId, 1000);
                 pendingPkts = capturedPackets.getPendingPkts();
                 capturedPkts.addAll(capturedPackets.getPkts());
             } catch (PktCaptureServiceException e) {
@@ -282,7 +314,7 @@ public class RecordController extends BorderPane {
             return;
         }
         
-        pktCaptureService.removeRecorder(selectedRecorder.getId());
+        
     }
  
     private void showError(String msg) {
