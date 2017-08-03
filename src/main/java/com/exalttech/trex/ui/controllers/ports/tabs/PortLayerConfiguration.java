@@ -230,9 +230,9 @@ public class PortLayerConfiguration extends AnchorPane {
         AsyncResponseManager.getInstance().suppressIncomingEvents(true);
 
         TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
-        boolean promiscuousEnabled = model.getPromiscuousMode();
-        if (!promiscuousEnabled) {
-            model.promiscuousModeProperty().setValue(true);
+        boolean multicastEnabled = model.getMulticast();
+        if (!multicastEnabled) {
+            model.multicastProperty().setValue(true);
         }
         if (iPv6NDService == null) {
             iPv6NDService = new IPv6NeighborDiscoveryService(trexClient);
@@ -276,8 +276,8 @@ public class PortLayerConfiguration extends AnchorPane {
                 LogsController.getInstance().appendText(LogType.INFO, "Scanning complete.");
             });
 
-            if (!promiscuousEnabled) {
-                model.promiscuousModeProperty().setValue(false);
+            if (!multicastEnabled) {
+                model.multicastProperty().setValue(false);
             }
         });
         
