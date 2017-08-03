@@ -19,10 +19,6 @@
                 <Insets bottom="10" />
             </padding>
             <PortFilterController fx:id="portFilter" />
-            <Button fx:id="applyFilterBtn"
-                    styleClass="normalButton"
-                    disable="true"
-                    text="Apply"/>
         </HBox>
     </top>
     <center>
