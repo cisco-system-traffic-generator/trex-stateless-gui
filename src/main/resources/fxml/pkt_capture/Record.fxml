@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.cisco.trex.stl.gui.controllers.capture.PortFilterController?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -16,16 +15,9 @@
         <HBox alignment="CENTER_LEFT"
               spacing="10">
             <padding>
-                <Insets bottom="10" />
+                <Insets top="5" bottom="15" />
             </padding>
-            <PortFilterController fx:id="portFilter" />
-            <Label text="Limit:" />
-            <TextField fx:id="limit"
-                       text="1000" />
-            
-            <Button fx:id="startRecorderBtn"
-                    styleClass="normalButton"
-                    text="Start Recorder"/>
+            <Label text="Active recorders" />
         </HBox>
     </top>
     <center>

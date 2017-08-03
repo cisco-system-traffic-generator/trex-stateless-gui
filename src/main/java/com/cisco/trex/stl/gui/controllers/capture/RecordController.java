@@ -43,10 +43,7 @@ public class RecordController extends BorderPane {
 
     @FXML
     private PortFilterController portFilter;
-    
-    @FXML
-    private Button startRecorderBtn;
-    
+
     @FXML
     private Button stopRecorderBtn;
     
