@@ -86,6 +86,9 @@ public class MonitorController extends BorderPane {
     
     private int monitorId = 0;
     
+    private int pktNumberOffset = 0;
+    private int latestPktIndex = 0;
+
     public MonitorController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Monitor.fxml");
 
@@ -126,6 +129,7 @@ public class MonitorController extends BorderPane {
         List<Integer> rxPorts = portFilter.getRxPorts();
         List<Integer> txPorts = portFilter.getTxPorts();
         try {
+            pktNumberOffset = latestPktIndex;
             pktCaptureService.updateMonitor(rxPorts, txPorts);
         } catch (PktCaptureServiceException e) {
             LOG.error("Unable to update monitor.", e);
@@ -319,8 +323,9 @@ public class MonitorController extends BorderPane {
             }
             
             Double time = abs(starTs - pkt.getTimeStamp());
-            
-            return new CapturedPktModel(pkt.getIndex(),
+
+            latestPktIndex = pkt.getIndex() + pktNumberOffset;
+            return new CapturedPktModel(latestPktIndex,
                                         pkt.getPort(),
                                         pkt.getOrigin(),
                                         time,
@@ -456,6 +461,7 @@ public class MonitorController extends BorderPane {
     }
 
     public void stopCapture() {
+        pktNumberOffset = 0;
         if(monitorId != 0 ) {
             pktCaptureService.stopMonitor(monitorId);
             pktCaptureService.cancel();
