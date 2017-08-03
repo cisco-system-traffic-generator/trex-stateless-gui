@@ -24,8 +24,7 @@
                 <Label id="" fx:id="startMonitorBtn"
                        prefHeight="24.0"
                        prefWidth="24.0"
-                       styleClass="playIcon"
-                       text="">
+                       styleClass="playIcon">
                     <tooltip>
                         <Tooltip text="Start Monitor"/>
                     </tooltip>
@@ -33,7 +32,7 @@
                 <Label id="" fx:id="stopMonitorBtn"
                        prefHeight="24.0"
                        prefWidth="24.0"
-                       styleClass="stopIcon" text="">
+                       styleClass="stopIcon">
                     <tooltip>
                         <Tooltip text="Stop Monitor"/>
                     </tooltip>
@@ -41,7 +40,7 @@
                 <Label id="" fx:id="clearMonitorBtn"
                        prefHeight="24.0"
                        prefWidth="24.0"
-                       styleClass="clearAllIcon" text="">
+                       styleClass="clearAllIcon">
                     <tooltip>
                         <Tooltip text="Clear Monitor Table"/>
                     </tooltip>
@@ -49,7 +48,7 @@
                 <Label id="" fx:id="startWiresharkBtn"
                        prefHeight="24.0"
                        prefWidth="24.0"
-                       styleClass="startWsIcon" text="">
+                       styleClass="startWsIcon">
                     <tooltip>
                         <Tooltip text="Start Wireshark"/>
                     </tooltip>
