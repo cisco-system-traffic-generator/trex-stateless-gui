@@ -1,6 +1,5 @@
 package com.cisco.trex.stl.gui.controllers.capture;
 
-import com.cisco.trex.stateless.model.capture.AddRecordPojo;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.ui.dialog.DialogView;
@@ -12,8 +11,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
