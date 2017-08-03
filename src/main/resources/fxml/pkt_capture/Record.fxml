@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.cisco.trex.stl.gui.controllers.capture.PortFilterController?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -15,73 +14,51 @@
     <top>
         <HBox alignment="CENTER_LEFT"
               spacing="10">
-            <PortFilterController fx:id="portFilter" />
-            <Label text="Limit:" />
-            <TextField fx:id="limit"
-                       text="1000" />
-            
-            <Button fx:id="startRecorderBtn"
-                    styleClass="normalButton"
-                    text="Start Recorder"/>
+            <padding>
+                <Insets top="5" bottom="15" />
+            </padding>
+            <Label text="Active recorders" />
         </HBox>
     </top>
     <center>
-        <VBox spacing="10">
-            <HBox alignment="CENTER_LEFT"
-                  spacing="10">
-                <padding>
-                    <Insets top="15" />
-                </padding>
-                
-                <Button fx:id="exportBtn"
-                        styleClass="normalButton"
-                        text="Export to PCAP" />
-                
-                <Button fx:id="stopRecorderBtn"
-                        styleClass="normalButton"
-                        text="Stop"/>
-                
-                <Button fx:id="removeRecorderBtn"
-                        styleClass="normalButton"
-                        text="Remove "/>
-                
-            </HBox>
-            <HBox alignment="CENTER_LEFT"
-                  spacing="10">
-                <TableView fx:id="activeRecorders">
-                    <columns>
-                        <TableColumn fx:id="id"
-                                     maxWidth="130.0"
-                                     minWidth="130.0"
-                                     text="ID" />
-                        
-                        <TableColumn fx:id="status"
-                                     maxWidth="130.0"
-                                     minWidth="130.0"
-                                     text="Status" />
-                        
-                        <TableColumn fx:id="packets"
-                                     maxWidth="130.0"
-                                     minWidth="130.0"
-                                     text="Packets" />
-                        
-                        <TableColumn fx:id="bytes"
-                                     maxWidth="130.0"
-                                     minWidth="130.0"
-                                     text="Bytes" />
+        <TableView fx:id="activeRecorders"
+                   styleClass="captureTable">
+            <columns>
+                <TableColumn fx:id="id"
+                             maxWidth="130.0"
+                             minWidth="130.0"
+                             text="ID" />
 
-                        <TableColumn fx:id="rxFilter"
-                                     minWidth="130.0"
-                                     maxWidth="Infinity"
-                                     text="RX Ports" />
-                        
-                        <TableColumn fx:id="txFilter"
-                                     maxWidth="130.0"
-                                     minWidth="130.0"
-                                     text="TX Ports" />
-                    </columns>
-                </TableView>
-            </HBox>
-        </VBox>
+                <TableColumn fx:id="status"
+                             maxWidth="130.0"
+                             minWidth="130.0"
+                             text="Status" />
+
+                <TableColumn fx:id="packets"
+                             maxWidth="130.0"
+                             minWidth="130.0"
+                             text="Packets" />
+
+                <TableColumn fx:id="bytes"
+                             maxWidth="130.0"
+                             minWidth="130.0"
+                             text="Bytes" />
+
+                <TableColumn fx:id="rxFilter"
+                             minWidth="130.0"
+                             maxWidth="Infinity"
+                             text="RX Ports" />
+
+                <TableColumn fx:id="txFilter"
+                             maxWidth="130.0"
+                             minWidth="130.0"
+                             text="TX Ports" />
+
+                <TableColumn fx:id="actions"
+                             maxWidth="130.0"
+                             minWidth="100.0"
+                             text="Actions" />
+            </columns>
+        </TableView>
     </center>
 </fx:root>

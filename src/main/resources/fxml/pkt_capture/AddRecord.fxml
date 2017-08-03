@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<?import org.controlsfx.control.CheckComboBox?>
+<fx:root xmlns="http://javafx.com/javafx/8"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:id="root"
+         type="javafx.scene.layout.BorderPane">
+    <padding>
+        <Insets top="10"  right="10"  bottom="10"  left="10" />
+    </padding>
+    <center>
+        <GridPane vgap="5">
+            <columnConstraints>
+                <ColumnConstraints prefWidth="40" />
+            </columnConstraints>
+            <Label GridPane.columnIndex="0"
+                   GridPane.rowIndex="0"
+                   text="Rx:" />
+            <CheckComboBox GridPane.columnIndex="1"
+                           GridPane.rowIndex="0"
+                           fx:id="rxFilter"
+                                   minWidth="150"
+                                   maxWidth="150" />
+
+            <Label GridPane.columnIndex="0"
+                   GridPane.rowIndex="1"
+                   text="Tx:" />
+            <CheckComboBox GridPane.columnIndex="1"
+                           GridPane.rowIndex="1"
+                           fx:id="txFilter"
+                                   minWidth="150"
+                                   maxWidth="150" />
+
+            <Label GridPane.columnIndex="0"
+                   GridPane.rowIndex="2"
+                   text="Limit:" />
+            <TextField GridPane.columnIndex="1"
+                       GridPane.rowIndex="2"
+                       fx:id="limit"
+                           minWidth="150"
+                           maxWidth="150"
+                           text="1000" />
+        </GridPane>
+    </center>
+</fx:root>
