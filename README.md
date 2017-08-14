@@ -41,16 +41,6 @@ Traffic Profile Management is an offline tool, you can use it without connecting
 
 ![trex-stream-properties](https://cloud.githubusercontent.com/assets/11919839/25692285/8076aa92-30cb-11e7-9931-61fea6d6fb48.png)
 
-## Advanced mode with Packet Crafting tool
-Packet Crafting Tool provides a capability to create any packet from scratch or load packet from PCAP file and modify it.
-![Packet Crafting Tool](https://raw.githubusercontent.com/kisel/trex-packet-editor-gui/master/docs/trex-packet-editor-main-dlg.png)
-
-Field Engine provides an easy way to add TRex VM instructions to a stream.
-
-<img src="https://cloud.githubusercontent.com/assets/2825175/20897636/b69ef016-bb55-11e6-8d7e-0e68c3c22311.png" width="400">
-
-Find more information about Packet Crafting tool on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki#packet-editor)
- 
 ### Dashboard
 
 Updated dashboard provides a capability to view real-time statistics per stream. Enhacned global statistic. You can find more information about Dashboard on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki#dashboard)
@@ -62,6 +52,30 @@ Updated dashboard provides a capability to view real-time statistics per stream.
 Now it is easy to manage port attributes, configure port layer mode and see hardware counters. You can find more infromation on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki#port-management)
 
 ![Port Attributes](https://cloud.githubusercontent.com/assets/2825175/25737935/93aaad6e-31a4-11e7-8d27-b51b3dd3d8c2.png)
+
+### IPv6 Neighbor Discovering
+
+Scan IPv6 hosts and use their MAC addresses in L2 configuration
+
+![Port Layer Configuration](https://user-images.githubusercontent.com/2825175/29268895-21876212-8119-11e7-95dd-654e35555165.png)
+
+## Packet Capturing
+
+Now you can monitor activity on TRex ports without connecting to the TRex console. It is very useful capability which completes full lifecycle of traffic generation. Create streams -> Combine them into a profile and specify bandwidth/rate etc -> Start traffic -> Verify the results.
+
+![capture_monitor](https://user-images.githubusercontent.com/2825175/29270082-395888f2-811f-11e7-98da-00b3d25ce152.gif)
+
+Also you can redirect the traffic into pre-installed Wireshark application. Find more on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki)
+
+## Advanced mode with Packet Crafting tool
+Packet Crafting Tool provides a capability to create any packet from scratch or load packet from PCAP file and modify it.
+![Packet Crafting Tool](https://raw.githubusercontent.com/kisel/trex-packet-editor-gui/master/docs/trex-packet-editor-main-dlg.png)
+
+Field Engine provides an easy way to add TRex VM instructions to a stream.
+
+<img src="https://cloud.githubusercontent.com/assets/2825175/20897636/b69ef016-bb55-11e6-8d7e-0e68c3c22311.png" width="400">
+
+Find more information about Packet Crafting tool on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki#packet-editor)
 
 ##  Builds 
 
