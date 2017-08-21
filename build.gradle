@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'application'
 
 group = 'com.exalttech'
-version = '4.1'
+version = '4.2-SNAPSHOT'
 
 description = """TRex Stateless GUI Application"""
 
