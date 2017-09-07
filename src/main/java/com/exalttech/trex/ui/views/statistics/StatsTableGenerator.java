@@ -22,10 +22,9 @@ import com.exalttech.trex.ui.views.statistics.cells.*;
 import com.exalttech.trex.util.Util;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import org.apache.log4j.Logger;
 
@@ -114,7 +113,8 @@ public class StatsTableGenerator {
 
         addCounterColumn(StatisticConstantsKeys.PORT_STATS_ROW_NAME);
 
-        double l1_total = 0;
+        double tx_bps_l1_total = 0;
+        double rx_bps_l1_total = 0;
         int columnIndex = 1;
         for (int i = startPortIndex; i < endPortIndex; i++) {
             rowIndex = 0;
@@ -125,12 +125,19 @@ public class StatsTableGenerator {
                 addPortInfoCells(port, columnWidth, columnIndex);
 
                 StatisticRow row_m_tx_bps = null;
+                StatisticRow row_m_rx_bps = null;
                 StatisticRow row_m_tx_pps = null;
+                StatisticRow row_m_rx_pps = null;
                 StatisticRow row_m_tx_bps_l1 = null;
+                StatisticRow row_m_rx_bps_l1 = null;
                 int rowIndex_row_m_tx_bps_l1 = -1;
+                int rowIndex_row_m_rx_bps_l1 = -1;
                 boolean odd_l1 = odd;
-                String stat_value_m_tx_bps = "222.22";
-                String stat_value_m_tx_pps = "333.33";
+                boolean odd_rx_l1 = odd;
+                String stat_value_m_tx_bps = "0.0";
+                String stat_value_m_tx_pps = "0.0";
+                String stat_value_m_rx_bps = "0.0";
+                String stat_value_m_rx_pps = "0.0";
                 for (StatisticRow key : StatisticConstantsKeys.PORT_STATS_KEY) {
                     keyBuffer.setLength(0);
                     keyBuffer.append(key.getKey()).append("-").append(i);
@@ -139,6 +146,13 @@ public class StatsTableGenerator {
                         row_m_tx_bps_l1 = key;
                         rowIndex_row_m_tx_bps_l1 = rowIndex++;
                         odd_l1 = odd;
+                        odd = !odd;
+                        continue;
+                    }
+                    if (keyBuffer.toString().startsWith("m_total_rx_bps_l1-" + i)) {
+                        row_m_rx_bps_l1 = key;
+                        rowIndex_row_m_rx_bps_l1 = rowIndex++;
+                        odd_rx_l1 = odd;
                         odd = !odd;
                         continue;
                     }
@@ -157,33 +171,79 @@ public class StatsTableGenerator {
                         row_m_tx_pps = key;
                         stat_value_m_tx_pps = new String(stat_value);
                     }
+                    if (keyBuffer.toString().startsWith("m_total_rx_pps-" + i)) {
+                        row_m_rx_pps = key;
+                        stat_value_m_rx_pps = new String(stat_value);
+                    }
+                    if (keyBuffer.toString().startsWith("m_total_rx_bps-" + i)) {
+                        row_m_rx_bps = key;
+                        stat_value_m_rx_pps = new String(stat_value);
+                    }
                 }
                 if (row_m_tx_bps_l1 != null && row_m_tx_bps != null && row_m_tx_pps != null) {
                     // l1 <-- m_tx_bps + m_tx_pps * 20.0 * 8.0
-                    double m_tx_bps = Double.parseDouble(stat_value_m_tx_bps);
-                    double m_tx_pps = Double.parseDouble(stat_value_m_tx_pps);
-                    double m_tx_bps_l1 = m_tx_bps + m_tx_pps * 20.0 * 8.0;
-
-                    odd = odd_l1;
-                    rowIndex = rowIndex_row_m_tx_bps_l1;
-                    l1_total += m_tx_bps_l1;
-                    keyBuffer.setLength(0);
-                    keyBuffer.append(row_m_tx_bps_l1.getKey()).append("-").append(i);
-                    StatisticCell cell = getGridCell(row_m_tx_bps_l1, columnWidth, keyBuffer.toString());
-                    cell.updateItem("" + m_tx_bps_l1, "" + m_tx_bps_l1);
-                    statTable.getChildren().remove(cell);
-                    statTable.add((Node) cell, columnIndex, rowIndex_row_m_tx_bps_l1);
+//                    double m_tx_bps = Double.parseDouble(stat_value_m_tx_bps);
+//                    double m_tx_pps = Double.parseDouble(stat_value_m_tx_pps);
+//                    double m_tx_bps_l1 = m_tx_bps + m_tx_pps * 20.0 * 8.0;
+//
+//                    odd = odd_l1;
+//                    rowIndex = rowIndex_row_m_tx_bps_l1;
+//                    tx_bps_l1_total += m_tx_bps_l1;
+//                    keyBuffer.setLength(0);
+//                    keyBuffer.append(row_m_tx_bps_l1.getKey()).append("-").append(i);
+//                    StatisticCell cell = getGridCell(row_m_tx_bps_l1, columnWidth, keyBuffer.toString());
+//                    cell.updateItem("" + m_tx_bps_l1, "" + m_tx_bps_l1);
+//                    statTable.getChildren().remove(cell);
+//                    statTable.add((Node) cell, columnIndex, rowIndex_row_m_tx_bps_l1);
+                    tx_bps_l1_total += handleL1BPSStats(
+                            i,
+                            Double.parseDouble(stat_value_m_tx_bps),
+                            Double.parseDouble(stat_value_m_tx_pps),
+                            odd_l1,
+                            rowIndex_row_m_tx_bps_l1,
+                            row_m_tx_bps_l1,
+                            columnIndex,
+                            columnWidth
+                    );
+                }
+                
+                if (row_m_rx_bps_l1 != null && row_m_rx_bps != null && row_m_rx_pps != null) {
+                    // l1 <-- m_rx_bps + m_rx_pps * 20.0 * 8.0
+                    rx_bps_l1_total += handleL1BPSStats(
+                            i,
+                            Double.parseDouble(stat_value_m_rx_bps),
+                            Double.parseDouble(stat_value_m_rx_pps),
+                            odd_rx_l1,
+                            rowIndex_row_m_rx_bps_l1,
+                            row_m_rx_bps_l1,
+                            columnIndex,
+                            columnWidth
+                    );
                 }
                 columnIndex++;
             }
         }
         if (isMultiPort) {
-            addTotalColumn(columnWidth, columnIndex, l1_total);
+            addTotalColumn(columnWidth, columnIndex, tx_bps_l1_total, rx_bps_l1_total);
         }
         return statTable;
 
     }
 
+    private double handleL1BPSStats(int portIndex, double bps, double pps, boolean odd_l1, int l1_index, StatisticRow l1Key, int columnIndex, double columnWidth) {
+        double l1_bps = bps + pps * 20.0 * 8.0;
+
+        odd = odd_l1;
+        rowIndex = l1_index;
+        keyBuffer.setLength(0);
+        keyBuffer.append(l1Key.getKey()).append("-").append(portIndex);
+        StatisticCell cell = getGridCell(l1Key, columnWidth, keyBuffer.toString());
+        cell.updateItem("" + l1_bps, "" + l1_bps);
+        statTable.getChildren().remove(cell);
+        statTable.add((Node) cell, columnIndex, l1_index);
+        return l1_bps;
+    }
+    
     /**
      * Add counter column
      *
@@ -365,7 +425,7 @@ public class StatsTableGenerator {
      * @param columnIndex
      * @param columnWidth
      */
-    private void addTotalColumn(double columnWidth, int columnIndex, double l1_total) {
+    private void addTotalColumn(double columnWidth, int columnIndex, double tx_bps_l1_total, double rx_bps_l1_total) {
         rowIndex = 1;
         odd = true;
         addHeaderCell("Total", columnIndex, columnWidth);
@@ -374,7 +434,10 @@ public class StatsTableGenerator {
         for (StatisticRow row : StatisticConstantsKeys.PORT_STATS_KEY) {
             StatisticCell cell = getGridCell(row, columnWidth, row.getKey() + "-total");
             if ((row.getKey() + "-total").startsWith("m_total_tx_bps_l1-total")) {
-                cell.updateItem("" + l1_total, "" + l1_total);
+                cell.updateItem("" + tx_bps_l1_total, "" + tx_bps_l1_total);
+            }
+            if ((row.getKey() + "-total").startsWith("m_total_rx_bps_l1-total")) {
+                cell.updateItem("" + rx_bps_l1_total, "" + rx_bps_l1_total);
             }
             else {
                 if (row.isFormatted()) {

@@ -6,6 +6,7 @@ import com.cisco.trex.stateless.model.stats.FlowStat;
 public class FlowStatPoint {
     private long rb;
     private double rbsL2;
+    private double rbsL1;
     private long rp;
     private double rps;
     private long tb;
@@ -25,6 +26,7 @@ public class FlowStatPoint {
         tp = flowStat.getTp().values().stream().mapToLong(Long::longValue).sum();
         tps = flowStat.getTps().values().stream().mapToDouble(Double::doubleValue).sum();
         tbsL1 = tbsL2 + 20 * tps * 8;
+        rbsL1 = rbsL2 + 20 * rps * 8;
         this.time = time;
     }
 
@@ -34,6 +36,9 @@ public class FlowStatPoint {
 
     public double getRbsL2() {
         return rbsL2;
+    }
+    public double getRbsL1() {
+        return rbsL1;
     }
 
     public long getRp() {
