@@ -736,17 +736,19 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
             assignedProf.setProfileName(profileName);
             assignedProf.setAllStreamsWithLatency(allStreamWithLatency);
+            PortModel port = PortsManager.getInstance().getPortModel(portID);
+            String portState = port.getPortStatus();
             StreamValidation streamValidationGraph = serverRPCMethods.assignTrafficProfile(portID, loadedProfiles);
+            
             portManager.getPortModel(portID).setStreamLoaded(true);
             startStream.setDisable(false);
             // update current multiplier data 
             assignedProf.setRate(streamValidationGraph.getResult().getRate());
             multiplierView.assignNewProfile(assignedProf);
-            // update multiplier value according to previous bandwidth value
-            if (assignPrevBandwidth) {
-                multiplierView.setSliderValue(currentBandwidth);
-            }
             updateMultiplierValues(assignedProf);
+            if (portState.equalsIgnoreCase("tx")) {
+                startTraffic(portID);
+            }
         } catch (IOException | InvalidRPCResponseException | IncorrectRPCMethodException ex) {
             startStream.setDisable(true);
             portManager.getPortModel(portID).setStreamLoaded(false);

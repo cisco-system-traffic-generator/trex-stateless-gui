@@ -26,29 +26,20 @@ import com.exalttech.trex.ui.components.MultiplierOption;
 import com.exalttech.trex.ui.components.events.MultiplierSelectionEvent;
 import com.exalttech.trex.ui.views.models.AssignedProfile;
 import com.exalttech.trex.util.Util;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import static javafx.scene.layout.AnchorPane.setBottomAnchor;
-import static javafx.scene.layout.AnchorPane.setLeftAnchor;
-import static javafx.scene.layout.AnchorPane.setRightAnchor;
-import static javafx.scene.layout.AnchorPane.setTopAnchor;
 
 /**
  * Multiplier option container view implementation
