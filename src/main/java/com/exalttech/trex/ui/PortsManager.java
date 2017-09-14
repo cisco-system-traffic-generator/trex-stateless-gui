@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.ui;
 
+import com.cisco.trex.stateless.model.port.PortVlan;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.models.PortModel;
@@ -73,7 +74,7 @@ public class PortsManager {
         portServiceModeChangedListeners.add(listener);
     }
     
-    public PortModel getPortModel(int portIndex) {
+    public PortModel    getPortModel(int portIndex) {
         PortModel model = portModels.get(portIndex);
         if (model == null) {
             model = PortModel.createModelFrom(portList.get(portIndex));
@@ -146,11 +147,25 @@ public class PortsManager {
                 port.setRx_info(portStatus.getRx_info());
                 port.setService(portStatus.getService());
                 port.linkProperty().set(portStatus.getAttr().getLink().getUp());
+                updateModel(port.getIndex(), portStatus);
             }
             portManagerHandler.onPortListUpdated(true);
         } catch (Exception ex) {
             logger.error("Error reading port status", ex);
         }
+    }
+
+    private void updateModel(int portIdx, PortStatus.PortStatusResult portStatus) {
+        PortModel model = getPortModel(portIdx);
+        String vlan = "";
+        PortVlan portVlan = portStatus.getAttr().getVlan();
+        List<Integer> vlanIds = portVlan.getTags();
+        if (!vlanIds.isEmpty()) {
+            vlan = vlanIds.stream()
+                          .map(String::valueOf)
+                          .collect(Collectors.joining(" "));
+        }
+        model.setVlan(vlan);
     }
 
     /**
