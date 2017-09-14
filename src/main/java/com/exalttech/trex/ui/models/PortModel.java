@@ -46,6 +46,7 @@ public class PortModel {
     private StringProperty pciAddress = new SimpleStringProperty();
     private StringProperty rxQueueing = new SimpleStringProperty();
     private StringProperty gratARP = new SimpleStringProperty();
+    private StringProperty vlan = new SimpleStringProperty();
     
     private ObjectProperty<ConfigurationMode> layerConfigurationType = new SimpleObjectProperty<>();
     
@@ -209,7 +210,19 @@ public class PortModel {
         serverRPCMethods.releasePort(getIndex(), false);
         setIsOwned(false);
     }
-    
+
+    public String getVlan() {
+        return vlan.get();
+    }
+
+    public StringProperty vlanProperty() {
+        return vlan;
+    }
+
+    public void setVlan(String vlan) {
+        this.vlan.set(vlan);
+    }
+
     public boolean getServiceMode() {
         return serviceModeProperty.get();
     }

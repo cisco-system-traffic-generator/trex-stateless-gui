@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.ui.models;
 
+import com.cisco.trex.stateless.model.port.PortVlan;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -250,6 +251,8 @@ public class PortStatus {
             @JsonProperty("speed")
             private int speed;
             private IntegerProperty speedProperty = new SimpleIntegerProperty();
+            @JsonProperty("vlan")
+            private PortVlan vlan;
             @JsonProperty("led")
             private PortStatusResultAttrLed led;
             private StringProperty rxFilterModeProperty = new SimpleStringProperty();
@@ -279,6 +282,14 @@ public class PortStatus {
 
             public void setSpeed(int speed) {
                 this.speedProperty.set(speed);
+            }
+
+            public PortVlan getVlan() {
+                return vlan;
+            }
+
+            public void setVlan(PortVlan vlan) {
+                this.vlan = vlan;
             }
 
             /**

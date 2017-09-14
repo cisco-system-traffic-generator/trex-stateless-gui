@@ -17,8 +17,8 @@
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
 
-            <Label text="Index:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <Label fx:id="index" id="index" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"
+            <Label text="VLAN:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label fx:id="vlan" id="index" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"
                    GridPane.columnSpan="2"/>
 
             <Label text="Driver:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>

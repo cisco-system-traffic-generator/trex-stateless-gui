@@ -2,7 +2,6 @@ package com.exalttech.trex.ui.controllers.ports.tabs;
 
 import com.cisco.trex.stateless.TRexClient;
 import com.exalttech.trex.application.TrexApp;
-import com.exalttech.trex.core.AsyncResponseManager;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.ui.PortsManager;
@@ -24,7 +23,8 @@ import org.apache.log4j.Logger;
 import org.controlsfx.control.ToggleSwitch;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PortAttributes extends BorderPane {
 
@@ -37,7 +37,7 @@ public class PortAttributes extends BorderPane {
     private PortModel port;
     
     @FXML
-    private Label index;
+    private Label vlan;
     @FXML
     private Label driver;
 
@@ -102,7 +102,24 @@ public class PortAttributes extends BorderPane {
             onReleasedAction();
         }
     };
-    
+
+    private ChangeListener<String> vlanChangeListener = (observable, oldValue, newValue) -> {
+        vlan.setText(formatVlanIds(newValue));
+    };
+
+    private String formatVlanIds(String vlan) {
+        List<String> vlanIds = Arrays.stream(vlan.split(" "))
+                .filter(vlanId -> !Strings.isNullOrEmpty(vlanId))
+                .collect(Collectors.toList());
+        if (vlanIds.size() == 2) {
+            return vlanIds.get(0) +"/"+vlanIds.get(1)+"(QinQ)";
+        } else if (vlanIds.isEmpty()) {
+            return "-";
+        } else {
+            return vlanIds.get(0);
+        }
+    }
+
     private void onAcquireAction() {
         acquireReleaseBtn.setText("Release");
         forceAcquireBtn.setDisable(true);
@@ -198,7 +215,8 @@ public class PortAttributes extends BorderPane {
             acquireReleaseBtn.setDisable(!Strings.isNullOrEmpty(this.port.getOwner()));
         }
 
-        index.textProperty().bind(model.indexProperty().asString());
+        vlan.setText(formatVlanIds(model.getVlan()));
+        model.vlanProperty().addListener(vlanChangeListener);
         driver.textProperty().bind(model.portDriverProperty());
         rxFilterMode.textProperty().bind(model.rxFilterModeProperty());
         owner.textProperty().bind(model.ownerProperty());
@@ -241,6 +259,7 @@ public class PortAttributes extends BorderPane {
 
     private void unbindPrevious() {
         if (port != null) {
+            port.vlanProperty().removeListener(vlanChangeListener);
             port.isOwnedProperty().removeListener(changeOnwershipListener);
             multicast.selectedProperty().unbindBidirectional(port.multicastProperty());
             promiscuousMode.selectedProperty().unbindBidirectional(port.promiscuousModeProperty());
@@ -253,6 +272,7 @@ public class PortAttributes extends BorderPane {
         port = null;
         
         Arrays.asList(
+            vlan,
             driver,
             rxFilterMode,
             owner,
