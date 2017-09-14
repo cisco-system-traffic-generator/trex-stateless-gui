@@ -4,6 +4,8 @@ import com.cisco.trex.stateless.IPv6NeighborDiscoveryService;
 import com.cisco.trex.stateless.TRexClient;
 import com.cisco.trex.stateless.exception.ServiceModeRequiredException;
 import com.cisco.trex.stateless.model.Ipv6Node;
+import com.cisco.trex.stateless.model.StubResult;
+import com.cisco.trex.stateless.model.TRexClientResult;
 import com.cisco.trex.stl.gui.models.IPv6Host;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.AsyncResponseManager;
@@ -38,10 +40,7 @@ import org.pcap4j.packet.namednumber.IcmpV4Type;
 import org.pcap4j.packet.namednumber.IcmpV6Type;
 
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -92,6 +91,8 @@ public class PortLayerConfiguration extends AnchorPane {
 
     @FXML
     RadioButton l3Mode;
+    @FXML
+    TextField vlan;
 
     @FXML
     private TableView<IPv6Host> ipv6Hosts;
@@ -290,6 +291,16 @@ public class PortLayerConfiguration extends AnchorPane {
             guiLogger.appendText(LogType.ERROR, "Port " + model.getIndex() + " is in TX mode. Please stop traffic first.");
             return;
         }
+        int vlanIdsCount = Arrays.stream(model.getVlan().split(" "))
+                .filter(vlanId -> !Strings.isNullOrEmpty(vlanId))
+                .map(Integer::valueOf)
+                .collect(Collectors.toList())
+                .size();
+        
+        if(vlanIdsCount > 2) {
+            guiLogger.appendText(LogType.ERROR, "Maximum two nested VLAN tags are allowed.");
+            return;
+        }
         
         if (l2Mode.isSelected()) {
             if (Strings.isNullOrEmpty(l2Destination.getText())) {
@@ -312,6 +323,29 @@ public class PortLayerConfiguration extends AnchorPane {
             @Override
             public Optional<String> call(){
                 TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
+                
+                List<Integer> vlanIds = new ArrayList<>();
+                if (!Strings.isNullOrEmpty(model.getVlan())) {
+                    vlanIds.addAll(
+                            Arrays.stream(model.getVlan().split(" "))
+                                  .filter(vlanId -> !Strings.isNullOrEmpty(vlanId))
+                                  .map(Integer::valueOf)
+                                  .collect(Collectors.toList())
+                    );
+                }
+                try{
+                    trexClient.serviceMode(model.getIndex(), true);
+                    TRexClientResult<StubResult> vlanConfigResult = trexClient.setVlan(model.getIndex(), vlanIds);
+                    if (vlanConfigResult.isFailed()) {
+                        guiLogger.appendText(LogType.ERROR, "Unable to save VLAN configuration");
+                    } else {
+                        guiLogger.appendText(LogType.INFO, "VLAN configuration updated");
+                    }
+                } finally {
+                    trexClient.serviceMode(model.getIndex(), false);
+                }
+                
+                
                 if (l2Mode.isSelected()) {
                     String dstMac = l2Destination.getText();
                     try {
@@ -472,6 +506,8 @@ public class PortLayerConfiguration extends AnchorPane {
         l3Destination.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().dstProperty());
         l3Source.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().srcProperty());
         
+        vlan.textProperty().bindBidirectional(this.model.vlanProperty());
+        
         updateControlsState();
         
         this.model.layerConfigurationTypeProperty().addListener(configurationModeChangeListener);
@@ -481,6 +517,7 @@ public class PortLayerConfiguration extends AnchorPane {
         if(model == null) {
             return;
         }
+        vlan.textProperty().unbindBidirectional(this.model.vlanProperty());
         
         l2Destination.textProperty().unbindBidirectional(this.model.getL2LayerConfiguration().dstProperty());
         l2Source.textProperty().unbindBidirectional(this.model.getL2LayerConfiguration().srcProperty());
