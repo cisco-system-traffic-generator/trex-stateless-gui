@@ -1002,11 +1002,12 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 /**************************************
     assign profile buttons
 **************************************/
-.addNewProfile {
+.addNewProfile, .duplicateProfile {
     -fx-border-radius: 3px;
     -fx-background-color: #32b4ea;
     -fx-text-fill:#ffffff;
 }
+
 .updateProfileBtn {
     -fx-border-radius: 3px;
     -fx-background-color: #64b21d;

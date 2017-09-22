@@ -276,15 +276,20 @@
                                                                     styleClass="addNewProfile" text="New Profile"
                                                                     AnchorPane.leftAnchor="383.0"
                                                                     AnchorPane.topAnchor="10.0"/>
+                                                            <Button fx:id="duplicateProfileBtn" mnemonicParsing="false"
+                                                                    onAction="#handleDuplicateProfile" prefWidth="112.0"
+                                                                    styleClass="duplicateProfile" text="Duplicate"
+                                                                    AnchorPane.leftAnchor="505.0"
+                                                                    AnchorPane.topAnchor="10.0"/>
                                                             <Separator id="separator" maxWidth="1.0"
                                                                        minWidth="1.0" orientation="VERTICAL"
                                                                        prefHeight="25.0" prefWidth="1.0"
-                                                                       AnchorPane.leftAnchor="505.0"
+                                                                       AnchorPane.leftAnchor="626.0"
                                                                        AnchorPane.topAnchor="10.0"/>
                                                             <Label fx:id="countdownValue" prefHeight="20.0"
                                                                    prefWidth="50.0"
                                                                    styleClass="countdownLabel"
-                                                                   AnchorPane.leftAnchor="715.0"
+                                                                   AnchorPane.leftAnchor="834.0"
                                                                    AnchorPane.topAnchor="14.0"/>
                                                             <Button id="applyBtn" fx:id="updateBtn"
                                                                     disable="true" mnemonicParsing="false"
@@ -292,7 +297,7 @@
                                                                     prefWidth="90.0"
                                                                     styleClass="updateProfileBtn"
                                                                     text="Update"
-                                                                    AnchorPane.leftAnchor="515.0"
+                                                                    AnchorPane.leftAnchor="634.0"
                                                                     AnchorPane.topAnchor="10.0"/>
                                                             <Button fx:id="stopUpdateBtn"
                                                                     mnemonicParsing="false"
@@ -300,7 +305,7 @@
                                                                     prefWidth="90.0"
                                                                     styleClass="stopUpdateBtn" text="Cancel"
                                                                     visible="false"
-                                                                    AnchorPane.leftAnchor="615.0"
+                                                                    AnchorPane.leftAnchor="734.0"
                                                                     AnchorPane.topAnchor="10.0"/>
                                                             <Label fx:id="disableProfileNote"
                                                                    prefHeight="17.0" prefWidth="336.0"
