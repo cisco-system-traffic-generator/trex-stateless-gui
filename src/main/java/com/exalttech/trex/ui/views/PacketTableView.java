@@ -431,6 +431,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             Profile[] newProfileDataList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
             tabledata.setStreamsList(trafficProfile.convertProfilesToTableData(newProfileDataList));
             saveChangesToYamlFile(newProfileDataList);
+
+            if (tableUpdateHandler != null) {
+                tableUpdateHandler.onStreamTableChanged();
+            }
         } catch (CloneNotSupportedException | IOException ex) {
             LOG.error("Error duplicating streams", ex);
         }
