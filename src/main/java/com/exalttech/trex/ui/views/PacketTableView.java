@@ -68,6 +68,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Stream table view implementation
@@ -402,13 +405,26 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         return selectedProfiles;
     }
 
+    private String getNewName(String profileName, List<Profile> profiles) {
+        Set<String> profileNames = profiles.stream()
+                .map(Profile::getName)
+                .collect(Collectors.toSet());
+
+        int availableSuffix = 1;
+        while (profileNames.contains(profileName + "_" + availableSuffix)) {
+            ++availableSuffix;
+        }
+
+        return profileName + "_" + availableSuffix;
+    }
+
     private void duplicateProfiles(List<Profile> newProfiles) {
         try{
             List<Profile> profiles = tabledata.getProfiles();
 
             for (Profile profile : newProfiles) {
                 Profile clonedProfile = (Profile) profile.clone();
-                clonedProfile.setName(profile.getName() + "_" + Util.getRandomNumericID(3));
+                clonedProfile.setName(getNewName(profile.getName(), profiles));
                 profiles.add(clonedProfile);
             }
 
