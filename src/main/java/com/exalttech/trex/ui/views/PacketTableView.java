@@ -68,6 +68,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Stream table view implementation
@@ -80,6 +83,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
     StreamTableButton buildPacketBtn;
     StreamTableButton editPacketBtn;
+    StreamTableButton duplicatePacketBtn;
     StreamTableButton deleteButtonBtn;
     StreamTableButton exportPcapButton;
     StreamTableButton importPcapButton;
@@ -94,7 +98,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     TrafficProfile trafficProfile;
     final KeyCombination copyCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
     final KeyCombination pasteCombination = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN);
-    private Profile selectedProfile = null;
+    private List<Profile> copiedProfiles = new ArrayList<>();
     private String profileName;
     int numOfStreamLoaded = 0;
     int numOfEnabledStream = 0;
@@ -145,6 +149,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         initializeStreamButtons(editPacketBtn, true);
         buttonContainer.getChildren().add(editPacketBtn);
 
+        duplicatePacketBtn = new StreamTableButton(StreamTableAction.DUPLICATE);
+        initializeStreamButtons(duplicatePacketBtn, true);
+        buttonContainer.getChildren().add(duplicatePacketBtn);
+
         deleteButtonBtn = new StreamTableButton(StreamTableAction.DELETE);
         initializeStreamButtons(deleteButtonBtn, true);
         buttonContainer.getChildren().add(deleteButtonBtn);
@@ -167,6 +175,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
         rightClickMenu = new ContextMenu();
         addMenuItem(StreamTableAction.EDIT);
+        addMenuItem(StreamTableAction.DUPLICATE);
         addMenuItem(StreamTableAction.DELETE);
         addMenuItem(StreamTableAction.EXPORT_TO_PCAP);
         addMenuItem(StreamTableAction.EXPORT_TO_YAML);
@@ -189,14 +198,15 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
             exportPcapButton.setDisable(notSelected);
             editPacketBtn.setDisable(notSelected);
+            duplicatePacketBtn.setDisable(notSelected);
             deleteButtonBtn.setDisable(notSelected);
         });
 
         streamPacketTableView.addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
             if (copyCombination.match(event)) {
-                selectedProfile = tabledata.getProfiles().get(streamPacketTableView.getSelectionModel().getSelectedIndex());
-            } else if (pasteCombination.match(event)) {
-                handleDuplicateStream();
+                copiedProfiles = getSelectedProfiles();
+            } else if (pasteCombination.match(event) && !copiedProfiles.isEmpty()) {
+                handlePasteStreams(copiedProfiles);
             } else if (event.getCode() == KeyCode.DELETE) {
                 handleDeletePacket();
             }
@@ -258,6 +268,9 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 break;
             case EDIT:
                 handleEditPacket();
+                break;
+            case DUPLICATE:
+                handleDuplicateStream();
                 break;
             case DELETE:
                 handleDeletePacket();
@@ -383,23 +396,59 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         }
     }
 
+    private List<Profile> getSelectedProfiles() {
+        List<Profile> selectedProfiles = new ArrayList<>();
+        for (int index : streamPacketTableView.getSelectionModel().getSelectedIndices()) {
+            selectedProfiles.add(tabledata.getProfiles().get(index));
+        }
+
+        return selectedProfiles;
+    }
+
+    private String getNewName(String profileName, List<Profile> profiles) {
+        Set<String> profileNames = profiles.stream()
+                .map(Profile::getName)
+                .collect(Collectors.toSet());
+
+        int availableSuffix = 1;
+        while (profileNames.contains(profileName + "_" + availableSuffix)) {
+            ++availableSuffix;
+        }
+
+        return profileName + "_" + availableSuffix;
+    }
+
+    private void duplicateProfiles(List<Profile> newProfiles) {
+        try{
+            List<Profile> profiles = tabledata.getProfiles();
+
+            for (Profile profile : newProfiles) {
+                Profile clonedProfile = (Profile) profile.clone();
+                clonedProfile.setName(getNewName(profile.getName(), profiles));
+                profiles.add(clonedProfile);
+            }
+
+            Profile[] newProfileDataList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
+            tabledata.setStreamsList(trafficProfile.convertProfilesToTableData(newProfileDataList));
+            saveChangesToYamlFile(newProfileDataList);
+
+            if (tableUpdateHandler != null) {
+                tableUpdateHandler.onStreamTableChanged();
+            }
+        } catch (CloneNotSupportedException | IOException ex) {
+            LOG.error("Error duplicating streams", ex);
+        }
+}
+
+    private void handlePasteStreams(List<Profile> copiedProfiles) {
+        duplicateProfiles(copiedProfiles);
+    }
+
     /**
      * Handle duplicate stream
      */
     public void handleDuplicateStream() {
-        try {
-            if (selectedProfile != null) {
-                Profile clonedProfile = (Profile) selectedProfile.clone();
-                clonedProfile.setName(selectedProfile.getName() + "_" + Util.getRandomNumericID(3));
-                tabledata.getProfiles().add(clonedProfile);
-
-                Profile[] newProfileDataList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
-                tabledata.setStreamsList(trafficProfile.convertProfilesToTableData(newProfileDataList));
-                saveChangesToYamlFile(newProfileDataList);
-            }
-        } catch (CloneNotSupportedException | IOException ex) {
-            LOG.error("Error duplicationg stream", ex);
-        }
+        duplicateProfiles(getSelectedProfiles());
     }
 
     /**
