@@ -37,6 +37,22 @@
                                 text="Create Profile"
                                 GridPane.columnIndex="0"
                                 GridPane.rowIndex="0"/>
+                        <Button id="duplicate-profile-button"
+                                fx:id="duplicateProfileBtn"
+                                mnemonicParsing="false"
+                                onAction="#handleDuplicateProfileBtnClicked"
+                                styleClass="customBtn"
+                                text="Duplicate Profile"
+                                GridPane.columnIndex="1"
+                                GridPane.rowIndex="0"/>
+                        <Button fx:id="loadProfileBtn"
+                                id="load-profile-button"
+                                mnemonicParsing="false"
+                                onMouseClicked="#handleLoadProfileBtnClick"
+                                styleClass="customBtn"
+                                text="Load Profile"
+                                GridPane.columnIndex="0"
+                                GridPane.rowIndex="1"/>
                         <Button fx:id="deleteProfileBtn"
                                 id="delete-profile-button"
                                 mnemonicParsing="false"
@@ -44,7 +60,7 @@
                                 styleClass="customBtn"
                                 text="Delete Profile"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="0"/>
+                                GridPane.rowIndex="1"/>
                         <Button fx:id="exportProfileBtn"
                                 id="export-profile-to-json-button"
                                 disable="true"
@@ -53,7 +69,7 @@
                                 styleClass="customBtn"
                                 text="Export to JSON"
                                 GridPane.columnIndex="0"
-                                GridPane.rowIndex="1"/>
+                                GridPane.rowIndex="2"/>
                         <Button fx:id="exportToYamlBtn"
                                 id="export-profile-to-yaml-button"
                                 disable="true"
@@ -62,14 +78,6 @@
                                 styleClass="customBtn"
                                 text="Export to Yaml"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="1"/>
-                        <Button fx:id="loadProfileBtn"
-                                id="load-profile-button"
-                                mnemonicParsing="false"
-                                onMouseClicked="#handleLoadProfileBtnClick"
-                                styleClass="customBtn"
-                                text="Load Profile"
-                                GridPane.columnIndex="0"
                                 GridPane.rowIndex="2"/>
                     </children>
                     <columnConstraints>

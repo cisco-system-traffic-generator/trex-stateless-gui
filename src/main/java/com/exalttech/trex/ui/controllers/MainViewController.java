@@ -156,6 +156,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     Button stopUpdateBtn;
     @FXML
     Button newProfileBtn;
+    @FXML
+    Button duplicateProfileBtn;
+
 
     @FXML
     AnchorPane logContainer;
@@ -203,13 +206,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     @FXML
     PortView portView;
-    
+
     @FXML
     Label serviceModeLabel;
-    
+
     BooleanProperty portViewVisibilityProperty = new SimpleBooleanProperty(false);
     BooleanProperty systemInfoVisibilityProperty = new SimpleBooleanProperty(true);
-    
+
     private ContextMenu rightClickPortMenu;
     private ContextMenu rightClickProfileMenu;
     private ContextMenu rightClickGlobalMenu;
@@ -550,12 +553,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         int portId = getSelectedPortIndex();
         if (portId != -1) {
             Port port = portManager.getPortList().get(portId);
-            
+
             boolean isOwned = port.getOwner().equals(ConnectionManager.getInstance().getClientName());
-            
+
             setDisableContextMenuItem("Acquire", !Util.isNullOrEmpty(port.getOwner()));
             setDisableContextMenuItem("Release Acquire", !isOwned);
-            
+
             boolean enableServiceMenuItemDisabled = true;
             boolean disableServiceMenuItemDisabled = true;
             if (isOwned) {
@@ -564,10 +567,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
             setDisableContextMenuItem("Enable Service Mode", enableServiceMenuItemDisabled);
             setDisableContextMenuItem("Disable Service Mode", disableServiceMenuItemDisabled);
-            
+
         }
     }
-    
+
     private void setDisableContextMenuItem(String item, boolean disable) {
         Optional<MenuItem> disableServiceModeOptional = getItemByName(rightClickPortMenu, item);
         disableServiceModeOptional.ifPresent(menuItem -> menuItem.setDisable(disable));
@@ -579,7 +582,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                    .filter(menuItem -> menuItem.getText().equalsIgnoreCase(text))
                    .findFirst();
     }
-    
+
     /**
      * Reset the application to initial state
      */
@@ -641,9 +644,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         if (didServerCrash) {
             openConnectDialog();
         }
-        
+
         portViewVisibilityProperty.setValue(false);
-        
+
         portManager.clearPorts();
 
         resetAppInProgress = false;
@@ -663,7 +666,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         PortModel model = portManager.getPortModel(getSelectedPortIndex());
 
         serviceModeLabel.visibleProperty().bind(model.serviceModeProperty());
-        
+
         portManager.updatedPorts(Arrays.asList(getSelectedPortIndex()));
         Optional<Integer> optional = portManager.getOwnedPortIndexes().stream().filter(idx -> idx.equals(getSelectedPortIndex())).findFirst();
         optional.ifPresent(val -> model.setIsOwned(true));
@@ -674,7 +677,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Hide and show stat table
      *
      * @TODO need to get rid off this method
-     * 
+     *
      * @param showStatTable
      */
     private void hideShowStatTable(boolean showStatTable) {
@@ -699,7 +702,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 assigned = new AssignedProfile();
                 assignedPortProfileMap.put(portIndex, assigned);
             }
-            
+
             if (assigned.isProfileAssigned()) {
                 doAssignProfile = false;
                 profileListBox.getSelectionModel().select(assigned.getProfileName());
@@ -709,13 +712,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
                 doAssignProfile = true;
             }
-            
+
             tableView.reset();
+
             if (!Util.isNullOrEmpty(assigned.getProfileName())) {
                 loadStreamTable(assigned.getProfileName());
                 // fill multiplier values
                 multiplierView.fillAssignedProfileValues(assigned);
             }
+
             prevViewvedPortPtofileIndex = portIndex;
         } catch (Exception ex) {
             LOG.error("Error loading profile", ex);
@@ -739,10 +744,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             PortModel port = PortsManager.getInstance().getPortModel(portID);
             String portState = port.getPortStatus();
             StreamValidation streamValidationGraph = serverRPCMethods.assignTrafficProfile(portID, loadedProfiles);
-            
+
             portManager.getPortModel(portID).setStreamLoaded(true);
             startStream.setDisable(false);
-            // update current multiplier data 
+            // update current multiplier data
             assignedProf.setRate(streamValidationGraph.getResult().getRate());
             multiplierView.assignNewProfile(assignedProf);
             updateMultiplierValues(assignedProf);
@@ -797,22 +802,24 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             return false;
         }
     }
-    
+
     /**
      * Initialize in-line built component
      */
     private void initializeInlineComponent() {
         updateBtn.setGraphic(new ImageView(new Image("/icons/apply.png")));
         newProfileBtn.setGraphic(new ImageView(new Image("/icons/add_profile.png")));
+        duplicateProfileBtn.setGraphic(new ImageView(new Image("/icons/clone_profile.png")));
         stopUpdateBtn.setGraphic(new ImageView(new Image("/icons/stop_update.png")));
         devicesTreeArrowContainer.setImage(leftArrow);
         // mapped profiles enabling with property
         profileListBox.disableProperty().bind(disableProfileProperty);
         newProfileBtn.disableProperty().bind(disableProfileProperty);
+        duplicateProfileBtn.disableProperty().bind(disableProfileProperty);
         profileDetailLabel.disableProperty().bind(disableProfileProperty);
         profileListBox.getItems().clear();
         profileListBox.setItems(FXCollections.observableArrayList(getProfilesNameList()));
-        
+
         profileListBox.valueProperty().addListener(new UpdateProfileListener<>(profileListBox.getSelectionModel()));
         updateProfileListProperty.bind(ProfileManager.getInstance().getUpdatedProperty());
         updateProfileListProperty.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
@@ -839,7 +846,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         addMenuItem(rightClickProfileMenu, "Play", ContextMenuClickType.PLAY, false);
         addMenuItem(rightClickProfileMenu, "Pause", ContextMenuClickType.PAUSE, false);
         addMenuItem(rightClickProfileMenu, "Stop", ContextMenuClickType.STOP, false);
-        
+
         rightClickGlobalMenu = new ContextMenu();
         addMenuItem(rightClickGlobalMenu, "Release All Ports", ContextMenuClickType.RELEASE_ALL, false);
         addMenuItem(rightClickGlobalMenu, "Acquire All Ports", ContextMenuClickType.ACQUIRE_ALL, false);
@@ -918,6 +925,38 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             LOG.error("Error creating new profile", ex);
         }
     }
+
+    /**
+     * Handle add new profile
+     *
+     * @param ev
+     */
+    @FXML
+    public void handleDuplicateProfile(ActionEvent ev) {
+        try {
+            String assignedProfile = String.valueOf(profileListBox.getValue());
+            if (Util.isNullOrEmpty(assignedProfile) || Constants.SELECT_PROFILE.equals(assignedProfile)) {
+                return;
+            }
+
+            String duplicatedProfileName = ProfileManager.getInstance().duplicateProfile(TrexApp.getPrimaryStage(), assignedProfile);
+            if (Util.isNullOrEmpty(duplicatedProfileName)) {
+                return;
+            }
+
+            int portID = getSelectedPortIndex();
+
+            if (portID > -1) {
+                if (PortState.getPortStatus(portManager.getPortList().get(portID).getStatus()) == PortState.PAUSE
+                        && !Util.isNullOrEmpty(duplicatedProfileName)) {
+                    profileListBox.getSelectionModel().select(duplicatedProfileName);
+                }
+            }
+        } catch (IOException ex) {
+            LOG.error("Error duplicating profile", ex);
+        }
+    }
+
 
     /**
      * Add menu item

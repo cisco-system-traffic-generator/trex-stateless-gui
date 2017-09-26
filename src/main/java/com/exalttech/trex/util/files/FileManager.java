@@ -19,12 +19,19 @@ import com.exalttech.trex.util.FileChooserFactory;
 import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.apache.commons.io.FileUtils;
+
+import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * File manager utility class
@@ -142,6 +149,22 @@ public class FileManager {
         File newFile = new File(path);
         newFile.createNewFile();
         return newFile;
+    }
+
+    /**
+     * Duplicate file
+     *
+     * @param srcFileName Source file name
+     * @param targetFileName Target file name
+     * @throws IOException
+     */
+    public static File duplicateFile(String srcFileName, String targetFileName) throws IOException {
+        Path srcPath = Paths.get(getProfilesFilePath() + srcFileName);
+        Path targetPath = Paths.get(getProfilesFilePath() + targetFileName);
+
+        Files.copy(srcPath, targetPath, REPLACE_EXISTING, COPY_ATTRIBUTES);
+
+        return targetPath.toFile();
     }
 
     /**

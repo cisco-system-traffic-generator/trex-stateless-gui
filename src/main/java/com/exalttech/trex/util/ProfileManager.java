@@ -136,16 +136,50 @@ public class ProfileManager {
      * @throws IOException
      */
     public String createNewProfile(Stage currentStage) throws IOException {
+        String profileName = getProfileNameDialogValue(currentStage, "Create Profile") + ".yaml";
+        File newFile = FileManager.createNewFile(profileName);
+        updateProfilesList(newFile, true);
+
+        return profileName;
+    }
+
+    public String duplicateProfile(Stage currentStage, String sourceProfileName) throws IOException {
+        if (!profilesMap.containsKey(sourceProfileName)) {
+            throw new IllegalArgumentException(String.format("Cannot find profile: %s", sourceProfileName));
+        }
+
+        String targetFileName = getProfileNameDialogValue(currentStage, "Duplicate Profile") + ".yaml";
+        if (profilesMap.containsKey(targetFileName)) {
+            throw new IllegalArgumentException(String.format("Profile already exists: %s", targetFileName));
+        }
+
+        Profiles profileInfo = profilesMap.get(sourceProfileName);
+        String sourceFileName = profileInfo.getFileName();
+
+        File result = FileManager.duplicateFile(sourceFileName, targetFileName);
+
+        updateProfilesList(result, true);
+
+        return targetFileName;
+    }
+
+    private String getProfileNameDialogValue(Stage currentStage, String title) throws IOException {
         String profileName = "";
-        DialogWindow profileNameWindow = new DialogWindow("ProfileStreamNameDialog.fxml", "Create Profile", 150, 100, false, currentStage);
+        DialogWindow profileNameWindow = new DialogWindow(
+                "ProfileStreamNameDialog.fxml",
+                title,
+                150,
+                100,
+                false,
+                currentStage);
         ProfileStreamNameDialogController controller = (ProfileStreamNameDialogController) profileNameWindow.getController();
         controller.setProfileWindow(true);
         profileNameWindow.show(true);
+
         if (controller.isDataAvailable()) {
-            profileName = controller.getName() + ".yaml";
-            File newFile = FileManager.createNewFile(profileName);
-            updateProfilesList(newFile, true);
+            return controller.getName();
         }
-        return profileName;
+
+        return "";
     }
 }

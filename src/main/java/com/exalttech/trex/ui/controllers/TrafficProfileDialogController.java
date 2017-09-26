@@ -72,6 +72,8 @@ public class TrafficProfileDialogController extends DialogView implements Initia
     @FXML
     Button createProfileBtn;
     @FXML
+    Button duplicateProfileBtn;
+    @FXML
     Button deleteProfileBtn;
     @FXML
     Button exportProfileBtn;
@@ -118,7 +120,6 @@ public class TrafficProfileDialogController extends DialogView implements Initia
                 });
             }
         });
-
     }
 
     /**
@@ -126,6 +127,7 @@ public class TrafficProfileDialogController extends DialogView implements Initia
      */
     private void initializeProfileBtn() {
         createProfileBtn.setGraphic(new ImageView(new Image("/icons/add.png")));
+        duplicateProfileBtn.setGraphic(new ImageView(new Image("/icons/clone.png")));
         deleteProfileBtn.setGraphic(new ImageView(new Image("/icons/delete.png")));
 
         exportProfileBtn.setGraphic(new ImageView(new Image("/icons/export_profile_icon.png")));
@@ -274,6 +276,7 @@ public class TrafficProfileDialogController extends DialogView implements Initia
      * @param enable
      */
     private void disableProfileFunctionBtn(boolean enable) {
+        duplicateProfileBtn.setDisable(enable);
         deleteProfileBtn.setDisable(enable);
         exportProfileBtn.setDisable(enable);
         exportToYamlBtn.setDisable(enable);
@@ -323,6 +326,26 @@ public class TrafficProfileDialogController extends DialogView implements Initia
                 profileListView.getSelectionModel().select(newProfileName);
                 // enable export buttons
                 disableProfileFunctionBtn(false);
+            }
+        } catch (IOException ex) {
+            LOG.error("Error creating new profile", ex);
+        }
+    }
+
+    /**
+     * Handle duplicate profile button clicked
+     *
+     * @param event
+     */
+    @FXML
+    public void handleDuplicateProfileBtnClicked(ActionEvent event) {
+        try {
+            if (!profileListView.getItems().isEmpty()) {
+                String profileName = profileListView.getSelectionModel().getSelectedItem().toString();
+
+                String dupFileName = ProfileManager.getInstance().duplicateProfile(currentStage, profileName);
+                profileListView.getItems().add(dupFileName);
+                profileListView.getSelectionModel().select(dupFileName);
             }
         } catch (IOException ex) {
             LOG.error("Error creating new profile", ex);
