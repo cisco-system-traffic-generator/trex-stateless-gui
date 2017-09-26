@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.cisco.trex.stl.gui.controllers.capture.PortFilterController?>
+<?import com.cisco.trex.stl.gui.controllers.capture.FilterController?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -18,7 +18,7 @@
             <padding>
                 <Insets bottom="10" />
             </padding>
-            <PortFilterController fx:id="portFilter" />
+            <FilterController fx:id="filter" />
         </HBox>
     </top>
     <center>

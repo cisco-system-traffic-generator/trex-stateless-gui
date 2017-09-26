@@ -6,6 +6,7 @@ import com.exalttech.trex.util.Initialization;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.CheckComboBox;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class PortFilterController extends HBox {
+public class FilterController extends HBox {
     
     @FXML
     private CheckComboBox<String> rxFilter;
@@ -23,26 +24,42 @@ public class PortFilterController extends HBox {
     private CheckComboBox<String> txFilter;
 
     @FXML
+    private TextField bpfFilter;
+
+    @FXML
     private Button applyBtn;
 
+    private boolean applyButtonVisible = false;
     private List<UpdateFilterHandler> onUpdateHandlers = new ArrayList<>();
 
     public interface UpdateFilterHandler {
         void onFilterUpdate();
     }
 
-    public PortFilterController() {
-        Initialization.initializeFXML(this, "/fxml/pkt_capture/PortFilter.fxml");
+    public FilterController() {
+        Initialization.initializeFXML(this, "/fxml/pkt_capture/Filter.fxml");
         PortsManager.getInstance().addPortServiceModeChangedListener(this::updateFilters);
         updateFilters();
+
+        applyBtn.setVisible(false);
         applyBtn.setOnAction(event -> {
             onUpdateHandlers.forEach(UpdateFilterHandler::onFilterUpdate);
             applyBtn.setDisable(true);
         });
 
-        rxFilter.getCheckModel().getCheckedItems().addListener((ListChangeListener<String>) c -> applyBtn.setDisable(false));
+        rxFilter
+                .getCheckModel()
+                .getCheckedItems()
+                .addListener((ListChangeListener<String>) c -> applyBtn.setDisable(!applyButtonVisible));
 
-        txFilter.getCheckModel().getCheckedItems().addListener((ListChangeListener<String>) c -> applyBtn.setDisable(false));
+        txFilter
+                .getCheckModel()
+                .getCheckedItems()
+                .addListener((ListChangeListener<String>) c -> applyBtn.setDisable(!applyButtonVisible));
+
+        bpfFilter
+                .textProperty()
+                .addListener((observableValue, oldValue, newValue) -> applyBtn.setDisable(!applyButtonVisible));
     }
 
     public void addOnFilterUpdateHandler(UpdateFilterHandler handler) {
@@ -64,13 +81,21 @@ public class PortFilterController extends HBox {
         txFilter.getCheckModel().checkAll();
     }
 
+    public void setApplyButtonVisible(final boolean isVisible) {
+        applyButtonVisible = isVisible;
+        applyBtn.setVisible(isVisible);
+        applyBtn.setDisable(true);
+    }
+
     public List<Integer> getRxPorts() {
         return getSelectedPortIndexes(rxFilter);
     }
     public List<Integer> getTxPorts() {
         return getSelectedPortIndexes(txFilter);
     }
-
+    public String getBPFFilter() {
+        return bpfFilter.textProperty().getValue();
+    }
     public static List<Integer> getSelectedPortIndexes(CheckComboBox<String> portFilter) {
         return portFilter.getCheckModel().getCheckedItems()
                                          .stream()

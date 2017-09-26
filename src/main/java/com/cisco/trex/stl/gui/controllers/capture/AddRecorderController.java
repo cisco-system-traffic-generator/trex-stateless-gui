@@ -17,21 +17,25 @@ public class AddRecorderController extends BorderPane {
     private CheckComboBox<String> txFilter;
 
     @FXML
+    private TextField filter;
+
+    @FXML
     private TextField limit;
 
     public AddRecorderController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/AddRecord.fxml");
 
-        List<String> availablePorts = PortFilterController.getAvailablePorts();
+        List<String> availablePorts = FilterController.getAvailablePorts();
         rxFilter.getItems().addAll(availablePorts);
         txFilter.getItems().addAll(availablePorts);
     }
 
     public AddRecordPojo getData() {
         AddRecordPojo data = new AddRecordPojo();
-        data.rxPorts = PortFilterController.getSelectedPortIndexes(rxFilter);
-        data.txPorts = PortFilterController.getSelectedPortIndexes(txFilter);
+        data.rxPorts = FilterController.getSelectedPortIndexes(rxFilter);
+        data.txPorts = FilterController.getSelectedPortIndexes(txFilter);
         data.pktLimit = Integer.valueOf(limit.getText());
+        data.filter = filter.getText();
         return data;
     }
 }

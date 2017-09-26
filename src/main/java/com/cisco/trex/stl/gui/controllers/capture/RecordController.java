@@ -40,21 +40,6 @@ import static java.util.stream.Collectors.toList;
 public class RecordController extends BorderPane {
 
     private static Logger LOG = Logger.getLogger(RecordController.class);
-
-    @FXML
-    private PortFilterController portFilter;
-
-    @FXML
-    private Button stopRecorderBtn;
-    
-    @FXML
-    private Button exportBtn;
-    
-    @FXML
-    private Button removeRecorderBtn;
-    
-    @FXML
-    private TextField limit;
     
     @FXML
     private TableView<Recorder> activeRecorders;
@@ -193,35 +178,6 @@ public class RecordController extends BorderPane {
         }
     }
 
-    public void handleStartRecorder(ActionEvent event) {
-        List<Integer> rxPorts = portFilter.getRxPorts();
-        List<Integer> txPorts = portFilter.getTxPorts();
-        
-        if (Integer.parseInt(limit.getText()) > 10000) {
-            showError("Limit can't be more than 10k packets.");
-            return;
-        }
-        
-        if (rxPorts.isEmpty() &&  txPorts.isEmpty()) {
-            showError("Please specify ports in a filter.");
-            return;
-        }
-        List<Integer> portsWithDisabledSM = guardEnabledServiceMode(rxPorts, txPorts);
-        if (!portsWithDisabledSM.isEmpty()) {
-            String msg = "Unable to start record due to disabled service mode on following ports: "
-                         + portsWithDisabledSM.stream().map(Objects::toString).collect(joining(", "));
-            showError(msg);
-        }
-        
-        try {
-            pktCaptureService.addRecorder(rxPorts, txPorts, Integer.parseInt(limit.getText()));
-        } catch (PktCaptureServiceException e) {
-            LOG.error("Unable to start recorder.", e);
-            showError("Unable to start recorder.");
-        }
-        
-    }
-    
     private void handleStopRecorder(int monitorId) {
         try {
             pktCaptureService.stopRecorder(monitorId);
