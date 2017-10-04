@@ -18,7 +18,7 @@
             <padding>
                 <Insets bottom="10" />
             </padding>
-            <FilterController fx:id="filter" />
+            <FilterController fx:id="filter" HBox.hgrow="ALWAYS" />
         </HBox>
     </top>
     <center>

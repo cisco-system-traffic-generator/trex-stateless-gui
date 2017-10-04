@@ -23,7 +23,8 @@
     <Label text="Filter (BPF):" />
     <TextField fx:id="bpfFilter"
                minWidth="210"
-               maxWidth="Infinity" />
+               maxWidth="Infinity"
+               HBox.hgrow="ALWAYS" />
     <Button fx:id="applyBtn"
             text="Apply"
             styleClass="normalButton"
