@@ -156,7 +156,7 @@ public class MonitorController extends BorderPane {
             monitorId = pktCaptureService.updateMonitor(rxPorts, txPorts, bpfFilter);
         } catch (PktCaptureServiceException e) {
             stopHandler.onStop();
-            filter.setApplyButtonVisible(false);
+            filter.setApplyBtnDisabled(false);
             LOG.error("Unable to update monitor.", e);
             showError("Unable to Update monitor: " + e.getLocalizedMessage());
         }
@@ -489,7 +489,7 @@ public class MonitorController extends BorderPane {
             }
             starTs = 0;
             monitorId = pktCaptureService.startMonitor(rxPorts, txPorts, bpfFilter, true);
-            filter.setApplyButtonVisible(true);
+            filter.setApplyBtnDisabled(true);
             startHandler.onStart();
         } catch (PktCaptureServiceException e) {
             LOG.error("Unable to start monitor.", e);
@@ -500,7 +500,7 @@ public class MonitorController extends BorderPane {
     public void stopCapture() {
         pktNumberOffset = 0;
         if(monitorId != 0) {
-            filter.setApplyButtonVisible(false);
+            filter.setApplyBtnDisabled(false);
             pktCaptureService.stopMonitor(monitorId);
             pktCaptureService.cancel();
 

@@ -29,7 +29,7 @@ public class FilterController extends HBox {
     @FXML
     private Button applyBtn;
 
-    private boolean applyButtonVisible = false;
+    private boolean applyBtnDisabled = false;
     private List<UpdateFilterHandler> onUpdateHandlers = new ArrayList<>();
 
     public interface UpdateFilterHandler {
@@ -41,7 +41,6 @@ public class FilterController extends HBox {
         PortsManager.getInstance().addPortServiceModeChangedListener(this::updateFilters);
         updateFilters();
 
-        applyBtn.setVisible(false);
         applyBtn.setOnAction(event -> {
             onUpdateHandlers.forEach(UpdateFilterHandler::onFilterUpdate);
             applyBtn.setDisable(true);
@@ -50,16 +49,16 @@ public class FilterController extends HBox {
         rxFilter
                 .getCheckModel()
                 .getCheckedItems()
-                .addListener((ListChangeListener<String>) c -> applyBtn.setDisable(!applyButtonVisible));
+                .addListener((ListChangeListener<String>) c -> applyBtn.setDisable(!applyBtnDisabled));
 
         txFilter
                 .getCheckModel()
                 .getCheckedItems()
-                .addListener((ListChangeListener<String>) c -> applyBtn.setDisable(!applyButtonVisible));
+                .addListener((ListChangeListener<String>) c -> applyBtn.setDisable(!applyBtnDisabled));
 
         bpfFilter
                 .textProperty()
-                .addListener((observableValue, oldValue, newValue) -> applyBtn.setDisable(!applyButtonVisible));
+                .addListener((observableValue, oldValue, newValue) -> applyBtn.setDisable(!applyBtnDisabled));
     }
 
     public void addOnFilterUpdateHandler(UpdateFilterHandler handler) {
@@ -81,9 +80,8 @@ public class FilterController extends HBox {
         txFilter.getCheckModel().checkAll();
     }
 
-    public void setApplyButtonVisible(final boolean isVisible) {
-        applyButtonVisible = isVisible;
-        applyBtn.setVisible(isVisible);
+    public void setApplyBtnDisabled(final boolean isDisabled) {
+        applyBtnDisabled = isDisabled;
         applyBtn.setDisable(true);
     }
 
