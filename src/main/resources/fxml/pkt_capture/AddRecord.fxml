@@ -15,7 +15,7 @@
     <center>
         <GridPane vgap="5">
             <columnConstraints>
-                <ColumnConstraints prefWidth="40" />
+                <ColumnConstraints prefWidth="80" />
             </columnConstraints>
             <Label GridPane.columnIndex="0"
                    GridPane.rowIndex="0"
@@ -37,9 +37,19 @@
 
             <Label GridPane.columnIndex="0"
                    GridPane.rowIndex="2"
-                   text="Limit:" />
+                   text="Filter (BPF):" />
             <TextField GridPane.columnIndex="1"
                        GridPane.rowIndex="2"
+                       fx:id="filter"
+                       minWidth="150"
+                       maxWidth="150"
+                       text="" />
+
+            <Label GridPane.columnIndex="0"
+                   GridPane.rowIndex="3"
+                   text="Limit:" />
+            <TextField GridPane.columnIndex="1"
+                       GridPane.rowIndex="3"
                        fx:id="limit"
                            minWidth="150"
                            maxWidth="150"

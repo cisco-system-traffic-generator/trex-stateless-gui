@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -52,19 +53,25 @@ public class PacketCaptureDashboardController extends DialogView implements Init
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        startMonitorBtn.setOnMouseClicked(event -> {
-            monitorController.startCapture();
+        monitorController.setStartHandler(() -> {
             startMonitorBtn.setDisable(true);
             stopMonitorBtn.setDisable(false);
             monitorIsActive = true;
         });
-        stopMonitorBtn.setOnMouseClicked(event -> {
-            monitorController.stopCapture();
+
+        monitorController.setStopHandler(() -> {
             stopMonitorBtn.setDisable(true);
             startMonitorBtn.setDisable(false);
             monitorIsActive = false;
         });
+
+        startMonitorBtn.setOnMouseClicked(event -> {
+            monitorController.startCapture();
+        });
+        stopMonitorBtn.setOnMouseClicked(event -> {
+            monitorController.stopCapture();
+        });
+
         clearMonitorBtn.setOnMouseClicked(event -> monitorController.clearCapture());
         startWiresharkBtn.setOnMouseClicked(event -> monitorController.startWireshark());
         startRecorderBtn.setOnMouseClicked(event -> {
@@ -72,9 +79,18 @@ public class PacketCaptureDashboardController extends DialogView implements Init
             Optional<AddRecordPojo> addRecordPojo = dialog.showAndWait();
             addRecordPojo.ifPresent(pojo -> {
                 try {
-                    monitorController.startRecorder(pojo.rxPorts, pojo.txPorts, pojo.pktLimit);
+                    monitorController.startRecorder(pojo.rxPorts, pojo.txPorts, pojo.filter, pojo.pktLimit);
                 } catch (PktCaptureServiceException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Unable to start a recorder.", ButtonType.OK);
+                    // TODO: Make this part common
+                    Text text = new Text("Unable to start a recorder: " + e.getLocalizedMessage());
+                    text.setWrappingWidth(350);
+
+                    HBox container = new HBox();
+                    container.setSpacing(10);
+                    container.getChildren().add(text);
+
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+                    alert.getDialogPane().setContent(container);
                     alert.showAndWait();
                 }
             });

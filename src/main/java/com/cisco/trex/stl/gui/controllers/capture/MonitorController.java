@@ -16,6 +16,8 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.pcap4j.packet.*;
@@ -48,7 +50,7 @@ public class MonitorController extends BorderPane {
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     @FXML
-    private PortFilterController portFilter;
+    private FilterController filter;
     
     @FXML
     private TableView<CapturedPktModel> capturedPkts;
@@ -89,6 +91,17 @@ public class MonitorController extends BorderPane {
     private int pktNumberOffset = 0;
     private int latestPktIndex = 0;
 
+    public interface StartHandler {
+        void onStart();
+    }
+
+    public interface StopHandler {
+        void onStop();
+    }
+
+    private StartHandler startHandler;
+    private StopHandler stopHandler;
+
     public MonitorController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Monitor.fxml");
 
@@ -102,7 +115,7 @@ public class MonitorController extends BorderPane {
         length.setCellValueFactory(cellData -> cellData.getValue().lengthProperty().asString());
         info.setCellValueFactory(cellData -> cellData.getValue().infoProperty());
 
-        portFilter.addOnFilterUpdateHandler(this::onFilterUpdate);
+        filter.addOnFilterUpdateHandler(this::onFilterUpdate);
 
         pktCaptureService.setOnSucceeded(this::handleOnPktsReceived);
         
@@ -125,15 +138,27 @@ public class MonitorController extends BorderPane {
         
     }
 
+    public void setStartHandler(StartHandler cb) {
+        startHandler = cb;
+    }
+
+    public void setStopHandler(StopHandler cb) {
+        stopHandler = cb;
+    }
+
     private void onFilterUpdate() {
-        List<Integer> rxPorts = portFilter.getRxPorts();
-        List<Integer> txPorts = portFilter.getTxPorts();
+        List<Integer> rxPorts = filter.getRxPorts();
+        List<Integer> txPorts = filter.getTxPorts();
+        String bpfFilter = filter.getBPFFilter();
+
         try {
             pktNumberOffset = latestPktIndex;
-            pktCaptureService.updateMonitor(rxPorts, txPorts);
+            monitorId = pktCaptureService.updateMonitor(rxPorts, txPorts, bpfFilter);
         } catch (PktCaptureServiceException e) {
+            stopHandler.onStop();
+            filter.setApplyBtnDisabled(false);
             LOG.error("Unable to update monitor.", e);
-            showError("Unalble to update monitor.");
+            showError("Unable to Update monitor: " + e.getLocalizedMessage());
         }
     }
 
@@ -153,8 +178,9 @@ public class MonitorController extends BorderPane {
     }
 
     public void startWireshark() {
-        final List<Integer> rxPorts = portFilter.getRxPorts();
-        final List<Integer> txPorts = portFilter.getTxPorts();
+        final List<Integer> rxPorts = filter.getRxPorts();
+        final List<Integer> txPorts = filter.getTxPorts();
+        final String bpfFilter = filter.getBPFFilter();
 
         List<Integer> portsWithDisabledSM = guardEnabledServiceMode(rxPorts, txPorts);
         if (!portsWithDisabledSM.isEmpty()) {
@@ -182,7 +208,7 @@ public class MonitorController extends BorderPane {
                 dumpService = new UnixPktDumpService();
             }
             try {
-                final int wsMonitorId = pktCaptureService.startMonitor(rxPorts, txPorts, false);
+                final int wsMonitorId = pktCaptureService.startMonitor(rxPorts, txPorts, bpfFilter,false);
 
                 Process wiresharkProcess = dumpService.init(wireSharkLocation);
 
@@ -194,7 +220,7 @@ public class MonitorController extends BorderPane {
             } catch (PktCaptureServiceException e) {
                 String msg = "Unable to start monitor.";
                 LOG.error(msg, e);
-                showError(msg);
+                showError(String.format("%s: %s",msg, e.getLocalizedMessage()));
             } catch (PktDumpServiceInitException e) {
                 LOG.error("Unable to initialize pkt dump service", e);
                 Platform.runLater(() -> showError(e.getMessage()));
@@ -435,9 +461,17 @@ public class MonitorController extends BorderPane {
     }
 
     private void showError(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
-        alert.showAndWait();
+        // TODO: Make this part common
+        Text text = new Text(msg);
+        text.setWrappingWidth(350);
 
+        HBox container = new HBox();
+        container.setSpacing(10);
+        container.getChildren().add(text);
+
+        Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
+        alert.getDialogPane().setContent(container);
+        alert.showAndWait();
     }
 
     public void startCapture() {
@@ -445,29 +479,34 @@ public class MonitorController extends BorderPane {
             pktCaptureService.reset();
         }
         try {
-            List<Integer> rxPorts = portFilter.getRxPorts();
-            List<Integer> txPorts = portFilter.getTxPorts();
+            final List<Integer> rxPorts = filter.getRxPorts();
+            final List<Integer> txPorts = filter.getTxPorts();
+            final String bpfFilter = filter.getBPFFilter();
 
             if (rxPorts.isEmpty() && txPorts.isEmpty()) {
                 showError("Zero ports selected. To capture packets please specify ports.");
                 return;
             }
             starTs = 0;
-            monitorId = pktCaptureService.startMonitor(rxPorts, txPorts, true);
+            monitorId = pktCaptureService.startMonitor(rxPorts, txPorts, bpfFilter, true);
+            filter.setApplyBtnDisabled(true);
+            startHandler.onStart();
         } catch (PktCaptureServiceException e) {
-            LOG.error("Unable to start/stop monitor.", e);
-            showError("Unalble to Start or Stop monitor.");
+            LOG.error("Unable to start monitor.", e);
+            showError("Unable to Start monitor: " + e.getLocalizedMessage());
         }
     }
 
     public void stopCapture() {
         pktNumberOffset = 0;
-        if(monitorId != 0 ) {
+        if(monitorId != 0) {
+            filter.setApplyBtnDisabled(false);
             pktCaptureService.stopMonitor(monitorId);
             pktCaptureService.cancel();
 
-            portFilter.setDisable(false);
+            filter.setDisable(false);
             monitorId = 0;
+            stopHandler.onStop();
         }
     }
 
@@ -475,8 +514,12 @@ public class MonitorController extends BorderPane {
         capturedPkts.getItems().clear();
     }
 
-    public void startRecorder(List<Integer> rxPorts, List<Integer> txPorts, int bufferLimit) throws PktCaptureServiceException {
-        pktCaptureService.addRecorder(rxPorts, txPorts, bufferLimit);
+    public void startRecorder(
+            List<Integer> rxPorts,
+            List<Integer> txPorts,
+            String filter,
+            int bufferLimit) throws PktCaptureServiceException {
+        pktCaptureService.addRecorder(rxPorts, txPorts, filter, bufferLimit);
     }
 
     public boolean isRunning() {

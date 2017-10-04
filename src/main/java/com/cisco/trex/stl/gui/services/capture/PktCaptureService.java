@@ -36,13 +36,16 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
                     LOG.error("Unable to fetch pkts from monitor.", e);
                     return null;
                 }
-                
             }
         };
     }
     
-    public int startMonitor(List<Integer> rx, List<Integer> tx, boolean serviceEnable) throws PktCaptureServiceException {
-        TRexClientResult<CaptureMonitor> result = tRexClient.captureMonitorStart(rx, tx);
+    public int startMonitor(
+            List<Integer> rx,
+            List<Integer> tx,
+            String filter,
+            boolean serviceEnable) throws PktCaptureServiceException {
+        TRexClientResult<CaptureMonitor> result = tRexClient.captureMonitorStart(rx, tx, filter);
         guardNotFailed(result);
         int captureId = result.get().getCaptureId();
         if (serviceEnable) {
@@ -52,10 +55,13 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
         return captureId;
     }
 
-    public int updateMonitor(List<Integer> rx, List<Integer> tx) throws PktCaptureServiceException {
+    public int updateMonitor(
+            List<Integer> rx,
+            List<Integer> tx,
+            String filter) throws PktCaptureServiceException {
         tRexClient.captureMonitorStop(currentActiveMonitorId);
         tRexClient.captureMonitorRemove(currentActiveMonitorId);
-        TRexClientResult<CaptureMonitor> result = tRexClient.captureMonitorStart(rx, tx);
+        TRexClientResult<CaptureMonitor> result = tRexClient.captureMonitorStart(rx, tx, filter);
         guardNotFailed(result);
         int captureId = result.get().getCaptureId();
         currentActiveMonitorId = captureId;
@@ -85,8 +91,8 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
         return result.get();
     }
     
-    public CaptureMonitor addRecorder(List<Integer> rx, List<Integer> tx, int bufferSize) throws PktCaptureServiceException {
-        TRexClientResult<CaptureMonitor> result = tRexClient.captureRecorderStart(rx, tx, bufferSize);
+    public CaptureMonitor addRecorder(List<Integer> rx, List<Integer> tx, String filter, int bufferSize) throws PktCaptureServiceException {
+        TRexClientResult<CaptureMonitor> result = tRexClient.captureRecorderStart(rx, tx, filter, bufferSize);
         guardNotFailed(result);
         return result.get();
     }
