@@ -9,6 +9,7 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.datastore.Preferences;
+import com.exalttech.trex.ui.util.AlertUtils;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.PreferencesManager;
 import javafx.application.Platform;
@@ -129,7 +130,13 @@ public class MonitorController extends BorderPane {
                     } catch (IOException e) {
                         String msg = "Unable to open packet.";
                         LOG.error(msg, e);
-                        showError(msg);
+
+                        AlertUtils.construct(
+                                Alert.AlertType.ERROR,
+                                "Packet opening error",
+                                msg,
+                                e.getLocalizedMessage())
+                                .showAndWait();
                     }
                 }
             });
@@ -157,8 +164,14 @@ public class MonitorController extends BorderPane {
         } catch (PktCaptureServiceException e) {
             stopHandler.onStop();
             filter.setApplyBtnDisabled(false);
+
             LOG.error("Unable to update monitor.", e);
-            showError("Unable to Update monitor: " + e.getLocalizedMessage());
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    "Monitor updating error",
+                    "Unable to update monitor",
+                    e.getLocalizedMessage())
+                    .showAndWait();
         }
     }
 
@@ -182,16 +195,29 @@ public class MonitorController extends BorderPane {
         final List<Integer> txPorts = filter.getTxPorts();
         final String bpfFilter = filter.getBPFFilter();
 
+        final String errorTitle = "Start wireshark error";
+
         List<Integer> portsWithDisabledSM = guardEnabledServiceMode(rxPorts, txPorts);
         if (!portsWithDisabledSM.isEmpty()) {
             String msg = "Unable to start record due to disabled service mode on following ports: "
                     + portsWithDisabledSM.stream().map(Objects::toString).collect(joining(", "));
-            showError(msg);
+
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    errorTitle,
+                    errorTitle,
+                    msg)
+                    .showAndWait();
             return;
         }
         
         if (rxPorts.isEmpty() && txPorts.isEmpty()) {
-            showError("Please specify ports in a filter.");
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    "Start wireshark error",
+                    "Start wireshark error",
+                    "Ports are not specified. Please specify ports in a filter.")
+                    .showAndWait();
             return;
         }
         if (!checkWiresharkLocation()) {
@@ -218,12 +244,20 @@ public class MonitorController extends BorderPane {
                 }
                 pktCaptureService.stopMonitor(wsMonitorId);
             } catch (PktCaptureServiceException e) {
-                String msg = "Unable to start monitor.";
-                LOG.error(msg, e);
-                showError(String.format("%s: %s",msg, e.getLocalizedMessage()));
+                AlertUtils.construct(
+                        Alert.AlertType.ERROR,
+                        errorTitle,
+                        "Unable to start monitor",
+                        e.getLocalizedMessage())
+                        .showAndWait();
             } catch (PktDumpServiceInitException e) {
                 LOG.error("Unable to initialize pkt dump service", e);
-                Platform.runLater(() -> showError(e.getMessage()));
+                Platform.runLater(() -> AlertUtils.construct(
+                        Alert.AlertType.ERROR,
+                        errorTitle,
+                        "Unable to initialize pkt dump service",
+                        e.getLocalizedMessage())
+                        .showAndWait());
             } catch (PktDumpServiceException e) {
                 LOG.error("Unable to dump packet.", e);
             } finally {
@@ -258,10 +292,15 @@ public class MonitorController extends BorderPane {
         
         boolean wsinstalled = locateWireshark();
         if (!wsinstalled) {
-            showError("Could not find Wireshark in default installation path.\n" +
-                    "Please install it first to proceed with this action.\n" +
-                    "You can download it from https://www.wireshark.org\n" +
-                    "Or you can specify location manually in preferences");
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    "Wireshark error",
+                    "Unable to start monitor",
+                    "Could not find Wireshark in default installation path.\n" +
+                            "Please install it first to proceed with this action.\n" +
+                            "You can download it from https://www.wireshark.org\n" +
+                            "Or you can specify location manually in preferences")
+                    .showAndWait();
         }
         return wsinstalled;
     }
@@ -460,31 +499,26 @@ public class MonitorController extends BorderPane {
         return result;
     }
 
-    private void showError(String msg) {
-        // TODO: Make this part common
-        Text text = new Text(msg);
-        text.setWrappingWidth(350);
-
-        HBox container = new HBox();
-        container.setSpacing(10);
-        container.getChildren().add(text);
-
-        Alert alert = new Alert(Alert.AlertType.ERROR, "", ButtonType.OK);
-        alert.getDialogPane().setContent(container);
-        alert.showAndWait();
-    }
-
     public void startCapture() {
         if (!pktCaptureService.isRunning()) {
             pktCaptureService.reset();
         }
+
+        final String monitorError = "Monitor error";
+        final String monitorErrorHeader = "Unable to start monitor";
+
         try {
             final List<Integer> rxPorts = filter.getRxPorts();
             final List<Integer> txPorts = filter.getTxPorts();
             final String bpfFilter = filter.getBPFFilter();
 
             if (rxPorts.isEmpty() && txPorts.isEmpty()) {
-                showError("Zero ports selected. To capture packets please specify ports.");
+                AlertUtils.construct(
+                        Alert.AlertType.ERROR,
+                        monitorError,
+                        monitorErrorHeader,
+                        "Zero ports selected. To capture packets please specify ports")
+                        .showAndWait();
                 return;
             }
             starTs = 0;
@@ -492,8 +526,13 @@ public class MonitorController extends BorderPane {
             filter.setApplyBtnDisabled(true);
             startHandler.onStart();
         } catch (PktCaptureServiceException e) {
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    monitorError,
+                    monitorErrorHeader,
+                    e.getLocalizedMessage())
+                    .showAndWait();
             LOG.error("Unable to start monitor.", e);
-            showError("Unable to Start monitor: " + e.getLocalizedMessage());
         }
     }
 

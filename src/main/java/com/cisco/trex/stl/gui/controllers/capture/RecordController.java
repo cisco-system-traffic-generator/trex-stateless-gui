@@ -8,6 +8,7 @@ import com.cisco.trex.stl.gui.services.capture.PktCaptureService;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.models.PortModel;
+import com.exalttech.trex.ui.util.AlertUtils;
 import com.exalttech.trex.util.Initialization;
 import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
@@ -183,7 +184,13 @@ public class RecordController extends BorderPane {
             pktCaptureService.stopRecorder(monitorId);
         } catch (PktCaptureServiceException e) {
             LOG.error("Unable to stop recorder.", e);
-            showError("Unable to stop recorder.");
+
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    "Recorder error",
+                    "Unable to stop the recorder",
+                    e.getLocalizedMessage())
+                    .showAndWait();
         }
     }
 
@@ -266,15 +273,8 @@ public class RecordController extends BorderPane {
         if (selectedRecorder == null) {
             return;
         }
-        
-        
     }
- 
-    private void showError(String msg) {
-        Alert alert = new Alert(AlertType.ERROR, msg, ButtonType.OK);
-        alert.showAndWait();
-        
-    }
+
     private class RecorderService extends ScheduledService<List<CaptureInfo>> {
 
         @Override

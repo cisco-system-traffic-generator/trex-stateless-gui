@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.ui.util.AlertUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -235,14 +236,24 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }
         final String metaJSON = new String(Base64.getDecoder().decode(meta));
         if (metaJSON.charAt(0) != '{') {
-            alertSimpleWarning("Stream initialization failed", "This stream couldn't be edited due to outdated data format.");
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    "Warning",
+                    "Stream initialization failed",
+                    "This stream couldn't be edited due to outdated data format.")
+                    .showAndWait();
             return null;
         }
         try {
             return new ObjectMapper().readValue(metaJSON, BuilderDataBinding.class);
         } catch (Exception exc) {
             LOG.error("Can't read packet meta", exc);
-            alertSimpleWarning("Stream initialization failed", exc.getMessage());
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    "Warning",
+                    "Stream initialization failed",
+                    exc.getMessage())
+                    .showAndWait();
             return null;
         }
     }
@@ -475,10 +486,11 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     private boolean alertWarning(String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setHeaderText(header);
-        alert.setContentText(content + "\nWould you like to change ip or port and try connection again ?");
-        alert.setTitle("Warning");
+        Alert alert = AlertUtils.construct(
+                Alert.AlertType.WARNING,
+                "Warning",
+                header,
+                content + "\nWould you like to change ip or port and try connection again ?");
 
         ButtonType buttonTypeOne = new ButtonType("Try", ButtonBar.ButtonData.YES);
         ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -490,13 +502,5 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             return false;
         }
         return true;
-    }
-
-    private void alertSimpleWarning(final String header, final String content) {
-        final Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.setTitle("Warning");
-        alert.showAndWait();
     }
 }

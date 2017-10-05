@@ -7,6 +7,7 @@ package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.dialog.DialogView;
+import com.exalttech.trex.ui.util.AlertUtils;
 import com.exalttech.trex.ui.views.importPcap.ImportedPacketProperties;
 import com.exalttech.trex.ui.views.importPcap.ImportedPacketPropertiesView;
 import com.exalttech.trex.ui.views.importPcap.ImportedPacketTableView;
@@ -14,10 +15,14 @@ import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
+
+import java.io.EOFException;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeoutException;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,6 +31,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.pcap4j.core.NotOpenException;
+import org.pcap4j.core.PcapNativeException;
 
 /**
  * FXML Controller class
@@ -100,14 +107,23 @@ public class ImportPcapWizardController extends DialogView implements Initializa
             Stage owner = (Stage) wizardViewContainer.getScene().getWindow();
             File pcapFile = FileManager.getSelectedFile("Open Pcap File", "", owner, FileType.PCAP, loadFolderPath, false);
             if (pcapFile != null) {
-                if (importedPacketTableView.setPcapFile(pcapFile)) {
-                    wizardViewContainer.getChildren().clear();
-                    wizardViewContainer.getChildren().add(importedPacketTableView);
-                    updateBtnState(false);
-                } else {
-                    Alert wrongPcapMsg = Util.getAlert(Alert.AlertType.ERROR);
-                    wrongPcapMsg.setContentText("Invalid Pcap, it should be one flow with IPV4 packets");
-                    wrongPcapMsg.showAndWait();
+                try {
+                    if (importedPacketTableView.setPcapFile(pcapFile)) {
+                        wizardViewContainer.getChildren().clear();
+                        wizardViewContainer.getChildren().add(importedPacketTableView);
+                        updateBtnState(false);
+                    } else {
+                        Alert wrongPcapMsg = Util.getAlert(Alert.AlertType.ERROR);
+                        wrongPcapMsg.setContentText("Invalid Pcap, it should be one flow with IPV4 packets");
+                        wrongPcapMsg.showAndWait();
+                    }
+                } catch (PcapNativeException | EOFException | TimeoutException | NotOpenException ex) {
+                    AlertUtils.construct(
+                            Alert.AlertType.ERROR,
+                            "Import error",
+                            "An error has occurred while attempting to import.",
+                            ex.getLocalizedMessage())
+                            .showAndWait();
                 }
             }
         }
