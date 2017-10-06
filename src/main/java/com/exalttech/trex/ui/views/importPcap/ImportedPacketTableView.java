@@ -8,6 +8,7 @@ package com.exalttech.trex.ui.views.importPcap;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.components.TextFieldTableViewCell;
 import com.exalttech.trex.ui.models.PacketInfo;
+import com.exalttech.trex.ui.util.AlertUtils;
 import com.exalttech.trex.ui.views.models.ImportPcapTableData;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.builder.VMInstructionBuilder;
@@ -173,29 +174,25 @@ public class ImportedPacketTableView extends AnchorPane {
      * @param pcapFile
      * @return
      */
-    public boolean setPcapFile(File pcapFile) {
+    public boolean setPcapFile(File pcapFile) throws PcapNativeException,
+                                                     EOFException,
+                                                     TimeoutException,
+                                                     NotOpenException {
         List<PacketInfo> packetInfoList = new ArrayList<>();
-        try {
-            PacketUpdater.getInstance().reset();
-            PcapHandle handler = Pcaps.openOffline(pcapFile.getAbsolutePath());
-            PacketParser parser = new PacketParser();
-            Packet packet;
-            while ((packet = handler.getNextPacketEx()) != null) {
-                if (!PacketUpdater.getInstance().validatePacket(packet)) {
-                    break;
-                }
-                PacketInfo packetInfo = new PacketInfo();
-                packet = PacketUpdater.getInstance().updatePacketSrcDst(packet);
-                packetInfo.setPacket(packet);
-                packetInfo.setTimeStamp(handler.getTimestamp().getTime());
-                parser.parsePacket(packet, packetInfo);
-                packetInfoList.add(packetInfo);
+        PacketUpdater.getInstance().reset();
+        PcapHandle handler = Pcaps.openOffline(pcapFile.getAbsolutePath());
+        PacketParser parser = new PacketParser();
+        Packet packet;
+        while ((packet = handler.getNextPacketEx()) != null) {
+            if (!PacketUpdater.getInstance().validatePacket(packet)) {
+                break;
             }
-        } catch (EOFException e) {
-            LOG.info("End of pcap file");
-
-        } catch (PcapNativeException | TimeoutException | NotOpenException ex) {
-            LOG.error("Error parsing selectd pcap file", ex);
+            PacketInfo packetInfo = new PacketInfo();
+            packet = PacketUpdater.getInstance().updatePacketSrcDst(packet);
+            packetInfo.setPacket(packet);
+            packetInfo.setTimeStamp(handler.getTimestamp().getTime());
+            parser.parsePacket(packet, packetInfo);
+            packetInfoList.add(packetInfo);
         }
         setTableData(packetInfoList);
         return PacketUpdater.getInstance().isValidPacket();

@@ -45,6 +45,7 @@ import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
+import com.exalttech.trex.ui.util.AlertUtils;
 import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
 import com.exalttech.trex.ui.views.MultiplierView;
 import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
@@ -1036,9 +1037,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 LOG.error("Error opening dashboard view", ex);
             }
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("At least one port with enabled service mode should be acquired.");
-            alert.show();
+            AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    "Capture error",
+                    "Unable to open capture window",
+                    "At least one port with enabled service mode should be acquired")
+                    .show();
         }
     }
     /**
