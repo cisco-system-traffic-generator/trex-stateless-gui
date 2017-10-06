@@ -39,6 +39,10 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
             }
         };
     }
+
+    public int getCurrentActiveMonitorId() {
+        return currentActiveMonitorId;
+    }
     
     public int startMonitor(
             List<Integer> rx,

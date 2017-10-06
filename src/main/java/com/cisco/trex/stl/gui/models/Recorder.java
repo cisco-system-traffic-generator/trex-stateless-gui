@@ -12,14 +12,26 @@ public class Recorder {
     private IntegerProperty bytes = new SimpleIntegerProperty();
     private StringProperty rxFilter = new SimpleStringProperty(); 
     private StringProperty txFilter = new SimpleStringProperty();
+    private StringProperty bpfFilter = new SimpleStringProperty();
+    private StringProperty type = new SimpleStringProperty();
 
-    public Recorder(Integer id, String status, String packets, Integer bytes, String rxFilter, String txFilter) {
+    public Recorder(
+            Integer id,
+            String status,
+            String packets,
+            Integer bytes,
+            String rxFilter,
+            String txFilter,
+            String bpfFilter,
+            String type) {
         this.id.set(id);
         this.status.set(status);
         this.packets.set(packets);
         this.bytes.set(bytes);
         this.rxFilter.set(rxFilter);
         this.txFilter.set(txFilter);
+        this.bpfFilter.set(bpfFilter);
+        this.type.set(type);
     }
 
     public int getId() {
@@ -93,7 +105,32 @@ public class Recorder {
     public void setTxFilter(String txFilter) {
         this.txFilter.set(txFilter);
     }
-    
+
+    public String getBpfFilter() {
+        return bpfFilter.get();
+    }
+
+    public StringProperty bpfFilterProperty() {
+        return bpfFilter;
+    }
+
+    public void setBpfFilter(String bpfFilter) {
+        this.bpfFilter.set(bpfFilter);
+    }
+
+    public String getType() {
+        return type.get();
+    }
+
+    public StringProperty typeProperty() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type.set(type);
+    }
+
+
     public boolean isFull() {
         String[] packets = getPackets().split("/");
         return packets[0].equals(packets[1]);

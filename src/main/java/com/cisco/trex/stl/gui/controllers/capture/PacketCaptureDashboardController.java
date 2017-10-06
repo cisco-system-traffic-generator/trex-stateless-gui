@@ -1,5 +1,6 @@
 package com.cisco.trex.stl.gui.controllers.capture;
 
+import com.cisco.trex.stl.gui.services.capture.PktCaptureService;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.ui.dialog.DialogView;
@@ -54,6 +55,11 @@ public class PacketCaptureDashboardController extends DialogView implements Init
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        final PktCaptureService pktCaptureService = new PktCaptureService();
+
+        monitorController.setPktCaptureService(pktCaptureService);
+        recordController.setPktCaptureService(pktCaptureService);
+
         monitorController.setStartHandler(() -> {
             startMonitorBtn.setDisable(true);
             stopMonitorBtn.setDisable(false);
