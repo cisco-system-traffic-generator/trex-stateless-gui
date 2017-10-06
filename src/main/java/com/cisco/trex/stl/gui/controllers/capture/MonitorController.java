@@ -82,7 +82,7 @@ public class MonitorController extends BorderPane {
     @FXML
     private TableColumn<CapturedPktModel, String> info;
     
-    private PktCaptureService pktCaptureService = new PktCaptureService();
+    private PktCaptureService pktCaptureService;
     
     private double starTs = 0;
     
@@ -116,8 +116,6 @@ public class MonitorController extends BorderPane {
         info.setCellValueFactory(cellData -> cellData.getValue().infoProperty());
 
         filter.addOnFilterUpdateHandler(this::onFilterUpdate);
-
-        pktCaptureService.setOnSucceeded(this::handleOnPktsReceived);
         
         capturedPkts.setRowFactory( tv -> {
             TableRow<CapturedPktModel> row = new TableRow<>();
@@ -144,6 +142,11 @@ public class MonitorController extends BorderPane {
 
     public void setStopHandler(StopHandler cb) {
         stopHandler = cb;
+    }
+
+    public void setPktCaptureService(PktCaptureService svc) {
+        pktCaptureService = svc;
+        pktCaptureService.setOnSucceeded(this::handleOnPktsReceived);
     }
 
     private void onFilterUpdate() {

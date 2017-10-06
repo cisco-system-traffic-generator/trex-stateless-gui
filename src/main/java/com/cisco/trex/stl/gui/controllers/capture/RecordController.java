@@ -61,45 +61,55 @@ public class RecordController extends BorderPane {
     
     @FXML
     private TableColumn<Recorder, String> txFilter;
+
+    @FXML
+    private TableColumn<Recorder, String> bpfFilter;
+
     @FXML
     private TableColumn<Recorder, String> actions;
+
+    @FXML
+    private TableColumn<Recorder, String> type;
+
     
-    private PktCaptureService pktCaptureService = new PktCaptureService();
-    
+    private PktCaptureService pktCaptureService;
+
     private RecorderService recorderService = new RecorderService();
 
     FileChooser fileChooser = new FileChooser();
-    
+
     public RecordController() {
         Initialization.initializeFXML(this, "/fxml/pkt_capture/Record.fxml");
-        
+
         id.setCellValueFactory(cellData -> cellData.getValue().idProperty().asString());
         status.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
         packets.setCellValueFactory(cellData -> cellData.getValue().packetsProperty());
         bytes.setCellValueFactory(cellData -> cellData.getValue().bytesProperty().asString());
         rxFilter.setCellValueFactory(cellData -> cellData.getValue().rxFilterProperty());
         txFilter.setCellValueFactory(cellData -> cellData.getValue().txFilterProperty());
+        bpfFilter.setCellValueFactory(cellData -> cellData.getValue().bpfFilterProperty());
+        type.setCellValueFactory(cellData -> cellData.getValue().typeProperty());
         actions.setCellValueFactory(new PropertyValueFactory<>(""));
-        actions.setCellFactory((column) -> new TableCell<Recorder, String>() {
+        actions.setCellFactory(column -> new TableCell<Recorder, String>() {
 
             ImageView removeIcon = new ImageView("icons/delete_record.png");
             ImageView stopIcon = new ImageView("icons/stop_record.png");
             ImageView saveIcon = new ImageView("icons/export_recorder.png");
-            
+
             HBox recordActionsPane = new HBox(10, saveIcon, stopIcon, removeIcon);
-            
+
             {
                 removeIcon.getStyleClass().addAll("recordActionBtn");
                 stopIcon.getStyleClass().addAll("recordActionBtn");
                 saveIcon.getStyleClass().addAll("recordActionBtn");
-                
+
                 recordActionsPane.setPadding(new Insets(3));
             }
-            
+
             @Override
             public void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                
+
                 if (empty) {
                     setGraphic(null);
                     setText(null);
@@ -108,11 +118,11 @@ public class RecordController extends BorderPane {
                     Recorder recorder = getTableView().getItems().get(getIndex());
 
                     removeIcon.setOnMouseClicked(e -> pktCaptureService.removeRecorder(recorder.getId()));
-                    
+
                     saveIcon.setOnMouseClicked(e -> handleSavePkts((recorder.getId())));
-                    
+
                     stopIcon.setOnMouseClicked(e -> handleStopRecorder(recorder.getId()));
-                    
+
                     setGraphic(recordActionsPane);
                     setText(null);
                 }
@@ -121,16 +131,27 @@ public class RecordController extends BorderPane {
 
         recorderService.setOnSucceeded(this::handleOnRecorderReceived);
         recorderService.setPeriod(new Duration(1000));
-        recorderService.start();
 
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Pcap Files", "*.pcap", "*.cap"));
+    }
+
+    public void setPktCaptureService(PktCaptureService svc) {
+        pktCaptureService = svc;
+        recorderService.start();
     }
 
     private void handleOnRecorderReceived(WorkerStateEvent workerStateEvent) {
         List<CaptureInfo> monitors = recorderService.getValue();
         ObservableList<Recorder> currentRecorders = activeRecorders.getItems();
         monitors.stream()
-                .filter(monitor -> monitor.getMode() != null && monitor.getMode().equalsIgnoreCase("fixed"))
+                .filter(monitor -> {
+                    final String mode = monitor.getMode();
+                    if (mode == null) return false;
+
+                    final boolean isModeSuitable = mode.equalsIgnoreCase("fixed")
+                            || mode.equalsIgnoreCase("cyclic");
+                    return isModeSuitable && monitor.getId() != pktCaptureService.getCurrentActiveMonitorId();
+                })
                 .map(this::captureInfo2Recorder)
                 .collect(toList()).forEach(newRecorder -> {
                     Optional<Recorder> existed =
@@ -152,13 +173,23 @@ public class RecordController extends BorderPane {
     }
 
     private Recorder captureInfo2Recorder(CaptureInfo captureInfo) {
+        final Map<String, String> modeMapping = new HashMap<>();
+        modeMapping.put("fixed", "Recorder");
+        modeMapping.put("cyclic", "Monitor");
+
+        final String mode = modeMapping.containsKey(captureInfo.getMode())
+                ? modeMapping.get(captureInfo.getMode())
+                : "Unknown";
+
         return new Recorder(
             captureInfo.getId(),
             captureInfo.getState(),
             String.format("%s/%s", captureInfo.getCount(), captureInfo.getLimit()),
             captureInfo.getBytes(),
             parseFilterMask(captureInfo.getFilter().getRxPortMask()),
-            parseFilterMask(captureInfo.getFilter().getTxPortMask())
+            parseFilterMask(captureInfo.getFilter().getTxPortMask()),
+            captureInfo.getFilter().getBpfFilter(),
+            mode
         );
     }
     
@@ -227,7 +258,7 @@ public class RecordController extends BorderPane {
             }
         }
     }
-    
+
     private void dumpPkts(List<CapturedPkt> pkts, String filename) throws PcapNativeException, NotOpenException {
         PcapHandle handle = Pcaps.openDead(DataLinkType.EN10MB, 65536);
         PcapDumper dumper = handle.dumpOpen(filename);

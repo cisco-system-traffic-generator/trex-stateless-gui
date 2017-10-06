@@ -54,10 +54,20 @@
                              minWidth="130.0"
                              text="TX Ports" />
 
+                <TableColumn fx:id="bpfFilter"
+                             maxWidth="130.0"
+                             minWidth="130.0"
+                             text="Filter (BPF)" />
+
                 <TableColumn fx:id="actions"
                              maxWidth="130.0"
                              minWidth="100.0"
                              text="Actions" />
+
+                <TableColumn fx:id="type"
+                             maxWidth="130.0"
+                             minWidth="100.0"
+                             text="Type" />
             </columns>
         </TableView>
     </center>
