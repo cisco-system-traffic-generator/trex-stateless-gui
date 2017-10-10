@@ -20,6 +20,8 @@ import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -60,7 +62,10 @@ public class PortLayerConfiguration extends AnchorPane {
     private TextField l2Destination;
 
     @FXML
-    private TextField l3Destination;
+    private TextField ipv4Destination;
+
+    @FXML
+    private TextField ipv6Destination;
 
     @FXML
     private Label pingLabel;
@@ -84,6 +89,9 @@ public class PortLayerConfiguration extends AnchorPane {
     private Label arpStatus;
 
     @FXML
+    private Label ipv6NDStatus;
+
+    @FXML
     private Label arpLabel;
 
     @FXML
@@ -103,7 +111,7 @@ public class PortLayerConfiguration extends AnchorPane {
 
     @FXML
     private TableColumn<IPv6Host, String> macColumn;
-    
+
     @FXML
     private TableColumn<IPv6Host, String> ipv6Column;
 
@@ -112,7 +120,7 @@ public class PortLayerConfiguration extends AnchorPane {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     Clipboard clipboard = Clipboard.getSystemClipboard();
-    
+
     private PortModel model;
     private LogsController guiLogger = LogsController.getInstance();
     private RPCMethods serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
@@ -121,25 +129,27 @@ public class PortLayerConfiguration extends AnchorPane {
     private Label ipv6HostsNotFoundPlaceholder = new Label("Zero IPv6 hosts found. Try to scan once again.");
 
     private void updateControlsState() {
-        Arrays.asList(l2Source, l2Destination, l3Source, l3Destination).forEach(textField -> {
+        Arrays.asList(l2Source, l2Destination, l3Source, ipv4Destination, ipv6Destination).forEach(textField -> {
             textField.setVisible(false);
             textField.setManaged(false);
         });
-        
+
         if (ConfigurationMode.L2.equals(model.getLayerMode())) {
             l2Source.setVisible(true);
             l2Destination.setVisible(true);
             l2Source.setManaged(true);
             l2Destination.setManaged(true);
-            
+
             l2Mode.setSelected(true);
             arpStatus.setVisible(false);
             arpLabel.setVisible(false);
         } else {
             l3Source.setVisible(true);
-            l3Destination.setVisible(true);
+            ipv4Destination.setVisible(true);
             l3Source.setManaged(true);
-            l3Destination.setManaged(true);
+            ipv4Destination.setManaged(true);
+            ipv6Destination.setVisible(true);
+            ipv6Destination.setManaged(true);
             arpStatus.textProperty().bindBidirectional(model.getL3LayerConfiguration().stateProperty());
             l3Mode.setSelected(true);
             arpLabel.setVisible(true);
@@ -149,15 +159,15 @@ public class PortLayerConfiguration extends AnchorPane {
 
     public PortLayerConfiguration() {
         Initialization.initializeFXML(this, "/fxml/ports/PortLayerConfiguration.fxml");
-        
+
         l2Mode.setOnAction(event -> model.setLayerMode(ConfigurationMode.L2));
-        
+
         l3Mode.setOnAction(event -> model.setLayerMode(ConfigurationMode.L3));
-        
+
         pingCommandBtn.setOnAction(this::runPingCmd);
-        
+
         saveBtn.setOnAction(this::saveConfiguration);
-        
+
         macColumn.setCellValueFactory(cellData -> cellData.getValue().macAddressProperty());
 
         ipv6Column.setCellValueFactory(cellData -> cellData.getValue().ipAddressProperty());
@@ -171,7 +181,7 @@ public class PortLayerConfiguration extends AnchorPane {
                 }
             });
             ContextMenu ctxMenu = new ContextMenu();
-            
+
             ctxMenu.getItems().addAll(createMenuItems(row));
             row.setContextMenu(ctxMenu);
 
@@ -181,9 +191,9 @@ public class PortLayerConfiguration extends AnchorPane {
                             .otherwise((ContextMenu)null));
             return row;
         });
-        
+
         startScanIpv6Btn.setOnAction(this::handleStartIPv6Scan);
-        
+
         clearIpv6HostsBtn.setOnAction(e -> {
             ipv6Hosts.getItems().clear();
             ipv6Hosts.setPlaceholder(ipv6HostsDefaultPlaceholder);
@@ -194,7 +204,7 @@ public class PortLayerConfiguration extends AnchorPane {
 
     private ObservableList<MenuItem> createMenuItems(TableRow<IPv6Host> row) {
         ObservableList<MenuItem> ctxMenuItems = FXCollections.observableArrayList();
-        
+
         MenuItem setAsL2DstMenuItem = new MenuItem("Set as L2 destination");
         setAsL2DstMenuItem.setOnAction(e -> setAsL2DstAction(row.getItem()));
 
@@ -211,10 +221,10 @@ public class PortLayerConfiguration extends AnchorPane {
             clipboard.setContent(clipboardContent);
         });
 
-        
-        
+
+
         ctxMenuItems.addAll(setAsL2DstMenuItem, copyMacMenuItem, copyIPMenuItem);
-        
+
         return ctxMenuItems;
     }
 
@@ -230,14 +240,12 @@ public class PortLayerConfiguration extends AnchorPane {
         AsyncResponseManager.getInstance().muteLogger();
         AsyncResponseManager.getInstance().suppressIncomingEvents(true);
 
-        TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
+
         boolean multicastEnabled = model.getMulticast();
         if (!multicastEnabled) {
             model.multicastProperty().setValue(true);
         }
-        if (iPv6NDService == null) {
-            iPv6NDService = new IPv6NeighborDiscoveryService(trexClient);
-        }
+        getIPv6NDService();
         startScanIpv6Btn.setDisable(true);
         ipv6Hosts.getItems().clear();
         ipv6Hosts.setPlaceholder(new Label("Scanning in progress..."));
@@ -245,7 +253,7 @@ public class PortLayerConfiguration extends AnchorPane {
             @Override
             public Optional<Map<String, Ipv6Node>> call(){
                 try {
-                    return Optional.of(iPv6NDService.scan(model.getIndex(), 10, "ff02::1"));
+                    return Optional.of(iPv6NDService.scan(model.getIndex(), 10, null));
                 } catch (ServiceModeRequiredException e) {
                     AsyncResponseManager.getInstance().unmuteLogger();
                     AsyncResponseManager.getInstance().suppressIncomingEvents(false);
@@ -261,7 +269,7 @@ public class PortLayerConfiguration extends AnchorPane {
             AsyncResponseManager.getInstance().unmuteLogger();
             AsyncResponseManager.getInstance().suppressIncomingEvents(false);
             startScanIpv6Btn.setDisable(false);
-            
+
             Optional<Map<String, Ipv6Node>> result = scanIpv6NeighborsTask.getValue();
             result.ifPresent((hosts) -> {
                 ipv6Hosts.getItems().addAll(
@@ -269,7 +277,7 @@ public class PortLayerConfiguration extends AnchorPane {
                                 .map(entry -> new IPv6Host(entry.getValue().getMac(), entry.getValue().getIp()))
                                 .collect(Collectors.toList())
                 );
-                
+
                 if (hosts.isEmpty()) {
                     ipv6Hosts.setPlaceholder(ipv6HostsNotFoundPlaceholder);
                 }
@@ -281,12 +289,12 @@ public class PortLayerConfiguration extends AnchorPane {
                 model.multicastProperty().setValue(false);
             }
         });
-        
+
         executorService.submit(scanIpv6NeighborsTask);
     }
 
     private void saveConfiguration(Event event) {
-        
+
         if (model.getPortStatus().equalsIgnoreCase("tx")) {
             guiLogger.appendText(LogType.ERROR, "Port " + model.getIndex() + " is in TX mode. Please stop traffic first.");
             return;
@@ -296,12 +304,12 @@ public class PortLayerConfiguration extends AnchorPane {
                 .map(Integer::valueOf)
                 .collect(Collectors.toList())
                 .size();
-        
+
         if(vlanIdsCount > 2) {
             guiLogger.appendText(LogType.ERROR, "Maximum two nested VLAN tags are allowed.");
             return;
         }
-        
+
         if (l2Mode.isSelected()) {
             if (Strings.isNullOrEmpty(l2Destination.getText())) {
                 guiLogger.appendText(LogType.ERROR, "Destination MAC is empty. ");
@@ -311,12 +319,12 @@ public class PortLayerConfiguration extends AnchorPane {
             if (!validateIpAddress(l3Source.getText())) {
                 return;
             }
-            if(!validateIpAddress(l3Destination.getText())) {
+            if(!validateIpAddress(ipv4Destination.getText())) {
                 return;
             }
-            
+
         }
-        
+
         saveBtn.setDisable(true);
         saveBtn.setText("Applying...");
         Task saveConfigurationTask = new Task<Optional<String>>() {
@@ -359,18 +367,46 @@ public class PortLayerConfiguration extends AnchorPane {
                     try {
                         AsyncResponseManager.getInstance().muteLogger();
                         String portSrcIP = l3Source.getText();
-                        String portDstIP = l3Destination.getText();
+                        String portDstIP = ipv4Destination.getText();
                         trexClient.serviceMode(model.getIndex(), true);
                         trexClient.setL3Mode(model.getIndex(), null, portSrcIP, portDstIP);
                         String nextHopMac = trexClient.resolveArp(model.getIndex(), portSrcIP, portDstIP);
                         if (nextHopMac != null) {
                             trexClient.setL3Mode(model.getIndex(), nextHopMac, portSrcIP, portDstIP);
-                            AsyncResponseManager.getInstance().unmuteLogger();
                         }
+
+                        String ipv6DstIP = ipv6Destination.textProperty().get();
+                        if(!Strings.isNullOrEmpty(ipv6DstIP)) {
+                            try {
+                                Map<String, Ipv6Node> result = getIPv6NDService().scan(model.getIndex(), 5, ipv6DstIP);
+                                AsyncResponseManager.getInstance().unmuteLogger();
+
+                                String statusString;
+                                String logEntry;
+                                if (result.size() == 1) {
+                                    Ipv6Node host = result.entrySet().iterator().next().getValue();
+                                    statusString = "resolved";
+                                    logEntry = "IPv6 destination resolved: " + host.getMac();
+                                } else {
+                                    statusString = "-";
+                                    logEntry = "Unable to resolve IPv6 destination.";
+                                }
+                                Platform.runLater(() -> {
+                                    ipv6NDStatus.setText(statusString);
+                                    guiLogger.appendText(LogType.INFO, logEntry);
+                                });
+                            } catch (ServiceModeRequiredException ignore) {}
+                        } else {
+                            Platform.runLater(() -> {
+                                ipv6NDStatus.setText("-");
+                            });
+                        }
+
                         return nextHopMac == null ? Optional.empty() : Optional.of(nextHopMac);
                     } catch (Exception e) {
                         logger.error("Failed to set L3 mode: " + e.getMessage());
                     } finally {
+                        AsyncResponseManager.getInstance().unmuteLogger();
                         trexClient.serviceMode(model.getIndex(), false);
                     }
                 }
@@ -386,17 +422,25 @@ public class PortLayerConfiguration extends AnchorPane {
                 String status = "unresolved";
                 if (result.isPresent()) {
                     status = "resolved";
-                    guiLogger.appendText(LogType.INFO, "ARP resolution for " + l3Destination.getText() +" is " + result.get());
+                    guiLogger.appendText(LogType.INFO, "ARP resolution for " + ipv4Destination.getText() +" is " + result.get());
                 } else {
-                    guiLogger.appendText(LogType.ERROR, "ARP resolution status: FAILED");
+                    guiLogger.appendText(LogType.ERROR, "ARP resolution arpStatus: FAILED");
                 }
-                arpStatus.setText(status);
+                this.arpStatus.setText(status);
             }
         });
 
         new Thread(saveConfigurationTask).start();
     }
-    
+
+    private IPv6NeighborDiscoveryService getIPv6NDService() {
+        if (iPv6NDService == null) {
+            TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
+            iPv6NDService = new IPv6NeighborDiscoveryService(trexClient);
+        }
+        return iPv6NDService;
+    }
+
     private boolean validateIpAddress(String ip) {
         if (Strings.isNullOrEmpty(ip)) {
             guiLogger.appendText(LogType.ERROR, "Empty IP address.");
@@ -410,13 +454,13 @@ public class PortLayerConfiguration extends AnchorPane {
         }
         return false;
     }
-    
+
     private void runPingCmd(Event event) {
         if (model.getPortStatus().equalsIgnoreCase("tx")) {
             guiLogger.appendText(LogType.ERROR, "Port " + model.getIndex() + " is in TX mode. Please stop traffic first.");
             return;
         }
-        
+
         if (Strings.isNullOrEmpty(pingDestination.getText())) {
             guiLogger.appendText(LogType.ERROR, "Empty ping destination address.");
             return;
@@ -428,14 +472,14 @@ public class PortLayerConfiguration extends AnchorPane {
         }
 
         pingCommandBtn.setDisable(true);
-        
+
         Task<Void> pingTask = new Task<Void>() {
             @Override
             public Void call(){
                 TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
                 trexClient.serviceMode(model.getIndex(), true);
                 guiLogger.appendText(LogType.PING, " Start ping " + targetIP);
-                
+
                 AsyncResponseManager.getInstance().muteLogger();
                 AsyncResponseManager.getInstance().suppressIncomingEvents(true);
                 try {
@@ -490,26 +534,26 @@ public class PortLayerConfiguration extends AnchorPane {
                 return null;
             }
         };
-        
+
         pingTask.setOnSucceeded(e -> pingCommandBtn.setDisable(false));
-        
+
         new Thread(pingTask).start();
     }
-    
+
     public void bindModel(PortModel model) {
         unbindAll();
         this.model = model;
-        
+
         l2Destination.textProperty().bindBidirectional(this.model.getL2LayerConfiguration().dstProperty());
         l2Source.textProperty().bindBidirectional(this.model.getL2LayerConfiguration().srcProperty());
-        
-        l3Destination.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().dstProperty());
+
+        ipv4Destination.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().dstProperty());
         l3Source.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().srcProperty());
-        
+
         vlan.textProperty().bindBidirectional(this.model.vlanProperty());
-        
+
         updateControlsState();
-        
+
         this.model.layerConfigurationTypeProperty().addListener(configurationModeChangeListener);
     }
 
@@ -518,13 +562,13 @@ public class PortLayerConfiguration extends AnchorPane {
             return;
         }
         vlan.textProperty().unbindBidirectional(this.model.vlanProperty());
-        
+
         l2Destination.textProperty().unbindBidirectional(this.model.getL2LayerConfiguration().dstProperty());
         l2Source.textProperty().unbindBidirectional(this.model.getL2LayerConfiguration().srcProperty());
 
-        l3Destination.textProperty().unbindBidirectional(this.model.getL3LayerConfiguration().dstProperty());
+        ipv4Destination.textProperty().unbindBidirectional(this.model.getL3LayerConfiguration().dstProperty());
         l3Source.textProperty().unbindBidirectional(this.model.getL3LayerConfiguration().srcProperty());
-        
+
         arpStatus.textProperty().unbindBidirectional(model.getL3LayerConfiguration().stateProperty());
         model.layerConfigurationTypeProperty().removeListener(configurationModeChangeListener);
     }

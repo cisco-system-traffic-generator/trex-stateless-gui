@@ -26,7 +26,7 @@
                               hgap="10" vgap="10">
                         <columnConstraints>
                             <ColumnConstraints hgrow="ALWAYS"
-                                               maxWidth="110"/>
+                                               maxWidth="120.0"/>
                             <ColumnConstraints hgrow="ALWAYS"/>
                         </columnConstraints>
                         <fx:define>
@@ -51,35 +51,54 @@
 
                         <Label text="Source:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
                         <HBox GridPane.rowSpan="2" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="2">
-                            <TextField fx:id="l2Source" disable="true" minWidth="${13 * s.width}" />
-                            <TextField fx:id="l3Source" minWidth="${13 * s.width}" />
+                            <TextField fx:id="l2Source" disable="true"/>
+                            <TextField fx:id="l3Source"/>
                         </HBox>
 
-                        <Label text="Destination:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                        <Label text="Destination IPv4:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
                         <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.columnSpan="2">
-                            <TextField fx:id="l2Destination" id="l2Destination" text="" minWidth="${13 * s.width}" />
-                            <TextField fx:id="l3Destination" id="l3Destination" text="" minWidth="${13 * s.width}" />
+                            <TextField fx:id="l2Destination" id="l2Destination" />
+                            <TextField fx:id="ipv4Destination" id="ipv4Destination" />
                         </HBox>
-                        <Label fx:id="arpLabel"
-                               text="ARP resolution:"
-                               GridPane.columnIndex="0"
-                               GridPane.rowIndex="5" />
-                        <Label fx:id="arpStatus"
-                               id="arpStatus" text=""
-                               minWidth="${13 * s.width}"
-                               GridPane.columnIndex="1"
-                               GridPane.rowIndex="5"
-                               GridPane.columnSpan="2" />
+
+                        <Label text="Destination IPv6:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                        <HBox GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.columnSpan="2">
+                            <TextField fx:id="ipv6Destination" id="ipv6Destination" />
+                        </HBox>
+
                         <Label fx:id="vlanLabel"
                                text="VLAN:"
                                GridPane.columnIndex="0"
                                GridPane.rowIndex="6" />
-                        <TextField fx:id="vlan"
-                                   GridPane.columnIndex="1"
-                                   GridPane.rowIndex="6" />
+                        <HBox GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.columnSpan="2">
+                            <TextField fx:id="vlan" />
+                        </HBox>
+
+                        <Label fx:id="arpLabel"
+                               text="ARP status:"
+                               GridPane.columnIndex="0"
+                               GridPane.rowIndex="7" />
+
+                        <Label fx:id="arpStatus"
+                               id="status"
+                               GridPane.columnIndex="1"
+                               GridPane.rowIndex="7"
+                               GridPane.columnSpan="2" />
+
+                        <Label fx:id="ipv6NDLabel"
+                               text="IPv6 destination:"
+                               GridPane.columnIndex="0"
+                               GridPane.rowIndex="8" />
+                        <Label fx:id="ipv6NDStatus"
+                               id="ipv6NDStatus"
+                               text="-"
+                               GridPane.columnIndex="1"
+                               GridPane.rowIndex="8"
+                               GridPane.columnSpan="2" />
+
                         <Button fx:id="saveBtn"
                                 GridPane.columnIndex="1"
-                                GridPane.rowIndex="7"
+                                GridPane.rowIndex="9"
                                 id="applyBtn"
                                 text="Apply"
                                 styleClass="normalButton" />
