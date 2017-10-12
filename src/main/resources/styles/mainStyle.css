@@ -845,6 +845,11 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-font-weight: normal;
 }
 
+.dashboardWarning {
+    -fx-font-weight: bold;
+    -fx-text-fill: red;
+}
+
 .dashboardStatsContainer{
     -fx-background-color: #ffffff;
     -fx-border-color: #32b4ea;

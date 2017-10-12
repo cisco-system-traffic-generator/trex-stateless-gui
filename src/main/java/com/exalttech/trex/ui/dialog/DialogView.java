@@ -54,4 +54,6 @@ public abstract class DialogView implements DialogKeyPressHandler {
         });
     }
 
+
+    public void shutdown() {}
 }

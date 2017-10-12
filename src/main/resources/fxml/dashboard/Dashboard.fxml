@@ -15,6 +15,7 @@
 <?import com.cisco.trex.stl.gui.controllers.dashboard.utilization.UtilizationController?>
 
 
+<?import javafx.scene.control.Label?>
 <BorderPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml"
             style="-fx-background-color: #f0f0f0"
@@ -56,6 +57,10 @@
                     <UtilizationController fx:id="utilization"/>
                 </Tab>
             </TabPane>
+            <Label fx:id="warning"
+                   styleClass="dashboardWarning"
+                   AnchorPane.topAnchor="15.0"
+                   AnchorPane.rightAnchor="70.0"/>
             <Button fx:id="clearButton"
                     mnemonicParsing="false"
                     styleClass="normalButton"
