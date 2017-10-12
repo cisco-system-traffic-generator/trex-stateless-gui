@@ -65,6 +65,7 @@ public class DialogWindow {
         } else {
             dialogStage.initModality(Modality.NONE);
             dialogStage.initOwner(null);
+            dialogStage.setOnCloseRequest(event -> ((DialogView) loader.getController()).shutdown());
             dialogStage.show();
         }
     }

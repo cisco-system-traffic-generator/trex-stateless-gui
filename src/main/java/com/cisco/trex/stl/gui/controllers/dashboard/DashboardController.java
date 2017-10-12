@@ -6,14 +6,20 @@ import com.cisco.trex.stl.gui.controllers.dashboard.ports.PortsController;
 import com.cisco.trex.stl.gui.controllers.dashboard.streams.StreamsController;
 import com.cisco.trex.stl.gui.controllers.dashboard.utilization.UtilizationController;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
+import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.dialog.DialogView;
+import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -25,6 +31,8 @@ public class DashboardController extends DialogView implements Initializable {
     private static final String STREAMS_TAB_LABEL = "Streams";
     private static final String LATENCY_TAB_LABEL = "Latency";
     private static final String CHARTS_TAB_LABEL = "Charts";
+
+    private static final String SERVICE_MODE_ENABLED_LABEL = "Service mode is enabled";
 
     @FXML
     private TabPane tabPane;
@@ -38,16 +46,38 @@ public class DashboardController extends DialogView implements Initializable {
     private LatencyController latency;
     @FXML
     private ChartsController charts;
+    @FXML
+    private Label warning;
+
+    ServiceModePollingService pollingSvc;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Nothing to do
+        pollingSvc = new ServiceModePollingService();
+        pollingSvc.setPeriod(Duration.seconds(1));
+        pollingSvc.setOnSucceeded(e -> {
+            final boolean serviceModeEnabled = (boolean) e.getSource().getValue();
+            if (serviceModeEnabled) {
+                warning.setText(SERVICE_MODE_ENABLED_LABEL);
+                warning.setVisible(true);
+            } else {
+                warning.setVisible(false);
+            }
+        });
+
+        pollingSvc.start();
+    }
+
+    @Override
+    public void shutdown() {
+        pollingSvc.cancel();
     }
 
     @Override
     public void onEnterKeyPressed(final Stage stage) {
         // Nothing to do
     }
+
 
     @FXML
     public void handleTabChanged(final Event event) {
@@ -102,4 +132,22 @@ public class DashboardController extends DialogView implements Initializable {
         StatsLoader.getInstance().reset();
         StatsStorage.getInstance().getPGIDStatsStorage().reset();
     }
+
+    protected class ServiceModePollingService extends ScheduledService<Boolean> {
+        PortsManager portsManager = PortsManager.getInstance();
+
+        @Override
+        protected Task<Boolean> createTask() {
+            return new Task<Boolean>() {
+                @Override
+                protected Boolean call() throws Exception {
+                    return portsManager.getPortList()
+                            .stream()
+                            .anyMatch(Port::getServiceMode);
+                }
+            };
+        }
+
+    }
+
 }
