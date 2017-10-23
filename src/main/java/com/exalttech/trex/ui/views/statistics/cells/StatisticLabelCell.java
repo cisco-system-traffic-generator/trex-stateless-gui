@@ -16,9 +16,11 @@
 package com.exalttech.trex.ui.views.statistics.cells;
 
 import com.exalttech.trex.ui.PortState;
-import com.exalttech.trex.util.Util;
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+
+import static com.exalttech.trex.ui.views.statistics.cells.CellType.ERROR_CELL;
 
 /**
  * Statistical label cell implementation
@@ -28,6 +30,8 @@ import javafx.scene.control.Label;
 public class StatisticLabelCell extends Label implements StatisticCell {
 
     CellType type;
+
+    private static final PseudoClass INVALID_PSEUDO_CLASS = PseudoClass.getPseudoClass("invalid");
 
     public StatisticLabelCell(String value, double width, boolean odd, CellType type, boolean isRightPosition) {
         this(width, odd, type, isRightPosition);
@@ -52,6 +56,15 @@ public class StatisticLabelCell extends Label implements StatisticCell {
         if (odd) {
             getStyleClass().add("statsTableColCellOdd");
         }
+
+        if (type == ERROR_CELL) {
+            addErrorStyles();
+        }
+    }
+
+    private void addErrorStyles() {
+        getStyleClass().add("statsTableErrorsValue");
+        pseudoClassStateChanged(INVALID_PSEUDO_CLASS, false);
     }
 
     /**
@@ -90,11 +103,7 @@ public class StatisticLabelCell extends Label implements StatisticCell {
      * @param value
      */
     private void updateErrorCell(double value) {
-        String valueColor = "statsTableGreenValue";
-        if (value > 0) {
-            valueColor = "statsTableRedValue";
-        }
-        getStyleClass().add(valueColor);
+        pseudoClassStateChanged(INVALID_PSEUDO_CLASS, value > 0);
     }
 
     /**
