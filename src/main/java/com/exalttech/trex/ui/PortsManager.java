@@ -44,7 +44,7 @@ public class PortsManager {
 
     ObjectMapper mapper = new ObjectMapper();
     
-    private List<PortServiceModeChangedListener> portServiceModeChangedListeners = new ArrayList<>();
+    private List<PortServiceModeChangedListener> portServiceModeChangedListeners = Collections.synchronizedList(new ArrayList<>());
     
     /**
      * Return instance of Port manager
@@ -70,16 +70,22 @@ public class PortsManager {
         // constructor
     }
 
-    public void addPortServiceModeChangedListener(PortServiceModeChangedListener listener) {
+    public void addPortServiceModeChangedListener(final PortServiceModeChangedListener listener) {
         portServiceModeChangedListeners.add(listener);
     }
+
+    public void removePortServiceModeChangedListener(final PortServiceModeChangedListener listener) {
+        portServiceModeChangedListeners.remove(listener);
+    }
     
-    public PortModel    getPortModel(int portIndex) {
+    public PortModel getPortModel(int portIndex) {
         PortModel model = portModels.get(portIndex);
         if (model == null) {
             model = PortModel.createModelFrom(portList.get(portIndex));
             model.serviceModeProperty().addListener((observable, oldVal, newVal) -> {
-                portServiceModeChangedListeners.forEach(PortServiceModeChangedListener::serviceModeChanged);
+                synchronized (portServiceModeChangedListeners) {
+                    portServiceModeChangedListeners.forEach(PortServiceModeChangedListener::serviceModeChanged);
+                }
             });
             portModels.put(portIndex, model);
         }

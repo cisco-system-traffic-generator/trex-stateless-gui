@@ -10,6 +10,7 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
+import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -49,35 +50,23 @@ public class DashboardController extends DialogView implements Initializable {
     @FXML
     private Label warning;
 
-    ServiceModePollingService pollingSvc;
+    PortsManager portsManager = PortsManager.getInstance();
+    private PortsManager.PortServiceModeChangedListener serviceModeChangeListener = this::serviceModeChanged;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        pollingSvc = new ServiceModePollingService();
-        pollingSvc.setPeriod(Duration.seconds(1));
-        pollingSvc.setOnSucceeded(e -> {
-            final boolean serviceModeEnabled = (boolean) e.getSource().getValue();
-            if (serviceModeEnabled) {
-                warning.setText(SERVICE_MODE_ENABLED_LABEL);
-                warning.setVisible(true);
-            } else {
-                warning.setVisible(false);
-            }
-        });
-
-        pollingSvc.start();
+        portsManager.addPortServiceModeChangedListener(serviceModeChangeListener);
     }
 
     @Override
     public void shutdown() {
-        pollingSvc.cancel();
+        portsManager.removePortServiceModeChangedListener(serviceModeChangeListener);
     }
 
     @Override
     public void onEnterKeyPressed(final Stage stage) {
         // Nothing to do
     }
-
 
     @FXML
     public void handleTabChanged(final Event event) {
@@ -133,21 +122,19 @@ public class DashboardController extends DialogView implements Initializable {
         StatsStorage.getInstance().getPGIDStatsStorage().reset();
     }
 
-    protected class ServiceModePollingService extends ScheduledService<Boolean> {
-        PortsManager portsManager = PortsManager.getInstance();
+    private void serviceModeChanged() {
+        final boolean isServiceModeEnabled = portsManager
+            .getPortList()
+            .stream()
+            .anyMatch(Port::getServiceMode);
 
-        @Override
-        protected Task<Boolean> createTask() {
-            return new Task<Boolean>() {
-                @Override
-                protected Boolean call() throws Exception {
-                    return portsManager.getPortList()
-                            .stream()
-                            .anyMatch(Port::getServiceMode);
-                }
-            };
-        }
-
+        Platform.runLater(() -> {
+            if (isServiceModeEnabled) {
+                warning.setText(SERVICE_MODE_ENABLED_LABEL);
+                warning.setVisible(true);
+            } else {
+                warning.setVisible(false);
+            }
+        });
     }
-
 }
