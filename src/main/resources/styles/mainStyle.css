@@ -445,13 +445,13 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 
 }
 
-.statsTableGreenValue{
+.statsTableErrorsValue {
     -fx-text-fill:#29bf4c !important;
     -fx-font-weight: bold;
 }
-.statsTableRedValue{
-    -fx-text-fill:#ea2323 !important;
-    -fx-font-weight: bold;
+
+.statsTableErrorsValue:invalid {
+    -fx-text-fill: #ea2323 !important;
 }
 
 .statsTableYellowValue{
