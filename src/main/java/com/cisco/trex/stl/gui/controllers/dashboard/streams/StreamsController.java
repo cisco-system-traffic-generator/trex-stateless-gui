@@ -114,6 +114,6 @@ public class StreamsController extends FlowStatsBaseController {
     }
 
     static double round(double value) {
-        return ((int)(value*100))/100.0;
+        return ((long)(value*100))/100.0;
     }
 }
