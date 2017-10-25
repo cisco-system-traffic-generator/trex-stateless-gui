@@ -75,6 +75,8 @@ public class ConnectionManager {
     private final String MAGIC_STRING = "ABE85CEA";
     private Object sendRequestMonitor = new Object();
 
+    private final static int DEFAULT_TIMEOUT = 3000;
+
     /**
      *
      * @return
@@ -213,14 +215,15 @@ public class ConnectionManager {
         }
 
         // Just try to connect but don't account
-        scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
+        scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, DEFAULT_TIMEOUT);
 
         return true;
     }
 
     private ZMQ.Socket buildRequester() {
         ZMQ.Socket s = context.createSocket(ZMQ.REQ);
-        s.setReceiveTimeOut(3000);
+        s.setReceiveTimeOut(DEFAULT_TIMEOUT);
+        s.setSendTimeOut(DEFAULT_TIMEOUT);
         return s;
     }
 
@@ -259,7 +262,7 @@ public class ConnectionManager {
 
     public boolean connectScapy(String scapy_ip, String scapy_port) {
         LogsController.getInstance().appendText(LogType.INFO, "Connecting to Scapy server: " + "tcp://" + scapy_ip + ":" + scapy_port);
-        scapyServerClient.connect("tcp://" + scapy_ip + ":" + scapy_port, 3000);
+        scapyServerClient.connect("tcp://" + scapy_ip + ":" + scapy_port, DEFAULT_TIMEOUT);
         if (scapyServerClient.isConnected()) {
             LogsController.getInstance().appendText(LogType.INFO, "Connected");
             return true;
