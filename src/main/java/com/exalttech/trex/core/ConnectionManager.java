@@ -101,16 +101,14 @@ public class ConnectionManager {
     private ZMQ.Socket requester = null;
     private boolean isReadOnly;
     private Task task;
-    ZContext context;
-    ZPoller poller;
+    private ZContext context = new ZContext();;
+    private ZPoller poller = new ZPoller(context);
     private String connectionString;
 
     /**
      *
      */
     protected ConnectionManager() {
-        context = new ZContext();
-        poller = new ZPoller(context);
         bindLogProperty();
 
         try {
@@ -547,14 +545,15 @@ public class ConnectionManager {
      */
     public String getAsyncResponse() {
         String ret = null;
-        LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex async port: " + "tcp://" + ip + ":" + asyncPort);
+        final String address = "tcp://" + ip + ":" + asyncPort;
+        LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex async port: " + address);
         final String[] error = {null};
         try {
             runAndWait(() -> {
                 try {
                     ZMQ.Socket subscriber = context.createSocket(ZMQ.SUB);
-                    subscriber.setReceiveTimeOut(5000);
-                    subscriber.connect("tcp://" + ip + ":" + asyncPort);
+                    subscriber.setReceiveTimeOut(DEFAULT_TIMEOUT);
+                    subscriber.connect(address);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
 
                     String res;
@@ -564,17 +563,25 @@ public class ConnectionManager {
                             if (res != null) {
                                 handleAsyncResponse(res);
                                 res = null;
+
+                                context.destroySocket(subscriber);
                                 return;
                             }
                             else {
                                 error[0] = "Error while verifing the Async request: " + "Async responce is null";
+
+                                context.destroySocket(subscriber);
                                 return;
                             }
                         } catch (Exception e) {
                             error[0] = "Error while verifing the Async request: " + e.getMessage();
+
+                            context.destroySocket(subscriber);
                             return;
                         }
                     }
+
+                    context.destroySocket(subscriber);
                 } catch (Exception e) {
                     error[0] = "Error while verifing the Async request: " + e.getMessage();
                 }
@@ -598,12 +605,12 @@ public class ConnectionManager {
             protected Void call() throws Exception {
                 try {
                     ZMQ.Socket subscriber = context.createSocket(ZMQ.SUB);
-                    subscriber.setReceiveTimeOut(5000);
-                    subscriber.connect("tcp://" + ip + ":" + asyncPort);
+                    subscriber.setReceiveTimeOut(DEFAULT_TIMEOUT);
+                    subscriber.connect(address);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
                     String res;
 
-                    while (!Thread.currentThread().isInterrupted()) {
+                    while (!isCancelled() && !Thread.currentThread().isInterrupted()) {
                         try {
                             res = getDecompressedString(subscriber.recv());
                             if (res != null) {
@@ -614,6 +621,8 @@ public class ConnectionManager {
                             LOG.error("Possible error while reading the Async request", ex);
                         }
                     }
+
+                    context.destroySocket(subscriber);
                 } catch (Exception ex) {
                     LOG.error("Possible error while reading the Async request", ex);
                 }
@@ -852,8 +861,10 @@ public class ConnectionManager {
                     return null;
                 }
             }
-            return getDecompressedString(serverResponse).getBytes();
-            // decompressed response
+
+            return serverResponse == null
+                ? null
+                : getDecompressedString(serverResponse).getBytes();
         } catch (IOException ex) {
             LOG.error("Error sending request", ex);
             return null;
@@ -903,5 +914,26 @@ public class ConnectionManager {
     }
     public void invalidatePortHandler(int portID) {
         trexClient.invalidatePortHandler(portID);
+    }
+
+    public void disconnect() {
+        ConnectionManager.getInstance().setConnected(false);
+
+        disconnectSubscriber();
+        disconnectRequester();
+        disconnectScapy();
+        getTrexClient().disconnect();
+
+        if (poller != null) {
+            try {
+                poller.close();
+            } catch (IOException ex) {
+                LOG.error("Error poller closing", ex);
+            }
+            poller.destroy();
+        }
+
+        context = new ZContext();
+        poller = new ZPoller(context);
     }
 }

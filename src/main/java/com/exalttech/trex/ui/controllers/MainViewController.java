@@ -354,8 +354,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             DialogWindow connectWindow = new DialogWindow("ConnectDialog.fxml", "Connect", 300, 100, false, TrexApp.getPrimaryStage());
             connectWindow.show(true);
             if (ConnectionManager.getInstance().isConnected()) {
+                serverRPCMethods.serverApiSync();
+
+                loadSystemInfo();
                 StatsLoader.getInstance().start();
                 StatsStorage.getInstance().startPolling();
+                portManager.updatePortForce();
+
                 serverStatusLabel.setText("Connected");
                 serverStatusIcon.setImage(new Image("/icons/connectedIcon.gif"));
                 connectIcon.getStyleClass().add("disconnectIcon");
@@ -367,9 +372,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 logsContainer.setDisable(false);
                 copyToClipboardBtn.setDisable(false);
                 dashboardIcon.setDisable(false);
-                serverRPCMethods.serverApiSync();
-                loadSystemInfo();
-                portManager.updatePortForce();
             }
         } catch (IOException ex) {
             LOG.error("Error while Connecting", ex);
@@ -590,7 +592,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void resetApplication(boolean didServerCrash) {
         Platform.runLater(() -> {
+            if (!didServerCrash) {
+                releaseAllPort(false);
+            }
+
             StatsStorage.getInstance().stopPolling();
+            shutdownRunningServices();
+
+            ConnectionManager.getInstance().disconnect();
 
             resetAppInProgress = true;
             profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
@@ -602,10 +611,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             serviceModeLabel.visibleProperty().unbind();
             serviceModeLabel.setVisible(false);
 
-            // close all open dialog
             DialogManager.getInstance().closeAll();
-            // shutdown running services
-            shutdownRunningServices();
 
             connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
             statsMenuItem.setDisable(true);
@@ -633,26 +639,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             LogsController.getInstance().getConsoleLogView().clear();
             LogsController.getInstance().getView().clear();
 
-            if (!didServerCrash) {
-                ConnectionManager.getInstance().setConnected(false);
-                // release all port
-                releaseAllPort(false);
-            }
-
-            // stop async subscriber
-            ConnectionManager.getInstance().disconnectSubscriber();
-            ConnectionManager.getInstance().disconnectRequester();
-            ConnectionManager.getInstance().disconnectScapy();
-
-            if (didServerCrash) {
-                openConnectDialog();
-            }
-
             portViewVisibilityProperty.setValue(false);
 
             portManager.clearPorts();
 
             resetAppInProgress = false;
+
+            if (didServerCrash) {
+                openConnectDialog();
+            }
         });
     }
 
