@@ -265,17 +265,17 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portView.visibleProperty().bind(portViewVisibilityProperty);
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
 
+        ConnectionManager.getInstance().addDisconnectListener(() -> resetApplication(true));
         // Handle update port state event
         AsyncResponseManager.getInstance().asyncEventObjectProperty().addListener((observable, oldValue, newVal) -> {
-            TrexEvent event = newVal;
 
-            switch (event.getType()) {
+            switch (newVal.getType()) {
                 case PORT_RELEASED:
                 case PORT_ACQUIRED:
                 case PORT_ATTR_CHANGED:
                 case PORT_STARTED:
                 case PORT_STOPPED:
-                    final int portId = event.getData().getAsJsonPrimitive("port_id").getAsInt();
+                    final int portId = newVal.getData().getAsJsonPrimitive("port_id").getAsInt();
                     PortModel portModel = portManager.getPortModel(portId);
 
                     if (ConnectionManager.getInstance().isConnected()) {
@@ -1419,8 +1419,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
             // stop async subscriber
             if (ConnectionManager.getInstance().isConnected()) {
-                ConnectionManager.getInstance().disconnectSubscriber();
-                ConnectionManager.getInstance().disconnectRequester();
+                ConnectionManager.getInstance().disconnect();
             }
         } catch (Exception ex) {
             LOG.error("Error closing the application", ex);

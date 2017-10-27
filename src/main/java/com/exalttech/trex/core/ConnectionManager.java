@@ -54,6 +54,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -73,7 +74,9 @@ public class ConnectionManager {
     private final static String ASYNC_PASS_STATUS = "Pass";
 
     private final String MAGIC_STRING = "ABE85CEA";
-    private Object sendRequestMonitor = new Object();
+    private final Object sendRequestMonitor = new Object();
+
+    private final List<DisconnectListener> disconnectListeners = Collections.synchronizedList(new ArrayList<>());
 
     private final static int DEFAULT_TIMEOUT = 3000;
 
@@ -608,14 +611,26 @@ public class ConnectionManager {
                     subscriber.setReceiveTimeOut(DEFAULT_TIMEOUT);
                     subscriber.connect(address);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
-                    String res;
 
+                    int failsCount = 0;
                     while (!isCancelled() && !Thread.currentThread().isInterrupted()) {
                         try {
-                            res = getDecompressedString(subscriber.recv());
+                            final String res = getDecompressedString(subscriber.recv());
                             if (res != null) {
                                 handleAsyncResponse(res);
-                                res = null;
+                                failsCount = 0;
+                            } else if (subscriber.base().errno() == ZError.EAGAIN) {
+                                if (failsCount == 2) {
+                                    LOG.error("Connection to server is down");
+                                    synchronized (disconnectListeners) {
+                                        disconnectListeners.forEach(DisconnectListener::handle);
+                                    }
+                                    break;
+                                }
+
+                                failsCount++;
+
+                                LOG.error("Got EAGAIN while getting async TRex response");
                             }
                         } catch (Exception ex) {
                             LOG.error("Possible error while reading the Async request", ex);
@@ -796,20 +811,6 @@ public class ConnectionManager {
     }
 
     /**
-     * @return the requester
-     */
-    public ZMQ.Socket getRequester() {
-        return requester;
-    }
-
-    /**
-     * @param requester the requester to set
-     */
-    public void setRequester(ZMQ.Socket requester) {
-        this.requester = requester;
-    }
-
-    /**
      *
      * @param request
      * @return
@@ -917,7 +918,7 @@ public class ConnectionManager {
     }
 
     public void disconnect() {
-        ConnectionManager.getInstance().setConnected(false);
+        setConnected(false);
 
         disconnectSubscriber();
         disconnectRequester();
@@ -935,5 +936,17 @@ public class ConnectionManager {
 
         context = new ZContext();
         poller = new ZPoller(context);
+    }
+
+    public void addDisconnectListener(final DisconnectListener listener) {
+        disconnectListeners.add(listener);
+    }
+
+    public void removeDisconnectListener(final DisconnectListener listener) {
+        disconnectListeners.remove(listener);
+    }
+
+    public interface DisconnectListener {
+        void handle();
     }
 }
