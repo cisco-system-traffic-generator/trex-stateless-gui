@@ -44,4 +44,8 @@ public class PortView extends TabPane {
             model.transmitStateProperty())
         );
     }
+
+    public void stopPolling() {
+        hardwareCounters.stopPolling();
+    }
 }

@@ -596,6 +596,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 releaseAllPort(false);
             }
 
+
             StatsStorage.getInstance().stopPolling();
             shutdownRunningServices();
 
@@ -1644,6 +1645,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Stop running services
      */
     private void shutdownRunningServices() {
+        portView.stopPolling();
         stopRefreshingService();
     }
 
