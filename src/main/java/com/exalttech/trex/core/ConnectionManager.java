@@ -77,6 +77,8 @@ public class ConnectionManager {
     private final Object sendRequestMonitor = new Object();
 
     private final List<DisconnectListener> disconnectListeners = Collections.synchronizedList(new ArrayList<>());
+    private boolean serverRestarted = false;
+    private final Object serverRestartedMonitor = new Object();
 
     private final static int DEFAULT_TIMEOUT = 3000;
 
@@ -182,6 +184,10 @@ public class ConnectionManager {
      * @return
      */
     public boolean initializeConnection(String ip, String rpcPort, String asyncPort, String scapyPort, String clientName, boolean isReadOnly) throws TRexConnectionException {
+        synchronized (serverRestartedMonitor) {
+            serverRestarted = false;
+        }
+
         this.ip = ip;
         this.rpcPort = rpcPort;
         this.asyncPort = asyncPort;
@@ -620,7 +626,7 @@ public class ConnectionManager {
                                 handleAsyncResponse(res);
                                 failsCount = 0;
                             } else if (subscriber.base().errno() == ZError.EAGAIN) {
-                                if (failsCount == 2) {
+                                if (failsCount > 2) {
                                     LOG.error("Connection to server is down");
                                     synchronized (disconnectListeners) {
                                         disconnectListeners.forEach(DisconnectListener::handle);
@@ -936,6 +942,20 @@ public class ConnectionManager {
 
         context = new ZContext();
         poller = new ZPoller(context);
+    }
+
+    public void notifyServerWasRestarted() {
+        synchronized (serverRestartedMonitor) {
+            if (serverRestarted) { // That means we already notified manager about server restart
+                return;
+            }
+
+            serverRestarted = true;
+        }
+
+        synchronized (disconnectListeners) {
+            disconnectListeners.forEach(DisconnectListener::handle);
+        }
     }
 
     public void addDisconnectListener(final DisconnectListener listener) {

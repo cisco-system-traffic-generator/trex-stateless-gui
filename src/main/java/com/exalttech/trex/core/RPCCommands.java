@@ -1,5 +1,6 @@
 package com.exalttech.trex.core;
 
+import com.cisco.trex.stateless.model.RPCResponseError;
 import com.cisco.trex.stateless.model.stats.ActivePGIdsRPCResult;
 import com.cisco.trex.stateless.model.stats.PGIdStatsRPCResult;
 import com.cisco.trex.stateless.model.RPCResponse;
@@ -54,6 +55,22 @@ public class RPCCommands {
         }
         final String jsonRPCResult = ConnectionManager.getInstance().sendRequest(command, stringParameters);
         final RPCResponse[] rpcResult = new ObjectMapper().readValue(jsonRPCResult, RPCResponse[].class);
+        final String specError = extractSpecError(rpcResult[0]);
+        final String invalidHandlerErrorPart = "API handler provided mismatch";
+
+        if (specError.contains(invalidHandlerErrorPart)) {
+            ConnectionManager.getInstance().notifyServerWasRestarted();
+        }
+
         return rpcResult[0].getResult();
+    }
+
+    private static String extractSpecError(final RPCResponse resp) {
+        final RPCResponseError err = resp.getError();
+        if (err != null) {
+            return err.getSpecificErr();
+        }
+
+        return "";
     }
 }
