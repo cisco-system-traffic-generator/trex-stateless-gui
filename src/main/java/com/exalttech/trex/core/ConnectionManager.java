@@ -54,6 +54,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -73,7 +74,13 @@ public class ConnectionManager {
     private final static String ASYNC_PASS_STATUS = "Pass";
 
     private final String MAGIC_STRING = "ABE85CEA";
-    private Object sendRequestMonitor = new Object();
+    private final Object sendRequestMonitor = new Object();
+
+    private final List<DisconnectListener> disconnectListeners = Collections.synchronizedList(new ArrayList<>());
+    private boolean serverRestarted = false;
+    private final Object serverRestartedMonitor = new Object();
+
+    private final static int DEFAULT_TIMEOUT = 3000;
 
     /**
      *
@@ -99,16 +106,14 @@ public class ConnectionManager {
     private ZMQ.Socket requester = null;
     private boolean isReadOnly;
     private Task task;
-    ZContext context;
-    ZPoller poller;
+    private ZContext context = new ZContext();;
+    private ZPoller poller = new ZPoller(context);
     private String connectionString;
 
     /**
      *
      */
     protected ConnectionManager() {
-        context = new ZContext();
-        poller = new ZPoller(context);
         bindLogProperty();
 
         try {
@@ -179,6 +184,10 @@ public class ConnectionManager {
      * @return
      */
     public boolean initializeConnection(String ip, String rpcPort, String asyncPort, String scapyPort, String clientName, boolean isReadOnly) throws TRexConnectionException {
+        synchronized (serverRestartedMonitor) {
+            serverRestarted = false;
+        }
+
         this.ip = ip;
         this.rpcPort = rpcPort;
         this.asyncPort = asyncPort;
@@ -213,14 +222,15 @@ public class ConnectionManager {
         }
 
         // Just try to connect but don't account
-        scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, 3000);
+        scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, DEFAULT_TIMEOUT);
 
         return true;
     }
 
     private ZMQ.Socket buildRequester() {
         ZMQ.Socket s = context.createSocket(ZMQ.REQ);
-        s.setReceiveTimeOut(3000);
+        s.setReceiveTimeOut(DEFAULT_TIMEOUT);
+        s.setSendTimeOut(DEFAULT_TIMEOUT);
         return s;
     }
 
@@ -259,7 +269,7 @@ public class ConnectionManager {
 
     public boolean connectScapy(String scapy_ip, String scapy_port) {
         LogsController.getInstance().appendText(LogType.INFO, "Connecting to Scapy server: " + "tcp://" + scapy_ip + ":" + scapy_port);
-        scapyServerClient.connect("tcp://" + scapy_ip + ":" + scapy_port, 3000);
+        scapyServerClient.connect("tcp://" + scapy_ip + ":" + scapy_port, DEFAULT_TIMEOUT);
         if (scapyServerClient.isConnected()) {
             LogsController.getInstance().appendText(LogType.INFO, "Connected");
             return true;
@@ -544,14 +554,15 @@ public class ConnectionManager {
      */
     public String getAsyncResponse() {
         String ret = null;
-        LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex async port: " + "tcp://" + ip + ":" + asyncPort);
+        final String address = "tcp://" + ip + ":" + asyncPort;
+        LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex async port: " + address);
         final String[] error = {null};
         try {
             runAndWait(() -> {
                 try {
                     ZMQ.Socket subscriber = context.createSocket(ZMQ.SUB);
-                    subscriber.setReceiveTimeOut(5000);
-                    subscriber.connect("tcp://" + ip + ":" + asyncPort);
+                    subscriber.setReceiveTimeOut(DEFAULT_TIMEOUT);
+                    subscriber.connect(address);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
 
                     String res;
@@ -561,17 +572,25 @@ public class ConnectionManager {
                             if (res != null) {
                                 handleAsyncResponse(res);
                                 res = null;
+
+                                context.destroySocket(subscriber);
                                 return;
                             }
                             else {
                                 error[0] = "Error while verifing the Async request: " + "Async responce is null";
+
+                                context.destroySocket(subscriber);
                                 return;
                             }
                         } catch (Exception e) {
                             error[0] = "Error while verifing the Async request: " + e.getMessage();
+
+                            context.destroySocket(subscriber);
                             return;
                         }
                     }
+
+                    context.destroySocket(subscriber);
                 } catch (Exception e) {
                     error[0] = "Error while verifing the Async request: " + e.getMessage();
                 }
@@ -595,22 +614,36 @@ public class ConnectionManager {
             protected Void call() throws Exception {
                 try {
                     ZMQ.Socket subscriber = context.createSocket(ZMQ.SUB);
-                    subscriber.setReceiveTimeOut(5000);
-                    subscriber.connect("tcp://" + ip + ":" + asyncPort);
+                    subscriber.setReceiveTimeOut(DEFAULT_TIMEOUT);
+                    subscriber.connect(address);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
-                    String res;
 
-                    while (!Thread.currentThread().isInterrupted()) {
+                    int failsCount = 0;
+                    while (!isCancelled() && !Thread.currentThread().isInterrupted()) {
                         try {
-                            res = getDecompressedString(subscriber.recv());
+                            final String res = getDecompressedString(subscriber.recv());
                             if (res != null) {
                                 handleAsyncResponse(res);
-                                res = null;
+                                failsCount = 0;
+                            } else if (subscriber.base().errno() == ZError.EAGAIN) {
+                                if (failsCount > 2) {
+                                    LOG.error("Connection to server is down");
+                                    synchronized (disconnectListeners) {
+                                        disconnectListeners.forEach(DisconnectListener::handle);
+                                    }
+                                    break;
+                                }
+
+                                failsCount++;
+
+                                LOG.error("Got EAGAIN while getting async TRex response");
                             }
                         } catch (Exception ex) {
                             LOG.error("Possible error while reading the Async request", ex);
                         }
                     }
+
+                    context.destroySocket(subscriber);
                 } catch (Exception ex) {
                     LOG.error("Possible error while reading the Async request", ex);
                 }
@@ -784,20 +817,6 @@ public class ConnectionManager {
     }
 
     /**
-     * @return the requester
-     */
-    public ZMQ.Socket getRequester() {
-        return requester;
-    }
-
-    /**
-     * @param requester the requester to set
-     */
-    public void setRequester(ZMQ.Socket requester) {
-        this.requester = requester;
-    }
-
-    /**
      *
      * @param request
      * @return
@@ -849,8 +868,10 @@ public class ConnectionManager {
                     return null;
                 }
             }
-            return getDecompressedString(serverResponse).getBytes();
-            // decompressed response
+
+            return serverResponse == null
+                ? null
+                : getDecompressedString(serverResponse).getBytes();
         } catch (IOException ex) {
             LOG.error("Error sending request", ex);
             return null;
@@ -900,5 +921,52 @@ public class ConnectionManager {
     }
     public void invalidatePortHandler(int portID) {
         trexClient.invalidatePortHandler(portID);
+    }
+
+    public void disconnect() {
+        setConnected(false);
+
+        disconnectSubscriber();
+        disconnectRequester();
+        disconnectScapy();
+        getTrexClient().disconnect();
+
+        if (poller != null) {
+            try {
+                poller.close();
+            } catch (IOException ex) {
+                LOG.error("Error poller closing", ex);
+            }
+            poller.destroy();
+        }
+
+        context = new ZContext();
+        poller = new ZPoller(context);
+    }
+
+    public void notifyServerWasRestarted() {
+        synchronized (serverRestartedMonitor) {
+            if (serverRestarted) { // That means we already notified manager about server restart
+                return;
+            }
+
+            serverRestarted = true;
+        }
+
+        synchronized (disconnectListeners) {
+            disconnectListeners.forEach(DisconnectListener::handle);
+        }
+    }
+
+    public void addDisconnectListener(final DisconnectListener listener) {
+        disconnectListeners.add(listener);
+    }
+
+    public void removeDisconnectListener(final DisconnectListener listener) {
+        disconnectListeners.remove(listener);
+    }
+
+    public interface DisconnectListener {
+        void handle();
     }
 }

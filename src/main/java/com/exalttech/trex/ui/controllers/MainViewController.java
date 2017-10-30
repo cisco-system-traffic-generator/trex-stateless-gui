@@ -265,18 +265,19 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portView.visibleProperty().bind(portViewVisibilityProperty);
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
 
+        ConnectionManager.getInstance().addDisconnectListener(() -> resetApplication(true));
         // Handle update port state event
         AsyncResponseManager.getInstance().asyncEventObjectProperty().addListener((observable, oldValue, newVal) -> {
-            TrexEvent event = newVal;
 
-            int portId = event.getData().getAsJsonPrimitive("port_id").getAsInt();
-            PortModel portModel = portManager.getPortModel(portId);
-            switch (event.getType()) {
+            switch (newVal.getType()) {
                 case PORT_RELEASED:
                 case PORT_ACQUIRED:
                 case PORT_ATTR_CHANGED:
                 case PORT_STARTED:
                 case PORT_STOPPED:
+                    final int portId = newVal.getData().getAsJsonPrimitive("port_id").getAsInt();
+                    PortModel portModel = portManager.getPortModel(portId);
+
                     if (ConnectionManager.getInstance().isConnected()) {
                         Platform.runLater(() -> {
                             portManager.updatedPorts(Arrays.asList(portModel.getIndex()));
@@ -353,8 +354,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             DialogWindow connectWindow = new DialogWindow("ConnectDialog.fxml", "Connect", 300, 100, false, TrexApp.getPrimaryStage());
             connectWindow.show(true);
             if (ConnectionManager.getInstance().isConnected()) {
+                serverRPCMethods.serverApiSync();
+
+                loadSystemInfo();
                 StatsLoader.getInstance().start();
                 StatsStorage.getInstance().startPolling();
+                portManager.updatePortForce();
+
                 serverStatusLabel.setText("Connected");
                 serverStatusIcon.setImage(new Image("/icons/connectedIcon.gif"));
                 connectIcon.getStyleClass().add("disconnectIcon");
@@ -366,9 +372,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 logsContainer.setDisable(false);
                 copyToClipboardBtn.setDisable(false);
                 dashboardIcon.setDisable(false);
-                serverRPCMethods.serverApiSync();
-                loadSystemInfo();
-                portManager.updatePortForce();
             }
         } catch (IOException ex) {
             LOG.error("Error while Connecting", ex);
@@ -588,69 +591,65 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Reset the application to initial state
      */
     private void resetApplication(boolean didServerCrash) {
-        StatsStorage.getInstance().stopPolling();
+        Platform.runLater(() -> {
+            if (!didServerCrash) {
+                releaseAllPort(false);
+            }
 
-        resetAppInProgress = true;
-        profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
-        // clear tree
-        devicesTree.setRoot(null);
-        // hide all right side views
-        statTableWrapper.setVisible(false);
-        profileContainer.setVisible(false);
-        serviceModeLabel.visibleProperty().unbind();
-        serviceModeLabel.setVisible(false);
 
-        // close all open dialog
-        DialogManager.getInstance().closeAll();
-        // shutdown running services
-        shutdownRunningServices();
+            StatsStorage.getInstance().stopPolling();
+            shutdownRunningServices();
 
-        connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
-        statsMenuItem.setDisable(true);
-        captureMenuItem.setDisable(true);
-        dashboardIcon.setDisable(true);
-        serverStatusIcon.setImage(new Image("/icons/offline.png"));
-        serverStatusLabel.setText("Disconnected");
-        connectIcon.getStyleClass().remove("disconnectIcon");
-        connectDixconnectTooltip.setText("Connect to TRex server");
+            ConnectionManager.getInstance().disconnect();
 
-        // reset Header btns
-        startStream.setDisable(true);
-        startAllStream.setDisable(true);
-        stopStream.setDisable(true);
-        stopAllStream.setDisable(true);
-        pauseStream.setDisable(true);
-        clearCache.setDisable(true);
-        logsContainer.setDisable(false);
-        copyToClipboardBtn.setDisable(true);
-        acquirePort.setDisable(true);
-        releasePort.setDisable(true);
-        assignedPortProfileMap.clear();
+            resetAppInProgress = true;
+            profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
+            // clear tree
+            devicesTree.setRoot(null);
+            // hide all right side views
+            statTableWrapper.setVisible(false);
+            profileContainer.setVisible(false);
+            serviceModeLabel.visibleProperty().unbind();
+            serviceModeLabel.setVisible(false);
 
-        // clear console log
-        LogsController.getInstance().getConsoleLogView().clear();
-        LogsController.getInstance().getView().clear();
+            DialogManager.getInstance().closeAll();
 
-        if (!didServerCrash) {
-            ConnectionManager.getInstance().setConnected(false);
-            // release all port
-            releaseAllPort(false);
-        }
+            connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
+            statsMenuItem.setDisable(true);
+            captureMenuItem.setDisable(true);
+            dashboardIcon.setDisable(true);
+            serverStatusIcon.setImage(new Image("/icons/offline.png"));
+            serverStatusLabel.setText("Disconnected");
+            connectIcon.getStyleClass().remove("disconnectIcon");
+            connectDixconnectTooltip.setText("Connect to TRex server");
 
-        // stop async subscriber
-        ConnectionManager.getInstance().disconnectSubscriber();
-        ConnectionManager.getInstance().disconnectRequester();
-        ConnectionManager.getInstance().disconnectScapy();
+            // reset Header btns
+            startStream.setDisable(true);
+            startAllStream.setDisable(true);
+            stopStream.setDisable(true);
+            stopAllStream.setDisable(true);
+            pauseStream.setDisable(true);
+            clearCache.setDisable(true);
+            logsContainer.setDisable(false);
+            copyToClipboardBtn.setDisable(true);
+            acquirePort.setDisable(true);
+            releasePort.setDisable(true);
+            assignedPortProfileMap.clear();
 
-        if (didServerCrash) {
-            openConnectDialog();
-        }
+            // clear console log
+            LogsController.getInstance().getConsoleLogView().clear();
+            LogsController.getInstance().getView().clear();
 
-        portViewVisibilityProperty.setValue(false);
+            portViewVisibilityProperty.setValue(false);
 
-        portManager.clearPorts();
+            portManager.clearPorts();
 
-        resetAppInProgress = false;
+            resetAppInProgress = false;
+
+            if (didServerCrash) {
+                openConnectDialog();
+            }
+        });
     }
 
     /**
@@ -1421,8 +1420,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
             // stop async subscriber
             if (ConnectionManager.getInstance().isConnected()) {
-                ConnectionManager.getInstance().disconnectSubscriber();
-                ConnectionManager.getInstance().disconnectRequester();
+                ConnectionManager.getInstance().disconnect();
             }
         } catch (Exception ex) {
             LOG.error("Error closing the application", ex);
@@ -1647,6 +1645,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Stop running services
      */
     private void shutdownRunningServices() {
+        portView.stopPolling();
         stopRefreshingService();
     }
 

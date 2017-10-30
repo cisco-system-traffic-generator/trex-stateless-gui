@@ -54,6 +54,7 @@ public class TrexEvent {
                 break;
             case 100:
                 this.type = TrexEventType.SERVER_STOPPED;
+                break;
             default:
                 this.type = TrexEventType.UNKNOWN_TYPE;
         }
