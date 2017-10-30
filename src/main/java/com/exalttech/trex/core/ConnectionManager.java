@@ -114,8 +114,6 @@ public class ConnectionManager {
      *
      */
     protected ConnectionManager() {
-        bindLogProperty();
-
         try {
             InetAddress ip = InetAddress.getLocalHost();
             String hostname = ip.getHostName();
@@ -890,18 +888,6 @@ public class ConnectionManager {
         System.arraycopy(firstDataArray, 0, concatedDataArray, 0, firstDataArray.length);
         System.arraycopy(secondDataArray, 0, concatedDataArray, firstDataArray.length, secondDataArray.length);
         return concatedDataArray;
-    }
-
-    /**
-     * Add listener to log property
-     */
-    private void bindLogProperty() {
-        logProperty.addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                LogsController.getInstance().appendConsoleViewText(newValue);
-            }
-        });
     }
 
     void setApiH(String apiH) {

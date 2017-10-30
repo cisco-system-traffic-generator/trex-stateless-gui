@@ -378,13 +378,6 @@
                                                                 prefWidth="200.0"/>
                                                 </content>
                                             </Tab>
-                                            <Tab fx:id="consoleLogTab" text="Console Log View">
-                                                <content>
-                                                    <AnchorPane fx:id="consoleLogContainer" minHeight="0.0"
-                                                                minWidth="0.0" prefHeight="180.0"
-                                                                prefWidth="200.0"/>
-                                                </content>
-                                            </Tab>
                                         </tabs>
                                     </TabPane>
                                     <Button fx:id="copyToClipboardBtn" disable="true"

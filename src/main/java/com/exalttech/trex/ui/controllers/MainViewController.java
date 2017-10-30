@@ -163,8 +163,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     @FXML
     AnchorPane logContainer;
-    @FXML
-    AnchorPane consoleLogContainer;
 
     @FXML
     Label startStream;
@@ -596,7 +594,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 releaseAllPort(false);
             }
 
-
             StatsStorage.getInstance().stopPolling();
             shutdownRunningServices();
 
@@ -636,8 +633,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             releasePort.setDisable(true);
             assignedPortProfileMap.clear();
 
-            // clear console log
-            LogsController.getInstance().getConsoleLogView().clear();
             LogsController.getInstance().getView().clear();
 
             portViewVisibilityProperty.setValue(false);
@@ -886,7 +881,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
         });
         logContainer.getChildren().add(LogsController.getInstance().getView());
-        consoleLogContainer.getChildren().add(LogsController.getInstance().getConsoleLogView());
 
         // initialize countdown service
         countdownService = new CountdownService();
@@ -1638,7 +1632,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             LogsController.getInstance().getView().copyToClipboard();
             return;
         }
-        LogsController.getInstance().getConsoleLogView().copyToClipboard();
     }
 
     /**
