@@ -623,7 +623,12 @@ public class ConnectionManager {
                             if (res != null) {
                                 handleAsyncResponse(res);
                                 failsCount = 0;
-                            } else if (subscriber.base().errno() == ZError.EAGAIN && isConnected()) {
+                            } else if (subscriber.base().errno() == ZError.EAGAIN) {
+                                if (!isConnected()) {
+                                    context.destroySocket(subscriber);
+                                    return null;
+                                }
+
                                 if (failsCount > 2) {
                                     LOG.error("Connection to server is down");
                                     synchronized (disconnectListeners) {
