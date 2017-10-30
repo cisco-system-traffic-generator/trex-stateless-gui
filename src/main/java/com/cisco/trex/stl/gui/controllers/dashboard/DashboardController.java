@@ -11,8 +11,6 @@ import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.statistics.StatsLoader;
 import javafx.application.Platform;
-import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -20,7 +18,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;

@@ -1,11 +1,12 @@
 package com.cisco.trex.stl.gui.controllers.capture;
 
 import com.exalttech.trex.ui.dialog.DialogKeyPressHandler;
+import com.exalttech.trex.ui.dialog.DialogView;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
-public class PacketViewerController implements DialogKeyPressHandler {
+public class PacketViewerController extends DialogView {
     private static Logger LOG = Logger.getLogger(PacketViewerController.class);
 
     @FXML
