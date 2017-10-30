@@ -39,14 +39,12 @@ public class LogsController {
         return instance;
     }
     private LogsView view;
-    private ConsoleLogView consoleLogView;
 
     /**
      * Protected constructor
      */
     protected LogsController() {
         view = new LogsView();
-        consoleLogView = new ConsoleLogView();
     }
 
     /**
@@ -62,26 +60,9 @@ public class LogsController {
 
     /**
      *
-     * @param textToAppend
-     */
-    public void appendConsoleViewText(String textToAppend) {
-        consoleLogView.append(textToAppend.trim());
-    }
-
-    /**
-     *
      * @return
      */
     public LogsView getView() {
         return view;
     }
-
-    /**
-     *
-     * @return
-     */
-    public ConsoleLogView getConsoleLogView() {
-        return consoleLogView;
-    }
-
 }
