@@ -589,15 +589,17 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Reset the application to initial state
      */
     private void resetApplication(boolean didServerCrash) {
-        Platform.runLater(() -> {
-            if (!didServerCrash) {
-                releaseAllPort(false);
-            }
+        DialogManager.getInstance().closeAll();
+        portManager.clearPorts();
 
+        if (!didServerCrash) {
+            releaseAllPort(false);
+        }
+
+        Platform.runLater(() -> {
             StatsStorage.getInstance().stopPolling();
             shutdownRunningServices();
-
-            ConnectionManager.getInstance().disconnect();
+            LogsController.getInstance().getView().clear();
 
             resetAppInProgress = true;
             profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
@@ -608,8 +610,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             profileContainer.setVisible(false);
             serviceModeLabel.visibleProperty().unbind();
             serviceModeLabel.setVisible(false);
-
-            DialogManager.getInstance().closeAll();
 
             connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
             statsMenuItem.setDisable(true);
@@ -633,14 +633,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             releasePort.setDisable(true);
             assignedPortProfileMap.clear();
 
-            LogsController.getInstance().getView().clear();
-
             portViewVisibilityProperty.setValue(false);
-
-            portManager.clearPorts();
 
             resetAppInProgress = false;
 
+            ConnectionManager.getInstance().disconnect();
+            
             if (didServerCrash) {
                 openConnectDialog();
             }
