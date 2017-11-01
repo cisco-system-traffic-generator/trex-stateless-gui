@@ -589,12 +589,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Reset the application to initial state
      */
     private void resetApplication(boolean didServerCrash) {
-        DialogManager.getInstance().closeAll();
-        portManager.clearPorts();
-
         if (!didServerCrash) {
             releaseAllPort(false);
         }
+
+        DialogManager.getInstance().closeAll();
+        portManager.clearPorts();
 
         Platform.runLater(() -> {
             StatsStorage.getInstance().stopPolling();
