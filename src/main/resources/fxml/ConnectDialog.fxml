@@ -107,7 +107,7 @@
                        GridPane.columnIndex="0"/>
                 <TextField fx:id="timeoutField"
                            id="connection-dialog-timeout"
-                           text="3"
+                           text="7"
                            GridPane.rowIndex="3"
                            GridPane.columnIndex="1"/>
                 <Label GridPane.rowIndex="4"

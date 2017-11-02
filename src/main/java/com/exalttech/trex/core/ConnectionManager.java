@@ -76,7 +76,7 @@ public class ConnectionManager {
     private final Object serverRestartedMonitor = new Object();
 
     private final static int INTERNAL_TIMEOUT = 1000;
-    private final static int DEFAULT_TIMEOUT = 3000;
+    private final static int DEFAULT_TIMEOUT = 7000;
 
     public static ConnectionManager getInstance() {
         if (instance == null) {
