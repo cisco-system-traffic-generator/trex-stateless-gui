@@ -1,18 +1,19 @@
-/**
+/*
  * *****************************************************************************
  * Copyright (c) 2016
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************
+ * *****************************************************************************
  */
+
 package com.exalttech.trex.core;
 
 import com.cisco.trex.stateless.TRexClient;
@@ -36,8 +37,6 @@ import com.xored.javafx.packeteditor.scapy.ScapyServerClient;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import org.apache.log4j.Logger;
 import org.zeromq.ZContext;
@@ -57,35 +56,28 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.DataFormatException;
 
-/**
- *
- * @author GeorgeKh
- */
+
 public class ConnectionManager {
 
     private TRexClient trexClient;
     private ScapyServerClient scapyServerClient;
     private static final Logger LOG = Logger.getLogger(ConnectionManager.class.getName());
     private static ConnectionManager instance = null;
-    private static StringProperty logProperty = new SimpleStringProperty();
+    private static final StringProperty logProperty = new SimpleStringProperty();
     private final static String ASYNC_PASS_STATUS = "Pass";
 
-    private final String MAGIC_STRING = "ABE85CEA";
     private final Object sendRequestMonitor = new Object();
 
     private final List<DisconnectListener> disconnectListeners = Collections.synchronizedList(new ArrayList<>());
     private boolean serverRestarted = false;
     private final Object serverRestartedMonitor = new Object();
 
+    private final static int INTERNAL_TIMEOUT = 1000;
     private final static int DEFAULT_TIMEOUT = 3000;
 
-    /**
-     *
-     * @return
-     */
     public static ConnectionManager getInstance() {
         if (instance == null) {
             instance = new ConnectionManager();
@@ -101,19 +93,20 @@ public class ConnectionManager {
     private String rpcPort;
     private String asyncPort;
     private String scapyPort;
+    private int timeout = DEFAULT_TIMEOUT;
     private boolean connected = false;
 
+    private AtomicBoolean connectionTimeout = new AtomicBoolean(false);
+
     private ZMQ.Socket requester = null;
-    private boolean isReadOnly;
     private Task task;
-    private ZContext context = new ZContext();;
+    private ZContext context = new ZContext();
     private ZPoller poller = new ZPoller(context);
     private String connectionString;
 
-    /**
-     *
-     */
-    protected ConnectionManager() {
+
+
+    private ConnectionManager() {
         try {
             InetAddress ip = InetAddress.getLocalHost();
             String hostname = ip.getHostName();
@@ -124,78 +117,40 @@ public class ConnectionManager {
         }
     }
 
-    /**
-     *
-     * @return
-     */
     public String getClientName() {
         return clientName;
     }
 
-    /**
-     *
-     * @param clientName
-     */
-    public void setClientName(String clientName) {
+    private void setClientName(String clientName) {
         this.clientName = clientName;
     }
 
-    /**
-     *
-     * @return
-     */
-    public String getIp() {
-        return ip;
-    }
-
-    /**
-     *
-     * @param ip
-     */
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public boolean isIsReadOnly() {
-        return isReadOnly;
-    }
-
-    /**
-     *
-     * @param isReadOnly
-     */
-    public void setIsReadOnly(boolean isReadOnly) {
-        this.isReadOnly = isReadOnly;
-    }
-
-    /**
-     *
-     * @param ip
-     * @param rpcPort
-     * @param asyncPort
-     * @param clientName
-     * @param isReadOnly
-     * @return
-     */
-    public boolean initializeConnection(String ip, String rpcPort, String asyncPort, String scapyPort, String clientName, boolean isReadOnly) throws TRexConnectionException {
+    public boolean initializeConnection(String ip,
+                                        String rpcPort,
+                                        String asyncPort,
+                                        String scapyPort,
+                                        int timeout,
+                                        String clientName,
+                                        boolean isReadOnly) throws TRexConnectionException {
         synchronized (serverRestartedMonitor) {
             serverRestarted = false;
         }
+
+        connectionTimeout.set(false);
 
         this.ip = ip;
         this.rpcPort = rpcPort;
         this.asyncPort = asyncPort;
         this.scapyPort = scapyPort;
         this.clientName = clientName;
-        this.isReadOnly = isReadOnly;
+
+        if (timeout > 0) {
+            this.timeout = timeout;
+        }
 
         trexClient = new TRexClient(ip, rpcPort, clientName);
         trexClient.connect();
-        // connect to zmq
+
         return connectToZMQ();
     }
 
@@ -203,9 +158,6 @@ public class ConnectionManager {
         return trexClient;
     }
 
-    /**
-     *
-     */
     private boolean connectToZMQ() {
         connectionString = "tcp://" + ip + ":" + rpcPort;
         try {
@@ -220,28 +172,22 @@ public class ConnectionManager {
         }
 
         // Just try to connect but don't account
-        scapyServerClient.connect("tcp://" + ip +":"+ scapyPort, DEFAULT_TIMEOUT);
+        scapyServerClient.connect("tcp://" + ip + ":" + scapyPort, timeout);
 
         return true;
     }
 
     private ZMQ.Socket buildRequester() {
         ZMQ.Socket s = context.createSocket(ZMQ.REQ);
-        s.setReceiveTimeOut(DEFAULT_TIMEOUT);
-        s.setSendTimeOut(DEFAULT_TIMEOUT);
+        s.setReceiveTimeOut(INTERNAL_TIMEOUT);
+        s.setSendTimeOut(INTERNAL_TIMEOUT);
         return s;
     }
 
-    /**
-     *
-     * @param isAsync
-     * @return
-     */
     public boolean testConnection(boolean isAsync) {
         if (isAsync) {
             return !Util.isNullOrEmpty(getAsyncResponse());
-        }
-        else {
+        } else {
             if (!connectTrex()) {
                 return false;
             }
@@ -276,29 +222,14 @@ public class ConnectionManager {
         return false;
     }
 
-    public void disconnectScapy() {
+    private void disconnectScapy() {
         scapyServerClient.closeConnection();
     }
 
-    /**
-     *
-     * Send request without Parameters
-     *
-     * @param cmd
-     * @return
-     */
-    public String sendRequest(String cmd) {
+    private String sendRequest(String cmd) {
         return sendRequest(cmd, null);
     }
 
-    /**
-     *
-     * Send request with Parameters
-     *
-     * @param cmd
-     * @param parameters
-     * @return
-     */
     public String sendRequest(String cmd, String parameters) {
 
         try {
@@ -344,17 +275,7 @@ public class ConnectionManager {
         return null;
     }
 
-    /**
-     *
-     * @param method
-     * @param params
-     * @return
-     * @throws JsonProcessingException
-     * @throws UnsupportedEncodingException
-     * @throws InvalidRPCResponseException
-     * @throws IncorrectRPCMethodException
-     */
-    public String sendRPCRequest(String method, Params params) throws JsonProcessingException, UnsupportedEncodingException, InvalidRPCResponseException, IncorrectRPCMethodException {
+    String sendRPCRequest(String method, Params params) throws JsonProcessingException, UnsupportedEncodingException, InvalidRPCResponseException, IncorrectRPCMethodException {
         RPCRequest rpcRequest = new RPCRequest();
         ObjectMapper mapper = new ObjectMapper();
         rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
@@ -370,28 +291,19 @@ public class ConnectionManager {
         return handleResponse(serverResponse, true);
     }
 
-    /**
-     *
-     * @param profilesList
-     * @return
-     * @throws JsonProcessingException
-     * @throws UnsupportedEncodingException
-     * @throws IncorrectRPCMethodException
-     * @throws InvalidRPCResponseException
-     */
-    public String sendAddStreamRequest(Profile[] profilesList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+    String sendAddStreamRequest(Profile[] profilesList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         List<String> addStreamCommandList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         RPCRequest rpcRequest = new RPCRequest();
         String jsonRequestString;
-        for (int i = 0; i < profilesList.length; i++) {
+        for (Profile aProfilesList : profilesList) {
 
             rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
             rpcRequest.setMethod(Constants.ADD_STREAM_METHOD);
-            rpcRequest.setParams(profilesList[i]);
+            rpcRequest.setParams(aProfilesList);
 
             jsonRequestString = mapper.writeValueAsString(rpcRequest);
-            jsonRequestString = Util.tuneJSONParams(jsonRequestString, profilesList[i], apiH);
+            jsonRequestString = Util.tuneJSONParams(jsonRequestString, aProfilesList, apiH);
             addStreamCommandList.add(jsonRequestString);
 
         }
@@ -402,16 +314,6 @@ public class ConnectionManager {
         return handleResponse(serverResponse, false);
     }
 
-    /**
-     * Send request for port status
-     *
-     * @param portList
-     * @return
-     * @throws JsonProcessingException
-     * @throws UnsupportedEncodingException
-     * @throws IncorrectRPCMethodException
-     * @throws InvalidRPCResponseException
-     */
     public String sendPortStatusRequest(List<Port> portList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         List<String> addStreamCommandList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -434,16 +336,6 @@ public class ConnectionManager {
         return handleResponse(serverResponse, false);
     }
 
-    /**
-     * Send request for port status
-     *
-     * @param port
-     * @return
-     * @throws JsonProcessingException
-     * @throws UnsupportedEncodingException
-     * @throws IncorrectRPCMethodException
-     * @throws InvalidRPCResponseException
-     */
     public String sendPortXStatsNamesRequest(Port port) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         List<String> addStreamCommandList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -466,16 +358,6 @@ public class ConnectionManager {
         return handleResponse(serverResponse, false);
     }
 
-    /**
-     * Send request for port status
-     *
-     * @param port
-     * @return
-     * @throws JsonProcessingException
-     * @throws UnsupportedEncodingException
-     * @throws IncorrectRPCMethodException
-     * @throws InvalidRPCResponseException
-     */
     public String sendPortXStatsValuesRequest(Port port) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         List<String> addStreamCommandList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -495,35 +377,15 @@ public class ConnectionManager {
 
         byte[] serverResponse = getServerRPCResponse(addStreamCommandList.toString());
 
-        return handleResponse(serverResponse, false, true);
+        return handleResponse(serverResponse, false);
     }
 
-    public String sendUtilizationRequest() throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
-        String serverResponse = sendRequest(Constants.GET_UTILIZATION_METHOD, "");
-
-        return serverResponse;
-    }
-
-    /**
-     * Handle server response
-     *
-     * @param serverResponse
-     * @param writeToLog
-     * @return
-     * @throws UnsupportedEncodingException
-     * @throws IncorrectRPCMethodException
-     * @throws InvalidRPCResponseException
-     */
     private String handleResponse(byte[] serverResponse, boolean writeToLog) throws UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
-        return handleResponse(serverResponse, writeToLog, true);
-    }
-
-    private String handleResponse(byte[] serverResponse, boolean writeToLog, boolean logTrace) throws UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         if (serverResponse != null) {
             String rpcResponse = new String(serverResponse, "UTF-8");
-            if (logTrace) {
-                LOG.trace("Received Server response \n" + Util.toPrettyFormat(rpcResponse));
-            }
+
+            LOG.trace("Received Server response \n" + Util.toPrettyFormat(rpcResponse));
+
             if (writeToLog) {
                 logProperty.setValue("Received Server response " + Util.toPrettyFormat(rpcResponse));
             }
@@ -544,14 +406,8 @@ public class ConnectionManager {
         }
     }
 
-    /**
-     *
-     * Async request management
-     *
-     * @return
-     */
-    public String getAsyncResponse() {
-        String ret = null;
+    private String getAsyncResponse() {
+        String ret;
         final String address = "tcp://" + ip + ":" + asyncPort;
         LogsController.getInstance().appendText(LogType.INFO, "Connecting to Trex async port: " + address);
         final String[] error = {null};
@@ -559,35 +415,21 @@ public class ConnectionManager {
             runAndWait(() -> {
                 try {
                     ZMQ.Socket subscriber = context.createSocket(ZMQ.SUB);
-                    subscriber.setReceiveTimeOut(DEFAULT_TIMEOUT);
+                    subscriber.setReceiveTimeOut(timeout);
                     subscriber.connect(address);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
 
                     String res;
-                    while (!Thread.currentThread().isInterrupted()) {
-                        try {
-                            res = getDecompressedString(subscriber.recv());
-                            if (res != null) {
-                                handleAsyncResponse(res);
-                                res = null;
-
-                                context.destroySocket(subscriber);
-                                return;
-                            }
-                            else {
-                                error[0] = "Error while verifing the Async request: " + "Async responce is null";
-
-                                context.destroySocket(subscriber);
-                                return;
-                            }
-                        } catch (Exception e) {
-                            error[0] = "Error while verifing the Async request: " + e.getMessage();
-
-                            context.destroySocket(subscriber);
-                            return;
+                    try {
+                        res = getDecompressedString(subscriber.recv());
+                        if (res != null) {
+                            handleAsyncResponse(res);
+                        } else {
+                            error[0] = "Error while verifing the Async request: " + "Async responce is null";
                         }
+                    } catch (Exception e) {
+                        error[0] = "Error while verifing the Async request: " + e.getMessage();
                     }
-
                     context.destroySocket(subscriber);
                 } catch (Exception e) {
                     error[0] = "Error while verifing the Async request: " + e.getMessage();
@@ -595,13 +437,10 @@ public class ConnectionManager {
             });
         } catch (InterruptedException e) {
             error[0] = "Error while verifing the Async request: " + e.getMessage();
-        } catch (ExecutionException e) {
-            error[0] = "Error while verifing the Async request: " + e.getMessage();
         }
         if (error[0] == null) {
             ret = ASYNC_PASS_STATUS;
-        }
-        else {
+        } else {
             LogsController.getInstance().appendText(LogType.ERROR, error[0]);
             ret = null;
         }
@@ -612,7 +451,7 @@ public class ConnectionManager {
             protected Void call() throws Exception {
                 try {
                     ZMQ.Socket subscriber = context.createSocket(ZMQ.SUB);
-                    subscriber.setReceiveTimeOut(DEFAULT_TIMEOUT);
+                    subscriber.setReceiveTimeOut(INTERNAL_TIMEOUT);
                     subscriber.connect(address);
                     subscriber.subscribe(ZMQ.SUBSCRIPTION_ALL);
 
@@ -629,8 +468,9 @@ public class ConnectionManager {
                                     return null;
                                 }
 
-                                if (failsCount > 2) {
+                                if (failsCount > timeout / INTERNAL_TIMEOUT) {
                                     LOG.error("Connection to server is down");
+                                    connectionTimeout.set(true);
                                     synchronized (disconnectListeners) {
                                         disconnectListeners.forEach(DisconnectListener::handle);
                                     }
@@ -660,14 +500,7 @@ public class ConnectionManager {
         return ret;
     }
 
-    /**
-     * Runs the specified {@link Runnable} on the
-     * JavaFX application thread and waits for completion.
-     *
-     * @param action the {@link Runnable} to run
-     * @throws NullPointerException if {@code action} is {@code null}
-     */
-    private static void runAndWait(Runnable action) throws InterruptedException, ExecutionException {
+    private static void runAndWait(Runnable action) throws InterruptedException {
         if (action == null)
             throw new NullPointerException("action");
 
@@ -691,14 +524,8 @@ public class ConnectionManager {
 
     }
 
-    /**
-     * Decompressed response
-     *
-     * @param data
-     * @return
-     */
     private String getDecompressedString(byte[] data) {
-        if (data==null) return null;
+        if (data == null) return null;
 
         // if the length is larger than 8 bytes
         if (data.length > 8) {
@@ -709,6 +536,7 @@ public class ConnectionManager {
             String magicString = DatatypeConverter.printHexBinary(magicBytes);
 
             /* check MAGIC in the first 4 bytes in case we have it, it is compressed */
+            String MAGIC_STRING = "ABE85CEA";
             if (magicString.equals(MAGIC_STRING)) {
 
                 // Skip another  4 bytes containing the uncompressed size of the  message
@@ -726,11 +554,6 @@ public class ConnectionManager {
         return new String(data);
     }
 
-    /**
-     * Handle async response
-     *
-     * @param res
-     */
     private void handleAsyncResponse(String res) {
         if (res.contains(Constants.TREX_GLOBAL_TAG)) {
             AsyncResponseManager.getInstance().setTrexGlobalResponse(res);
@@ -743,10 +566,7 @@ public class ConnectionManager {
         }
     }
 
-    /**
-     *
-     */
-    public void disconnectSubscriber() {
+    private void disconnectSubscriber() {
         try {
             task.cancel(true);
         } catch (Exception ex) {
@@ -758,52 +578,21 @@ public class ConnectionManager {
         }
     }
 
-    /**
-     *
-     */
-    public void disconnectRequester() {
+    private void disconnectRequester() {
         setConnected(false);
         requester.disconnect(connectionString);
         requester.close();
     }
 
-    /**
-     *
-     * @return
-     */
     public String getIPAddress() {
         return ip;
     }
 
-    /**
-     *
-     * @return
-     */
-    public String getAsyncPort() {
-        return asyncPort;
-    }
-
-    public String getScapyPort() {
-        return scapyPort;
-    }
-
-    /**
-     *
-     * @return
-     */
     public String getRpcPort() {
         return rpcPort;
     }
 
-    /**
-     *
-     * @return
-     */
     public boolean isConnected() {
-        return this.connected;
-    }
-
-    public boolean isTrexConnected() {
         return this.connected;
     }
 
@@ -811,19 +600,10 @@ public class ConnectionManager {
         return scapyServerClient.isConnected();
     }
 
-    /**
-     *
-     * @param connected
-     */
     public void setConnected(boolean connected) {
         this.connected = connected;
     }
 
-    /**
-     *
-     * @param request
-     * @return
-     */
     private byte[] getServerRPCResponse(String request) {
         try {
             // prepare compression header
@@ -837,9 +617,13 @@ public class ConnectionManager {
             // compress request
             byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
             byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
-            byte[] serverResponse = null;
-            boolean success = false;
+            byte[] serverResponse;
+            boolean success;
+
             synchronized (sendRequestMonitor) {
+                if (connectionTimeout.get()) {
+                    return null;
+                }
                 try {
                     success = requester.send(finalRequest);
                 } catch (ZMQException e) {
@@ -853,13 +637,16 @@ public class ConnectionManager {
                     serverResponse = requester.recv(0);
                     if (serverResponse == null) {
                         if (requester.base().errno() == ZError.EAGAIN) {
-                            int retries = 5;
+                            int retries = timeout / INTERNAL_TIMEOUT;
                             while (serverResponse == null && retries > 0) {
+                                if (connectionTimeout.get()) {
+                                    return null;
+                                }
+
                                 retries--;
                                 serverResponse = requester.recv(0);
                             }
-                            if (retries == 0) {
-                                resend(finalRequest);
+                            if (retries == 0 && resend(finalRequest)) {
                                 serverResponse = requester.recv(0);
                             }
                         } else {
@@ -880,14 +667,18 @@ public class ConnectionManager {
             return null;
         }
     }
-    
+
     private boolean resend(byte[] msg) {
+        if (connectionTimeout.get()) {
+            return false;
+        }
+
         context.destroySocket(requester);
         requester = buildRequester();
         requester.connect(connectionString);
         return requester.send(msg);
     }
-    
+
     private byte[] concatByteArrays(byte[] firstDataArray, byte[] secondDataArray) {
         byte[] concatedDataArray = new byte[firstDataArray.length + secondDataArray.length];
         System.arraycopy(firstDataArray, 0, concatedDataArray, 0, firstDataArray.length);
@@ -899,10 +690,6 @@ public class ConnectionManager {
         this.apiH = apiH;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getApiH() {
         return apiH;
     }
@@ -910,6 +697,7 @@ public class ConnectionManager {
     public void propagatePortHandler(int portID, String handler) {
         trexClient.updatePortHandler(portID, handler);
     }
+
     public void invalidatePortHandler(int portID) {
         trexClient.invalidatePortHandler(portID);
     }
@@ -935,7 +723,7 @@ public class ConnectionManager {
         poller = new ZPoller(context);
     }
 
-    public void notifyServerWasRestarted() {
+    void notifyServerWasRestarted() {
         synchronized (serverRestartedMonitor) {
             if (serverRestarted) { // That means we already notified manager about server restart
                 return;
@@ -951,10 +739,6 @@ public class ConnectionManager {
 
     public void addDisconnectListener(final DisconnectListener listener) {
         disconnectListeners.add(listener);
-    }
-
-    public void removeDisconnectListener(final DisconnectListener listener) {
-        disconnectListeners.remove(listener);
     }
 
     public interface DisconnectListener {

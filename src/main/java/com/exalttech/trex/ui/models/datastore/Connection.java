@@ -32,168 +32,105 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class Connection {
 
-    String ip;
+    private String ip;
 
-    String rpcPort;
+    private String rpcPort;
 
-    String asyncPort;
+    private String asyncPort;
 
-    String scapyPort;
+    private String scapyPort;
 
-    String user;
+    private int timeout;
 
-    boolean fullControl;
+    private String user;
+
+    private boolean fullControl;
     
-    boolean lastUsed;
+    private boolean lastUsed;
 
-    /**
-     *
-     */
-    public Connection() {
-        // default constructor
-    }
+    public Connection() {}
 
-    /**
-     *
-     * @param ip
-     * @param rpcPort
-     * @param asyncPort
-     * @param user
-     * @param fullControl
-     */
-    public Connection(String ip, String rpcPort, String asyncPort, String scapyPort, String user, boolean fullControl) {
+    public Connection(String ip,
+                      String rpcPort,
+                      String asyncPort,
+                      String scapyPort,
+                      int timeout,
+                      String user,
+                      boolean fullControl) {
         this.ip = ip;
         this.rpcPort = rpcPort;
         this.asyncPort = asyncPort;
         this.scapyPort = Util.isNullOrEmpty(scapyPort) ? "4507" : scapyPort;
+        this.timeout = timeout;
         this.user = user;
         this.fullControl = fullControl;
     }
 
-    /**
-     * Return IP
-     *
-     * @return
-     */
     @XmlElement(name = "hostname")
     public String getIp() {
         return ip;
     }
 
-    /**
-     * Set IP
-     *
-     * @param ip
-     */
-    public void setIp(String ip) {
+    public void setIp(final String ip) {
         this.ip = ip;
     }
 
-    /**
-     * Return RPC port
-     *
-     * @return
-     */
     @XmlElement(name = "rpc_port")
     public String getRpcPort() {
         return rpcPort;
     }
 
-    /**
-     * Set RPC port
-     *
-     * @param rpcPort
-     */
     public void setRpcPort(String rpcPort) {
         this.rpcPort = rpcPort;
     }
 
-    /**
-     * Return Async port
-     *
-     * @return
-     */
     @XmlElement(name = "async_port")
     public String getAsyncPort() {
         return asyncPort;
     }
 
-    /**
-     * Set Async port
-     *
-     * @param asyncPort
-     */
-    public void setAsyncPort(String asyncPort) {
+    public void setAsyncPort(final String asyncPort) {
         this.asyncPort = asyncPort;
     }
 
-    /**
-     * Return Scapy port
-     *
-     * @return
-     */
     @XmlElement(name = "scapy_port")
     public String getScapyPort() {
         return scapyPort;
     }
 
-    /**
-     * Set Async port
-     *
-     * @param scapyPort
-     */
     public void setScapyPort(String scapyPort) {
         this.scapyPort = scapyPort;
     }
 
-    /**
-     * Return user
-     *
-     * @return
-     */
+    @XmlElement(name = "timeout")
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(final int timeout) {
+        this.timeout = timeout;
+    }
+
     public String getUser() {
         return user;
     }
 
-    /**
-     * Set user
-     *
-     * @param user
-     */
-    public void setUser(String user) {
+    public void setUser(final String user) {
         this.user = user;
     }
 
-    /**
-     * Return whether full control is select or not
-     *
-     * @return
-     */
     public boolean isFullControl() {
         return fullControl;
     }
 
-    /**
-     * Set full control selection
-     *
-     * @param fullControl
-     */
-    public void setFullControl(boolean fullControl) {
+    public void setFullControl(final boolean fullControl) {
         this.fullControl = fullControl;
     }
 
-    /**
-     * Set last used
-     * @param lastUsed 
-     */
-    public void setLastUsed(boolean lastUsed) {
+    public void setLastUsed(final boolean lastUsed) {
         this.lastUsed = lastUsed;
     }
 
-    /**
-     * Return true if it is last used, otherwise return false
-     * @return 
-     */
     @XmlElement(name = "last_used")
     public boolean isLastUsed() {
         return lastUsed;
@@ -203,5 +140,4 @@ public class Connection {
     public String toString() {
         return new Gson().toJson(this);
     }
-
 }
