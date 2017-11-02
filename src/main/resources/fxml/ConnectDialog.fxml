@@ -4,7 +4,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
@@ -77,6 +76,7 @@
                     <RowConstraints minHeight="30.0"/>
                     <RowConstraints minHeight="30.0"/>
                     <RowConstraints minHeight="30.0"/>
+                    <RowConstraints minHeight="30.0"/>
                 </rowConstraints>
                 <Label text="Sync Port"
                        GridPane.rowIndex="0"
@@ -102,18 +102,26 @@
                            text="4507"
                            GridPane.rowIndex="2"
                            GridPane.columnIndex="1"/>
-                <Label GridPane.rowIndex="3"
+                <Label text="Timeout (seconds)"
+                       GridPane.rowIndex="3"
+                       GridPane.columnIndex="0"/>
+                <TextField fx:id="timeoutField"
+                           id="connection-dialog-timeout"
+                           text="3"
+                           GridPane.rowIndex="3"
+                           GridPane.columnIndex="1"/>
+                <Label GridPane.rowIndex="4"
                        GridPane.columnIndex="0"
                        text="Name"/>
                 <TextField fx:id="nameTextField"
                            id="connection-dialog-user"
                            text="Client1"
-                           GridPane.rowIndex="3"
+                           GridPane.rowIndex="4"
                            GridPane.columnIndex="1"/>
-                <Label GridPane.rowIndex="4"
+                <Label GridPane.rowIndex="5"
                        GridPane.columnIndex="0"
                        text="Mode"/>
-                <StackPane GridPane.rowIndex="4"
+                <StackPane GridPane.rowIndex="5"
                            GridPane.columnIndex="1">
                     <fx:define>
                         <ToggleGroup fx:id="mode" />
