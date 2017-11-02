@@ -124,7 +124,6 @@ public class PortModel {
         model.linkControlSupportProperty().set(port.is_link_supported);
         model.ledControlProperty().set(port.is_led_supported);
         model.flowControlSupportProperty().set(port.is_fc_supported);
-        
         return model;
     }
 
