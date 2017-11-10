@@ -640,6 +640,16 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             ConnectionManager.getInstance().disconnect();
             
             if (didServerCrash) {
+                AlertUtils.construct(
+                    Alert.AlertType.ERROR,
+                    "Disconnected from TRex",
+                    "Connection was broken",
+                    "There may be several reasons:\n" +
+                        "1. TRex server crashed or shut down\n" +
+                        "2. Client was disconnected by timeout. If you are experiencing network issues, " +
+                        "you can adjust timeout value in server connection settings.")
+                    .showAndWait();
+
                 openConnectDialog();
             }
         });
