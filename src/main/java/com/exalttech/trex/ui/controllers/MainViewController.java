@@ -1,17 +1,17 @@
 /**
  * *****************************************************************************
  * Copyright (c) 2016
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************
+ * *****************************************************************************
  */
 package com.exalttech.trex.ui.controllers;
 
@@ -108,7 +108,7 @@ import java.util.logging.Level;
  * @author Georgekh
  */
 public class MainViewController implements Initializable, EventHandler<KeyEvent>,
-        MultiplierOptionChangeHandler, PortManagerEventHandler, PacketTableUpdatedHandler {
+    MultiplierOptionChangeHandler, PortManagerEventHandler, PacketTableUpdatedHandler {
 
     private static final Logger LOG = Logger.getLogger(MainViewController.class.getName());
     private final RPCMethods serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
@@ -580,9 +580,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
     private Optional<MenuItem> getItemByName(ContextMenu menu, String text) {
         return menu.getItems()
-                   .stream()
-                   .filter(menuItem -> menuItem.getText().equalsIgnoreCase(text))
-                   .findFirst();
+            .stream()
+            .filter(menuItem -> menuItem.getText().equalsIgnoreCase(text))
+            .findFirst();
     }
 
     /**
@@ -638,16 +638,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             resetAppInProgress = false;
 
             ConnectionManager.getInstance().disconnect();
-            
+
             if (didServerCrash) {
                 AlertUtils.construct(
                     Alert.AlertType.ERROR,
                     "Disconnected from TRex",
-                    "Connection was broken",
-                    "There may be several reasons:\n" +
-                        "1. TRex server crashed or shut down\n" +
-                        "2. Client was disconnected by timeout. If you are experiencing network issues, " +
-                        "you can adjust timeout value in server connection settings.")
+                    "Disconnected from TRex server",
+                    "Make sure TRex server is online and reachable.\n" +
+                        "If you have a slow connection network connection you can change timeout options in the application connection settings.\n")
                     .showAndWait();
 
                 openConnectDialog();
@@ -763,7 +761,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             LOG.error("Failed to load Stream", ex);
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(MainViewController.class.getName()).log(Level.SEVERE, null, ex);
-        }finally {
+        } finally {
             portManager.updatedPorts(Arrays.asList(portID));
         }
     }
@@ -801,7 +799,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             return true;
         } catch (Exception e) {
             LOG.error("Error loading stream table", e);
-            LogsController.getInstance().appendText(LogType.ERROR, "Unable to load profile "+ fileName);
+            LogsController.getInstance().appendText(LogType.ERROR, "Unable to load profile " + fileName);
             return false;
         }
     }
@@ -950,7 +948,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
             if (portID > -1) {
                 if (PortState.getPortStatus(portManager.getPortList().get(portID).getStatus()) == PortState.PAUSE
-                        && !Util.isNullOrEmpty(duplicatedProfileName)) {
+                    && !Util.isNullOrEmpty(duplicatedProfileName)) {
                     profileListBox.getSelectionModel().select(duplicatedProfileName);
                 }
             }
@@ -1017,21 +1015,21 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     public void handleCaptureItemClicked(ActionEvent event) {
         final String currentUser = ConnectionManager.getInstance().getClientName();
         Optional<Port> atLeastOneEnabledServiceMode = PortsManager.getInstance()
-                                                                  .getPortList()
-                                                                  .stream()
-                                                                  .filter(port -> port.getOwner().equalsIgnoreCase(currentUser) && port.getServiceMode())
-                                                                  .findAny();
+            .getPortList()
+            .stream()
+            .filter(port -> port.getOwner().equalsIgnoreCase(currentUser) && port.getServiceMode())
+            .findAny();
         if (atLeastOneEnabledServiceMode.isPresent()) {
             try {
                 DialogWindow statsWindow = new DialogWindow(
-                        "pkt_capture/Layout.fxml",
-                        "Packet Capture",
-                        50,
-                        10,
-                        1200,
-                        700,
-                        true,
-                        TrexApp.getPrimaryStage()
+                    "pkt_capture/Layout.fxml",
+                    "Packet Capture",
+                    50,
+                    10,
+                    1200,
+                    700,
+                    true,
+                    TrexApp.getPrimaryStage()
                 );
                 statsWindow.show(false);
             } catch (IOException ex) {
@@ -1039,13 +1037,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
         } else {
             AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    "Capture error",
-                    "Unable to open capture window",
-                    "At least one port with enabled service mode should be acquired")
-                    .show();
+                Alert.AlertType.ERROR,
+                "Capture error",
+                "Unable to open capture window",
+                "At least one port with enabled service mode should be acquired")
+                .show();
         }
     }
+
     /**
      * Handle stats menu item clicked
      *
@@ -1062,14 +1061,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             if (DialogManager.getInstance().getNumberOfOpenedDialog() < 4) {
                 DialogWindow statsWindow = new DialogWindow(
-                        "dashboard/Dashboard.fxml",
-                        "Dashboard",
-                        50,
-                        10,
-                        1210,
-                        740,
-                        true,
-                        TrexApp.getPrimaryStage()
+                    "dashboard/Dashboard.fxml",
+                    "Dashboard",
+                    50,
+                    10,
+                    1210,
+                    740,
+                    true,
+                    TrexApp.getPrimaryStage()
                 );
                 statsWindow.show(false);
             }
@@ -1133,7 +1132,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             public void accept(Port port) {
                 PortState portState = PortState.getPortStatus(port.getStatus());
                 if (portManager.isCurrentUserOwner(port.getIndex())
-                        && portState != PortState.TX && portState != PortState.IDLE) {
+                    && portState != PortState.TX && portState != PortState.IDLE) {
                     doStartResume(port.getIndex());
                 }
             }
@@ -1287,7 +1286,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                     releaseAllPort(true);
                     portManager.updatePortForce();
                     break;
-                    
+
                 case UNLOAD_PROFILE:
                     profileListBox.setValue(Constants.SELECT_PROFILE);
                     break;
@@ -1590,7 +1589,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             if (selected != null && selected.getTreeItemType() == TreeItemType.PORT) {
                 updateAcquireReleaseBtnState(false);
             } else if (selected != null && selected.getTreeItemType() == TreeItemType.PORT_PROFILE
-                    && !portManager.isCurrentUserOwner(getSelectedPortIndex())) {
+                && !portManager.isCurrentUserOwner(getSelectedPortIndex())) {
                 viewProfile();
             }
         } else {
@@ -1767,14 +1766,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             ConnectionsWrapper connection = (ConnectionsWrapper) XMLFileManager.loadXML("connections.xml", ConnectionsWrapper.class);
             Connection lastUsed = null;
             for (Connection con : connection.getConnectionList()) {
-                if(con.isLastUsed()){
+                if (con.isLastUsed()) {
                     lastUsed = con;
                 }
             }
             if (lastUsed == null) {
                 ConnectionManager.getInstance().connectScapy();
-            }
-            else {
+            } else {
                 ConnectionManager.getInstance().connectScapy(lastUsed.getIp(), lastUsed.getScapyPort());
             }
 
@@ -1805,7 +1803,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             if (reverting || lastLoadedPortPtofileIndex != prevViewvedPortPtofileIndex) {
                 return;
             }
-            
+
             if (!resetAppInProgress && !isAllowed()) {
                 reverting = true;
                 Platform.runLater(() -> {
@@ -1814,7 +1812,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 });
                 return;
             }
-            
+
             try {
                 doAssignProfile = true;
                 String profileName = String.valueOf(newValue);
@@ -1840,13 +1838,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             int portIndex = getSelectedPortIndex();
             PortModel currentPortModel = portManager.getPortModel(portIndex);
             boolean isPortTransmit = currentPortModel.transmitStateProperty().get();
-            
+
             if (!isPortTransmit && Constants.SELECT_PROFILE.equals(selectionModel.getSelectedItem())) {
                 return true;
             }
-            
+
             if (isPortTransmit) {
-                String header = "Port "+portIndex+" in TX mode";
+                String header = "Port " + portIndex + " in TX mode";
                 String content = "Assigning another profile to the port will stop it. Proceed?";
                 Optional result = runConfirmationDialog(header, content);
                 return result.get() == ButtonType.OK;
@@ -1868,15 +1866,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 return null;
             }
         };
-        
+
         unloadProfileTask.setOnSucceeded(event -> {
-            LogsController.getInstance().appendText(LogType.INFO, currentSelectedProfile +" profile unloaded");
+            LogsController.getInstance().appendText(LogType.INFO, currentSelectedProfile + " profile unloaded");
             currentSelectedProfile = Constants.SELECT_PROFILE;
             assignedPortProfileMap.put(lastLoadedPortPtofileIndex, new AssignedProfile());
             trafficProfileLoadedProperty.set(false);
             portManager.updatedPorts(Arrays.asList(lastLoadedPortPtofileIndex));
         });
-        LogsController.getInstance().appendText(LogType.INFO, "Unloading " + currentSelectedProfile +" profile");
+        LogsController.getInstance().appendText(LogType.INFO, "Unloading " + currentSelectedProfile + " profile");
         new Thread(unloadProfileTask).start();
     }
 
