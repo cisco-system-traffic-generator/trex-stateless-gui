@@ -1,7 +1,7 @@
 #!/bin/sh
 
-BASE=$(dirname $0)
-cd $BASE
+BASE="$(dirname "$0")"
+cd "$BASE"
 
 show_install_java() {
     echo 'Please download and install latest Oracle Java Runtime environment(JRE)'
