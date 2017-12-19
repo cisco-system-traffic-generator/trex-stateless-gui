@@ -1,0 +1,24 @@
+#!/bin/sh
+
+BASE=$(dirname $0)
+cd $BASE
+
+show_install_java() {
+    echo 'Please download and install latest Oracle Java Runtime environment(JRE)'
+    echo ' and add it to PATH environment variable'
+    echo 'Java download location: https://java.com/ru/download/'
+    echo 'Manually choose package(or different OS): https://java.com/ru/download/manual.jsp'
+    echo 'manual run command: $JRE_PATH/bin/java -jar trex-stateless-gui.jar'
+    exit 1
+}
+
+if ! which java > /dev/null ; then
+    echo "java not found"
+    show_install_java
+fi
+
+if ! java -jar trex-stateless-gui.jar; then
+    echo 'If you experience issues running TRex GUI application, try using Oracle Java'
+    show_install_java
+fi
+
