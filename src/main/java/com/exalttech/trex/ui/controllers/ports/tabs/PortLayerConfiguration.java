@@ -341,18 +341,16 @@ public class PortLayerConfiguration extends AnchorPane {
                               .collect(Collectors.toList())
                     );
                 }
-                try {
-                    trexClient.serviceMode(model.getIndex(), true);
-                    TRexClientResult<StubResult> vlanConfigResult = trexClient.setVlan(model.getIndex(), vlanIds);
-                    if (vlanConfigResult.isFailed()) {
-                        guiLogger.appendText(LogType.ERROR, "Unable to save VLAN configuration");
-                    } else {
-                        guiLogger.appendText(LogType.INFO, "VLAN configuration updated");
-                    }
-                } finally {
-                    trexClient.serviceMode(model.getIndex(), false);
-                }
 
+                AsyncResponseManager.getInstance().suppressIncomingEvents(true);
+                trexClient.serviceMode(model.getIndex(), true);
+
+                TRexClientResult<StubResult> vlanConfigResult = trexClient.setVlan(model.getIndex(), vlanIds);
+                if (vlanConfigResult.isFailed()) {
+                    guiLogger.appendText(LogType.ERROR, "Unable to save VLAN configuration");
+                } else {
+                    guiLogger.appendText(LogType.INFO, "VLAN configuration updated");
+                }
 
                 if (l2Mode.isSelected()) {
                     String dstMac = l2Destination.getText();
@@ -370,40 +368,36 @@ public class PortLayerConfiguration extends AnchorPane {
                         String portDstIP = l3Destination.getText();
                         final boolean dstIsIPv6 = InetAddresses.forString(portDstIP).getAddress().length > 4;
 
-                        trexClient.serviceMode(model.getIndex(), true);
-
                         if (dstIsIPv6) {
-                            try {
-                                Map<String, Ipv6Node> result = getIPv6NDService().scan(model.getIndex(), 5, portDstIP);
-                                AsyncResponseManager.getInstance().unmuteLogger();
+                            Map<String, Ipv6Node> result = getIPv6NDService().scan(model.getIndex(), 5, portDstIP);
+                            AsyncResponseManager.getInstance().unmuteLogger();
 
-                                String statusString;
-                                String logEntry;
-                                if (result.size() == 1) {
-                                    Ipv6Node host = result.entrySet().iterator().next().getValue();
-                                    final String mac = host.getMac();
-                                    statusString = "resolved";
-                                    logEntry = "IPv6 destination resolved: " + mac;
+                            String statusString;
+                            String logEntry;
+                            if (result.size() == 1) {
+                                Ipv6Node host = result.entrySet().iterator().next().getValue();
+                                final String mac = host.getMac();
+                                statusString = "resolved";
+                                logEntry = "IPv6 destination resolved: " + mac;
 
-                                    setAsL2DstAction(mac);
+                                setAsL2DstAction(mac);
 
-                                    try {
-                                        serverRPCMethods.setSetL2(model.getIndex(), mac);
-                                        guiLogger.appendText(LogType.INFO, "L2 mode configured for " + model.getIndex());
+                                try {
+                                    serverRPCMethods.setSetL2(model.getIndex(), mac);
+                                    guiLogger.appendText(LogType.INFO, "L2 mode configured for " + model.getIndex());
 
-                                    } catch (Exception e1) {
-                                        logger.error("Failed to set L2 mode: " + e1.getMessage());
-                                    }
-                                } else {
-                                    statusString = "-";
-                                    logEntry = "Unable to resolve IPv6 destination.";
+                                } catch (Exception e1) {
+                                    logger.error("Failed to set L2 mode: " + e1.getMessage());
                                 }
-                                Platform.runLater(() -> {
-                                    ipv6NDStatus.setText(statusString);
-                                    guiLogger.appendText(LogType.INFO, logEntry);
-                                });
-                            } catch (ServiceModeRequiredException ignore) {
+                            } else {
+                                statusString = "-";
+                                logEntry = "Unable to resolve IPv6 destination.";
                             }
+                            Platform.runLater(() -> {
+                                arpStatus.setText("none");
+                                ipv6NDStatus.setText(statusString);
+                                guiLogger.appendText(LogType.INFO, logEntry);
+                            });
                         } else {
                             trexClient.setL3Mode(model.getIndex(), null, portSrcIP, portDstIP);
 
@@ -418,12 +412,18 @@ public class PortLayerConfiguration extends AnchorPane {
 
                             return nextHopMac == null ? Optional.empty() : Optional.of(nextHopMac);
                         }
-
+                    } catch (ServiceModeRequiredException e) {
+                        AsyncResponseManager.getInstance().unmuteLogger();
+                        Platform.runLater(() -> {
+                            ipv6Hosts.setPlaceholder(ipv6HostsDefaultPlaceholder);
+                            LogsController.getInstance().appendText(LogType.ERROR, "Service mode is not enabled for port: " + model.getIndex() + ". Enable Service Mode in Control tab.");
+                        });
                     } catch (Exception e) {
                         logger.error("Failed to set L3IPv4 mode: " + e.getMessage());
                     } finally {
-                        AsyncResponseManager.getInstance().unmuteLogger();
                         trexClient.serviceMode(model.getIndex(), false);
+                        AsyncResponseManager.getInstance().suppressIncomingEvents(false);
+                        AsyncResponseManager.getInstance().unmuteLogger();
                     }
                 }
                 return Optional.empty();
