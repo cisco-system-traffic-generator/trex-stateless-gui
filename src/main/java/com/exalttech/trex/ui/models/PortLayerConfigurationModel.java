@@ -8,6 +8,10 @@ public class PortLayerConfigurationModel {
     
     private StringProperty src = new SimpleStringProperty();
     private StringProperty dst = new SimpleStringProperty();
+
+    private String src6 = "";
+    private String dst6 = "";
+
     private StringProperty state = new SimpleStringProperty();
 
     public PortLayerConfigurationModel(ConfigurationMode type, String src, String dst, String state) {
@@ -43,5 +47,21 @@ public class PortLayerConfigurationModel {
 
     public StringProperty stateProperty() {
         return state;
+    }
+
+    public String getSrc6() {
+        return src6;
+    }
+
+    public void setSrc6(String src6) {
+        this.src6 = src6;
+    }
+
+    public String getDst6() {
+        return dst6;
+    }
+
+    public void setDst6(String dst6) {
+        this.dst6 = dst6;
     }
 }

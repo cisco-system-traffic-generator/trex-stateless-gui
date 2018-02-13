@@ -12,6 +12,7 @@ import com.exalttech.trex.core.AsyncResponseManager;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCMethods;
 import com.exalttech.trex.ui.models.ConfigurationMode;
+import com.exalttech.trex.ui.models.PortLayerConfigurationModel;
 import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
@@ -249,7 +250,7 @@ public class PortLayerConfiguration extends AnchorPane {
             @Override
             public Optional<Map<String, Ipv6Node>> call() {
                 try {
-                    return Optional.of(iPv6NDService.scan(model.getIndex(), 10, null));
+                    return Optional.of(iPv6NDService.scan(model.getIndex(), 10, null, null));
                 } catch (ServiceModeRequiredException e) {
                     AsyncResponseManager.getInstance().unmuteLogger();
                     AsyncResponseManager.getInstance().suppressIncomingEvents(false);
@@ -357,7 +358,7 @@ public class PortLayerConfiguration extends AnchorPane {
                     try {
                         serverRPCMethods.setSetL2(model.getIndex(), dstMac);
                         guiLogger.appendText(LogType.INFO, "L2 mode configured for " + model.getIndex());
-
+                        clearModelIPv6();
                     } catch (Exception e1) {
                         logger.error("Failed to set L2 mode: " + e1.getMessage());
                     }
@@ -367,9 +368,14 @@ public class PortLayerConfiguration extends AnchorPane {
                         String portSrcIP = l3Source.getText();
                         String portDstIP = l3Destination.getText();
                         final boolean dstIsIPv6 = InetAddresses.forString(portDstIP).getAddress().length > 4;
+                        final boolean srcIsIPv6 = InetAddresses.forString(portSrcIP).getAddress().length > 4;
+
+                        if (srcIsIPv6 != dstIsIPv6) {
+                            throw new Exception("src and dst addresses are different version");
+                        }
 
                         if (dstIsIPv6) {
-                            Map<String, Ipv6Node> result = getIPv6NDService().scan(model.getIndex(), 5, portDstIP);
+                            Map<String, Ipv6Node> result = getIPv6NDService().scan(model.getIndex(), 5, portDstIP, portSrcIP);
                             AsyncResponseManager.getInstance().unmuteLogger();
 
                             String statusString;
@@ -386,6 +392,9 @@ public class PortLayerConfiguration extends AnchorPane {
                                     serverRPCMethods.setSetL2(model.getIndex(), mac);
                                     guiLogger.appendText(LogType.INFO, "L2 mode configured for " + model.getIndex());
 
+                                    final PortLayerConfigurationModel l3Conf = model.getL3LayerConfiguration();
+                                    l3Conf.setSrc6(portSrcIP);
+                                    l3Conf.setDst6(portDstIP);
                                 } catch (Exception e1) {
                                     logger.error("Failed to set L2 mode: " + e1.getMessage());
                                 }
@@ -401,6 +410,7 @@ public class PortLayerConfiguration extends AnchorPane {
                         } else {
                             trexClient.setL3Mode(model.getIndex(), null, portSrcIP, portDstIP);
 
+                            clearModelIPv6();
                             String nextHopMac = trexClient.resolveArp(model.getIndex(), portSrcIP, portDstIP);
                             if (nextHopMac != null) {
                                 trexClient.setL3Mode(model.getIndex(), nextHopMac, portSrcIP, portDstIP);
@@ -419,7 +429,8 @@ public class PortLayerConfiguration extends AnchorPane {
                             LogsController.getInstance().appendText(LogType.ERROR, "Service mode is not enabled for port: " + model.getIndex() + ". Enable Service Mode in Control tab.");
                         });
                     } catch (Exception e) {
-                        logger.error("Failed to set L3IPv4 mode: " + e.getMessage());
+                        logger.error("Failed to set L3 mode: " + e.getMessage());
+                        guiLogger.appendText(LogType.ERROR, "Failed to set L3 mode: " + e.getMessage());
                     } finally {
                         trexClient.serviceMode(model.getIndex(), false);
                         AsyncResponseManager.getInstance().suppressIncomingEvents(false);
@@ -433,8 +444,12 @@ public class PortLayerConfiguration extends AnchorPane {
         saveConfigurationTask.setOnSucceeded(e -> {
             saveBtn.setText("Apply");
             saveBtn.setDisable(false);
+
+            final boolean dstIsIPv6 = InetAddresses.forString(l3Source.getText()).getAddress().length > 4;
+            final boolean srcIsIPv6 = InetAddresses.forString(l3Destination.getText()).getAddress().length > 4;
+
             Optional result = (Optional) (saveConfigurationTask.getValue());
-            if (l3Mode.isSelected()) {
+            if (l3Mode.isSelected() && !dstIsIPv6 && !srcIsIPv6) {
                 String status = "unresolved";
                 if (result.isPresent()) {
                     status = "resolved";
@@ -583,8 +598,21 @@ public class PortLayerConfiguration extends AnchorPane {
         l2Destination.textProperty().bindBidirectional(this.model.getL2LayerConfiguration().dstProperty());
         l2Source.textProperty().bindBidirectional(this.model.getL2LayerConfiguration().srcProperty());
 
-        l3Destination.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().dstProperty());
-        l3Source.textProperty().bindBidirectional(this.model.getL3LayerConfiguration().srcProperty());
+        final PortLayerConfigurationModel l3Conf = this.model.getL3LayerConfiguration();
+
+        l3Destination.textProperty().bindBidirectional(l3Conf.dstProperty());
+        l3Source.textProperty().bindBidirectional(l3Conf.srcProperty());
+
+        final String src6 = l3Conf.getSrc6();
+        final String dst6 = l3Conf.getDst6();
+
+        if (src6 != null && !src6.equals("")) {
+            l3Source.textProperty().setValue(src6);
+        }
+
+        if (dst6 != null && !dst6.equals("")) {
+            l3Destination.textProperty().setValue(dst6);
+        }
 
         vlan.textProperty().bindBidirectional(this.model.vlanProperty());
 
@@ -607,5 +635,11 @@ public class PortLayerConfiguration extends AnchorPane {
 
         arpStatus.textProperty().unbindBidirectional(model.getL3LayerConfiguration().stateProperty());
         model.layerConfigurationTypeProperty().removeListener(configurationModeChangeListener);
+    }
+
+    private void clearModelIPv6() {
+        final PortLayerConfigurationModel l3Conf = this.model.getL3LayerConfiguration();
+        l3Conf.setSrc6(null);
+        l3Conf.setDst6(null);
     }
 }
