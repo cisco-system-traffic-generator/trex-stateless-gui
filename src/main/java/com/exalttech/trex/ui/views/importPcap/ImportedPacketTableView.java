@@ -175,7 +175,6 @@ public class ImportedPacketTableView extends AnchorPane {
      * @return
      */
     public boolean setPcapFile(File pcapFile) throws PcapNativeException,
-                                                     EOFException,
                                                      TimeoutException,
                                                      NotOpenException {
         List<PacketInfo> packetInfoList = new ArrayList<>();
@@ -183,7 +182,12 @@ public class ImportedPacketTableView extends AnchorPane {
         PcapHandle handler = Pcaps.openOffline(pcapFile.getAbsolutePath());
         PacketParser parser = new PacketParser();
         Packet packet;
-        while ((packet = handler.getNextPacketEx()) != null) {
+        while (true) {
+            try {
+                packet = handler.getNextPacketEx();
+            } catch (EOFException e) {
+                break;
+            }
             if (!PacketUpdater.getInstance().validatePacket(packet)) {
                 break;
             }

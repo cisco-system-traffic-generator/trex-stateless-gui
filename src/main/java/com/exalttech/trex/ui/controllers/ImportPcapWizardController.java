@@ -117,7 +117,7 @@ public class ImportPcapWizardController extends DialogView implements Initializa
                         wrongPcapMsg.setContentText("Invalid Pcap, it should be one flow with IPV4 packets");
                         wrongPcapMsg.showAndWait();
                     }
-                } catch (PcapNativeException | EOFException | TimeoutException | NotOpenException ex) {
+                } catch (PcapNativeException | TimeoutException | NotOpenException ex) {
                     AlertUtils.construct(
                             Alert.AlertType.ERROR,
                             "Import error",
