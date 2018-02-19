@@ -28,7 +28,7 @@ public class StatisticConstantsKeys {
     /**
      *
      */
-    public static final List<String> PORT_STATS_ROW_NAME = Arrays.asList("Owner", "State", "Tx bps L2", "Tx bps L1", "Tx pps", "Rx bps L1",  "Rx bps L2", "Rx pps", "opackets",
+    public static final List<String> PORT_STATS_ROW_NAME = Arrays.asList("Owner", "State", "Tx bps L2", "Tx bps L1", "Tx pps", "Rx bps L2", "Rx bps L1", "Rx pps", "opackets",
             "ipackets", "obytes", "ibytes", "tx-bytes", "rx-bytes", "tx-pkts", "rx-pkts", "oerrors", "ierrors");
 
     /**

@@ -436,7 +436,7 @@ public class StatsTableGenerator {
             if ((row.getKey() + "-total").startsWith("m_total_tx_bps_l1-total")) {
                 cell.updateItem("" + tx_bps_l1_total, "" + tx_bps_l1_total);
             }
-            if ((row.getKey() + "-total").startsWith("m_total_rx_bps_l1-total")) {
+            else if ((row.getKey() + "-total").startsWith("m_total_rx_bps_l1-total")) {
                 cell.updateItem("" + rx_bps_l1_total, "" + rx_bps_l1_total);
             }
             else {
