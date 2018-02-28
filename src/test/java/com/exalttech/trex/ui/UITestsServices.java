@@ -14,7 +14,9 @@ import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.ListViewMatchers;
 import org.testfx.matcher.control.TableViewMatchers;
 import org.testfx.matcher.control.TextInputControlMatchers;
-import org.testfx.service.support.WaitUntilSupport;
+import org.testfx.util.WaitForAsyncUtils;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * UI test services
@@ -22,8 +24,7 @@ import org.testfx.service.support.WaitUntilSupport;
  */
 public abstract class UITestsServices extends ApplicationTest{
     
-    
-    private WaitUntilSupport waitUntilSupport = new WaitUntilSupport();
+
    
     /**
      * Find node
@@ -39,8 +40,12 @@ public abstract class UITestsServices extends ApplicationTest{
      * Wait for node to be exists 
      * @param nodeID 
      */
-    public void waitForNode(String nodeID){
-        waitUntilSupport.waitUntil((Node)find(nodeID), NodeMatchers.isVisible(), 500);
+    public void waitForNode(String nodeID) {
+        try {
+            WaitForAsyncUtils.waitFor(500, TimeUnit.SECONDS, () -> NodeMatchers.isVisible().matches((Node)find(nodeID)));
+        } catch (TimeoutException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     /**
