@@ -212,6 +212,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     BooleanProperty portViewVisibilityProperty = new SimpleBooleanProperty(false);
     BooleanProperty systemInfoVisibilityProperty = new SimpleBooleanProperty(true);
 
+    private Optional<ContextMenu> rightClickDevicesTreeMenu = Optional.empty();
     private ContextMenu rightClickPortMenu;
     private ContextMenu rightClickProfileMenu;
     private ContextMenu rightClickGlobalMenu;
@@ -464,14 +465,17 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleTreeClicked(MouseEvent mouseEvent) {
-
+        rightClickDevicesTreeMenu.ifPresent(ContextMenu::hide);
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            // mouse left button clicked
+            // mouse right button clicked
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                viewTreeContextMenu(selected);
+                updateContextMenuState();
+                rightClickDevicesTreeMenu = Optional.ofNullable(selected.getMenu());
+                rightClickDevicesTreeMenu.ifPresent(contextMenu -> {
+                    contextMenu.show(devicesTree, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                });
             }
-
         }
     }
 
@@ -517,19 +521,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             } catch (Exception ex) {
                 LOG.error(ex);
             }
-        }
-    }
-
-    /**
-     * View treeitem context menu
-     *
-     * @param selected
-     */
-    private void viewTreeContextMenu(CustomTreeItem selected) {
-        devicesTree.setContextMenu(null);
-        updateContextMenuState();
-        if (selected.getMenu() != null) {
-            devicesTree.setContextMenu(selected.getMenu());
         }
     }
 
