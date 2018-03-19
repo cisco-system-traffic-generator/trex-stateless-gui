@@ -1234,13 +1234,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void handleContextMenuItemCLicked(ContextMenuClickType type) {
         try {
             Integer portIndex = getSelectedPortIndex();
-            PortModel portModel = PortsManager.getInstance().getPortModel(portIndex);
             switch (type) {
                 case ENABLE_SERVICE:
-                    portModel.serviceModeProperty().set(true);
+                    PortsManager.getInstance().getPortModel(portIndex).serviceModeProperty().set(true);
                     break;
                 case DISABLE_SERVICE:
-                    portModel.serviceModeProperty().set(false);
+                    PortsManager.getInstance().getPortModel(portIndex).serviceModeProperty().set(false);
                     break;
                 case ACQUIRE:
                     acquirePort();
