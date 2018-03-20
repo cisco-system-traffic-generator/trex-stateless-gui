@@ -489,7 +489,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         if (selected != null) {
 
             if (profileLoaded) {
-                updateCurrentProfileMultiplier();
+                updateCurrentProfile();
             }
 
             try {
@@ -524,9 +524,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     }
 
     /**
-     * Update current loaded profile multiplier
+     * Update current loaded profile
      */
-    private void updateCurrentProfileMultiplier() {
+    private void updateCurrentProfile() {
         profileLoaded = false;
         AssignedProfile assignedProf = assignedPortProfileMap.get(lastLoadedPortPtofileIndex);
         if (assignedProf != null) {
@@ -1807,6 +1807,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
 
             try {
+                if (!updateBtn.isDisabled()) {
+                    doUpdateAssignedProfile(lastLoadedPortPtofileIndex);
+                }
                 doAssignProfile = true;
                 String profileName = String.valueOf(newValue);
                 profileDetailContainer.setVisible(false);
