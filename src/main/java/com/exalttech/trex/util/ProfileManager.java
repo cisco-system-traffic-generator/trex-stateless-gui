@@ -136,7 +136,10 @@ public class ProfileManager {
      * @throws IOException
      */
     public String createNewProfile(Stage currentStage) throws IOException {
-        String profileName = getProfileNameDialogValue(currentStage, "Create Profile") + ".yaml";
+        String profileName = getProfileNameDialogValue(currentStage, "Create Profile");
+        if (Util.isNullOrEmpty(profileName)) {
+            return "";
+        }
         File newFile = FileManager.createNewFile(profileName);
         updateProfilesList(newFile, true);
 
@@ -148,7 +151,11 @@ public class ProfileManager {
             throw new IllegalArgumentException(String.format("Cannot find profile: %s", sourceProfileName));
         }
 
-        String targetFileName = getProfileNameDialogValue(currentStage, "Duplicate Profile") + ".yaml";
+        String targetFileName = getProfileNameDialogValue(currentStage, "Duplicate Profile");
+        if (Util.isNullOrEmpty(targetFileName)) {
+            return "";
+        }
+
         if (profilesMap.containsKey(targetFileName)) {
             throw new IllegalArgumentException(String.format("Profile already exists: %s", targetFileName));
         }
@@ -164,7 +171,6 @@ public class ProfileManager {
     }
 
     private String getProfileNameDialogValue(Stage currentStage, String title) throws IOException {
-        String profileName = "";
         DialogWindow profileNameWindow = new DialogWindow(
                 "ProfileStreamNameDialog.fxml",
                 title,
@@ -177,7 +183,7 @@ public class ProfileManager {
         profileNameWindow.show(true);
 
         if (controller.isDataAvailable()) {
-            return controller.getName();
+            return controller.getName() + ".yaml";
         }
 
         return "";

@@ -344,8 +344,10 @@ public class TrafficProfileDialogController extends DialogView implements Initia
                 String profileName = profileListView.getSelectionModel().getSelectedItem().toString();
 
                 String dupFileName = ProfileManager.getInstance().duplicateProfile(currentStage, profileName);
-                profileListView.getItems().add(dupFileName);
-                profileListView.getSelectionModel().select(dupFileName);
+                if(!Util.isNullOrEmpty(dupFileName)) {
+                    profileListView.getItems().add(dupFileName);
+                    profileListView.getSelectionModel().select(dupFileName);
+                }
             }
         } catch (IOException ex) {
             LOG.error("Error creating new profile", ex);
