@@ -741,6 +741,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             // update current multiplier data
             assignedProf.setRate(streamValidationGraph.getResult().getRate());
             multiplierView.assignNewProfile(assignedProf);
+            // update multiplier value according to previous bandwidth value
+            if (assignPrevBandwidth) {
+                multiplierView.setSliderValue(currentBandwidth);
+            }
             updateMultiplierValues(assignedProf);
             if (portState.equalsIgnoreCase("tx")) {
                 startTraffic(portID);
