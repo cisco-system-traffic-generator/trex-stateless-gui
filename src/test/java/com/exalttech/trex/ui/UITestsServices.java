@@ -14,6 +14,7 @@ import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.ListViewMatchers;
 import org.testfx.matcher.control.TableViewMatchers;
 import org.testfx.matcher.control.TextInputControlMatchers;
+import org.testfx.matcher.control.TextMatchers;
 import org.testfx.util.WaitForAsyncUtils;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -54,7 +55,7 @@ public abstract class UITestsServices extends ApplicationTest{
      * @param text 
      */
     public void verifyTextExists(String selector, String text){
-         FxAssert.verifyThat(selector, NodeMatchers.hasText(text));
+         FxAssert.verifyThat(selector, TextMatchers.hasText(text));
     }
     
     /**
