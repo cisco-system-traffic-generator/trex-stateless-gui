@@ -239,7 +239,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private static final String DISCONNECT_MENU_ITEM_TITLE = "Disconnect";
     private static final String CONNECT_MENU_ITEM_TITLE = "Connect";
 
-    private int lastLoadedPortPtofileIndex = -1;
+    private int lastLoadedPortProfileIndex = -1;
     private boolean profileLoaded = false;
 
     private Image leftArrow;
@@ -249,7 +249,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private EventBus eventBus;
     private boolean resetAppInProgress;
     private BooleanProperty trafficProfileLoadedProperty = new SimpleBooleanProperty(false);
-    private int prevViewvedPortPtofileIndex = -1;
+    private int prevViewvedPortProfileIndex = -1;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -528,13 +528,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void updateCurrentProfile() {
         profileLoaded = false;
-        AssignedProfile assignedProf = assignedPortProfileMap.get(lastLoadedPortPtofileIndex);
+        AssignedProfile assignedProf = assignedPortProfileMap.get(lastLoadedPortProfileIndex);
         if (assignedProf != null) {
             assignedProf.setHasDuration(multiplierView.isDurationEnable());
             updateMultiplierValues(assignedProf);
         }
         if (!updateBtn.isDisabled()) {
-            doUpdateAssignedProfile(lastLoadedPortPtofileIndex);
+            doUpdateAssignedProfile(lastLoadedPortProfileIndex);
         }
     }
 
@@ -684,7 +684,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         try {
             hideShowStatTable(false);
             int portIndex = getSelectedPortIndex();
-            lastLoadedPortPtofileIndex = portIndex;
+            lastLoadedPortProfileIndex = portIndex;
             profileLoaded = true;
             disableProfileProperty.set(!portManager.isCurrentUserOwner(portIndex));
             disableProfileNote.visibleProperty().bind(disableProfileProperty);
@@ -712,7 +712,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 multiplierView.fillAssignedProfileValues(assigned);
             }
 
-            prevViewvedPortPtofileIndex = portIndex;
+            prevViewvedPortProfileIndex = portIndex;
         } catch (Exception ex) {
             LOG.error("Error loading profile", ex);
         }
@@ -1507,7 +1507,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * Enable update/Stop button button
      */
     private void enableUpdateBtn(boolean enableCounter, boolean enableUpdate) {
-        Port currentPort = portManager.getPortList().get(lastLoadedPortPtofileIndex);
+        Port currentPort = portManager.getPortList().get(lastLoadedPortProfileIndex);
         boolean enableUpdateBtn = enableUpdate && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
         boolean startCounting = enableCounter && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
         stopUpdateBtn.setVisible(startCounting);
@@ -1793,7 +1793,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
         @Override
         public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
-            if (reverting || lastLoadedPortPtofileIndex != prevViewvedPortPtofileIndex) {
+            if (reverting || lastLoadedPortProfileIndex != prevViewvedPortProfileIndex) {
                 return;
             }
 
@@ -1808,7 +1808,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
             try {
                 if (!updateBtn.isDisabled()) {
-                    doUpdateAssignedProfile(lastLoadedPortPtofileIndex);
+                    doUpdateAssignedProfile(lastLoadedPortProfileIndex);
                 }
                 doAssignProfile = true;
                 String profileName = String.valueOf(newValue);
@@ -1857,8 +1857,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             @Override
             protected Void call() throws Exception {
                 TRexClient trexClient = ConnectionManager.getInstance().getTrexClient();
-                trexClient.stopTraffic(lastLoadedPortPtofileIndex);
-                trexClient.removeAllStreams(lastLoadedPortPtofileIndex);
+                trexClient.stopTraffic(lastLoadedPortProfileIndex);
+                trexClient.removeAllStreams(lastLoadedPortProfileIndex);
                 return null;
             }
         };
@@ -1866,9 +1866,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         unloadProfileTask.setOnSucceeded(event -> {
             LogsController.getInstance().appendText(LogType.INFO, currentSelectedProfile + " profile unloaded");
             currentSelectedProfile = Constants.SELECT_PROFILE;
-            assignedPortProfileMap.put(lastLoadedPortPtofileIndex, new AssignedProfile());
+            assignedPortProfileMap.put(lastLoadedPortProfileIndex, new AssignedProfile());
             trafficProfileLoadedProperty.set(false);
-            portManager.updatedPorts(Arrays.asList(lastLoadedPortPtofileIndex));
+            portManager.updatedPorts(Arrays.asList(lastLoadedPortProfileIndex));
         });
         LogsController.getInstance().appendText(LogType.INFO, "Unloading " + currentSelectedProfile + " profile");
         new Thread(unloadProfileTask).start();
