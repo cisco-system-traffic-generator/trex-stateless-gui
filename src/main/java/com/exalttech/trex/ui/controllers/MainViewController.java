@@ -468,7 +468,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         rightClickDevicesTreeMenu.ifPresent(ContextMenu::hide);
         CustomTreeItem selected = (CustomTreeItem) devicesTree.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            // mouse right button clicked
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 updateContextMenuState();
                 rightClickDevicesTreeMenu = Optional.ofNullable(selected.getMenu());
