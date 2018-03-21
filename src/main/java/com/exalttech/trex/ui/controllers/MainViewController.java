@@ -228,12 +228,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private String currentSelectedProfile;
     private MultiplierView multiplierView;
     private NotificationPanel notificationPanel;
-    boolean reAssign = false;
+    boolean needReassignProfile = false;
     private CountdownService countdownService;
     private PortsManager portManager;
     private final BooleanProperty disableProfileProperty = new SimpleBooleanProperty();
     StatsTableGenerator statsTableGenerator;
-    boolean doAssignProfile = true;
     private boolean allStreamWithLatency;
     private boolean isFirstPortStatusRequest = true;
     private static final String DISCONNECT_MENU_ITEM_TITLE = "Disconnect";
@@ -511,7 +510,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         portViewVisibilityProperty.setValue(true);
                         break;
                     case PORT_PROFILE:
-                        doAssignProfile = false;
                         viewProfile();
                         break;
                     default:
@@ -526,15 +524,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     /**
      * Update current loaded profile
      */
-    private void updateCurrentProfile() {
+    private void updateCurrentProfile() { //TODO get rid of this method and implement with tryUpdateProfile(...)
         profileLoaded = false;
         AssignedProfile assignedProf = assignedPortProfileMap.get(lastSelectedPortIndex);
         if (assignedProf != null) {
             assignedProf.setHasDuration(multiplierView.isDurationEnable());
             updateMultiplierValues(assignedProf);
         }
-        if (!updateBtn.isDisabled()) {
-            doUpdateAssignedProfile(lastSelectedPortIndex);
+        if (isWaitingUpdate()) {
+            tryUpdateProfile(false, true);
         }
     }
 
@@ -695,13 +693,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
 
             if (assigned.isProfileAssigned()) {
-                doAssignProfile = false;
                 profileListBox.getSelectionModel().select(assigned.getProfileName());
                 profileDetailContainer.setVisible(true);
             } else {
                 profileDetailContainer.setVisible(false);
                 profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
-                doAssignProfile = true;
             }
 
             tableView.reset();
@@ -890,7 +886,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             int count = (int) event.getSource().getValue();
             countdownValue.setText(String.valueOf(count) + " Sec");
             if (count == 0) {
-                doUpdateAssignedProfile(getSelectedPortIndex());
+                doUpdateAssignedProfile();
             }
         });
 
@@ -1172,8 +1168,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         if (portID > -1) {
             serverRPCMethods.stopPortTraffic(portID);
             portManager.updatedPorts(Arrays.asList(portID));
-            if (!updateBtn.isDisabled() && !reAssign) {
-                enableUpdateBtn(false, false);
+            if (isWaitingUpdate() && !needReassignProfile) {
+                cancelUpdate();
             }
         }
     }
@@ -1362,22 +1358,22 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @FXML
     public void handleUpdateBtnClicked(ActionEvent event) {
-        doUpdateAssignedProfile(getSelectedPortIndex());
+        doUpdateAssignedProfile();
     }
 
     /**
      * Update current port
      */
-    private void doUpdateAssignedProfile(int portIndex) {
+    private void doUpdateAssignedProfile() {
         try {
-            if (reAssign) {
-                reAssign = false;
+            if (needReassignProfile) {
+                needReassignProfile = false;
                 String assignedProfile = String.valueOf(profileListBox.getValue());
-                assignProfile(assignedProfile, multiplierView.getSliderValue(), true, portIndex);
+                assignProfile(assignedProfile, multiplierView.getSliderValue(), true, lastSelectedPortIndex);
             } else {
-                serverRPCMethods.updateTraffic(portIndex, false, MultiplierType.pps.name(), multiplierView.getPPSValue());
+                serverRPCMethods.updateTraffic(lastSelectedPortIndex, false, MultiplierType.pps.name(), multiplierView.getPPSValue());
                 // update assigned profile multiplier
-                AssignedProfile assignedProf = assignedPortProfileMap.get(portIndex);
+                AssignedProfile assignedProf = assignedPortProfileMap.get(lastSelectedPortIndex);
                 updateMultiplierValues(assignedProf);
             }
             updateHeaderBtnStat();
@@ -1503,17 +1499,64 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         }
     }
 
+
+    /**
+     * Tries to update profile for last selected port. If
+     * this port is transmitting traffic the update will
+     * be delayed ("Update" and "Cancel" buttons will appear),
+     * otherwise update will be executed immediately.
+     * @param enqueueNeedReassign if true, then profile will be reassigned
+     *                     on update, if false -- only trafficUpdate
+     *                     will be called. If there is already need
+     *                     to reassign profile and enqueueNeedReassign is false
+     *                     it still will be reassigned on next update
+     * @param forceUpdate if true the update will be executed immediately
+     *              ignoring other conditions
+     */
+    private void tryUpdateProfile(boolean enqueueNeedReassign, boolean forceUpdate) {
+        needReassignProfile |= enqueueNeedReassign;
+        boolean shouldDelay = portManager.getPortModel(lastSelectedPortIndex).transmitStateProperty().get() && isContinuousStream();
+        if(shouldDelay && !forceUpdate) {
+            enableUpdateBtn(true, true);
+        } else {
+            doUpdateAssignedProfile();
+        }
+    }
+
+    /**
+     * Overloaded version of {@link #tryUpdateProfile(boolean, boolean)} method
+     * with parameter forceUpdate set to false by default.
+     * @param enqueueNeedReassign
+     */
+    private void tryUpdateProfile(boolean enqueueNeedReassign) {
+        tryUpdateProfile(enqueueNeedReassign, false);
+    }
+
+    /**
+     * Cancels update if it was delayed inside {@link #tryUpdateProfile(boolean)} method
+     */
+    private void cancelUpdate() {
+        enableUpdateBtn(false, false);
+    }
+
+    /**
+     * Uses with {@link #tryUpdateProfile(boolean)} method
+     * @return true if profile updating was delayed and not yet executed,
+     * returns false otherwise
+     */
+    private boolean isWaitingUpdate() {
+        return !updateBtn.isDisabled();
+    }
+
     /**
      * Enable update/Stop button button
      */
     private void enableUpdateBtn(boolean enableCounter, boolean enableUpdate) {
-        Port currentPort = portManager.getPortList().get(lastSelectedPortIndex);
-        boolean enableUpdateBtn = enableUpdate && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
-        boolean startCounting = enableCounter && (reAssign || PortState.getPortStatus(currentPort.getStatus()) == PortState.TX && isContinuousStream());
-        stopUpdateBtn.setVisible(startCounting);
-        countdownValue.setVisible(startCounting);
-        updateBtn.setDisable(!enableUpdateBtn);
-        if (startCounting) {
+        stopUpdateBtn.setVisible(enableCounter);
+        countdownValue.setVisible(enableCounter);
+        updateBtn.setDisable(!enableUpdate);
+        if (enableCounter) {
+            countdownService.resetCounter();
             countdownService.restart();
         } else if (countdownService.isRunning()) {
             countdownService.cancel();
@@ -1540,8 +1583,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @Override
     public void optionValueChanged() {
-        countdownService.resetCounter();
-        enableUpdateBtn(true, true);
+        if(portManager.getPortModel(getSelectedPortIndex()).transmitStateProperty().get())
+            tryUpdateProfile(false);
     }
 
     /**
@@ -1657,8 +1700,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     @Override
     public void onStreamUpdated() {
-        reAssign = true;
-        enableUpdateBtn(true, true);
+        tryUpdateProfile(true);
     }
 
     /**
@@ -1677,8 +1719,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             String fileName = String.valueOf(profileListBox.getValue());
             loadStreamTable(fileName);
             // assigned profile may changed need to re-assign
-            reAssign = true;
-            enableUpdateBtn(true, true);
+            tryUpdateProfile(true);
         } catch (Exception ex) {
             LOG.error("Error reloading table", ex);
         }
@@ -1807,20 +1848,16 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             }
 
             try {
-                if (!updateBtn.isDisabled()) {
-                    doUpdateAssignedProfile(lastSelectedPortIndex);
+                if (isWaitingUpdate()) {
+                    tryUpdateProfile(false, true);
                 }
-                doAssignProfile = true;
                 String profileName = String.valueOf(newValue);
                 profileDetailContainer.setVisible(false);
-                if (!"".equals(profileName) && profileName != null && !Constants.SELECT_PROFILE.equals(profileName)) {
+                if (!Util.isNullOrEmpty(profileName) && !Constants.SELECT_PROFILE.equals(profileName)) {
                     profileDetailContainer.setVisible(true);
                     currentSelectedProfile = profileName;
                     loadStreamTable(profileName);
-                    if (loadedProfiles.length > 0 && doAssignProfile) {
-                        // assign profile to selected port
-                        assignProfile(profileName, 0, false, getSelectedPortIndex());
-                    }
+                    tryUpdateProfile(true, true);
                     trafficProfileLoadedProperty.set(true);
                 } else {
                     unloadProfile();
