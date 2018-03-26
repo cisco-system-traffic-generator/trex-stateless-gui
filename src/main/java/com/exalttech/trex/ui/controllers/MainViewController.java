@@ -387,7 +387,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         systemInfoReq = (SystemInfoReq) Util.fromJSONString(data, SystemInfoReq.class);
         systemInfoReq.setIp(ConnectionManager.getInstance().getIPAddress());
         systemInfoReq.setPort(ConnectionManager.getInstance().getRpcPort());
-        portManager.setPortList(systemInfoReq.getResult().getPorts());
+
+        List<Port> ports = systemInfoReq.getResult().getPorts();
+        Collections.sort(ports, (p1, p2) -> Integer.compare(p1.getIndex(), p2.getIndex()));
+        portManager.setPortList(ports);
 
         String versionResponse = ConnectionManager.getInstance().sendRequest("get_version", "");
         Gson gson = new Gson();
