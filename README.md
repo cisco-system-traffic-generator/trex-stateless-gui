@@ -16,7 +16,7 @@ The application main features can be split into tree parts (TRex Management, Tra
 
 This is an online part, you need to be connected to TRex in order to perform the following actions:
 
-- Connect and manage TRex v2.23 and above.
+- Connect and manage TRex instances
 - Ability to preview all ports along with their status and statistics.
 - Ability to assign traffic to a specific port and start the traffic.
 - Ability to update the bandwidth / update the multiplier options on the fly.
@@ -79,12 +79,7 @@ Find more information about Packet Crafting tool on [Wiki page](https://github.c
 
 ##  Builds 
 
-Latest build version 4.0 with release notes is available [here](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/tag/v4.0)
-
-You can also download installers directly from here:
- - Windows: [trex-stateless-gui-4.0.exe](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v4.0/trex-stateless-gui4.0.exe)
- - Mac OS: [trex-stateless-gui-4.0.dmg](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v4.0/trex-stateless-gui-4.0.dmg) and [trex-stateless-gui-4.0.pkg](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v4.0/trex-stateless-gui-1.0.pkg)
- - Compiled binary: [trex-stateless-gui-4.0.tgz](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/download/v4.0/trex-stateless-gui.tgz)
+Latest builds are available on the following [Github release page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/releases/)
 
 ## YouTrack
 
