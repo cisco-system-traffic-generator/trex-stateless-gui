@@ -217,6 +217,12 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private ContextMenu rightClickProfileMenu;
     private ContextMenu rightClickGlobalMenu;
 
+    private DialogWindow connectWindow;
+    private DialogWindow trafficWindow;
+    private DialogWindow aboutWindow;
+    private DialogWindow captureWindow;
+    private DialogWindow preferencesWindow;
+
     private SystemInfoReq systemInfoReq = null;
     private PacketTableView tableView;
     private RefreshingService refreshStatsService = new RefreshingService();
@@ -349,7 +355,9 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void openConnectDialog() {
         try {
-            DialogWindow connectWindow = new DialogWindow("ConnectDialog.fxml", "Connect", 300, 100, false, TrexApp.getPrimaryStage());
+            if (connectWindow == null) {
+                connectWindow = new DialogWindow("ConnectDialog.fxml", "Connect", 300, 100, false, TrexApp.getPrimaryStage());
+            }
             connectWindow.show(true);
             if (ConnectionManager.getInstance().isConnected()) {
                 serverRPCMethods.serverApiSync();
@@ -371,7 +379,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 copyToClipboardBtn.setDisable(false);
                 dashboardIcon.setDisable(false);
             }
-        } catch (IOException ex) {
+        } catch (IOException | NullPointerException ex) {
             LOG.error("Error while Connecting", ex);
         }
     }
@@ -405,11 +413,17 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @throws IOException
      */
     @FXML
-    public void openTrafficProfile(ActionEvent event) throws IOException {
-        DialogWindow trafficWindow = new DialogWindow("TrafficProfileDialog.fxml", "Traffic Profiles", 10, 50, true, TrexApp.getPrimaryStage());
-        TrafficProfileDialogController controller = (TrafficProfileDialogController) trafficWindow.getController();
-        controller.init();
-        trafficWindow.show(true);
+    public void openTrafficProfile(ActionEvent event) {
+        try {
+            if (trafficWindow == null) {
+                trafficWindow = new DialogWindow("TrafficProfileDialog.fxml", "Traffic Profiles", 10, 50, true, TrexApp.getPrimaryStage());
+		TrafficProfileDialogController controller = (TrafficProfileDialogController) trafficWindow.getController();
+	        controller.init();
+            }
+            trafficWindow.show(true);
+        } catch (IOException | NullPointerException ex) {
+            LOG.error("Error opening traffic profile", ex);
+        }
     }
 
     /**
@@ -584,10 +598,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             releaseAllPort(false);
         }
 
-        DialogManager.getInstance().closeAll();
         portManager.clearPorts();
 
         Platform.runLater(() -> {
+            DialogManager.getInstance().closeAll();
             StatsStorage.getInstance().stopPolling();
             shutdownRunningServices();
             LogsController.getInstance().getView().clear();
@@ -984,9 +998,15 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      * @throws java.lang.Exception
      */
     @FXML
-    public void handleAboutTreeItemClicked(ActionEvent event) throws Exception {
-        DialogWindow statsWindow = new DialogWindow("AboutWindowView.fxml", "TRex", 200, 100, false, TrexApp.getPrimaryStage());
-        statsWindow.show(true);
+    public void handleAboutTreeItemClicked(ActionEvent event) {
+        try {
+            if (aboutWindow == null) {
+                aboutWindow = new DialogWindow("AboutWindowView.fxml", "TRex", 200, 100, false, TrexApp.getPrimaryStage());
+            }
+            aboutWindow.show(true);
+        } catch (IOException | NullPointerException ex) {
+            LOG.error("Error opening About", ex);
+        }
     }
 
     /**
@@ -1014,17 +1034,18 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             .findAny();
         if (atLeastOneEnabledServiceMode.isPresent()) {
             try {
-                DialogWindow statsWindow = new DialogWindow(
-                    "pkt_capture/Layout.fxml",
-                    "Packet Capture",
-                    50,
-                    10,
-                    1200,
-                    700,
-                    true,
-                    TrexApp.getPrimaryStage()
-                );
-                statsWindow.show(false);
+                if (captureWindow == null) {
+                    captureWindow = new DialogWindow(
+                            "pkt_capture/Layout.fxml",
+                            "Packet Capture",
+                            50,
+                            10,
+                            1200,
+                            700,
+                            true,
+                            TrexApp.getPrimaryStage());
+                }
+            captureWindow.show(false);
             } catch (IOException ex) {
                 LOG.error("Error opening dashboard view", ex);
             }
@@ -1053,17 +1074,17 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void openStateDialog() {
         try {
             if (DialogManager.getInstance().getNumberOfOpenedDialog() < 4) {
-                DialogWindow statsWindow = new DialogWindow(
-                    "dashboard/Dashboard.fxml",
-                    "Dashboard",
-                    50,
-                    10,
-                    1210,
-                    740,
-                    true,
-                    TrexApp.getPrimaryStage()
+                DialogWindow dashboardWindow = new DialogWindow(
+                        "dashboard/Dashboard.fxml",
+                        "Dashboard",
+                        50,
+                        10,
+                        1210,
+                        740,
+                        true,
+                        TrexApp.getPrimaryStage()
                 );
-                statsWindow.show(false);
+                dashboardWindow.show(false);
             }
         } catch (IOException ex) {
             LOG.error("Error opening dashboard view", ex);
@@ -1494,8 +1515,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void openPreferencesWindow() {
         try {
-            DialogWindow statsWindow = new DialogWindow("Preferences.fxml", "Preferences", 100, 50, true, TrexApp.getPrimaryStage());
-            statsWindow.show(true);
+            if (preferencesWindow == null) {
+                preferencesWindow = new DialogWindow("Preferences.fxml", "Preferences", 100, 50, true, TrexApp.getPrimaryStage());
+            }
+            preferencesWindow.show(true);
         } catch (IOException ex) {
             LOG.error("Error opening preferences window", ex);
 
