@@ -119,7 +119,7 @@ public class StatsTableGenerator {
         for (int i = startPortIndex; i < endPortIndex; i++) {
             rowIndex = 0;
             odd = true;
-            Port port = PortsManager.getInstance().getPortList().get(i);
+            Port port = PortsManager.getInstance().getPortByIndex(i);
             if (visiblePorts == null || visiblePorts.contains(port.getIndex())) {
                 // add owner and port status
                 addPortInfoCells(port, columnWidth, columnIndex);

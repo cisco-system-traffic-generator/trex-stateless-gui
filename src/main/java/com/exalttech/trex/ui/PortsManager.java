@@ -81,7 +81,7 @@ public class PortsManager {
     public PortModel getPortModel(int portIndex) {
         PortModel model = portModels.get(portIndex);
         if (model == null) {
-            model = PortModel.createModelFrom(portList.get(portIndex));
+            model = PortModel.createModelFrom(getPortByIndex(portIndex));
             model.serviceModeProperty().addListener((observable, oldVal, newVal) -> {
                 synchronized (portServiceModeChangedListeners) {
                     portServiceModeChangedListeners.forEach(PortServiceModeChangedListener::serviceModeChanged);
@@ -116,6 +116,21 @@ public class PortsManager {
      */
     public void setPortList(List<Port> portList) {
         this.portList = portList;
+    }
+
+    /**
+     * Get port with specified index
+     * @param portIndex index of needed port
+     * @return if port exists, returns acutal port with index portIndex , otherwise returns new empty port
+     */
+    public Port getPortByIndex(int portIndex) {
+        if (this.portList.stream().noneMatch(p -> p.getIndex() == portIndex)) {
+            logger.error(String.format("Port with index %s was not found. Returning empty port", portIndex));
+        }
+        return this.portList.stream()
+                .filter(p -> p.getIndex() == portIndex)
+                .findFirst()
+                .orElse(new Port());
     }
 
     /**
@@ -220,7 +235,7 @@ public class PortsManager {
      * @return
      */
     public boolean isCurrentUserOwner(int portIndex) {
-        return portList.get(portIndex).getOwner().equals(ConnectionManager.getInstance().getClientName());
+        return getPortByIndex(portIndex).getOwner().equalsIgnoreCase(ConnectionManager.getInstance().getClientName());
     }
 
     /**
@@ -237,7 +252,7 @@ public class PortsManager {
      * @return
      */
     public boolean isPortFree(int portIndex) {
-        return Util.isNullOrEmpty(portList.get(portIndex).getOwner());
+        return Util.isNullOrEmpty(getPortByIndex(portIndex).getOwner());
     }
 
     /**
