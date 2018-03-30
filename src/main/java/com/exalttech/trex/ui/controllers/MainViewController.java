@@ -287,17 +287,6 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                             portManager.updatedPorts(Arrays.asList(portModel.getIndex()));
                             onPortListUpdated(true);
                         });
-                        boolean isAllPortsStopped = true;
-                        for (final Port port : portManager.getPortList()) {
-                            if (port.getIndex() == port.getIndex()) {
-                                continue;
-                            }
-                            final String portStatus = port.getStatus();
-                            if (portStatus.equals("TX") || portStatus.equals("PAUSE")) {
-                                isAllPortsStopped = false;
-                                break;
-                            }
-                        }
                     }
                     break;
                 case SERVER_STOPPED:
@@ -559,7 +548,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void updateContextMenuState() {
         int portId = getSelectedPortIndex();
         if (portId != -1) {
-            Port port = portManager.getPortList().get(portId);
+            Port port = portManager.getPortByIndex(portId);
 
             boolean isOwned = port.getOwner().equals(ConnectionManager.getInstance().getClientName());
 
@@ -954,7 +943,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             int portID = getSelectedPortIndex();
 
             if (portID > -1) {
-                if (PortState.getPortStatus(portManager.getPortList().get(portID).getStatus()) == PortState.PAUSE
+                if (PortState.getPortStatus(portManager.getPortByIndex(portID).getStatus()) == PortState.PAUSE
                     && !Util.isNullOrEmpty(duplicatedProfileName)) {
                     profileListBox.getSelectionModel().select(duplicatedProfileName);
                 }
@@ -1125,7 +1114,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private void doStartResume(int portID) {
         // disable start button to avoid another quick click
         startStream.setDisable(true);
-        if (PortState.getPortStatus(portManager.getPortList().get(portID).getStatus()) == PortState.PAUSE) {
+        if (PortState.getPortStatus(portManager.getPortByIndex(portID).getStatus()) == PortState.PAUSE) {
             serverRPCMethods.resumeTraffic(portID);
         } else {
             startTraffic(portID);
@@ -1226,7 +1215,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         int portID = getSelectedPortIndex();
         LOG.trace("Clicked on the Pause Transit Button with selectedPort [" + portID + "]");
         if (portID > -1) {
-            if (PortState.getPortStatus(portManager.getPortList().get(portID).getStatus()) == PortState.PAUSE) {
+            if (PortState.getPortStatus(portManager.getPortByIndex(portID).getStatus()) == PortState.PAUSE) {
                 serverRPCMethods.resumeTraffic(portID);
             } else {
                 enableUpdateBtn(false, false);
@@ -1460,7 +1449,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         int portIndex = getSelectedPortIndex();
         resetBtnState();
         if (portIndex != -1) {
-            Port port = portManager.getPortList().get(portIndex);
+            Port port = portManager.getPortByIndex(portIndex);
             PortState state = PortState.getPortStatus(port.getStatus());
 
             // enable state btn btn according to owner 

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -89,7 +90,7 @@ public class StatsTableGenerator {
      */
     public GridPane getPortStatTable(
             Map<String, String> cached,
-            int portIndex,
+            List<Integer> portIndices,
             boolean isMultiPort,
             double columnWidth,
             Set<Integer> visiblePorts
@@ -99,12 +100,6 @@ public class StatsTableGenerator {
         this.prevTotalValues = totalValues;
         this.cachedStatsList = cached;
 
-        int startPortIndex = portIndex;
-        int endPortIndex = portIndex + 1;
-        if (isMultiPort) {
-            startPortIndex = 0;
-            endPortIndex = portIndex;
-        }
         rowIndex = 0;
         totalValues = new HashMap<>();
         statTable.getChildren().clear();
@@ -116,10 +111,10 @@ public class StatsTableGenerator {
         double tx_bps_l1_total = 0;
         double rx_bps_l1_total = 0;
         int columnIndex = 1;
-        for (int i = startPortIndex; i < endPortIndex; i++) {
+        for (int i : portIndices) {
             rowIndex = 0;
             odd = true;
-            Port port = PortsManager.getInstance().getPortList().get(i);
+            Port port = PortsManager.getInstance().getPortByIndex(i);
             if (visiblePorts == null || visiblePorts.contains(port.getIndex())) {
                 // add owner and port status
                 addPortInfoCells(port, columnWidth, columnIndex);

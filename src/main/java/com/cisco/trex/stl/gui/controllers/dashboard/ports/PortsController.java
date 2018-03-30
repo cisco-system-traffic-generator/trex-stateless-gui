@@ -60,7 +60,7 @@ public class PortsController extends GlobalStatsBaseController {
         statTableContainer.getChildren().add(
                 statsTableGenerator.getPortStatTable(
                         StatsLoader.getInstance().getShadowStatsList(),
-                        portsManager.getPortList().size(),
+                        portsManager.getPortIndexes(),
                         true,
                         150,
                         portsSelector.getSelectedPortIndexes()

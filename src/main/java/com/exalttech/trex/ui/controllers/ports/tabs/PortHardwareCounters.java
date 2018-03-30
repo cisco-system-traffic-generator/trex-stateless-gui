@@ -60,7 +60,7 @@ public class PortHardwareCounters extends BorderPane {
         if (refreshingService.isRunning()) {
             refreshingService.cancel();
         }
-        port = portManager.getPortList().get(model.getIndex());
+        port = portManager.getPortByIndex(model.getIndex());
 
         if (runPolling) {
             startPolling();
