@@ -19,6 +19,7 @@ public class DialogWindow {
     private FXMLLoader loader;
     private Stage dialogStage;
     private Pane rootPane;
+    private boolean hasBeenVisible = false;
 
     public DialogWindow(
             final String layoutFile,
@@ -52,6 +53,14 @@ public class DialogWindow {
         if (minHeight != -1) {
             dialogStage.setMinHeight(minHeight);
         }
+
+        dialogStage.setOnCloseRequest(event -> {
+            DialogManager.getInstance().removeHandler(this);
+            ((DialogView) loader.getController()).shutdown();
+        });
+        dialogStage.setOnShowing(event -> {
+            DialogManager.getInstance().addHandler(this, () -> dialogStage.close());
+        });
     }
 
     public void show(boolean isLockParent) {
@@ -59,15 +68,27 @@ public class DialogWindow {
         if (controller != null) {
             controller.setupStage(dialogStage);
         }
+
+        if (dialogStage.isShowing()) {
+            dialogStage.requestFocus();
+        }
+
+        if (!hasBeenVisible) {
+            Modality modality = isLockParent? Modality.APPLICATION_MODAL : Modality.NONE;
+            dialogStage.initModality(modality);
+
+            if (!isLockParent) {
+                dialogStage.initOwner(null);
+            }
+        }
+
         if (isLockParent) {
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.showAndWait();
         } else {
-            dialogStage.initModality(Modality.NONE);
-            dialogStage.initOwner(null);
-            dialogStage.setOnCloseRequest(event -> ((DialogView) loader.getController()).shutdown());
             dialogStage.show();
         }
+
+        hasBeenVisible = true;
     }
 
     private Stage buildDialogWindow(

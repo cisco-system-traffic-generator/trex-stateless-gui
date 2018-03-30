@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.ui.dialog;
 
+import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -40,8 +41,8 @@ public class DialogManager {
 
         return instance;
     }
-    int numberOfOpenedDialog = 0;
-    List<DialogCloseHandler> dialogCloseHandlerList;
+
+    private List<Pair<DialogWindow, DialogCloseHandler>> dialogCloseHandlerList;
 
     /**
      *
@@ -53,35 +54,31 @@ public class DialogManager {
     /**
      * Add close handler
      *
-     * @param handler
+     * @param window dialog which closing will be handled
+     * @param handler will be called
      */
-    public void addHandler(DialogCloseHandler handler) {
-        numberOfOpenedDialog++;
-        dialogCloseHandlerList.add(handler);
+    public void addHandler(DialogWindow window, DialogCloseHandler handler) {
+        if(dialogCloseHandlerList.stream().noneMatch(pair -> window == pair.getKey())) {
+            dialogCloseHandlerList.add(new Pair<>(window, handler));
+        }
     }
 
     /**
      * Remove close handler
      *
-     * @param handler
+     * @param window
      */
-    public void removeHandler(DialogCloseHandler handler) {
-        numberOfOpenedDialog--;
-        dialogCloseHandlerList.remove(handler);
+    public void removeHandler(DialogWindow window) {
+        dialogCloseHandlerList.removeIf( pair -> window == pair.getKey());
     }
 
     /**
      * Close all opened dialog
      */
     public void closeAll() {
-        dialogCloseHandlerList.stream().forEach(new Consumer<DialogCloseHandler>() {
-            @Override
-            public void accept(DialogCloseHandler closeHandler) {
-                closeHandler.closeDialog();
-            }
-        });
+        List<Pair<DialogWindow, DialogCloseHandler>> toBeClosed = new ArrayList<>(dialogCloseHandlerList); //possible modifing list while iterating
+        toBeClosed.forEach(pair -> pair.getValue().closeDialog());
         dialogCloseHandlerList.clear();
-        numberOfOpenedDialog = 0;
     }
 
     /**
@@ -90,7 +87,7 @@ public class DialogManager {
      * @return
      */
     public int getNumberOfOpenedDialog() {
-        return numberOfOpenedDialog;
+        return dialogCloseHandlerList.size();
     }
 
 }
