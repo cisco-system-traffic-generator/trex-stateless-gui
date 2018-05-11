@@ -91,12 +91,12 @@
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-packet-editor</artifactId>
-            <version>13e5752</version>
+            <version>0259e21</version>
         </dependency>
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-java-sdk</artifactId>
-            <version>79ad329</version>
+            <version>70a5da7</version>
         </dependency>
         <dependency>
             <groupId>org.pcap4j</groupId>
