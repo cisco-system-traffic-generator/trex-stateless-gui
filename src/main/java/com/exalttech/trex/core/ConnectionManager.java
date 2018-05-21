@@ -425,7 +425,7 @@ public class ConnectionManager {
                         if (res != null) {
                             handleAsyncResponse(res);
                         } else {
-                            error[0] = "Error while verifing the Async request: " + "Async responce is null";
+                            error[0] = "Error while verifing the Async request: " + "No response from server";
                         }
                     } catch (Exception e) {
                         error[0] = "Error while verifing the Async request: " + e.getMessage();
