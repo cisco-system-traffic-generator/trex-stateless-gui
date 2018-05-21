@@ -172,7 +172,7 @@ public class StatsTableGenerator {
                     }
                     if (keyBuffer.toString().startsWith("m_total_rx_bps-" + i)) {
                         row_m_rx_bps = key;
-                        stat_value_m_rx_pps = new String(stat_value);
+                        stat_value_m_rx_bps = new String(stat_value);
                     }
                 }
                 if (row_m_tx_bps_l1 != null && row_m_tx_bps != null && row_m_tx_pps != null) {
