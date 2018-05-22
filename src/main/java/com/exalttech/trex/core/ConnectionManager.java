@@ -45,12 +45,14 @@ import org.zeromq.ZMQException;
 import org.zeromq.ZPoller;
 import zmq.ZError;
 
+import javax.naming.SizeLimitExceededException;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,6 +64,7 @@ import java.util.zip.DataFormatException;
 
 public class ConnectionManager {
 
+    public static final int MAX_REQUEST_SIZE = 999999;
     private TRexClient trexClient;
     private ScapyServerClient scapyServerClient;
     private static final Logger LOG = Logger.getLogger(ConnectionManager.class.getName());
@@ -604,7 +607,7 @@ public class ConnectionManager {
         this.connected = connected;
     }
 
-    private byte[] getServerRPCResponse(String request) {
+    private byte[] getServerRPCResponse(String request) throws SizeLimitExceededException {
         try {
             // prepare compression header
             ByteBuffer headerByteBuffer = ByteBuffer.allocate(8);
@@ -617,6 +620,11 @@ public class ConnectionManager {
             // compress request
             byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
             byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
+
+            if (finalRequest.length >= MAX_REQUEST_SIZE) {
+                throw new SizeLimitExceededException(MessageFormat.format("Size of request is too large (limit is {0})", MAX_REQUEST_SIZE));
+            }
+
             byte[] serverResponse;
             boolean success;
 
