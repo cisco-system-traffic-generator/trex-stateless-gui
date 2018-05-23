@@ -35,6 +35,7 @@ import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.Packet;
+import org.testng.util.Strings;
 
 import java.io.EOFException;
 import java.io.File;
@@ -213,7 +214,14 @@ public class ImportedPacketTableView extends AnchorPane {
         tableDataList.clear();
         for (PacketInfo packetInfo : packetInfoList) {
             ImportPcapTableData tableData = new ImportPcapTableData();
-            tableData.setName("packet_" + index);
+
+            StringBuilder name = new StringBuilder();
+            if (!Strings.isNullOrEmpty(propertiesBinder.getPrefix())) {
+                name.append(propertiesBinder.getPrefix()).append("_");
+            }
+            name.append("packet_").append(index);
+
+            tableData.setName(name.toString());
             tableData.setIndex(index);
             tableData.setLength(packetInfo.getPacket().length());
             tableData.setMacSrc(packetInfo.getSrcMac());
@@ -258,8 +266,8 @@ public class ImportedPacketTableView extends AnchorPane {
                         }
                         // update pps/ISG
                         defineISG_PPSValues(profile, getIpg(diffTimeStamp, firstStream));
-                        if (firstStream) {
-                            firstStream = false;
+                        if (!firstStream) {
+                            profile.getStream().setSelfStart(false);
                         }
                         // get next stream 
                         next = getNextSelectedPacket();
@@ -271,6 +279,9 @@ public class ImportedPacketTableView extends AnchorPane {
                             profile.getStream().setActionCount(propertiesBinder.getCount());
                         }
 
+                        if (firstStream) {
+                            firstStream = false;
+                        }
                         current = next;
                         profilesList.add(profile);
                     }

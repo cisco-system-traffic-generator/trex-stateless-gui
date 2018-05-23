@@ -56,6 +56,9 @@ public class ImportedPacketPropertiesView extends AnchorPane {
     @FXML
     TextField countTF;
 
+    @FXML
+    TextField prefixTF;
+
     ImportedPacketProperties propertiesBinder;
 
     /**
@@ -138,6 +141,8 @@ public class ImportedPacketPropertiesView extends AnchorPane {
         ipgRB.selectedProperty().bindBidirectional(propertiesBinder.getIpgSelectionProperty());
 
         countTF.textProperty().bindBidirectional(propertiesBinder.getCountProperty());
+
+        prefixTF.textProperty().bindBidirectional(propertiesBinder.getPrefixProperty());
     }
 
     /**

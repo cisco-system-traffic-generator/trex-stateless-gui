@@ -36,6 +36,8 @@ public class ImportedPacketProperties {
 
     StringProperty countProperty = new SimpleStringProperty("0");
 
+    StringProperty prefixProperty = new SimpleStringProperty("");
+
     /**
      * Get destination enabled property
      *
@@ -232,6 +234,25 @@ public class ImportedPacketProperties {
      */
     public int getCount() {
         return Util.getIntFromString(countProperty.get());
+    }
+
+    /**
+     * Get prefix of stream name property
+     *
+     * @return
+     */
+    public StringProperty getPrefixProperty() {
+        return prefixProperty;
+    }
+
+    /**
+     *
+     * Get prefix string value
+     *
+     * @return
+     */
+    public String getPrefix() {
+        return prefixProperty.get();
     }
 
     /**
