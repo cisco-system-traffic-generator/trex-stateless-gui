@@ -86,6 +86,18 @@ public class Error {
         return specificErr;
     }
 
+    public String getSpecificOrMessage() {
+        if (specificErr != null) {
+            return specificErr;
+        }
+
+        if (message != null) {
+            return message;
+        }
+
+        return "Unknown error from Trex host. No description provided.";
+    }
+
     /**
      *
      * @param specificErr The specific_err
