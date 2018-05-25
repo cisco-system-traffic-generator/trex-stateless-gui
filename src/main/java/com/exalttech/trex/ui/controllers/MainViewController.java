@@ -269,7 +269,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portView.visibleProperty().bind(portViewVisibilityProperty);
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
 
-        ConnectionManager.getInstance().addDisconnectListener(() -> resetApplication(true));
+        ConnectionManager.getInstance().addDisconnectListener(() -> {
+            if (!resetAppInProgress && ConnectionManager.getInstance().isConnected()){
+                resetApplication(true);
+            }
+        });
         // Handle update port state event
         AsyncResponseManager.getInstance().asyncEventObjectProperty().addListener((observable, oldValue, newVal) -> {
 
