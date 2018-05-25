@@ -64,7 +64,7 @@ import java.util.zip.DataFormatException;
 
 public class ConnectionManager {
 
-    public static final int MAX_REQUEST_SIZE = 999999;
+    public static final int MAX_REQUEST_SIZE = 999999; //TrexRpcServerReqRes does not handle requests greater this size
     public static final int HEADER_SIZE = 8;
     private TRexClient trexClient;
     private ScapyServerClient scapyServerClient;
@@ -300,11 +300,6 @@ public class ConnectionManager {
         ObjectMapper mapper = new ObjectMapper();
         RPCRequest rpcRequest = new RPCRequest();
         String jsonRequestString;
-
-        final int limitOfRequest = MAX_REQUEST_SIZE - 100000; //100000 as safety margin
-        int requestSize = 0;
-        StringBuilder response = new StringBuilder();
-
         for (Profile aProfilesList : profilesList) {
 
             rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
@@ -313,22 +308,64 @@ public class ConnectionManager {
 
             jsonRequestString = mapper.writeValueAsString(rpcRequest);
             jsonRequestString = Util.tuneJSONParams(jsonRequestString, aProfilesList, apiH);
-
-            if (requestSize + jsonRequestString.getBytes().length >= limitOfRequest) {
-                if (requestSize == 0) {
-                    throw new SizeLimitExceededException(MessageFormat.format("Cannot send stream, size of request is too large (limit is {0} bytes)", MAX_REQUEST_SIZE));
-                }
-                response.append(sendStreamGroup(addStreamCommandList)).append("\n");
-                requestSize = 0;
-                addStreamCommandList = new ArrayList<>();
-            }
             addStreamCommandList.add(jsonRequestString);
-            requestSize += jsonRequestString.getBytes().length;
+
         }
-        if (addStreamCommandList.size() > 0) {
-            response.append(sendStreamGroup(addStreamCommandList)).append("\n");
+
+        List<List<String>> streamGroups = packMultipleRequestsIntoGroups(addStreamCommandList);
+
+        StringBuilder response = new StringBuilder();
+        for (List<String> group : streamGroups) {
+            response.append(sendStreamGroup(group)).append("\n");
         }
         return response.toString();
+    }
+
+    /**
+     * Method recursively splits list of requests into several lists of requests
+     * which are fit MAX_REQUEST_SIZE ({@value #MAX_REQUEST_SIZE})
+     * @param requests
+     * @return list of request lists which are fit size limit
+     * @throws SizeLimitExceededException if there is now possibility to split lists more but there is
+     * requests which are not fit (e.g. one request is greater than MAX_REQUEST_SIZE ({@value MAX_REQUEST_SIZE})
+     */
+    private List<List<String>> packMultipleRequestsIntoGroups(List<String> requests) throws SizeLimitExceededException {
+        List<List<String>> sendingGroups = new ArrayList<>();
+        sendingGroups.add(requests);
+
+        boolean splitted = true;
+        while (true) {
+            boolean allFit = true;
+            for (List<String> group : sendingGroups) {
+                if(group.toString().getBytes().length > (MAX_REQUEST_SIZE - HEADER_SIZE)) {
+                    allFit = false;
+                    break;
+                }
+            }
+
+            if (allFit) {
+                break;
+            } else if (!splitted) {
+                throw new SizeLimitExceededException("There is a stream not fitting max request size");
+            }
+
+            List<List<String>> newGroups = new ArrayList<>();
+            splitted = false;
+            for (List<String> group : sendingGroups) {
+                List<String> partA = group.subList(0, (int) Math.ceil(group.size()/2.0));
+                newGroups.add(partA);
+                if (group.size() == partA.size()) {
+                    continue;
+                }
+                List<String> partB = group.subList(partA.size(), group.size());
+                splitted = true;
+                newGroups.add(partB);
+            }
+
+            sendingGroups = newGroups;
+        }
+
+        return sendingGroups;
     }
 
     private String sendStreamGroup(List<String> addStreamCommandList) throws SizeLimitExceededException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
