@@ -55,8 +55,8 @@ public class StreamsController extends FlowStatsBaseController {
         table.add(new StatisticLabelCell("Tx bps L2", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 2);
         table.add(new StatisticLabelCell("Tx bps L1", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 3);
         table.add(new StatisticLabelCell("Rx pps", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 4);
-        table.add(new StatisticLabelCell("Rx bps L1", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 5);
-        table.add(new StatisticLabelCell("Rx bps L2", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 6);
+        table.add(new StatisticLabelCell("Rx bps L2", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 5);
+        table.add(new StatisticLabelCell("Rx bps L1", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 6);
         table.add(new StatisticLabelCell("Tx pkts", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 7);
         table.add(new StatisticLabelCell("Rx pkts", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 8);
         table.add(new StatisticLabelCell("Tx bytes", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 9);
@@ -101,8 +101,8 @@ public class StreamsController extends FlowStatsBaseController {
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getTbsL2())), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 2);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getTbsL1())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 3);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRps())), true, "pkt/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 4);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRbsL1())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 5);
-                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRbsL2())), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 6);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRbsL2())), true, "b/s"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 5);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getRbsL1())), true, "b/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 6);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tp), true, "pkts"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 7);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 8);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tb), true, "B"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 9);

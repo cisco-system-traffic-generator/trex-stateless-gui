@@ -9,9 +9,12 @@
 
 <fx:root prefHeight="480.0" prefWidth="1080.0" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<children>
-		<AnchorPane id="AnchorPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-			<children>
-				<Label layoutY="8.0" prefHeight="30.0" prefWidth="284.0" styleClass="importedPcapPropertiesNote" text="     Changes will be only applied on IPV4 Packets" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+        <AnchorPane id="BasicAnchorPane">
+            <Label text="Name prefix" AnchorPane.topAnchor="25" AnchorPane.leftAnchor="30"/>
+            <TextField fx:id="prefixTF" prefHeight="22.0" prefWidth="170.0" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="20.0" />
+            <AnchorPane id="AnchorPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+                <children>
+                    <Label layoutY="8.0" prefHeight="30.0" prefWidth="284.0" styleClass="importedPcapPropertiesNote" text="     Changes will be only applied on IPV4 Packets" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
             <Label layoutX="24.0" layoutY="51.0" prefHeight="15.0" prefWidth="284.0" text="Internet Protocol v4" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="60.0" />
             <GridPane alignment="CENTER_LEFT" layoutX="34.0" layoutY="74.0" prefHeight="90.0" prefWidth="595.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="85.0">
               <columnConstraints>
@@ -53,9 +56,10 @@
             <TextField fx:id="speedupTF" layoutX="148.0" layoutY="227.0" prefHeight="22.0" prefWidth="170.0" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="247.0" />
             <TextField fx:id="ipgTF" layoutX="130.0" layoutY="257.0" prefHeight="22.0" prefWidth="170.0" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="282.0" />
             <Separator layoutX="30.0" layoutY="312.0" prefWidth="650.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="330.0" />
-            <Label layoutX="56.0" layoutY="328.0" text="Count" AnchorPane.leftAnchor="56.0" AnchorPane.topAnchor="360.0" />
+            <Label layoutX="56.0" layoutY="328.0" text="Loop count" AnchorPane.leftAnchor="56.0" AnchorPane.topAnchor="360.0" />
             <TextField fx:id="countTF" layoutX="130.0" layoutY="316.0" prefHeight="22.0" prefWidth="170.0" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="357.0" />
-			</children>
-		</AnchorPane>
-	</children>
+                </children>
+            </AnchorPane>
+        </AnchorPane>
+    </children>
 </fx:root>

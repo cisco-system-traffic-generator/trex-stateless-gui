@@ -41,8 +41,6 @@ public class LatencyHistogramController extends FlowChartController {
         final PGIDStatsStorage pgIDStatsStorage = statsStorage.getPGIDStatsStorage();
         final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyStatPointHistoryMap =
                 pgIDStatsStorage.getLatencyStatPointHistoryMap();
-        final Map<Integer, LatencyStatPoint> latencyStatPointShadowMap =
-                pgIDStatsStorage.getLatencyStatPointShadowMap();
         final String[] histogramKeys = pgIDStatsStorage.getHistogramKeys(HISTOGRAM_SIZE);
 
         final List<XYChart.Series<String, Long>> seriesList = new LinkedList<>();
@@ -58,18 +56,12 @@ public class LatencyHistogramController extends FlowChartController {
                     return;
                 }
 
-                final LatencyStatPoint latencyShadow = latencyStatPointShadowMap.get(pgID);
-                final Map<String, Long> shadowHistogram = latencyShadow != null ?
-                        latencyShadow.getLatencyStat().getLat().getHistogram() :
-                        new HashMap<>();
-
                 final Map<String, Long> histogram = history.last().getLatencyStat().getLat().getHistogram();
                 final XYChart.Series<String, Long> series = new XYChart.Series<>();
                 series.setName(String.valueOf(pgID));
                 for (final String key : histogramKeys) {
                     final long value = histogram.getOrDefault(key, 0L);
-                    final long shadowValue = shadowHistogram.getOrDefault(key, 0L);
-                    series.getData().add(new XYChart.Data<>(key, value - shadowValue));
+                    series.getData().add(new XYChart.Data<>(key, value));
                 }
                 setSeriesColor(series, color);
                 seriesList.add(series);

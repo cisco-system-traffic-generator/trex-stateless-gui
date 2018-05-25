@@ -29,9 +29,9 @@ public class PGIDStatsStorage {
     private final Set<Integer> stoppedPGIds = new HashSet<>();
     private final Map<Integer, FlowStatPoint> flowStatPointShadowMap = new HashMap<>();
 
-    private final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyStatPointHistoryMap = new HashMap<>();
+    private final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyHistoryByPGID = new HashMap<>();
+    private final Map<Integer, LatencyStatPoint> latencyInitialOffsetByPGID = new HashMap<>();
     private final Map<Integer, Long> maxLatencyMap = new HashMap<>();
-    private final Map<Integer, LatencyStatPoint> latencyStatPointShadowMap = new HashMap<>();
     private String[] histogramKeys = new String[0];
 
     private Map<String, Integer> lastVerId = new HashMap<>();
@@ -55,15 +55,11 @@ public class PGIDStatsStorage {
     }
 
     public Map<Integer, ArrayHistory<LatencyStatPoint>> getLatencyStatPointHistoryMap() {
-        return latencyStatPointHistoryMap;
+        return latencyHistoryByPGID;
     }
 
     public Map<Integer, Long> getMaxLatencyMap() {
         return maxLatencyMap;
-    }
-
-    public Map<Integer, LatencyStatPoint> getLatencyStatPointShadowMap() {
-        return latencyStatPointShadowMap;
     }
 
     public String[] getHistogramKeys(final int size) {
@@ -161,7 +157,7 @@ public class PGIDStatsStorage {
 
             final Map<String, LatencyStat> latencyStatMap = receivedPGIDStats.getLatency();
             if (latencyStatMap != null) {
-                processLatencyStats(receivedPGIDStats.getLatency(), verId, time);
+                processLatencyStats(latencyStatMap, verId, time);
             } else {
                 clearLatencyStats();
             }
@@ -241,7 +237,7 @@ public class PGIDStatsStorage {
             final Map<String, Integer> verId,
             final double time
     ) {
-        final Set<Integer> unvisitedStreams = new HashSet<>(latencyStatPointHistoryMap.keySet());
+        final Set<Integer> unvisitedStreams = new HashSet<>(latencyHistoryByPGID.keySet());
         final Set<String> histogramKeysSet = new HashSet<>();
 
         latencyStatMap.forEach((final String pgID, final LatencyStat latencyStat) -> {
@@ -251,20 +247,23 @@ public class PGIDStatsStorage {
             } catch (NumberFormatException exc) {
                 return;
             }
-
             unvisitedStreams.remove(intPGID);
 
-            final LatencyStatPoint statsFlowHistoryPoint = new LatencyStatPoint(latencyStat, time);
-            ArrayHistory<LatencyStatPoint> history = latencyStatPointHistoryMap.get(intPGID);
+            ArrayHistory<LatencyStatPoint> history = latencyHistoryByPGID.get(intPGID);
             if (history == null) {
                 history = new ArrayHistory<>(HISTORY_SIZE);
-                latencyStatPointHistoryMap.put(intPGID, history);
+                latencyHistoryByPGID.put(intPGID, history);
             } else if (!verId.get(pgID).equals(lastVerId.get(pgID))) {
                 history.clear();
                 maxLatencyMap.remove(intPGID);
-                latencyStatPointShadowMap.remove(intPGID);
+                latencyInitialOffsetByPGID.remove(intPGID);
             }
-            history.add(statsFlowHistoryPoint);
+
+            final LatencyStatPoint latencyStatPoint = new LatencyStatPoint(latencyStat, time);
+            latencyInitialOffsetByPGID.putIfAbsent(intPGID, latencyStatPoint);
+
+            LatencyStatPoint shifted = latencyStatPoint.subtractOffset(latencyInitialOffsetByPGID.get(intPGID));
+            history.add(shifted);
 
             final long lastMax = latencyStat.getLat().getLastMax();
             final Long maxLatency = maxLatencyMap.get(intPGID);
@@ -273,8 +272,6 @@ public class PGIDStatsStorage {
             }
 
             histogramKeysSet.addAll(latencyStat.getLat().getHistogram().keySet());
-
-            latencyStatPointShadowMap.putIfAbsent(intPGID, statsFlowHistoryPoint);
         });
 
         histogramKeys = new String[histogramKeysSet.size()];
@@ -282,28 +279,26 @@ public class PGIDStatsStorage {
         Arrays.sort(histogramKeys, PGIDStatsStorage::compareHistogramKeys);
 
         unvisitedStreams.forEach((final Integer pgID) -> {
-            latencyStatPointHistoryMap.remove(pgID);
+            latencyHistoryByPGID.remove(pgID);
             maxLatencyMap.remove(pgID);
-            latencyStatPointShadowMap.remove(pgID);
+            latencyInitialOffsetByPGID.remove(pgID);
         });
     }
 
     private void clearLatencyStats() {
-        latencyStatPointHistoryMap.clear();
+        latencyHistoryByPGID.clear();
         maxLatencyMap.clear();
-        latencyStatPointShadowMap.clear();
+        latencyInitialOffsetByPGID.clear();
     }
 
     private void resetLatencyStats() {
-        latencyStatPointShadowMap.clear();
+	latencyInitialOffsetByPGID.clear();
         maxLatencyMap.clear();
-        latencyStatPointHistoryMap.forEach((final Integer pgID, final ArrayHistory<LatencyStatPoint> history) -> {
+        latencyHistoryByPGID.forEach((final Integer pgID, final ArrayHistory<LatencyStatPoint> history) -> {
             if (!history.isEmpty()) {
                 final LatencyStatPoint last = history.last();
                 maxLatencyMap.put(pgID, last.getLatencyStat().getLat().getLastMax());
-                latencyStatPointShadowMap.put(pgID, last);
                 history.clear();
-                history.add(last);
             }
         });
     }

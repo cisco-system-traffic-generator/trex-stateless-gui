@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 
+import javax.naming.SizeLimitExceededException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -84,9 +85,7 @@ public class RPCMethods {
             serverConnectionManager.propagatePortHandler(portID, handler);
             return handler;
 
-        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException ex) {
-            throw new PortAcquireException(ex.getMessage());
-        } catch (IOException ex) {
+        } catch (InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException | IOException | SizeLimitExceededException ex) {
             throw new PortAcquireException(ex.getMessage());
         }
 
@@ -116,7 +115,7 @@ public class RPCMethods {
         try {
             serverConnectionManager.sendRPCRequest(method, params);
             return true;
-        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException ex) {
+        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | SizeLimitExceededException ex) {
             return false;
         }
 
@@ -142,7 +141,7 @@ public class RPCMethods {
             String updateTrafficResponse = serverConnectionManager.sendRPCRequest(Constants.UPDATE_TRAFFIC_METHOD, trafficParams);
             return getMultiplierValue(updateTrafficResponse);
 
-        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException ex) {
+        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException | SizeLimitExceededException ex) {
             throw new TrafficException(ex.toString());
         }
 
@@ -207,7 +206,7 @@ public class RPCMethods {
             LOG.trace("Start Traffic response:" + updateTrafficResponse);
             return getMultiplierValue(updateTrafficResponse);
 
-        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException ex) {
+        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException | SizeLimitExceededException ex) {
             throw new TrafficException(ex.toString());
         }
     }
@@ -381,7 +380,7 @@ public class RPCMethods {
             serverConnectionManager.sendRPCRequest(Constants.PING_METHOD, null);
             LOG.trace("Ping OK");
             return true;
-        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException ex) {
+        } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException | SizeLimitExceededException ex) {
             LOG.error("Failed to ping RPC Server", ex);
             return false;
         }

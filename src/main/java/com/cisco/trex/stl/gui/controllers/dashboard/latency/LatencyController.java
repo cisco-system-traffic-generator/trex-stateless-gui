@@ -109,8 +109,6 @@ public class LatencyController extends FlowStatsBaseController {
                 pgIDStatsStorage.getFlowStatPointShadowMap();
         final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyStatPointHistoryMap =
                 pgIDStatsStorage.getLatencyStatPointHistoryMap();
-        final Map<Integer, LatencyStatPoint> latencyStatPointShadowMap =
-                pgIDStatsStorage.getLatencyStatPointShadowMap();
         final Map<Integer, Long> maxLatencyMap = pgIDStatsStorage.getMaxLatencyMap();
         final Set<Integer> stoppedPGIds = pgIDStatsStorage.getStoppedPGIds();
 
@@ -156,11 +154,6 @@ public class LatencyController extends FlowStatsBaseController {
 
                 long totalErr = latencyStat.getErr().getTotal();
 
-                final LatencyStatPoint latencyShadow = latencyStatPointShadowMap.get(pgID);
-                if (latencyShadow != null) {
-                    totalErr -= latencyShadow.getLatencyStat().getErr().getTotal();
-                }
-
                 final LatencyStatLat lat = latencyStat.getLat();
 
                 final boolean isStopped = stoppedPGIds.contains(pgID);
@@ -188,8 +181,6 @@ public class LatencyController extends FlowStatsBaseController {
         final PGIDStatsStorage pgIDStatsStorage = StatsStorage.getInstance().getPGIDStatsStorage();
         final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyStatPointHistoryMap =
                 pgIDStatsStorage.getLatencyStatPointHistoryMap();
-        final Map<Integer, LatencyStatPoint> latencyStatPointShadowMap =
-                pgIDStatsStorage.getLatencyStatPointShadowMap();
         final String[] histogramKeys = pgIDStatsStorage.getHistogramKeys(HISTOGRAM_SIZE);
         final Set<Integer> stoppedPGIds = pgIDStatsStorage.getStoppedPGIds();
 
@@ -224,29 +215,13 @@ public class LatencyController extends FlowStatsBaseController {
                 long sth = latencyStatErr.getSth();
                 long stl = latencyStatErr.getStl();
 
-                final LatencyStatPoint latencyShadow = latencyStatPointShadowMap.get(pgID);
-                Map<String, Long> shadowHistogram;
-                if (latencyShadow != null) {
-                    final LatencyStatErr latencyStatShadowErr = latencyShadow.getLatencyStat().getErr();
-                    drp -= latencyStatShadowErr.getDrp();
-                    dup -= latencyStatShadowErr.getDup();
-                    ooo -= latencyStatShadowErr.getOoo();
-                    sth -= latencyStatShadowErr.getSth();
-                    stl -= latencyStatShadowErr.getStl();
-
-                    shadowHistogram = latencyShadow.getLatencyStat().getLat().getHistogram();
-                } else {
-                    shadowHistogram = new HashMap<>();
-                }
-
                 final boolean isStopped = stoppedPGIds.contains(pgID);
 
                 int col = 0;
                 table.add(new HeaderCell(COLUMN_WIDTH, String.valueOf(pgID), isStopped), rowIndex, col++);
                 for (final String key : histogramKeys) {
                     final long value = histogram.getOrDefault(key, 0L);
-                    final long shadowValue = shadowHistogram.getOrDefault(key, 0L);
-                    table.add(new StatisticLabelCell(String.valueOf(value - shadowValue), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
+                    table.add(new StatisticLabelCell(String.valueOf(value), COLUMN_WIDTH, col % 2 == 0, CellType.DEFAULT_CELL, true, isStopped), rowIndex, col++);
                 }
                 table.add(new StatisticLabelCell(String.valueOf(drp), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true, isStopped), rowIndex, col++);
                 table.add(new StatisticLabelCell(String.valueOf(dup), COLUMN_WIDTH, col % 2 == 0, CellType.ERROR_CELL, true, isStopped), rowIndex, col++);

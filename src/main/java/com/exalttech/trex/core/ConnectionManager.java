@@ -45,12 +45,14 @@ import org.zeromq.ZMQException;
 import org.zeromq.ZPoller;
 import zmq.ZError;
 
+import javax.naming.SizeLimitExceededException;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,6 +64,8 @@ import java.util.zip.DataFormatException;
 
 public class ConnectionManager {
 
+    public static final int MAX_REQUEST_SIZE = 999999; //TrexRpcServerReqRes does not handle requests greater this size
+    public static final int HEADER_SIZE = 8;
     private TRexClient trexClient;
     private ScapyServerClient scapyServerClient;
     private static final Logger LOG = Logger.getLogger(ConnectionManager.class.getName());
@@ -259,8 +263,8 @@ public class ConnectionManager {
                     try {
                         String rpcResponse = Util.removeFirstBrackets(serversResponse);
                         RPCError rpcError = mapper.readValue(rpcResponse, RPCError.class);
-                        LOG.error(rpcError.getError().getSpecificErr());
-                        LogsController.getInstance().appendText(LogType.ERROR, rpcError.getError().getSpecificErr());
+                        LOG.error(rpcError.getError().getSpecificOrMessage());
+                        LogsController.getInstance().appendText(LogType.ERROR, rpcError.getError().getSpecificOrMessage());
 
                     } catch (IOException ex) {
                         LOG.warn("Error parsing response", ex);
@@ -268,14 +272,14 @@ public class ConnectionManager {
                 }
                 return serversResponse;
             }
-        } catch (UnsupportedEncodingException ex) {
+        } catch (UnsupportedEncodingException | SizeLimitExceededException ex) {
             LOG.error("Error while sending request", ex);
         }
 
         return null;
     }
 
-    String sendRPCRequest(String method, Params params) throws JsonProcessingException, UnsupportedEncodingException, InvalidRPCResponseException, IncorrectRPCMethodException {
+    String sendRPCRequest(String method, Params params) throws JsonProcessingException, UnsupportedEncodingException, InvalidRPCResponseException, IncorrectRPCMethodException, SizeLimitExceededException {
         RPCRequest rpcRequest = new RPCRequest();
         ObjectMapper mapper = new ObjectMapper();
         rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
@@ -291,7 +295,7 @@ public class ConnectionManager {
         return handleResponse(serverResponse, true);
     }
 
-    String sendAddStreamRequest(Profile[] profilesList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+    String sendAddStreamRequest(Profile[] profilesList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException, SizeLimitExceededException {
         List<String> addStreamCommandList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         RPCRequest rpcRequest = new RPCRequest();
@@ -307,6 +311,64 @@ public class ConnectionManager {
             addStreamCommandList.add(jsonRequestString);
 
         }
+
+        List<List<String>> streamGroups = packMultipleRequestsIntoGroups(addStreamCommandList);
+
+        StringBuilder response = new StringBuilder();
+        for (List<String> group : streamGroups) {
+            response.append(sendStreamGroup(group)).append("\n");
+        }
+        return response.toString();
+    }
+
+    /**
+     * Method recursively splits list of requests into several lists of requests
+     * which are fit MAX_REQUEST_SIZE ({@value #MAX_REQUEST_SIZE})
+     * @param requests
+     * @return list of request lists which are fit size limit
+     * @throws SizeLimitExceededException if there is now possibility to split lists more but there is
+     * requests which are not fit (e.g. one request is greater than MAX_REQUEST_SIZE ({@value MAX_REQUEST_SIZE})
+     */
+    private List<List<String>> packMultipleRequestsIntoGroups(List<String> requests) throws SizeLimitExceededException {
+        List<List<String>> sendingGroups = new ArrayList<>();
+        sendingGroups.add(requests);
+
+        boolean splitted = true;
+        while (true) {
+            boolean allFit = true;
+            for (List<String> group : sendingGroups) {
+                if(group.toString().getBytes().length > (MAX_REQUEST_SIZE - HEADER_SIZE)) {
+                    allFit = false;
+                    break;
+                }
+            }
+
+            if (allFit) {
+                break;
+            } else if (!splitted) {
+                throw new SizeLimitExceededException("There is a stream not fitting max request size");
+            }
+
+            List<List<String>> newGroups = new ArrayList<>();
+            splitted = false;
+            for (List<String> group : sendingGroups) {
+                List<String> partA = group.subList(0, (int) Math.ceil(group.size()/2.0));
+                newGroups.add(partA);
+                if (group.size() == partA.size()) {
+                    continue;
+                }
+                List<String> partB = group.subList(partA.size(), group.size());
+                splitted = true;
+                newGroups.add(partB);
+            }
+
+            sendingGroups = newGroups;
+        }
+
+        return sendingGroups;
+    }
+
+    private String sendStreamGroup(List<String> addStreamCommandList) throws SizeLimitExceededException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
         String requestCommand = Util.toPrettyFormat(addStreamCommandList.toString());
         LOG.info(requestCommand);
         logProperty.setValue("Sending request " + requestCommand);
@@ -314,7 +376,7 @@ public class ConnectionManager {
         return handleResponse(serverResponse, false);
     }
 
-    public String sendPortStatusRequest(List<Port> portList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+    public String sendPortStatusRequest(List<Port> portList) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException, SizeLimitExceededException {
         List<String> addStreamCommandList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         RPCRequest rpcRequest = new RPCRequest();
@@ -336,7 +398,7 @@ public class ConnectionManager {
         return handleResponse(serverResponse, false);
     }
 
-    public String sendPortXStatsNamesRequest(Port port) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+    public String sendPortXStatsNamesRequest(Port port) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException, SizeLimitExceededException {
         List<String> addStreamCommandList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         RPCRequest rpcRequest = new RPCRequest();
@@ -358,7 +420,7 @@ public class ConnectionManager {
         return handleResponse(serverResponse, false);
     }
 
-    public String sendPortXStatsValuesRequest(Port port) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException {
+    public String sendPortXStatsValuesRequest(Port port) throws JsonProcessingException, UnsupportedEncodingException, IncorrectRPCMethodException, InvalidRPCResponseException, SizeLimitExceededException {
         List<String> addStreamCommandList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         RPCRequest rpcRequest = new RPCRequest();
@@ -393,9 +455,10 @@ public class ConnectionManager {
                 try {
                     rpcResponse = Util.removeFirstBrackets(rpcResponse);
                     RPCError rpcError = new ObjectMapper().readValue(rpcResponse, RPCError.class);
-                    LOG.error(rpcError.getError().getSpecificErr());
-                    LogsController.getInstance().appendText(LogType.ERROR, rpcError.getError().getSpecificErr());
-                    throw new IncorrectRPCMethodException(rpcError.getError().getSpecificErr() + "\n " + Util.toPrettyFormat(rpcResponse));
+                    String err = rpcError.getError().getSpecificOrMessage();
+                    LOG.error(err);
+                    LogsController.getInstance().appendText(LogType.ERROR, err);
+                    throw new IncorrectRPCMethodException(err + "\n " + Util.toPrettyFormat(rpcResponse));
                 } catch (IOException ex) {
                     LOG.warn("Error parsing response", ex);
                 }
@@ -425,7 +488,7 @@ public class ConnectionManager {
                         if (res != null) {
                             handleAsyncResponse(res);
                         } else {
-                            error[0] = "Error while verifing the Async request: " + "Async responce is null";
+                            error[0] = "Error while verifing the Async request: " + "No response from server";
                         }
                     } catch (Exception e) {
                         error[0] = "Error while verifing the Async request: " + e.getMessage();
@@ -604,10 +667,10 @@ public class ConnectionManager {
         this.connected = connected;
     }
 
-    private byte[] getServerRPCResponse(String request) {
+    private byte[] getServerRPCResponse(String request) throws SizeLimitExceededException {
         try {
             // prepare compression header
-            ByteBuffer headerByteBuffer = ByteBuffer.allocate(8);
+            ByteBuffer headerByteBuffer = ByteBuffer.allocate(HEADER_SIZE);
             headerByteBuffer.put((byte) 0xAB);
             headerByteBuffer.put((byte) 0xE8);
             headerByteBuffer.put((byte) 0x5C);
@@ -617,6 +680,11 @@ public class ConnectionManager {
             // compress request
             byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
             byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
+
+            if (finalRequest.length >= MAX_REQUEST_SIZE) {
+                throw new SizeLimitExceededException(MessageFormat.format("Size of request is too large (limit is {0} bytes)", MAX_REQUEST_SIZE));
+            }
+
             byte[] serverResponse;
             boolean success;
 
