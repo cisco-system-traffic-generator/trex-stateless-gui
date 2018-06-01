@@ -8,7 +8,7 @@ import com.cisco.trex.stl.gui.services.capture.PktCaptureService;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.models.PortModel;
-import com.exalttech.trex.ui.util.AlertUtils;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.util.Initialization;
 import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
@@ -18,7 +18,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -216,11 +215,12 @@ public class RecordController extends BorderPane {
         } catch (PktCaptureServiceException e) {
             LOG.error("Unable to stop recorder.", e);
 
-            AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    "Recorder error",
-                    "Unable to stop the recorder",
-                    e.getLocalizedMessage())
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle("Recorder error")
+                    .setHeader("Unable to stop the recorder")
+                    .setContent(e.getLocalizedMessage())
+                    .getAlert()
                     .showAndWait();
         }
     }

@@ -5,6 +5,7 @@
  */
 package com.exalttech.trex.ui.views.importPcap;
 
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.ui.views.streams.builder.IPV4Type;
 import com.exalttech.trex.util.Util;
 import java.util.function.UnaryOperator;
@@ -186,16 +187,16 @@ public class ImportedPacketPropertiesView extends AnchorPane {
      */
     private boolean isValidAddresses() {
         boolean valid = true;
-        Alert errorMsg = Util.getAlert(Alert.AlertType.ERROR);
+        TrexAlertBuilder alertBuilder = TrexAlertBuilder.build().setType(Alert.AlertType.ERROR);
         if (srcEnabledCB.isSelected() && !Util.isValidIPAddress(srcAddressTF.getText())) {
-            errorMsg.setContentText("Invalid source IP address");
+            alertBuilder.setContent("Invalid source IP address");
             valid = false;
         } else if (dstEnabledCB.isSelected() && !Util.isValidIPAddress(dstAddressTF.getText())) {
-            errorMsg.setContentText("Invalid destination IP address");
+            alertBuilder.setContent("Invalid destination IP address");
             valid = false;
         }
         if (!valid) {
-            errorMsg.showAndWait();
+            alertBuilder.getAlert().showAndWait();
         }
         return valid;
     }
@@ -206,16 +207,16 @@ public class ImportedPacketPropertiesView extends AnchorPane {
      */
     private boolean validateCount() {
         boolean valid = true;
-        Alert errorMsg = Util.getAlert(Alert.AlertType.ERROR);
+        TrexAlertBuilder errorBuilder = TrexAlertBuilder.build().setType(Alert.AlertType.ERROR);
         if (srcEnabledCB.isSelected() && !isValidCount(srcCountTF.getText())) {
-            errorMsg.setContentText("Source count should be between 2 - 100M ");
+            errorBuilder.setContent("Source count should be between 2 - 100M ");
             valid = false;
         } else if (dstEnabledCB.isSelected() && !isValidCount(dstCountTF.getText())) {
-            errorMsg.setContentText("Destination count should be between 2 - 100M ");
+            errorBuilder.setContent("Destination count should be between 2 - 100M ");
             valid = false;
         }
         if (!valid) {
-            errorMsg.showAndWait();
+            errorBuilder.getAlert().showAndWait();
         }
         return valid;
     }

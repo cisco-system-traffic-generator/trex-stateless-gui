@@ -17,6 +17,7 @@ package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.dialog.DialogView;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.util.Util;
 import java.net.URL;
 import java.util.List;
@@ -105,16 +106,16 @@ public class ProfileStreamNameDialogController extends DialogView implements Ini
      * @return
      */
     private boolean validInput() {
-        Alert alert = Util.getAlert(Alert.AlertType.ERROR);
+        TrexAlertBuilder errorBuilder = TrexAlertBuilder.build().setType(Alert.AlertType.ERROR);
         if (Util.isNullOrEmpty(nameTF.getText())) {
-            alert.setContentText("Please fill the empty fields");
-            alert.showAndWait();
+            errorBuilder.setContent("Please fill the empty fields");
+            errorBuilder.getAlert().showAndWait();
             return false;
         } else if (profileList != null && !profileWindow) {
             for (Profile p : profileList) {
                 if (p.getName().equals(nameTF.getText())) {
-                    alert.setContentText("Stream name already exists, please select a different Stream name");
-                    alert.showAndWait();
+                    errorBuilder.setContent("Stream name already exists, please select a different Stream name");
+                    errorBuilder.getAlert().showAndWait();
                     return false;
                 }
             }

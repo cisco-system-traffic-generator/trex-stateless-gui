@@ -18,8 +18,8 @@ package com.exalttech.trex.util;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.remote.models.params.Params;
 import com.exalttech.trex.remote.models.profiles.Profile;
-import com.exalttech.trex.ui.MultiplierType;
 import com.exalttech.trex.ui.models.datastore.CaptureStatus;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -75,8 +75,6 @@ public class Util {
     private static final String OS = System.getProperty("os.name").toLowerCase();
     private static final int UNIT_VALUE = 1000;
     private static final int SHORT_LENGTH = 16;
-    private static final int ALERT_X_POSITION = 300;
-    private static final int ALERT_Y_POSITION = 150;
     private static final String APPLICATION_EXECUTABLE = "trex-stateless-gui.exe";
     private static final String VERSION_PROPERTIES_FILE = "version.properties";
     private static final String VERSION_KEY = "version";
@@ -281,32 +279,20 @@ public class Util {
     }
 
     /**
-     * Generate and return alert message window
-     *
-     * @param type
-     * @return
-     */
-    public static Alert getAlert(Alert.AlertType type) {
-        Alert alert = new Alert(type, "", ButtonType.OK);
-        alert.setHeaderText(null);
-        alert.setX(TrexApp.getPrimaryStage().getX() + ALERT_X_POSITION);
-        alert.setY(TrexApp.getPrimaryStage().getY() + ALERT_Y_POSITION);
-        return alert;
-    }
-
-    /**
      * Confirm deletion message window
      *
      * @param deleteMsg
      * @return
      */
     public static boolean isConfirmed(String deleteMsg) {
-        Alert confirmMsgBox = Util.getAlert(Alert.AlertType.CONFIRMATION);
-        confirmMsgBox.getButtonTypes().clear();
-        confirmMsgBox.getButtonTypes().addAll(ButtonType.YES, ButtonType.NO);
-        confirmMsgBox.setContentText(deleteMsg);
-        Optional<ButtonType> result = confirmMsgBox.showAndWait();
-        return result.get() == ButtonType.YES;
+        Alert confirmMsgBox = TrexAlertBuilder.build()
+                .setType(Alert.AlertType.CONFIRMATION)
+                .setButtons(ButtonType.YES, ButtonType.NO)
+                .setContent(deleteMsg)
+                .getAlert();
+
+        Optional<ButtonType> userSelection = confirmMsgBox.showAndWait();
+        return userSelection.isPresent() && userSelection.get() == ButtonType.YES;
     }
 
     /**

@@ -8,7 +8,7 @@ package com.exalttech.trex.ui.views.importPcap;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.components.TextFieldTableViewCell;
 import com.exalttech.trex.ui.models.PacketInfo;
-import com.exalttech.trex.ui.util.AlertUtils;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.ui.views.models.ImportPcapTableData;
 import com.exalttech.trex.ui.views.streams.builder.PacketBuilderHelper;
 import com.exalttech.trex.ui.views.streams.builder.VMInstructionBuilder;
@@ -348,9 +348,11 @@ public class ImportedPacketTableView extends AnchorPane {
         boolean validNames = true;
         if (!duplicateIndexesList.isEmpty()) {
             validNames = false;
-            Alert alert = Util.getAlert(Alert.AlertType.ERROR);
-            alert.setContentText("Some packet names (highlighted in red) have the same names of exisiting packets !");
-            alert.showAndWait();
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setContent("Some packet names (highlighted in red) have the same names of exisiting packets !")
+                    .getAlert()
+                    .showAndWait();
         }
         return validNames;
     }

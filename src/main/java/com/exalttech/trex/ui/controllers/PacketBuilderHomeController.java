@@ -15,7 +15,7 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.ui.util.AlertUtils;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -236,11 +236,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }
         final String metaJSON = new String(Base64.getDecoder().decode(meta));
         if (metaJSON.charAt(0) != '{') {
-            AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    "Warning",
-                    "Stream initialization failed",
-                    "This stream couldn't be edited due to outdated data format.")
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle("Warning")
+                    .setHeader("Stream initialization failed")
+                    .setContent("This stream couldn't be edited due to outdated data format.")
+                    .getAlert()
                     .showAndWait();
             return null;
         }
@@ -248,11 +249,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             return new ObjectMapper().readValue(metaJSON, BuilderDataBinding.class);
         } catch (Exception exc) {
             LOG.error("Can't read packet meta", exc);
-            AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    "Warning",
-                    "Stream initialization failed",
-                    exc.getMessage())
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle("Warning")
+                    .setHeader("Stream initialization failed")
+                    .setContent(exc.getMessage())
+                    .getAlert()
                     .showAndWait();
             return null;
         }
@@ -486,21 +488,19 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     private boolean alertWarning(String header, String content) {
-        Alert alert = AlertUtils.construct(
-                Alert.AlertType.WARNING,
-                "Warning",
-                header,
-                content + "\nWould you like to change ip or port and try connection again ?");
-
-        ButtonType buttonTypeOne = new ButtonType("Try", ButtonBar.ButtonData.YES);
+        ButtonType buttonTypeTry = new ButtonType("Try", ButtonBar.ButtonData.YES);
         ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeCancel);
+
+        Alert alert = TrexAlertBuilder.build()
+                .setType(Alert.AlertType.WARNING)
+                .setTitle("Warning")
+                .setHeader(header)
+                .setContent(content + "\nWould you like to change ip or port and try connection again ?")
+                .setButtons(buttonTypeTry, buttonTypeCancel)
+                .getAlert();
 
         alert.showAndWait();
         ButtonType res = alert.getResult();
-        if (res.getButtonData() == ButtonBar.ButtonData.CANCEL_CLOSE) {
-            return false;
-        }
-        return true;
+        return res.getButtonData() != ButtonBar.ButtonData.CANCEL_CLOSE;
     }
 }

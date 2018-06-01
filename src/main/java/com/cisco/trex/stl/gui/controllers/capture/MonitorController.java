@@ -9,7 +9,7 @@ import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.dialog.DialogWindow;
 import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.datastore.Preferences;
-import com.exalttech.trex.ui.util.AlertUtils;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.util.Initialization;
 import com.exalttech.trex.util.PreferencesManager;
 import javafx.application.Platform;
@@ -17,8 +17,6 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.pcap4j.packet.*;
@@ -126,14 +124,15 @@ public class MonitorController extends BorderPane {
                     try {
                         openPacketViewer(rowData);
                     } catch (IOException e) {
-                        String msg = "Unable to open packet.";
+                        String msg = "Unable to open packet";
                         LOG.error(msg, e);
 
-                        AlertUtils.construct(
-                                Alert.AlertType.ERROR,
-                                "Packet opening error",
-                                msg,
-                                e.getLocalizedMessage())
+                        TrexAlertBuilder.build()
+                                .setType(Alert.AlertType.ERROR)
+                                .setTitle("Packet opening error")
+                                .setHeader(msg)
+                                .setContent(e.getLocalizedMessage())
+                                .getAlert()
                                 .showAndWait();
                     }
                 }
@@ -169,11 +168,12 @@ public class MonitorController extends BorderPane {
             filter.setApplyBtnDisabled(false);
 
             LOG.error("Unable to update monitor.", e);
-            AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    "Monitor updating error",
-                    "Unable to update monitor",
-                    e.getLocalizedMessage())
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle("Monitor updating error")
+                    .setHeader("Unable to update monitor")
+                    .setContent(e.getLocalizedMessage())
+                    .getAlert()
                     .showAndWait();
         }
     }
@@ -205,21 +205,23 @@ public class MonitorController extends BorderPane {
             String msg = "Unable to start record due to disabled service mode on following ports: "
                     + portsWithDisabledSM.stream().map(Objects::toString).collect(joining(", "));
 
-            AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    errorTitle,
-                    errorTitle,
-                    msg)
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle(errorTitle)
+                    .setHeader(errorTitle)
+                    .setContent(msg)
+                    .getAlert()
                     .showAndWait();
             return;
         }
         
         if (rxPorts.isEmpty() && txPorts.isEmpty()) {
-            AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    "Start wireshark error",
-                    "Start wireshark error",
-                    "Ports are not specified. Please specify ports in a filter.")
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle("Start wireshark error")
+                    .setHeader("Start wireshark error")
+                    .setContent("Ports are not specified. Please specify ports in a filter.")
+                    .getAlert()
                     .showAndWait();
             return;
         }
@@ -247,19 +249,21 @@ public class MonitorController extends BorderPane {
                 }
                 pktCaptureService.stopMonitor(wsMonitorId);
             } catch (PktCaptureServiceException e) {
-                AlertUtils.construct(
-                        Alert.AlertType.ERROR,
-                        errorTitle,
-                        "Unable to start monitor",
-                        e.getLocalizedMessage())
+                TrexAlertBuilder.build()
+                        .setType(Alert.AlertType.ERROR)
+                        .setTitle(errorTitle)
+                        .setHeader("Unable to start monitor")
+                        .setContent(e.getLocalizedMessage())
+                        .getAlert()
                         .showAndWait();
             } catch (PktDumpServiceInitException e) {
                 LOG.error("Unable to initialize pkt dump service", e);
-                Platform.runLater(() -> AlertUtils.construct(
-                        Alert.AlertType.ERROR,
-                        errorTitle,
-                        "Unable to initialize pkt dump service",
-                        e.getLocalizedMessage())
+                Platform.runLater(() -> TrexAlertBuilder.build()
+                        .setType(Alert.AlertType.ERROR)
+                        .setTitle(errorTitle)
+                        .setHeader("Unable to initialize pkt dump service")
+                        .setContent(e.getLocalizedMessage())
+                        .getAlert()
                         .showAndWait());
             } catch (PktDumpServiceException e) {
                 LOG.error("Unable to dump packet.", e);
@@ -295,14 +299,15 @@ public class MonitorController extends BorderPane {
         
         boolean wsinstalled = locateWireshark();
         if (!wsinstalled) {
-            AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    "Wireshark error",
-                    "Unable to start monitor",
-                    "Could not find Wireshark in default installation path.\n" +
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle("Wireshark error")
+                    .setHeader("Unable to start monitor")
+                    .setContent("Could not find Wireshark in default installation path.\n" +
                             "Please install it first to proceed with this action.\n" +
                             "You can download it from https://www.wireshark.org\n" +
                             "Or you can specify location manually in preferences")
+                    .getAlert()
                     .showAndWait();
         }
         return wsinstalled;
@@ -516,11 +521,12 @@ public class MonitorController extends BorderPane {
             final String bpfFilter = filter.getBPFFilter();
 
             if (rxPorts.isEmpty() && txPorts.isEmpty()) {
-                AlertUtils.construct(
-                        Alert.AlertType.ERROR,
-                        monitorError,
-                        monitorErrorHeader,
-                        "Zero ports selected. To capture packets please specify ports")
+                TrexAlertBuilder.build()
+                        .setType(Alert.AlertType.ERROR)
+                        .setTitle(monitorError)
+                        .setHeader(monitorErrorHeader)
+                        .setContent("Zero ports selected. To capture packets please specify ports")
+                        .getAlert()
                         .showAndWait();
                 return;
             }
@@ -529,11 +535,12 @@ public class MonitorController extends BorderPane {
             filter.setApplyBtnDisabled(true);
             startHandler.onStart();
         } catch (PktCaptureServiceException e) {
-            AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    monitorError,
-                    monitorErrorHeader,
-                    e.getLocalizedMessage())
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle(monitorError)
+                    .setHeader(monitorErrorHeader)
+                    .setContent(e.getLocalizedMessage())
+                    .getAlert()
                     .showAndWait();
             LOG.error("Unable to start monitor.", e);
         }

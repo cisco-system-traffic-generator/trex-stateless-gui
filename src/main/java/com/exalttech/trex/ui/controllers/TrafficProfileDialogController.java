@@ -17,6 +17,7 @@ package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.dialog.DialogView;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.ui.views.PacketTableView;
 import com.exalttech.trex.util.*;
 import com.exalttech.trex.util.files.FileManager;
@@ -217,9 +218,11 @@ public class TrafficProfileDialogController extends DialogView implements Initia
                 disableProfileFunctionBtn(false);
             }
         } catch (IOException ex) {
-            Alert alert = Util.getAlert(AlertType.ERROR);
-            alert.setContentText("Error loading file " + loadFileName);
-            alert.showAndWait();
+            TrexAlertBuilder.build()
+                    .setType(AlertType.ERROR)
+                    .setContent("Error loading file " + loadFileName)
+                    .getAlert()
+                    .showAndWait();
             LOG.error("Error loading the profile", ex);
         }
     }
@@ -288,11 +291,12 @@ public class TrafficProfileDialogController extends DialogView implements Initia
      * @param fileName
      */
     private void handleInvalidLoadedFile(String fileName) {
-        Alert errAlert = Util.getAlert(AlertType.ERROR);
-        errAlert.setContentText("Invalid Yaml file " + fileName);
         profileViewWrapper.getChildren().clear();
-
-        errAlert.showAndWait();
+        TrexAlertBuilder.build()
+                .setType(AlertType.ERROR)
+                .setContent("Invalid Yaml file " + fileName)
+                .getAlert()
+                .showAndWait();
     }
 
     /**

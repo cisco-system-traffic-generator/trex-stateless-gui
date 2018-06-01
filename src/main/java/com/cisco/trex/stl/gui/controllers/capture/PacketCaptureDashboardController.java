@@ -4,12 +4,11 @@ import com.cisco.trex.stl.gui.services.capture.PktCaptureService;
 import com.cisco.trex.stl.gui.services.capture.PktCaptureServiceException;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.util.AlertUtils;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -88,11 +87,12 @@ public class PacketCaptureDashboardController extends DialogView implements Init
                 try {
                     monitorController.startRecorder(pojo.rxPorts, pojo.txPorts, pojo.filter, pojo.pktLimit);
                 } catch (PktCaptureServiceException e) {
-                    AlertUtils.construct(
-                            Alert.AlertType.ERROR,
-                            "Recorder error",
-                            "Unable to start the recorder",
-                            e.getLocalizedMessage())
+                    TrexAlertBuilder.build()
+                            .setType(Alert.AlertType.ERROR)
+                            .setTitle("Recorder error")
+                            .setHeader("Unable to start the recorder")
+                            .setContent(e.getLocalizedMessage())
+                            .getAlert()
                             .showAndWait();
                 }
             });

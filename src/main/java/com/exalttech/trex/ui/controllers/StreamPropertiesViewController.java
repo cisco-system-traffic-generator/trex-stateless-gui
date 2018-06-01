@@ -19,6 +19,7 @@ import com.exalttech.trex.remote.models.profiles.Mode;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.remote.models.profiles.Rate;
 import com.exalttech.trex.ui.components.NumberField;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.util.Util;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -461,9 +462,11 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
         }
         boolean validInputData = validInputData();
         if (!valid && validInputData) {
-            Alert alert = Util.getAlert(Alert.AlertType.ERROR);
-            alert.setContentText(errMsg);
-            alert.showAndWait();
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setContent(errMsg)
+                    .getAlert()
+                    .showAndWait();
         }
         return valid && validInputData;
     }
@@ -488,9 +491,11 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
             }
         }
         if (!valid) {
-            Alert alert = Util.getAlert(Alert.AlertType.ERROR);
-            alert.setContentText(errMsg);
-            alert.showAndWait();
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setContent(errMsg)
+                    .getAlert()
+                    .showAndWait();
         }
         return valid;
     }

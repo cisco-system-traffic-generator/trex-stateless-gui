@@ -7,7 +7,7 @@ package com.exalttech.trex.ui.controllers;
 
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.dialog.DialogView;
-import com.exalttech.trex.ui.util.AlertUtils;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.ui.views.importPcap.ImportedPacketProperties;
 import com.exalttech.trex.ui.views.importPcap.ImportedPacketPropertiesView;
 import com.exalttech.trex.ui.views.importPcap.ImportedPacketTableView;
@@ -16,7 +16,6 @@ import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 
-import java.io.EOFException;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -113,16 +112,19 @@ public class ImportPcapWizardController extends DialogView implements Initializa
                         wizardViewContainer.getChildren().add(importedPacketTableView);
                         updateBtnState(false);
                     } else {
-                        Alert wrongPcapMsg = Util.getAlert(Alert.AlertType.ERROR);
-                        wrongPcapMsg.setContentText("Invalid Pcap, it should be one flow with IPV4 packets");
-                        wrongPcapMsg.showAndWait();
+                        TrexAlertBuilder.build()
+                                .setType(Alert.AlertType.ERROR)
+                                .setContent("Invalid Pcap, it should be one flow with IPV4 packets")
+                                .getAlert()
+                                .showAndWait();
                     }
                 } catch (PcapNativeException | TimeoutException | NotOpenException ex) {
-                    AlertUtils.construct(
-                            Alert.AlertType.ERROR,
-                            "Import error",
-                            "An error has occurred while attempting to import.",
-                            ex.getLocalizedMessage())
+                    TrexAlertBuilder.build()
+                            .setType(Alert.AlertType.ERROR)
+                            .setTitle("Import error")
+                            .setHeader("An error has occurred while attempting to import.")
+                            .setContent(ex.getLocalizedMessage())
+                            .getAlert()
                             .showAndWait();
                 }
             }
