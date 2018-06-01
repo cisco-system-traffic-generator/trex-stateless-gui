@@ -90,6 +90,8 @@ public class MonitorController extends BorderPane {
     private int pktNumberOffset = 0;
     private int latestPktIndex = 0;
 
+    private DialogWindow dialogWindow;
+
     public interface StartHandler {
         void onStart();
     }
@@ -179,14 +181,16 @@ public class MonitorController extends BorderPane {
     }
 
     private void openPacketViewer(CapturedPktModel rowData) throws IOException {
-        DialogWindow dialogWindow = new DialogWindow("pkt_capture/PacketViewerLayout.fxml",
-                "Packet viewer",
-                10, 
-                50,
-                800,
-                700,
-                false,
-                TrexApp.getPrimaryStage());
+        if (dialogWindow == null) {
+            dialogWindow = new DialogWindow("pkt_capture/PacketViewerLayout.fxml",
+                    "Packet viewer",
+                    10,
+                    50,
+                    800,
+                    700,
+                    false,
+                    TrexApp.getPrimaryStage());
+        }
         PacketViewerController controller = (PacketViewerController) dialogWindow.getController();
         controller.getPacketViewer().showPkt(rowData.getBytes());
         

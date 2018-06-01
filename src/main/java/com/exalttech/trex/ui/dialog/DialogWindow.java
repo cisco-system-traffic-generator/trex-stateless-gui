@@ -58,6 +58,9 @@ public class DialogWindow {
             DialogManager.getInstance().removeHandler(this);
             ((DialogView) loader.getController()).shutdown();
         });
+        dialogStage.setOnHidden( event -> {
+            DialogManager.getInstance().removeHandler(this);
+        });
         dialogStage.setOnShowing(event -> {
             DialogManager.getInstance().addHandler(this, () -> dialogStage.close());
         });
@@ -124,5 +127,9 @@ public class DialogWindow {
 
     public Object getController() {
         return loader.getController();
+    }
+
+    public boolean isVisible() {
+        return dialogStage.isShowing();
     }
 }
