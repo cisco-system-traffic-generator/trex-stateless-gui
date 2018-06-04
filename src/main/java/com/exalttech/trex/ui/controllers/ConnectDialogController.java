@@ -20,6 +20,7 @@ import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.XMLFileManager;
 import javafx.application.Platform;
@@ -192,9 +193,11 @@ public class ConnectDialogController extends DialogView implements Initializable
 
     private void connectionValidationFinished(final Stage stage, final String error) {
         if (error != null) {
-            final Alert errMsg = Util.getAlert(Alert.AlertType.ERROR);
-            errMsg.setContentText(error);
-            errMsg.show();
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setContent(error)
+                    .getAlert()
+                    .show();
         } else {
             final String ip = connectionsCB.getEditor().getText();
 
@@ -219,18 +222,18 @@ public class ConnectDialogController extends DialogView implements Initializable
 
     private boolean validateInput() {
         boolean isValid = true;
-        Alert errMsg = Util.getAlert(Alert.AlertType.ERROR);
+        TrexAlertBuilder errorBuilder = TrexAlertBuilder.build().setType(Alert.AlertType.ERROR);
         if (connectionsCB.getEditor().getText() == null || !Util.isValidAddress(connectionsCB.getEditor().getText())) {
-            errMsg.setContentText("Invalid TRex Host Name or IP address");
+            errorBuilder.setContent("Invalid TRex Host Name or IP address");
             isValid = false;
         } else if (!Util.isValidPort(rpcPortTextField.getText())) {
-            errMsg.setContentText("Invalid TRex Sync Port Number(" + rpcPortTextField.getText() + ")");
+            errorBuilder.setContent("Invalid TRex Sync Port Number(" + rpcPortTextField.getText() + ")");
             isValid = false;
         } else if (!Util.isValidPort(asyncPortTextField.getText())) {
-            errMsg.setContentText("Invalid Async Port Number(" + asyncPortTextField.getText() + ")");
+            errorBuilder.setContent("Invalid Async Port Number(" + asyncPortTextField.getText() + ")");
             isValid = false;
         } else if (!Util.isValidPort(scapyPortTextField.getText())) {
-            errMsg.setContentText("Invalid Scapy Port Number(" + scapyPortTextField.getText() + ")");
+            errorBuilder.setContent("Invalid Scapy Port Number(" + scapyPortTextField.getText() + ")");
             isValid = false;
         } else if (Util.isNullOrEmpty(nameTextField.getText())) {
             try {
@@ -238,13 +241,13 @@ public class ConnectDialogController extends DialogView implements Initializable
                 String username = System.getProperty("user.name");
                 nameTextField.setText(username + "@" + ip.getHostAddress());
             } catch (UnknownHostException e) {
-                errMsg.setContentText("Name should not be empty");
+                errorBuilder.setContent("Name should not be empty");
                 isValid = false;
             }
         }
 
         if (!isValid) {
-            errMsg.show();
+            errorBuilder.getAlert().show();
         }
         return isValid;
     }

@@ -141,7 +141,7 @@ public class CustomTreeItem extends TreeItem<Object> {
             itemContainer.add(iconContainer, 0, 0);
         }
 
-        itemTitle.setText(title);
+        itemTitle = new Label(title);
         itemTitle.getStyleClass().add("treeItemTitle");
         itemContainer.add(itemTitle, 1, 0);
 

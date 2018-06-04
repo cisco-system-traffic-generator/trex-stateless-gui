@@ -1,5 +1,8 @@
 package com.exalttech.trex;
 
+import com.exalttech.trex.ui.models.datastore.Profiles;
+import com.exalttech.trex.ui.models.datastore.ProfilesWrapper;
+import com.exalttech.trex.util.files.XMLFileManager;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.FileChooser;
@@ -13,6 +16,8 @@ import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.exalttech.trex.util.FileChooserFactory;
 import com.exalttech.trex.util.files.FileManager;
@@ -143,8 +148,9 @@ public class TestTrafficProfiles extends TestBase {
         final File profilesDir = new File(FileManager.getProfilesFilePath());
         FileUtils.copyFileToDirectory(profile, profilesDir);
 
-        final File profiles = new File(getResourcesFolder() + "/profiles.xml");
-        final File localDir = new File(FileManager.getLocalFilePath());
-        FileUtils.copyFileToDirectory(profiles, localDir);
+        List<Profiles> profilesList = new ArrayList<>();
+        profilesList.add(new Profiles("profile.yaml", profilesDir + "/profile.yaml"));
+        ProfilesWrapper wrapper = new ProfilesWrapper(profilesList);
+        XMLFileManager.saveXML("profiles.xml", wrapper, ProfilesWrapper.class);
     }
 }

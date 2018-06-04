@@ -363,6 +363,13 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-background-image: url("/icons/delete_on.png");
 
 }
+
+.alert-content  > .content.label, .alert-content > .content > .alert-text{
+    -fx-font-size: 14px;
+    -fx-font-family: Verdana;
+}
+
+
 /*****************************
  treeItem
 *****************************/
@@ -1081,7 +1088,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 /******************************
     Buttons
 ******************************/
-.normalButton{
+.normalButton, .dialog-pane .button {
     -fx-background-color: #32b4ea;
     -fx-text-fill: #FFFFFF;
     -fx-border-radius: 3px;

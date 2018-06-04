@@ -105,6 +105,8 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     private boolean doUpdate = false;
     ContextMenu rightClickMenu;
     private File loadedProfile;
+    private DialogWindow srteamWindow;
+    private DialogWindow profileNameWindow;
 
     /**
      * @param maxHight
@@ -606,9 +608,11 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 return;
             }
             setStreamEditingWindowOpen(true);
-            Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
-            String windowTitle = "Edit Stream (" + data.getName() + ")";
-            DialogWindow srteamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
+            if (srteamWindow == null) {
+                Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
+                String windowTitle = "Edit Stream (" + data.getName() + ")";
+                srteamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
+            }
             PacketBuilderHomeController controller = (PacketBuilderHomeController) srteamWindow.getController();
             boolean streaminited = false;
             switch (type) {
@@ -651,8 +655,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     private void viewStreamNameWindow(StreamBuilderType type) {
         try {
-            Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
-            DialogWindow profileNameWindow = new DialogWindow("ProfileStreamNameDialog.fxml", "Add Stream", 150, 100, false, currentStage);
+            if(profileNameWindow == null) {
+                Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
+                profileNameWindow = new DialogWindow("ProfileStreamNameDialog.fxml", "Add Stream", 150, 100, false, currentStage);
+            }
             ProfileStreamNameDialogController controller = (ProfileStreamNameDialogController) profileNameWindow.getController();
             controller.setProfileList(tabledata.getProfiles());
             controller.setProfileWindow(false);

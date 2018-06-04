@@ -28,12 +28,10 @@ public class TestPortConfiguration extends TestBase {
     
     @Test
     public void checkAttributeChangingTest() {
-
         acquirePortViaToolbar("Port 0");
-
         checkPortAttrs();
-
         checkPortAttrsModification();
+        resetPort("Port 0");
     }
 
     @Test
@@ -54,6 +52,7 @@ public class TestPortConfiguration extends TestBase {
         tryCall(
             () -> {
                 clearLogs();
+                clickOn("#l2Mode");
                 setText("#l2Destination", "de:ad:be:ef:de:ad");
                 clickOn("Apply");
             },
@@ -69,6 +68,7 @@ public class TestPortConfiguration extends TestBase {
                 clickOn("#l3Mode");
                 setText("#l3Source", "192.168.50.156");
                 setText("#l3Destination", "192.168.50.155");
+                setText("#vlan", "");
                 clickOn("Apply");
             },
             () -> applyBtn.getText().equalsIgnoreCase("Apply")
@@ -82,6 +82,7 @@ public class TestPortConfiguration extends TestBase {
                 clickOn("#l3Mode");
                 setText("#l3Source", "192.168.50.155");
                 setText("#l3Destination", "192.168.50.156");
+                setText("#vlan", "");
                 clickOn("Apply");
             },
             () -> applyBtn.getText().equalsIgnoreCase("Apply")
@@ -89,6 +90,7 @@ public class TestPortConfiguration extends TestBase {
         Label arpStatus = lookup("#arpStatus").query();
         Assert.assertTrue(arpStatus.getText().equalsIgnoreCase("resolved"));
         resetPort("Port 0");
+        resetPort("Port 1");
     }
 
     private void clickOnToggleSwitch(String controlId) {

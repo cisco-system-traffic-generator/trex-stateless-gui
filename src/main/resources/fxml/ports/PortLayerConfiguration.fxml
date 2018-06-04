@@ -68,7 +68,7 @@
 
                         <Label fx:id="arpLabel" text="ARP status:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
 
-                        <Label id="status" fx:id="arpStatus" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+                        <Label fx:id="arpStatus" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="8" />
 
                         <Label fx:id="ipv6NDLabel" text="IPv6 destination:" GridPane.columnIndex="0" GridPane.rowIndex="9" />
                         <Label id="ipv6NDStatus" fx:id="ipv6NDStatus" text="-" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="9" />

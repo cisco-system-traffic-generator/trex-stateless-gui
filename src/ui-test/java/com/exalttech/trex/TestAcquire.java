@@ -52,6 +52,7 @@ public class TestAcquire extends TestBase {
         clickOn("Release Acquire");
         Assert.assertNull(lookup(String.format("(%s)", getTRexDefaultUser())).query());
 
+        resetAllPorts();
         disconnect(MenuType.SHORTCUT);
     }
 

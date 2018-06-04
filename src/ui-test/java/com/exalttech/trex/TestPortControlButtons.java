@@ -37,6 +37,7 @@ public class TestPortControlButtons extends TestBase {
 
         Button acquireReleaseBtn = lookup("#acquireReleaseBtn").query();
         Assert.assertEquals(acquireReleaseBtn.getText(), "Release");
+        resetAllPorts();
         disconnect(connectionType);
     }
 }

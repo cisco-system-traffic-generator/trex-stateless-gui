@@ -20,6 +20,7 @@
  */
 package com.exalttech.trex.ui.views.streams.builder;
 
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.ui.views.streams.binders.PayloadDataBinding;
 import com.exalttech.trex.util.PreferencesManager;
 import com.exalttech.trex.util.Util;
@@ -172,9 +173,11 @@ public class PayloadView extends AbstractProtocolView {
                 if (Util.isHex(data)) {
                     pattern.setText(data);
                 }else{
-                    Alert errorMsg = Util.getAlert(Alert.AlertType.ERROR);
-                    errorMsg.setContentText("Invalid payload pattern");
-                    errorMsg.showAndWait();
+                    TrexAlertBuilder.build()
+                            .setType(Alert.AlertType.ERROR)
+                            .setContent("Invalid payload pattern")
+                            .getAlert()
+                            .showAndWait();
                 }
             }
         } catch (Exception ex) {

@@ -18,7 +18,7 @@
 
     <groupId>com.cisco</groupId>
     <artifactId>trex-stateless-gui</artifactId>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>TRex Stateless GUI Application</name>
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>
             <artifactId>trex-packet-editor</artifactId>
-            <version>0259e21</version>
+            <version>d051fc1</version>
         </dependency>
         <dependency>
             <groupId>com.github.cisco-system-traffic-generator</groupId>

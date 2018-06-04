@@ -38,6 +38,7 @@ import javafx.stage.Stage;
 public class ProfileManager {
 
     private static ProfileManager instance = null;
+    private DialogWindow profileNameWindow;
 
     /**
      * Return instance of the saveLoadProfiles
@@ -171,13 +172,15 @@ public class ProfileManager {
     }
 
     private String getProfileNameDialogValue(Stage currentStage, String title) throws IOException {
-        DialogWindow profileNameWindow = new DialogWindow(
-                "ProfileStreamNameDialog.fxml",
-                title,
-                150,
-                100,
-                false,
-                currentStage);
+        if (profileNameWindow == null) {
+            profileNameWindow = new DialogWindow(
+                    "ProfileStreamNameDialog.fxml",
+                    title,
+                    150,
+                    100,
+                    false,
+                    currentStage);
+        }
         ProfileStreamNameDialogController controller = (ProfileStreamNameDialogController) profileNameWindow.getController();
         controller.setProfileWindow(true);
         profileNameWindow.show(true);

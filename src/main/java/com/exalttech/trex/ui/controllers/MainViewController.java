@@ -22,7 +22,6 @@ import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.core.AsyncResponseManager;
 import com.exalttech.trex.core.ConnectionManager;
 import com.exalttech.trex.core.RPCMethods;
-import com.exalttech.trex.core.TrexEvent;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
@@ -45,7 +44,7 @@ import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.SystemInfoReq;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
-import com.exalttech.trex.ui.util.AlertUtils;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.ui.views.MultiplierOptionChangeHandler;
 import com.exalttech.trex.ui.views.MultiplierView;
 import com.exalttech.trex.ui.views.PacketTableUpdatedHandler;
@@ -269,7 +268,11 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portView.visibleProperty().bind(portViewVisibilityProperty);
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
 
-        ConnectionManager.getInstance().addDisconnectListener(() -> resetApplication(true));
+        ConnectionManager.getInstance().addDisconnectListener(() -> {
+            if (!resetAppInProgress && ConnectionManager.getInstance().isConnected()){
+                resetApplication(true);
+            }
+        });
         // Handle update port state event
         AsyncResponseManager.getInstance().asyncEventObjectProperty().addListener((observable, oldValue, newVal) -> {
 
@@ -634,13 +637,14 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             ConnectionManager.getInstance().disconnect();
 
             if (didServerCrash) {
-                AlertUtils.construct(
-                    Alert.AlertType.ERROR,
-                    "Disconnected from TRex",
-                    "Disconnected from TRex server",
-                    "Make sure TRex server is online and reachable.\n" +
+                TrexAlertBuilder.build()
+                        .setType(Alert.AlertType.ERROR)
+                        .setTitle("Disconnected from TRex")
+                        .setHeader("Disconnected from TRex server")
+                        .setContent("Make sure TRex server is online and reachable.\n" +
                         "If you have a slow connection network connection you can change timeout options in the application connection settings.\n")
-                    .showAndWait();
+                        .getAlert()
+                        .showAndWait();
 
                 openConnectDialog();
             }
@@ -1039,12 +1043,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 LOG.error("Error opening dashboard view", ex);
             }
         } else {
-            AlertUtils.construct(
-                Alert.AlertType.ERROR,
-                "Capture error",
-                "Unable to open capture window",
-                "At least one port with enabled service mode should be acquired")
-                .show();
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setTitle("Capture error")
+                    .setHeader("Unable to open capture window")
+                    .setContent("At least one port with enabled service mode should be acquired")
+                    .getAlert()
+                    .show();
         }
     }
 
@@ -1895,7 +1900,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                 String header = "Port " + portIndex + " in TX mode";
                 String content = "Assigning another profile to the port will stop it. Proceed?";
                 Optional result = runConfirmationDialog(header, content);
-                return result.get() == ButtonType.OK;
+                return result.isPresent() && result.get() == ButtonType.OK;
             }
             return true;
         }
@@ -1927,11 +1932,13 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     }
 
     private Optional runConfirmationDialog(String header, String content) {
-        Dialog alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.getDialogPane().getStyleClass().add("warning");
-        alert.setTitle("Warning");
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        return alert.showAndWait();
+        return TrexAlertBuilder.build()
+                .setType(Alert.AlertType.CONFIRMATION)
+                .setTitle("Warning")
+                .setHeader(header)
+                .setContent(content)
+                .setStyle("warning")
+                .getAlert()
+                .showAndWait();
     }
 }
