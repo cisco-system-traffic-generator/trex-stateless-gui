@@ -19,9 +19,7 @@ import com.cisco.trex.stateless.TRexClient;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
 import com.cisco.trex.stl.gui.util.RunningConfiguration;
 import com.exalttech.trex.application.TrexApp;
-import com.exalttech.trex.core.AsyncResponseManager;
-import com.exalttech.trex.core.ConnectionManager;
-import com.exalttech.trex.core.RPCMethods;
+import com.exalttech.trex.core.*;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.exceptions.PortAcquireException;
@@ -268,11 +266,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         portView.visibleProperty().bind(portViewVisibilityProperty);
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
 
-        ConnectionManager.getInstance().addDisconnectListener(() -> {
-            if (!resetAppInProgress && ConnectionManager.getInstance().isConnected()){
-                resetApplication(true);
-            }
-        });
+        ConnectionManager.getInstance().addDisconnectListener(() -> resetApplication(true));
         // Handle update port state event
         AsyncResponseManager.getInstance().asyncEventObjectProperty().addListener((observable, oldValue, newVal) -> {
 
@@ -590,65 +584,66 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             releaseAllPort(false);
         }
 
-        portManager.clearPorts();
-
-        Platform.runLater(() -> {
-            DialogManager.getInstance().closeAll();
-            StatsStorage.getInstance().stopPolling();
-            shutdownRunningServices();
-            LogsController.getInstance().getView().clear();
-
+        if (!resetAppInProgress) {
             resetAppInProgress = true;
-            profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
-            // clear tree
-            devicesTree.setRoot(null);
-            // hide all right side views
-            statTableWrapper.setVisible(false);
-            profileContainer.setVisible(false);
-            serviceModeLabel.visibleProperty().unbind();
-            serviceModeLabel.setVisible(false);
+            portManager.clearPorts();
+            Platform.runLater(() -> {
+                DialogManager.getInstance().closeAll();
+                StatsStorage.getInstance().stopPolling();
+                shutdownRunningServices();
+                LogsController.getInstance().getView().clear();
 
-            connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
-            statsMenuItem.setDisable(true);
-            captureMenuItem.setDisable(true);
-            dashboardIcon.setDisable(true);
-            serverStatusIcon.setImage(new Image("/icons/offline.png"));
-            serverStatusLabel.setText("Disconnected");
-            connectIcon.getStyleClass().remove("disconnectIcon");
-            connectDixconnectTooltip.setText("Connect to TRex server");
+                profileListBox.getSelectionModel().select(Constants.SELECT_PROFILE);
+                // clear tree
+                devicesTree.setRoot(null);
+                // hide all right side views
+                statTableWrapper.setVisible(false);
+                profileContainer.setVisible(false);
+                serviceModeLabel.visibleProperty().unbind();
+                serviceModeLabel.setVisible(false);
 
-            // reset Header btns
-            startStream.setDisable(true);
-            startAllStream.setDisable(true);
-            stopStream.setDisable(true);
-            stopAllStream.setDisable(true);
-            pauseStream.setDisable(true);
-            clearCache.setDisable(true);
-            logsContainer.setDisable(false);
-            copyToClipboardBtn.setDisable(true);
-            acquirePort.setDisable(true);
-            releasePort.setDisable(true);
-            assignedPortProfileMap.clear();
+                connectMenuItem.setText(CONNECT_MENU_ITEM_TITLE);
+                statsMenuItem.setDisable(true);
+                captureMenuItem.setDisable(true);
+                dashboardIcon.setDisable(true);
+                serverStatusIcon.setImage(new Image("/icons/offline.png"));
+                serverStatusLabel.setText("Disconnected");
+                connectIcon.getStyleClass().remove("disconnectIcon");
+                connectDixconnectTooltip.setText("Connect to TRex server");
 
-            portViewVisibilityProperty.setValue(false);
+                // reset Header btns
+                startStream.setDisable(true);
+                startAllStream.setDisable(true);
+                stopStream.setDisable(true);
+                stopAllStream.setDisable(true);
+                pauseStream.setDisable(true);
+                clearCache.setDisable(true);
+                logsContainer.setDisable(false);
+                copyToClipboardBtn.setDisable(true);
+                acquirePort.setDisable(true);
+                releasePort.setDisable(true);
+                assignedPortProfileMap.clear();
 
-            resetAppInProgress = false;
+                portViewVisibilityProperty.setValue(false);
 
-            ConnectionManager.getInstance().disconnect();
+                resetAppInProgress = false;
 
-            if (didServerCrash) {
-                TrexAlertBuilder.build()
-                        .setType(Alert.AlertType.ERROR)
-                        .setTitle("Disconnected from TRex")
-                        .setHeader("Disconnected from TRex server")
-                        .setContent("Make sure TRex server is online and reachable.\n" +
-                        "If you have a slow connection network connection you can change timeout options in the application connection settings.\n")
-                        .getAlert()
-                        .showAndWait();
+                ConnectionManager.getInstance().disconnect();
 
-                openConnectDialog();
-            }
-        });
+                if (didServerCrash) {
+                    TrexAlertBuilder.build()
+                            .setType(Alert.AlertType.ERROR)
+                            .setTitle("Disconnected from TRex")
+                            .setHeader("Disconnected from TRex server")
+                            .setContent("Make sure TRex server is online and reachable.\n" +
+                                    "If you have a slow connection network connection you can change timeout options in the application connection settings.\n")
+                            .getAlert()
+                            .showAndWait();
+
+                    openConnectDialog();
+                }
+            });
+        }
     }
 
     /**
