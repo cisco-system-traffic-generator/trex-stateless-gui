@@ -1088,7 +1088,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 /******************************
     Buttons
 ******************************/
-.normalButton, .dialog-pane .button {
+.normalButton, .dialog-pane .button:default {
     -fx-background-color: #32b4ea;
     -fx-text-fill: #FFFFFF;
     -fx-border-radius: 3px;
@@ -1096,7 +1096,7 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
     -fx-font-weight: bold;
 }
 
-.cancelButton{
+.cancelButton, .dialog-pane .button {
     -fx-border-radius: 3px;
     -fx-background-color: #32b4ea;
     -fx-text-fill: #FFFFFF;
