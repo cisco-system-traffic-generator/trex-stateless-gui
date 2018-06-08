@@ -91,3 +91,23 @@ dependencies {
     testCompile "org.mockito:mockito-core:2.7.9"
 }
 
+apply plugin: 'javafx-gradle-plugin'
+
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.7.0'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+
+    }
+}
+
+jfx {
+    mainClass = mainClassName
+    jfxMainAppJarName = "trex-stateless-gui.jar"
+    appName = "trex-stateless-gui"
+    nativeReleaseVersion = version
+    vendor = 'Xored'
+}
