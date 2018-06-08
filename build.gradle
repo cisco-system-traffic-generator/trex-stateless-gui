@@ -103,11 +103,12 @@ buildscript {
 
     }
 }
-
+import org.apache.tools.ant.taskdefs.condition.Os;
 jfx {
     mainClass = mainClassName
     jfxMainAppJarName = "trex-stateless-gui.jar"
     appName = "trex-stateless-gui"
     nativeReleaseVersion = version
+    additionalAppResources = Os.isFamily(Os.FAMILY_WINDOWS)? "src/main/resources/win32-x86-64": null
     vendor = 'Xored'
 }
