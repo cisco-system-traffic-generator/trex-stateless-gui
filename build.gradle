@@ -109,6 +109,12 @@ jfx {
     jfxMainAppJarName = "trex-stateless-gui.jar"
     appName = "trex-stateless-gui"
     nativeReleaseVersion = version
-    additionalAppResources = Os.isFamily(Os.FAMILY_WINDOWS)? "src/main/resources/win32-x86-64": null
+    additionalAppResources = Os.isFamily(Os.FAMILY_WINDOWS)? "src/main/resources/win32-x86-64" : null
     vendor = 'Xored'
+}
+
+processResources {
+    filesMatching("**/version.properties") {
+        expand('version': version)
+    }
 }
