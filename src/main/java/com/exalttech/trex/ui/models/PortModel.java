@@ -57,7 +57,6 @@ public class PortModel {
     
     private BooleanProperty isOwnedProperty = new SimpleBooleanProperty(false);
     private RPCMethods serverRPCMethods;
-    private TRexClient trexClient;
     private LogsController guiLogger;
     private boolean streamLoaded;
     private BooleanProperty isTransmitProperty = new SimpleBooleanProperty(false);
@@ -65,7 +64,6 @@ public class PortModel {
     private PortModel() {
         guiLogger = LogsController.getInstance();
         serverRPCMethods = TrexApp.injector.getInstance(RPCMethods.class);
-        trexClient = ConnectionManager.getInstance().getTrexClient();
         supportCapabilities.put("link", linkControlSupport);
         supportCapabilities.put("led", ledControlSupport);
         supportCapabilities.put("flowControl", flowControlSupport);
@@ -190,7 +188,7 @@ public class PortModel {
             if (!isOwnedProperty.get()) {
                 return;
             }
-            com.cisco.trex.stateless.model.PortStatus status = trexClient.serviceMode(portIndex, newValue);
+            com.cisco.trex.stateless.model.PortStatus status = ConnectionManager.getInstance().getTrexClient().serviceMode(portIndex, newValue);
             if (!newValue.equals(status.service)) {
                 guiLogger.appendText(LogType.ERROR, "Filed to change service mode for port " + portIndex+". Check active capturing mode or enabled rx queues.");
                 Platform.runLater(() -> serviceModeProperty.set(oldValue));
