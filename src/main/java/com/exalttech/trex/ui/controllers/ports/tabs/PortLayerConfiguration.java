@@ -344,6 +344,7 @@ public class PortLayerConfiguration extends AnchorPane {
                 }
 
                 AsyncResponseManager.getInstance().suppressIncomingEvents(true);
+                boolean serviceModeBeforeResolve = model.getServiceMode();
                 trexClient.serviceMode(model.getIndex(), true);
 
                 TRexClientResult<StubResult> vlanConfigResult = trexClient.setVlan(model.getIndex(), vlanIds);
@@ -432,7 +433,7 @@ public class PortLayerConfiguration extends AnchorPane {
                         logger.error("Failed to set L3 mode: " + e.getMessage());
                         guiLogger.appendText(LogType.ERROR, "Failed to set L3 mode: " + e.getMessage());
                     } finally {
-                        trexClient.serviceMode(model.getIndex(), false);
+                        trexClient.serviceMode(model.getIndex(), serviceModeBeforeResolve);
                         AsyncResponseManager.getInstance().suppressIncomingEvents(false);
                         AsyncResponseManager.getInstance().unmuteLogger();
                     }
