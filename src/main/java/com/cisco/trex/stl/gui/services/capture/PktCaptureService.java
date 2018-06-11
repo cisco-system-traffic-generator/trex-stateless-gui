@@ -20,8 +20,6 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
     
     private int currentActiveMonitorId = 0;
     
-    private TRexClient tRexClient = ConnectionManager.getInstance().getTrexClient();
-    
     @Override
     protected Task<CapturedPackets> createTask() {
         return new Task<CapturedPackets>() {
@@ -49,7 +47,7 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
             List<Integer> tx,
             String filter,
             boolean serviceEnable) throws PktCaptureServiceException {
-        TRexClientResult<CaptureMonitor> result = tRexClient.captureMonitorStart(rx, tx, filter);
+        TRexClientResult<CaptureMonitor> result = getTrexClient().captureMonitorStart(rx, tx, filter);
         guardNotFailed(result);
         int captureId = result.get().getCaptureId();
         if (serviceEnable) {
@@ -59,13 +57,17 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
         return captureId;
     }
 
+    private TRexClient getTrexClient() {
+        return ConnectionManager.getInstance().getTrexClient();
+    }
+
     public int updateMonitor(
             List<Integer> rx,
             List<Integer> tx,
             String filter) throws PktCaptureServiceException {
-        tRexClient.captureMonitorStop(currentActiveMonitorId);
-        tRexClient.captureMonitorRemove(currentActiveMonitorId);
-        TRexClientResult<CaptureMonitor> result = tRexClient.captureMonitorStart(rx, tx, filter);
+        getTrexClient().captureMonitorStop(currentActiveMonitorId);
+        getTrexClient().captureMonitorRemove(currentActiveMonitorId);
+        TRexClientResult<CaptureMonitor> result = getTrexClient().captureMonitorStart(rx, tx, filter);
         guardNotFailed(result);
         int captureId = result.get().getCaptureId();
         currentActiveMonitorId = captureId;
@@ -76,12 +78,12 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
         if (currentActiveMonitorId == captureId) {
             currentActiveMonitorId = 0;
         }
-        tRexClient.captureMonitorStop(captureId);
-        tRexClient.captureMonitorRemove(captureId);
+        getTrexClient().captureMonitorStop(captureId);
+        getTrexClient().captureMonitorRemove(captureId);
     }
 
     public CaptureMonitorStop stopRecorder(int caputureId) throws PktCaptureServiceException {
-        TRexClientResult<CaptureMonitorStop> result = tRexClient.captureMonitorStop(caputureId);
+        TRexClientResult<CaptureMonitorStop> result = getTrexClient().captureMonitorStop(caputureId);
         if (result.isFailed()) {
             LOG.error("Unable to stop monitor. "+result.getError());
             throw new PktCaptureServiceException(result.getError());
@@ -90,23 +92,23 @@ public class PktCaptureService extends ScheduledService<CapturedPackets> {
     }
 
     synchronized public CapturedPackets fetchCapturedPkts(int captureId, int chunkSize) throws PktCaptureServiceException {
-        TRexClientResult<CapturedPackets> result = tRexClient.captureFetchPkts(captureId, chunkSize);
+        TRexClientResult<CapturedPackets> result = getTrexClient().captureFetchPkts(captureId, chunkSize);
         guardNotFailed(result);
         return result.get();
     }
     
     public CaptureMonitor addRecorder(List<Integer> rx, List<Integer> tx, String filter, int bufferSize) throws PktCaptureServiceException {
-        TRexClientResult<CaptureMonitor> result = tRexClient.captureRecorderStart(rx, tx, filter, bufferSize);
+        TRexClientResult<CaptureMonitor> result = getTrexClient().captureRecorderStart(rx, tx, filter, bufferSize);
         guardNotFailed(result);
         return result.get();
     }
     
     public boolean removeRecorder(int recorderId) {
-        return tRexClient.captureMonitorRemove(recorderId);
+        return getTrexClient().captureMonitorRemove(recorderId);
     }
     
     public List<CaptureInfo> getActiveCaptures() throws PktCaptureServiceException {
-        TRexClientResult<CaptureInfo[]> result = tRexClient.getActiveCaptures();
+        TRexClientResult<CaptureInfo[]> result = getTrexClient().getActiveCaptures();
         guardNotFailed(result);
         return Arrays.stream(result.get()).collect(Collectors.toList());
     }
