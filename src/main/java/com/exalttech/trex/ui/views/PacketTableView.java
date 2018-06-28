@@ -302,6 +302,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         tabledata.getStreamsList().add(newRow);
         Profile newProfile = new Profile();
         newProfile.setName(streamName);
+        newProfile.setStreamId(getNewId());
         tabledata.getProfiles().add(newProfile);
         streamPacketTableView.setItems(FXCollections.observableArrayList(tabledata.getStreamsList()));
         streamPacketTableView.getSelectionModel().select(newRow);
@@ -420,6 +421,20 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         return profileName + "_" + availableSuffix;
     }
 
+    private Integer getNewId() {
+        List<Profile> profiles = tabledata.getProfiles();
+        Set<Integer> profileIds = profiles.stream()
+                .map(Profile::getStreamId)
+                .collect(Collectors.toSet());
+
+        int availableId = 0;
+        while (profileIds.contains(availableId)) {
+            ++availableId;
+        }
+
+        return availableId;
+    }
+
     private void duplicateProfiles(List<Profile> newProfiles) {
         try{
             List<Profile> profiles = tabledata.getProfiles();
@@ -427,6 +442,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             for (Profile profile : newProfiles) {
                 Profile clonedProfile = (Profile) profile.clone();
                 clonedProfile.setName(getNewName(profile.getName(), profiles));
+                clonedProfile.setStreamId(getNewId());
                 profiles.add(clonedProfile);
             }
 
