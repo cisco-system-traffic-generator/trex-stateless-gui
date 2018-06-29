@@ -15,14 +15,13 @@
  */
 package com.exalttech.trex.util;
 
-import com.exalttech.trex.remote.models.profiles.Mode;
-import com.exalttech.trex.remote.models.profiles.PacketInfo;
-import com.exalttech.trex.remote.models.profiles.Profile;
-import com.exalttech.trex.remote.models.profiles.Rate;
+import com.exalttech.trex.remote.models.profiles.*;
 import com.exalttech.trex.ui.views.models.TableProfileStream;
 import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import javafx.stage.Window;
@@ -34,6 +33,8 @@ import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
 import org.pcap4j.packet.*;
+import org.pcap4j.packet.Packet;
+import org.slf4j.helpers.MessageFormatter;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -51,6 +52,7 @@ import java.util.concurrent.TimeoutException;
 public class TrafficProfile {
 
     private static final Logger LOG = Logger.getLogger(TrafficProfile.class.getName());
+    public static final String DEFAULT_STREAM_NAME = "Stream";
 
     /**
      *
@@ -172,10 +174,21 @@ public class TrafficProfile {
      * @throws java.io.IOException
      */
     public Profile[] getTrafficProfile(File yamlFile) throws IOException {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        Profile[] trafficProfileArray = mapper.readValue(yamlFile, Profile[].class);
-        int i = 0;
-        for (Profile profile : trafficProfileArray) {
+        Profile[] trafficProfileArray = parseYamlProfileOrStream(yamlFile);
+        adjustProfiles(yamlFile, trafficProfileArray);
+        return trafficProfileArray;
+    }
+
+    private void adjustProfiles(File yamlFile, Profile[] trafficProfileArray) {
+        for (int i=0; i<trafficProfileArray.length; i++) {
+            Profile profile = trafficProfileArray[i];
+
+            if (profile.getName() == null) {
+                StringBuilder profileName = new StringBuilder(DEFAULT_STREAM_NAME);
+                profileName.append("_").append(i);
+                profile.setName(profileName.toString());
+            }
+
             Map<String, Object> streamAdditionalProperties = profile.getStream().getAdditionalProperties();
             if (streamAdditionalProperties.containsKey("vm")) {
                 profile.getStream().setVmRaw(streamAdditionalProperties.get("vm").toString());
@@ -183,23 +196,44 @@ public class TrafficProfile {
             if (streamAdditionalProperties.containsKey("rx_stats")) {
                 profile.getStream().setRxStatsRaw(streamAdditionalProperties.get("rx_stats").toString());
             }
-            // Check the Binary is in the Yaml File
-            if (profile.getStream().getPacket().getBinary() == null) {
-                String absolutePath = yamlFile.getAbsolutePath();
-                String filePath = absolutePath.
-                        substring(0, absolutePath.lastIndexOf(File.separator));
-                String pacpFile = profile.getStream().getPacket().getPcap();
-                String encodedPcap = encodePcapFile(filePath + File.separator + pacpFile);
-                profile.getStream().getPacket().setBinary(encodedPcap);
+            if (profile.getStream().getPacket().getBinary() == null &&
+                    profile.getStream().getPacket().getPcap() != null) {
+                setBinaryFromPcap(yamlFile, profile);
             }
-            profile.getStream().getPacket().setPcap(null);
-
-            if (profile.getName() == null) {
-                profile.setName("Stream" + i++);
-            }
-
         }
-        return trafficProfileArray;
+    }
+
+    private void setBinaryFromPcap(File yamlFile, Profile profile) {
+        String absolutePath = yamlFile.getAbsolutePath();
+        String filePath = absolutePath.
+                substring(0, absolutePath.lastIndexOf(File.separator));
+        String pacpFile = profile.getStream().getPacket().getPcap();
+        String encodedPcap = encodePcapFile(filePath + File.separator + pacpFile);
+        profile.getStream().getPacket().setBinary(encodedPcap);
+        profile.getStream().getPacket().setPcap(null);
+    }
+
+    private Profile[] parseYamlProfileOrStream(File yamlFile) throws IOException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        try {
+            return mapper.readValue(yamlFile, Profile[].class);
+        } catch (JsonParseException | JsonMappingException e) {
+            LOG.warn(MessageFormatter.format("Cannot parse {0} as Profile array", yamlFile.getName()));
+        }
+        try {
+            Stream[] streams = mapper.readValue(yamlFile, Stream[].class);
+            Profile[] result = new Profile[streams.length];
+            for (int i=0; i<streams.length; i++) {
+                Profile newProfile = new Profile();
+                newProfile.setStream(streams[i]);
+                result[i] = newProfile;
+            }
+            return result;
+        } catch (JsonParseException | JsonMappingException e) {
+            LOG.warn(MessageFormatter.format("Cannot parse {0} as Stream array", yamlFile.getName()));
+        }
+
+        throw new IOException(MessageFormatter.format("Cannot parse {0} correctly", yamlFile.getName()).toString());
     }
 
     /**
