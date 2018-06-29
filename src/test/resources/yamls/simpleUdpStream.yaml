@@ -1,0 +1,33 @@
+- action_count: 8
+  enabled: true
+  flags: 3
+  flow_stats:
+    enabled: true
+  isg: 1.5
+  mode:
+    rate:
+      type: pps
+      value: 28
+    type: continuous
+  packet:
+    binary: !!python/unicode 'AAAAAQAAAAAAAgAACABFAAAuAAEAAEAROr0QAAABMAAAAQA1ADUAGoMSeHh4eHh4eHh4eHh4eHh4eHh4'
+    meta: ''
+  self_start: true
+  start_paused: false
+  vm:
+    instructions:
+    - init_value: 1761607681
+      max_value: 1761607934
+      min_value: 1761607681
+      name: src
+      op: inc
+      size: 4
+      step: 1
+      type: flow_var
+    - add_value: 0
+      is_big_endian: true
+      name: src
+      pkt_offset: 26
+      type: write_flow_var
+    - pkt_offset: 14
+      type: fix_checksum_ipv4
