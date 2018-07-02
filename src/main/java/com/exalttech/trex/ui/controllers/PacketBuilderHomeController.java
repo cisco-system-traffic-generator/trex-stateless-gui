@@ -141,7 +141,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         parser = new PacketParser();
     }
 
-    public boolean initStreamBuilder(String pcapFileBinary, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
+    public boolean initStreamBuilder(String pcapFileBinary, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) throws Exception {
         selectedProfile = profileList.get(selectedProfileIndex);
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
@@ -172,6 +172,15 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }
 
         if (selectedProfile.getStream().getAdvancedMode()) {
+            if (isImportedStreamProperty.getValue()) {
+                Stream currentStream = streamPropertiesController.getUpdatedSelectedProfile().getStream();
+                byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
+                byte[] packet = Base64.getDecoder().decode(base64Packet);
+                packetBuilderController.loadPcapBinary(packet);
+                packetBuilderController.loadVmInstructions(currentStream.getAdditionalProperties().get("vm"));
+            } else {
+                packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+            }
             showAdvancedModeTabs();
         } else {
             showSimpleModeTabs();

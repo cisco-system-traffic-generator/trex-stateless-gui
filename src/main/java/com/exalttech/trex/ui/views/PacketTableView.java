@@ -651,7 +651,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             else {
                 LOG.error("Error while initing editor dialog");
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOG.error("Error opening file", ex);
         }
     }
