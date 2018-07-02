@@ -15,6 +15,7 @@
  */
 package com.exalttech.trex.ui.controllers;
 
+import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,6 +68,12 @@ import com.exalttech.trex.util.Util;
 
 public class PacketBuilderHomeController extends DialogView implements Initializable {
     private static final Logger LOG = Logger.getLogger(PacketBuilderHomeController.class.getName());
+
+    private enum SelectedEditMode {
+        Cancel,
+        Advanced,
+        Simple
+    }
 
     @FXML
     private AnchorPane hexPane;
@@ -138,48 +146,75 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
         currentSelectedProfileIndex = selectedProfileIndex;
-        
-        if (selectedProfile.getStream().getAdvancedMode()
-                && !ConnectionManager.getInstance().isScapyConnected()) {
-            boolean loop = true;
-            while (loop) {
-                eventBus.post(new ScapyClientNeedConnectEvent());
-                if (ConnectionManager.getInstance().isScapyConnected()) {
-                    loop = false;
-                }
-                else {
-                    loop = alertWarning("Can't open packet editor in Advanced mode",
-                            "There is no connection to Scapy server."
-                                    + "\nPlease refer to documentation about"
-                                    + "\nScapy server and advanced mode.");
-                }
-            }
-            if (!ConnectionManager.getInstance().isScapyConnected()) {
+
+        if (selectedProfile.getStream().getAdvancedMode() && !ConnectionManager.getInstance().isScapyConnected()) {
+            SelectedEditMode action = prepareToAdvancedMode();
+            if (action == SelectedEditMode.Cancel) {
                 return false;
+            } else {
+                selectedProfile.getStream().setAdvancedMode(action == SelectedEditMode.Advanced);
             }
         }
 
         packetBuilderController.reset();
         streamPropertiesController.init(profileList, selectedProfileIndex);
         updateNextPrevButtonState();
+
         switch (type) {
             case BUILD_STREAM:
                 initStreamBuilder(new BuilderDataBinding());
-                showSimpleModeTabs();
                 break;
             case EDIT_STREAM:
                 initEditStream(pcapFileBinary);
-                if(selectedProfile.getStream().getAdvancedMode()) {
-                    showAdvancedModeTabs();
-                } else {
-                    showSimpleModeTabs();
-                }
                 break;
             default:
                 break;
         }
 
+        if (selectedProfile.getStream().getAdvancedMode()) {
+            showAdvancedModeTabs();
+        } else {
+            showSimpleModeTabs();
+        }
+
         return true;
+    }
+
+    private SelectedEditMode prepareToAdvancedMode() {
+        String warningText = "There is no connection to Scapy server\n" +
+                "Please, refer to documentation about\n" +
+                "Scapy server and advanced mode.";
+
+        ButtonType tryConnect = new ButtonType("Connect", ButtonBar.ButtonData.YES);
+        ButtonType continueSimple = new ButtonType("Simple Mode");
+
+        while (true) {
+            Optional<ButtonType> userSelection = TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.WARNING)
+                    .setHeader("Scapy server connection required")
+                    .setContent(warningText)
+                    .setButtons(tryConnect, continueSimple, ButtonType.CANCEL)
+                    .getAlert()
+                    .showAndWait();
+
+            if (!userSelection.isPresent() || userSelection.get().equals(ButtonType.CANCEL)) {
+                return SelectedEditMode.Cancel;
+            } else if (userSelection.get().equals(continueSimple)) {
+                return SelectedEditMode.Simple;
+            }
+
+            eventBus.post(new ScapyClientNeedConnectEvent());
+
+            if (ConnectionManager.getInstance().isScapyConnected()) {
+                return SelectedEditMode.Advanced;
+            }
+
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setContent("Connection to Scapy server failed.")
+                    .getAlert()
+                    .showAndWait();
+        }
     }
 
     private void initEditStream(String pcapFileBinary) {
@@ -358,30 +393,29 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         boolean advancedMode = currentStream.getAdvancedMode();
 
         try {
-            if (!ConnectionManager.getInstance().isScapyConnected()) {
-                eventBus.post(new ScapyClientNeedConnectEvent());
-            }
             if (advancedMode) {
                 streamEditorModeBtn.setText("Advanced mode");
                 currentStream.setAdvancedMode(false);
                 showSimpleModeTabs();
             } else {
-                if (ConnectionManager.getInstance().isScapyConnected()) {
-                    if (isImportedStreamProperty.getValue()) {
-                        byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
-                        byte[] packet = Base64.getDecoder().decode(base64Packet);
-                        packetBuilderController.loadPcapBinary(packet);
-                    } else {
-                        packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+                if (!ConnectionManager.getInstance().isScapyConnected()) {
+                    SelectedEditMode userSelection = prepareToAdvancedMode();
+
+                    if (userSelection == SelectedEditMode.Cancel || userSelection == SelectedEditMode.Simple) {
+                        return;
                     }
-                    streamEditorModeBtn.setText("Simple mode");
-                    currentStream.setAdvancedMode(true);
-                    showAdvancedModeTabs();
-                } else {
-                    alertWarning("Can't open Advanced mode", "There is no connection to Scapy server."
-                            + "\nPlease refer to documentation about"
-                            + "\nScapy server and advanced configuration mode.");
                 }
+
+                if (isImportedStreamProperty.getValue()) {
+                    byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
+                    byte[] packet = Base64.getDecoder().decode(base64Packet);
+                    packetBuilderController.loadPcapBinary(packet);
+                } else {
+                    packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
+                }
+                streamEditorModeBtn.setText("Simple mode");
+                currentStream.setAdvancedMode(true);
+                showAdvancedModeTabs();
             }
         } catch (Exception e) {
             LOG.error("Unable to open advanced mode due to: " + e.getMessage());

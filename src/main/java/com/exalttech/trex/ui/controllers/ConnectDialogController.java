@@ -159,7 +159,6 @@ public class ConnectDialogController extends DialogView implements Initializable
 
     @FXML
     public void handleCloseDialog(final MouseEvent event) {
-        ConnectionManager.getInstance().setConnected(false);
         Node node = (Node) event.getSource();
         Stage stage = (Stage) node.getScene().getWindow();
         stage.hide();

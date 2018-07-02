@@ -58,7 +58,7 @@ public class Stream implements Cloneable {
     private int actionCount = 0;
 
     @JsonProperty("advanced_mode")
-    private boolean advancedMode;
+    private boolean advancedMode = true;
     
     @JsonIgnore
     private FlowStats flowStats;
