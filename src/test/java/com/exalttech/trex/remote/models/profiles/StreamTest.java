@@ -1,6 +1,5 @@
 package com.exalttech.trex.remote.models.profiles;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -11,7 +10,6 @@ import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -39,6 +37,14 @@ public class StreamTest {
 
         expectedException.expect(JsonMappingException.class);
         Stream[] streams = yamlMapper.readValue(invalidYaml, Stream[].class);
+    }
+
+    @Test
+    public void failOnProfileParse() throws IOException {
+        File profileYaml = getYaml("yamls/simpleTcpProfile.yaml");
+
+        expectedException.expect(JsonMappingException.class);
+        Stream[] profiles = yamlMapper.readValue(profileYaml, Stream[].class);
     }
 
     @Test
