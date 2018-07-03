@@ -41,10 +41,7 @@ import com.google.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -172,15 +169,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }
 
         if (selectedProfile.getStream().getAdvancedMode()) {
-            if (isImportedStreamProperty.getValue()) {
-                Stream currentStream = streamPropertiesController.getUpdatedSelectedProfile().getStream();
-                byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
-                byte[] packet = Base64.getDecoder().decode(base64Packet);
-                packetBuilderController.loadPcapBinary(packet);
-                packetBuilderController.loadVmInstructions(currentStream.getAdditionalProperties().get("vm"));
-            } else {
-                packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
-            }
             showAdvancedModeTabs();
         } else {
             showSimpleModeTabs();
@@ -226,7 +214,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }
     }
 
-    private void initEditStream(String pcapFileBinary) {
+    private void initEditStream(String pcapFileBinary) throws IOException {
         streamTabPane.setDisable(false);
         saveButton.setDisable(false);
         streamEditorModeBtn.setDisable(false);
@@ -268,6 +256,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         String base64UserModel = currentStream.getPacket().getModel();
         if (!Strings.isNullOrEmpty(base64UserModel)) {
             packetBuilderController.loadUserModel(base64UserModel);
+        } else {
+            byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
+            byte[] packet = Base64.getDecoder().decode(base64Packet);
+            packetBuilderController.loadPcapBinary(packet);
         }
     }
     
@@ -473,7 +465,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         prevStreamBtn.setDisable((currentSelectedProfileIndex == 0));
     }
 
-    private void loadStream() {
+    private void loadStream() throws IOException {
         resetTabs();
         streamTabPane.getSelectionModel().select(streamPropertiesTab);
         selectedProfile = profileList.get(currentSelectedProfileIndex);
