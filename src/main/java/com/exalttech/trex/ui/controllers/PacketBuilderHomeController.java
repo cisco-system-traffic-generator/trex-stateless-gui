@@ -300,10 +300,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         isImportedStreamProperty.setValue(false);
         isBuildPacket = true;
         String packetEditorModel = selectedProfile.getStream().getPacket().getModel();
+        this.builderDataBinder = builderDataBinder;
         if (!Strings.isNullOrEmpty(packetEditorModel)) {
             packetBuilderController.loadUserModel(packetEditorModel);
+        } else {
+            packetBuilderController.loadSimpleUserModel(this.builderDataBinder.serializeAsPacketModel());
         }
-        this.builderDataBinder = builderDataBinder;
         // initialize builder tabs
         protocolSelectionController.bindSelections(builderDataBinder.getProtocolSelection());
         protocolDataController.bindSelection(builderDataBinder);
