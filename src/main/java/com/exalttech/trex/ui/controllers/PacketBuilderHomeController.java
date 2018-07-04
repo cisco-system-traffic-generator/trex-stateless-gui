@@ -15,7 +15,6 @@
  */
 package com.exalttech.trex.ui.controllers;
 
-import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -119,11 +118,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private PacketInfo packetInfo = null;
     private PacketParser parser;
     private PacketHex packetHex;
-    private Profile selectedProfile;
     private boolean isBuildPacket = false;
     private List<Profile> profileList;
     private String yamlFileName;
-    private int currentSelectedProfileIndex;
+    private int currentProfileIndex;
     private BuilderDataBinding builderDataBinder;
     private TrafficProfile trafficProfile;
     private BooleanProperty isImportedStreamProperty = new SimpleBooleanProperty(false);
@@ -139,17 +137,16 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     public boolean initStreamBuilder(List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) throws Exception {
-        selectedProfile = profileList.get(selectedProfileIndex);
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
-        currentSelectedProfileIndex = selectedProfileIndex;
+        currentProfileIndex = selectedProfileIndex;
 
-        if (selectedProfile.getStream().getAdvancedMode() && !ConnectionManager.getInstance().isScapyConnected()) {
+        if (getSelectedProfile().getStream().getAdvancedMode() && !ConnectionManager.getInstance().isScapyConnected()) {
             SelectedEditMode action = prepareToAdvancedMode();
             if (action == SelectedEditMode.Cancel) {
                 return false;
             } else {
-                selectedProfile.getStream().setAdvancedMode(action == SelectedEditMode.Advanced);
+                getSelectedProfile().getStream().setAdvancedMode(action == SelectedEditMode.Advanced);
             }
         }
 
@@ -159,7 +156,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
         switch (type) {
             case BUILD_STREAM:
-                streamEditorModeBtn.setText(selectedProfile.getStream().getAdvancedMode() ? "Simple mode" : "Advanced mode");
+                streamEditorModeBtn.setText(getSelectedProfile().getStream().getAdvancedMode() ? "Simple mode" : "Advanced mode");
                 initStreamBuilder(new BuilderDataBinding());
                 break;
             case EDIT_STREAM:
@@ -169,7 +166,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 break;
         }
 
-        if (selectedProfile.getStream().getAdvancedMode()) {
+        if (getSelectedProfile().getStream().getAdvancedMode()) {
             showAdvancedModeTabs();
         } else {
             showSimpleModeTabs();
@@ -219,7 +216,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.setDisable(false);
         saveButton.setDisable(false);
         streamEditorModeBtn.setDisable(false);
-        Stream currentStream = selectedProfile.getStream();
+        Stream currentStream = getSelectedProfile().getStream();
         streamEditorModeBtn.setText(currentStream.getAdvancedMode() ? "Simple mode" : "Advanced mode");
         if (!Util.isNullOrEmpty(currentStream.getPacket().getMeta())) {
             BuilderDataBinding dataBinding = getDataBinding();
@@ -263,10 +260,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             packetBuilderController.loadPcapBinary(packet);
         }
     }
-    
+
     private BuilderDataBinding getDataBinding() {
-        String meta = selectedProfile.getStream().getPacket().getMeta();
-        boolean emptyMeta = meta == null; 
+        String meta = getSelectedProfile().getStream().getPacket().getMeta();
+        boolean emptyMeta = meta == null;
         isImportedStreamProperty.setValue(emptyMeta);
         if (emptyMeta) {
             return null;
@@ -300,7 +297,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void initStreamBuilder(BuilderDataBinding builderDataBinder) {
         isImportedStreamProperty.setValue(false);
         isBuildPacket = true;
-        String packetEditorModel = selectedProfile.getStream().getPacket().getModel();
+        String packetEditorModel = getSelectedProfile().getStream().getPacket().getModel();
         this.builderDataBinder = builderDataBinder;
         if (!Strings.isNullOrEmpty(packetEditorModel)) {
             packetBuilderController.loadUserModel(packetEditorModel);
@@ -407,14 +404,14 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @FXML
     public void nextStreamBtnClicked(ActionEvent event) {
         nextStreamBtn.setDisable(true);
-        loadProfile(true);
+        switchProfile(true);
     }
 
 
     @FXML
     public void prevStreamBtnClick(ActionEvent event) {
         prevStreamBtn.setDisable(true);
-        loadProfile(false);
+        switchProfile(false);
     }
 
     @FXML
@@ -434,12 +431,12 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         stage.hide();
     }
 
-    private void loadProfile(boolean isNext) {
+    private void switchProfile(boolean isNext) {
         try {
             Util.optimizeMemory();
             updateCurrentProfile();
             if (streamPropertiesController.isValidStreamPropertiesFields()) {
-                int nextProfileIndex = this.currentSelectedProfileIndex + (isNext? 1 : -1);
+                int nextProfileIndex = this.currentProfileIndex + (isNext? 1 : -1);
                 Stream nextStream = profileList.get(nextProfileIndex).getStream();
                 if (nextStream.getAdvancedMode()) {
                     if (!ConnectionManager.getInstance().isScapyConnected()) {
@@ -451,7 +448,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                         }
                     }
                 }
-                this.currentSelectedProfileIndex = nextProfileIndex;
+                this.currentProfileIndex = nextProfileIndex;
                 loadStream();
             }
         } catch (Exception ex) {
@@ -473,21 +470,20 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     private void updateNextPrevButtonState() {
-        nextStreamBtn.setDisable((currentSelectedProfileIndex >= profileList.size() - 1));
-        prevStreamBtn.setDisable((currentSelectedProfileIndex == 0));
+        nextStreamBtn.setDisable((currentProfileIndex >= profileList.size() - 1));
+        prevStreamBtn.setDisable((currentProfileIndex == 0));
     }
 
     private void loadStream() throws IOException {
         resetTabs();
         streamTabPane.getSelectionModel().select(streamPropertiesTab);
-        selectedProfile = profileList.get(currentSelectedProfileIndex);
-        Stream currentStream = selectedProfile.getStream();
-        String windowTitle = "Edit Stream (" + selectedProfile.getName() + ")";
+        Stream currentStream = getSelectedProfile().getStream();
+        String windowTitle = "Edit Stream (" + getSelectedProfile().getName() + ")";
         // update window title
         Stage stage = (Stage) streamTabPane.getScene().getWindow();
         stage.setTitle(windowTitle);
 
-        streamPropertiesController.init(profileList, currentSelectedProfileIndex);
+        streamPropertiesController.init(profileList, currentProfileIndex);
         initEditStream();
         if (currentStream.getAdvancedMode()) {
             showAdvancedModeTabs();
@@ -497,27 +493,27 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     private void updateCurrentProfile() throws Exception {
-        selectedProfile = streamPropertiesController.getUpdatedSelectedProfile();
+        profileList.set(currentProfileIndex, streamPropertiesController.getUpdatedSelectedProfile());
         String hexPacket = null;
         if (packetHex != null && !isBuildPacket) {
             hexPacket = packetHex.getPacketHexFromList();
         } else if (isBuildPacket) {
             hexPacket = PacketBuilderHelper.getPacketHex(protocolDataController.getProtocolData().getPacket().getRawData());
-            selectedProfile.getStream().setAdditionalProperties(protocolDataController.getVm(advancedSettingsController.getCacheSize()));
-            selectedProfile.getStream().setFlags(protocolDataController.getFlagsValue());
+            getSelectedProfile().getStream().setAdditionalProperties(protocolDataController.getVm(advancedSettingsController.getCacheSize()));
+            getSelectedProfile().getStream().setFlags(protocolDataController.getFlagsValue());
 
             // save stream selected in stream property
             final String metaJSON = new ObjectMapper().writeValueAsString(builderDataBinder);
             final String encodedMeta = Base64.getEncoder().encodeToString(metaJSON.getBytes());
-            selectedProfile.getStream().getPacket().setMeta(encodedMeta);
+            getSelectedProfile().getStream().getPacket().setMeta(encodedMeta);
         }
         String encodedBinaryPacket = trafficProfile.encodeBinaryFromHexString(hexPacket);
-        Packet packet = selectedProfile.getStream().getPacket();
-        
-        if (selectedProfile.getStream().getAdvancedMode()) {
+        Packet packet = getSelectedProfile().getStream().getPacket();
+
+        if (getSelectedProfile().getStream().getAdvancedMode()) {
             packet.setBinary(packetBuilderController.getModel().getPkt().binary);
             packet.setModel(packetBuilderController.getModel().serialize());
-            selectedProfile.getStream().setAdditionalProperties(packetBuilderController.getPktVmInstructions());
+            getSelectedProfile().getStream().setAdditionalProperties(packetBuilderController.getPktVmInstructions());
         } else {
             packet.setBinary(encodedBinaryPacket);
             packet.setModel("");
@@ -532,6 +528,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @Override
     public void onEscapKeyPressed() {
         // ignoring global escape
+    }
+
+    private Profile getSelectedProfile() {
+        return this.profileList.get(this.currentProfileIndex);
     }
 
     private boolean alertWarning(String header, String content) {
