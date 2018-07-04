@@ -65,12 +65,6 @@ import com.exalttech.trex.util.Util;
 public class PacketBuilderHomeController extends DialogView implements Initializable {
     private static final Logger LOG = Logger.getLogger(PacketBuilderHomeController.class.getName());
 
-    private enum SelectedEditMode {
-        Cancel,
-        Advanced,
-        Simple
-    }
-
     @FXML
     private AnchorPane hexPane;
     @FXML
@@ -138,25 +132,19 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
     public boolean initStreamBuilder(List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) throws Exception {
         this.profileList = profileList;
+        this.currentProfileIndex = selectedProfileIndex;
         this.yamlFileName = yamlFileName;
-        currentProfileIndex = selectedProfileIndex;
 
-        if (getSelectedProfile().getStream().getAdvancedMode() && !ConnectionManager.getInstance().isScapyConnected()) {
-            SelectedEditMode action = prepareToAdvancedMode();
-            if (action == SelectedEditMode.Cancel) {
-                return false;
-            } else {
-                getSelectedProfile().getStream().setAdvancedMode(action == SelectedEditMode.Advanced);
-            }
+        if (!prepareToAdvancedIfNecessary()) {
+            return false;
         }
 
         packetBuilderController.reset();
         streamPropertiesController.init(profileList, selectedProfileIndex);
         updateNextPrevButtonState();
-
+        updateEditorModeButton();
         switch (type) {
             case BUILD_STREAM:
-                streamEditorModeBtn.setText(getSelectedProfile().getStream().getAdvancedMode() ? "Simple mode" : "Advanced mode");
                 initStreamBuilder(new BuilderDataBinding());
                 break;
             case EDIT_STREAM:
@@ -175,7 +163,31 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         return true;
     }
 
-    private SelectedEditMode prepareToAdvancedMode() {
+    private boolean prepareToAdvancedIfNecessary() {
+        return prepareToAdvancedIfNecessary(this.currentProfileIndex);
+    }
+    /**
+     * The method prepares GUI to work with advanced mode if it is necessary
+     * if stream by profileIndex is in Simple mode, just returns true
+     * if stream by profileIndex is in Advanced mode and Scapy is connected, also returns true
+     * if Scapy is not connected, user decides either switch to Simple mode,
+     * or to try to connect or to cancel editing.
+     * In case of Simple mode selected by user, stream by profileIndex is switched to Simple mode
+     * @return
+     */
+    private boolean prepareToAdvancedIfNecessary(int profileIndex) {
+        Stream stream = this.profileList.get(profileIndex).getStream();
+
+        if (!stream.getAdvancedMode()) { // Simple mode, just return, we don't need Scapy
+            return true;
+        }
+
+        if (ConnectionManager.getInstance().isScapyConnected()) { // Advanced, and Scapy is connected, ok
+            return true;
+        }
+
+        // Need advanced mode, but Scapy isn't connected
+
         String warningText = "There is no connection to Scapy server\n" +
                 "Please, refer to documentation about\n" +
                 "Scapy server and advanced mode.";
@@ -193,15 +205,17 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                     .showAndWait();
 
             if (!userSelection.isPresent() || userSelection.get().equals(ButtonType.CANCEL)) {
-                return SelectedEditMode.Cancel;
+                return false;
             } else if (userSelection.get().equals(continueSimple)) {
-                return SelectedEditMode.Simple;
+                stream.setAdvancedMode(false);
+                return true;
             }
 
             eventBus.post(new ScapyClientNeedConnectEvent()); // trying to connect
 
             if (ConnectionManager.getInstance().isScapyConnected()) {
-                return SelectedEditMode.Advanced;
+                stream.setAdvancedMode(true);
+                return true;
             }
 
             TrexAlertBuilder.build()
@@ -217,7 +231,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         saveButton.setDisable(false);
         streamEditorModeBtn.setDisable(false);
         Stream currentStream = getSelectedProfile().getStream();
-        streamEditorModeBtn.setText(currentStream.getAdvancedMode() ? "Simple mode" : "Advanced mode");
+        updateEditorModeButton();
         if (!Util.isNullOrEmpty(currentStream.getPacket().getMeta())) {
             BuilderDataBinding dataBinding = getDataBinding();
             if (dataBinding != null) {
@@ -344,12 +358,18 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.getTabs().addAll(streamPropertiesTab, packetEditorTab, fieldEngineTab);
     }
 
-    private boolean saveStream() {
+    private boolean saveProfile() {
         try {
             String fieldEngineError = packetBuilderController.getFieldEngineError();
             if (!Strings.isNullOrEmpty(fieldEngineError))  {
                 streamTabPane.getSelectionModel().select(fieldEngineTab);
-                LOG.error("Unable to save stream due to errors in Field Engine:" + fieldEngineError);
+                String fieldEngineMessage = "Unable to save stream due to errors in Field Engine: " + fieldEngineError;
+                TrexAlertBuilder.build()
+                        .setType(Alert.AlertType.ERROR)
+                        .setContent(fieldEngineMessage)
+                        .getAlert()
+                        .showAndWait();
+                LOG.error(fieldEngineMessage);
                 return false;
             }
             updateCurrentProfile();
@@ -367,23 +387,16 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
     @FXML
     public void switchEditorMode(ActionEvent event) throws Exception {
-        Stream currentStream = streamPropertiesController.getUpdatedSelectedProfile().getStream();
-        boolean advancedMode = currentStream.getAdvancedMode();
+        Stream currentStream = getSelectedProfile().getStream();
+        boolean isAdvanced  = currentStream.getAdvancedMode();
+        currentStream.setAdvancedMode(!isAdvanced);
 
+        if(!prepareToAdvancedIfNecessary()) {
+            currentStream.setAdvancedMode(isAdvanced);
+            return;
+        }
         try {
-            if (advancedMode) {
-                streamEditorModeBtn.setText("Advanced mode");
-                currentStream.setAdvancedMode(false);
-                showSimpleModeTabs();
-            } else {
-                if (!ConnectionManager.getInstance().isScapyConnected()) {
-                    SelectedEditMode userSelection = prepareToAdvancedMode();
-
-                    if (userSelection == SelectedEditMode.Cancel || userSelection == SelectedEditMode.Simple) {
-                        return;
-                    }
-                }
-
+            if (currentStream.getAdvancedMode()) {
                 if (isImportedStreamProperty.getValue()) {
                     byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
                     byte[] packet = Base64.getDecoder().decode(base64Packet);
@@ -391,14 +404,20 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 } else {
                     packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
                 }
-                streamEditorModeBtn.setText("Simple mode");
-                currentStream.setAdvancedMode(true);
                 showAdvancedModeTabs();
+            } else {
+                showSimpleModeTabs();
             }
+
+            updateEditorModeButton();
         } catch (Exception e) {
             LOG.error("Unable to open advanced mode due to: " + e.getMessage());
             alertWarning("Can't open Advanced mode", "Some errors occurred. See logs for more details.");
         }
+    }
+
+    private void updateEditorModeButton() {
+        streamEditorModeBtn.setText(getSelectedProfile().getStream().getAdvancedMode() ? "Simple mode" : "Advanced mode");
     }
 
     @FXML
@@ -416,7 +435,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
     @FXML
     public void saveProfileBtnClicked(ActionEvent event) {
-        if (saveStream()) {
+        if (saveProfile()) {
             // close the dialog
             Node node = (Node) event.getSource();
             Stage stage = (Stage) node.getScene().getWindow();
@@ -437,16 +456,8 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             updateCurrentProfile();
             if (streamPropertiesController.isValidStreamPropertiesFields()) {
                 int nextProfileIndex = this.currentProfileIndex + (isNext? 1 : -1);
-                Stream nextStream = profileList.get(nextProfileIndex).getStream();
-                if (nextStream.getAdvancedMode()) {
-                    if (!ConnectionManager.getInstance().isScapyConnected()) {
-                        SelectedEditMode action = prepareToAdvancedMode();
-                        if (action == SelectedEditMode.Cancel) {
-                            return;
-                        } else {
-                            nextStream.setAdvancedMode(action == SelectedEditMode.Advanced);
-                        }
-                    }
+                if (!prepareToAdvancedIfNecessary(nextProfileIndex)) {
+                    return;
                 }
                 this.currentProfileIndex = nextProfileIndex;
                 loadStream();
