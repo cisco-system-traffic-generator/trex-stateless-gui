@@ -138,7 +138,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         parser = new PacketParser();
     }
 
-    public boolean initStreamBuilder(String pcapFileBinary, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) throws Exception {
+    public boolean initStreamBuilder(List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) throws Exception {
         selectedProfile = profileList.get(selectedProfileIndex);
         this.profileList = profileList;
         this.yamlFileName = yamlFileName;
@@ -163,7 +163,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 initStreamBuilder(new BuilderDataBinding());
                 break;
             case EDIT_STREAM:
-                initEditStream(pcapFileBinary);
+                initEditStream();
                 break;
             default:
                 break;
@@ -215,7 +215,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         }
     }
 
-    private void initEditStream(String pcapFileBinary) throws IOException {
+    private void initEditStream() throws IOException {
         streamTabPane.setDisable(false);
         saveButton.setDisable(false);
         streamEditorModeBtn.setDisable(false);
@@ -243,11 +243,11 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             streamTabPane.getTabs().remove(packetEditorTab);
             streamTabPane.getTabs().remove(fieldEngineTab);
         }
-        
-        if (pcapFileBinary != null) {
+
+        if (currentStream.getPacket().getBinary() != null) {
             try {
                 isBuildPacket = false;
-                File pcapFile = trafficProfile.decodePcapBinary(pcapFileBinary);
+                File pcapFile = trafficProfile.decodePcapBinary(currentStream.getPacket().getBinary());
                 parser.parseFile(pcapFile.getAbsolutePath(), packetInfo);
                 packetHex.setData(packetInfo);
             } catch (IOException ex) {
@@ -257,7 +257,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         String base64UserModel = currentStream.getPacket().getModel();
         if (!Strings.isNullOrEmpty(base64UserModel)) {
             packetBuilderController.loadUserModel(base64UserModel);
-        } else {
+        } else if (currentStream.getAdvancedMode()) {
             byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
             byte[] packet = Base64.getDecoder().decode(base64Packet);
             packetBuilderController.loadPcapBinary(packet);
@@ -439,11 +439,19 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             Util.optimizeMemory();
             updateCurrentProfile();
             if (streamPropertiesController.isValidStreamPropertiesFields()) {
-                if (isNext) {
-                    this.currentSelectedProfileIndex += 1;
-                } else {
-                    this.currentSelectedProfileIndex -= 1;
+                int nextProfileIndex = this.currentSelectedProfileIndex + (isNext? 1 : -1);
+                Stream nextStream = profileList.get(nextProfileIndex).getStream();
+                if (nextStream.getAdvancedMode()) {
+                    if (!ConnectionManager.getInstance().isScapyConnected()) {
+                        SelectedEditMode action = prepareToAdvancedMode();
+                        if (action == SelectedEditMode.Cancel) {
+                            return;
+                        } else {
+                            nextStream.setAdvancedMode(action == SelectedEditMode.Advanced);
+                        }
+                    }
                 }
+                this.currentSelectedProfileIndex = nextProfileIndex;
                 loadStream();
             }
         } catch (Exception ex) {
@@ -480,7 +488,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         stage.setTitle(windowTitle);
 
         streamPropertiesController.init(profileList, currentSelectedProfileIndex);
-        initEditStream(currentStream.getPacket().getBinary());
+        initEditStream();
         if (currentStream.getAdvancedMode()) {
             showAdvancedModeTabs();
         } else {

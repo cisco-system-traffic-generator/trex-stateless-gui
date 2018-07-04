@@ -632,7 +632,6 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             PacketBuilderHomeController controller = (PacketBuilderHomeController) srteamWindow.getController();
 
             boolean streaminited = controller.initStreamBuilder(
-                    data.getPcapBinary(),
                     tabledata.getProfiles(),
                     streamPacketTableView.getSelectionModel().getSelectedIndex(),
                     tabledata.getYamlFileName(),
