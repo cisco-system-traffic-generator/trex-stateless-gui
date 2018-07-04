@@ -201,7 +201,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 return SelectedEditMode.Simple;
             }
 
-            eventBus.post(new ScapyClientNeedConnectEvent());
+            eventBus.post(new ScapyClientNeedConnectEvent()); // trying to connect
 
             if (ConnectionManager.getInstance().isScapyConnected()) {
                 return SelectedEditMode.Advanced;
@@ -347,23 +347,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.getTabs().addAll(streamPropertiesTab, packetEditorTab, fieldEngineTab);
     }
 
-    @FXML
-    public void handleCloseDialog(final MouseEvent event) {
-        Node node = (Node) event.getSource();
-        Stage stage = (Stage) node.getScene().getWindow();
-        stage.hide();
-    }
-
-    @FXML
-    public void saveProfileBtnClicked(ActionEvent event) {
-        if (saveStream()) {
-            // close the dialog
-            Node node = (Node) event.getSource();
-            Stage stage = (Stage) node.getScene().getWindow();
-            stage.hide();
-        }
-    }
-
     private boolean saveStream() {
         try {
             String fieldEngineError = packetBuilderController.getFieldEngineError();
@@ -383,12 +366,6 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             LOG.error("Error Saving yaml file", ex);
         }
         return false;
-    }
-
-    @FXML
-    public void nextStreamBtnClicked(ActionEvent event) {
-        nextStreamBtn.setDisable(true);
-        loadProfile(true);
     }
 
     @FXML
@@ -428,9 +405,33 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     @FXML
+    public void nextStreamBtnClicked(ActionEvent event) {
+        nextStreamBtn.setDisable(true);
+        loadProfile(true);
+    }
+
+
+    @FXML
     public void prevStreamBtnClick(ActionEvent event) {
         prevStreamBtn.setDisable(true);
         loadProfile(false);
+    }
+
+    @FXML
+    public void saveProfileBtnClicked(ActionEvent event) {
+        if (saveStream()) {
+            // close the dialog
+            Node node = (Node) event.getSource();
+            Stage stage = (Stage) node.getScene().getWindow();
+            stage.hide();
+        }
+    }
+
+    @FXML
+    public void handleCloseDialog(final MouseEvent event) {
+        Node node = (Node) event.getSource();
+        Stage stage = (Stage) node.getScene().getWindow();
+        stage.hide();
     }
 
     private void loadProfile(boolean isNext) {

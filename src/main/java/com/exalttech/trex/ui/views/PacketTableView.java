@@ -630,20 +630,14 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 srteamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
             }
             PacketBuilderHomeController controller = (PacketBuilderHomeController) srteamWindow.getController();
-            boolean streaminited = false;
-            switch (type) {
-                case EDIT_STREAM:
-                    streaminited = controller.initStreamBuilder(data.getPcapBinary(), tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.EDIT_STREAM);
-                    break;
-                case ADD_STREAM:
-                    streaminited = controller.initStreamBuilder(null, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.ADD_STREAM);
-                    break;
-                case BUILD_STREAM:
-                    streaminited = controller.initStreamBuilder(null, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.BUILD_STREAM);
-                    break;
-                default:
-                    break;
-            }
+
+            boolean streaminited = controller.initStreamBuilder(
+                    data.getPcapBinary(),
+                    tabledata.getProfiles(),
+                    streamPacketTableView.getSelectionModel().getSelectedIndex(),
+                    tabledata.getYamlFileName(),
+                    type
+            );
 
             if (streaminited) {
                 srteamWindow.show(true);
