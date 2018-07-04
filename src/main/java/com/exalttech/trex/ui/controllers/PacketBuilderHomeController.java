@@ -159,6 +159,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
 
         switch (type) {
             case BUILD_STREAM:
+                streamEditorModeBtn.setText(selectedProfile.getStream().getAdvancedMode() ? "Simple mode" : "Advanced mode");
                 initStreamBuilder(new BuilderDataBinding());
                 break;
             case EDIT_STREAM:
