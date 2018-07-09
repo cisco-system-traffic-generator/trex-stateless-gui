@@ -36,6 +36,12 @@ sourceSets {
     }
 }
 
+test {
+    testLogging {
+        events "passed", "skipped" , "failed"
+    }
+}
+
 task uiTest(type: Test) {
     description 'Runs UI testing(E2E)'
     outputs.upToDateWhen { false }
