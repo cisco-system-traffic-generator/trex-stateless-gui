@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.gson.Gson;
 import javafx.stage.Window;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -191,7 +192,9 @@ public class TrafficProfile {
 
             Map<String, Object> streamAdditionalProperties = profile.getStream().getAdditionalProperties();
             if (streamAdditionalProperties.containsKey("vm")) {
-                profile.getStream().setVmRaw(streamAdditionalProperties.get("vm").toString());
+                Gson gson = new Gson();
+                Object vm = streamAdditionalProperties.get("vm");
+                profile.getStream().setVmRaw(gson.toJson(vm));
             }
             if (streamAdditionalProperties.containsKey("rx_stats")) {
                 profile.getStream().setRxStatsRaw(streamAdditionalProperties.get("rx_stats").toString());
