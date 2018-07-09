@@ -355,7 +355,10 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
                 serverStatusLabel.setText("Connected");
                 serverStatusIcon.setImage(new Image("/icons/connectedIcon.gif"));
-                connectIcon.getStyleClass().add("disconnectIcon");
+                String disconnectIconStyle = "disconnectIcon";
+                if (!connectIcon.getStyleClass().contains(disconnectIconStyle)) {
+                    connectIcon.getStyleClass().add(disconnectIconStyle);
+                }
                 connectDixconnectTooltip.setText("Disconnect from TRex server");
                 connectMenuItem.setText(DISCONNECT_MENU_ITEM_TITLE);
                 statsMenuItem.setDisable(false);

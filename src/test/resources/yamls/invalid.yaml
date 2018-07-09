@@ -1,0 +1,8 @@
+- there: "in this yaml"
+  are:
+    - invalid_field: 1
+    - invalid_field: 2
+    - invalid_field: 3
+  some: 5
+  invalid: "totally"
+  fields: "that's it"

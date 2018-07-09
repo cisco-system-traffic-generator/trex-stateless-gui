@@ -16,14 +16,10 @@
 package com.exalttech.trex.remote.models.profiles;
 
 import com.exalttech.trex.util.Util;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +28,6 @@ import java.util.Map;
  * @author GeorgeKh
  */
 @JsonInclude(Include.NON_NULL)
-
 @JsonPropertyOrder({"action_count", "enabled", "flags", "flow_stats", "isg", "mode", "next_stream_id", "packet", "self_start"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 
@@ -63,7 +58,7 @@ public class Stream implements Cloneable {
     private int actionCount = 0;
 
     @JsonProperty("advanced_mode")
-    private boolean advancedMode;
+    private boolean advancedMode = true;
     
     @JsonIgnore
     private FlowStats flowStats;
@@ -75,6 +70,15 @@ public class Stream implements Cloneable {
     private String rxStatsRaw = "";
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @JsonCreator
+    public Stream(
+            @JsonProperty(value="mode", required=true) Mode mode,
+            @JsonProperty(value="packet", required=true) Packet packet
+            ) {
+        this.mode = mode;
+        this.packet = packet;
+    }
 
     /**
      *

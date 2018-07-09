@@ -455,8 +455,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
             valid = false;
         } else {
             double timeInloop = Double.parseDouble(timeInLoopTF.getText());
-            if (timeInLoopCB.isSelected() && (timeInloop <= 0 || timeInloop > 64000)) {
-                errMsg = "Time in loop should be between > 0 and < 64K";
+            if (timeInLoopCB.isSelected() && (timeInloop <= 0)) {
+                errMsg = "Time in loop should be more than 0";
                 valid = false;
             }
         }
@@ -509,6 +509,8 @@ public class StreamPropertiesViewController implements Initializable, EventHandl
             }
 
             profile.getStream().setActionCount(Integer.parseInt(timeInLoopTF.getText()));
+        } else {
+            profile.getStream().setActionCount(0);
         }
     }
 

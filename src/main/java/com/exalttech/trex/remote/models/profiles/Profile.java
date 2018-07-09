@@ -17,13 +17,8 @@ package com.exalttech.trex.remote.models.profiles;
 
 import com.exalttech.trex.remote.models.params.Params;
 import com.exalttech.trex.util.Util;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +27,6 @@ import java.util.Map;
  * @author GeorgeKh
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 @JsonPropertyOrder({"name", "next", "stream", "stream_id"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Profile extends Params implements Cloneable {
@@ -56,6 +50,17 @@ public class Profile extends Params implements Cloneable {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    @JsonCreator
+    public Profile(
+            @JsonProperty(value="name", required = true) String name,
+            @JsonProperty(value="stream", required = true) Stream stream,
+            @JsonProperty(value="stream_id", required = true) int streamId
+
+    ) {
+        this.name = name;
+        this.stream = stream;
+        this.streamId = streamId;
+    }
     /**
      *
      */

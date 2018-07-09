@@ -34,9 +34,5 @@ public enum StreamBuilderType {
     /**
      *
      */
-    ADD_STREAM,
-    /**
-     *
-     */
     BUILD_STREAM;
 }

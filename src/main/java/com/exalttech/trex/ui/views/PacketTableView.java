@@ -302,6 +302,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         tabledata.getStreamsList().add(newRow);
         Profile newProfile = new Profile();
         newProfile.setName(streamName);
+        newProfile.setStreamId(getNewId());
         tabledata.getProfiles().add(newProfile);
         streamPacketTableView.setItems(FXCollections.observableArrayList(tabledata.getStreamsList()));
         streamPacketTableView.getSelectionModel().select(newRow);
@@ -420,6 +421,20 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         return profileName + "_" + availableSuffix;
     }
 
+    private Integer getNewId() {
+        List<Profile> profiles = tabledata.getProfiles();
+        Set<Integer> profileIds = profiles.stream()
+                .map(Profile::getStreamId)
+                .collect(Collectors.toSet());
+
+        int availableId = 0;
+        while (profileIds.contains(availableId)) {
+            ++availableId;
+        }
+
+        return availableId;
+    }
+
     private void duplicateProfiles(List<Profile> newProfiles) {
         try{
             List<Profile> profiles = tabledata.getProfiles();
@@ -427,6 +442,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             for (Profile profile : newProfiles) {
                 Profile clonedProfile = (Profile) profile.clone();
                 clonedProfile.setName(getNewName(profile.getName(), profiles));
+                clonedProfile.setStreamId(getNewId());
                 profiles.add(clonedProfile);
             }
 
@@ -614,20 +630,13 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 srteamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
             }
             PacketBuilderHomeController controller = (PacketBuilderHomeController) srteamWindow.getController();
-            boolean streaminited = false;
-            switch (type) {
-                case EDIT_STREAM:
-                    streaminited = controller.initStreamBuilder(data.getPcapBinary(), tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.EDIT_STREAM);
-                    break;
-                case ADD_STREAM:
-                    streaminited = controller.initStreamBuilder(null, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.ADD_STREAM);
-                    break;
-                case BUILD_STREAM:
-                    streaminited = controller.initStreamBuilder(null, tabledata.getProfiles(), streamPacketTableView.getSelectionModel().getSelectedIndex(), tabledata.getYamlFileName(), StreamBuilderType.BUILD_STREAM);
-                    break;
-                default:
-                    break;
-            }
+
+            boolean streaminited = controller.initStreamBuilder(
+                    tabledata.getProfiles(),
+                    streamPacketTableView.getSelectionModel().getSelectedIndex(),
+                    tabledata.getYamlFileName(),
+                    type
+            );
 
             if (streaminited) {
                 srteamWindow.show(true);
@@ -635,7 +644,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             else {
                 LOG.error("Error while initing editor dialog");
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOG.error("Error opening file", ex);
         }
     }

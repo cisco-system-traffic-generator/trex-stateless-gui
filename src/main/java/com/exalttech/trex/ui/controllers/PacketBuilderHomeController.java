@@ -40,9 +40,7 @@ import com.google.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Base64;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -114,11 +112,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private PacketInfo packetInfo = null;
     private PacketParser parser;
     private PacketHex packetHex;
-    private Profile selectedProfile;
     private boolean isBuildPacket = false;
     private List<Profile> profileList;
     private String yamlFileName;
-    private int currentSelectedProfileIndex;
+    private int currentProfileIndex;
     private BuilderDataBinding builderDataBinder;
     private TrafficProfile trafficProfile;
     private BooleanProperty isImportedStreamProperty = new SimpleBooleanProperty(false);
@@ -133,61 +130,108 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         parser = new PacketParser();
     }
 
-    public boolean initStreamBuilder(String pcapFileBinary, List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) {
-        selectedProfile = profileList.get(selectedProfileIndex);
+    public boolean initStreamBuilder(List<Profile> profileList, int selectedProfileIndex, String yamlFileName, StreamBuilderType type) throws Exception {
         this.profileList = profileList;
+        this.currentProfileIndex = selectedProfileIndex;
         this.yamlFileName = yamlFileName;
-        currentSelectedProfileIndex = selectedProfileIndex;
-        
-        if (selectedProfile.getStream().getAdvancedMode()
-                && !ConnectionManager.getInstance().isScapyConnected()) {
-            boolean loop = true;
-            while (loop) {
-                eventBus.post(new ScapyClientNeedConnectEvent());
-                if (ConnectionManager.getInstance().isScapyConnected()) {
-                    loop = false;
-                }
-                else {
-                    loop = alertWarning("Can't open packet editor in Advanced mode",
-                            "There is no connection to Scapy server."
-                                    + "\nPlease refer to documentation about"
-                                    + "\nScapy server and advanced mode.");
-                }
-            }
-            if (!ConnectionManager.getInstance().isScapyConnected()) {
-                return false;
-            }
+
+        if (!prepareToAdvancedIfNecessary()) {
+            return false;
         }
 
         packetBuilderController.reset();
         streamPropertiesController.init(profileList, selectedProfileIndex);
         updateNextPrevButtonState();
+        updateEditorModeButton();
         switch (type) {
             case BUILD_STREAM:
                 initStreamBuilder(new BuilderDataBinding());
-                showSimpleModeTabs();
                 break;
             case EDIT_STREAM:
-                initEditStream(pcapFileBinary);
-                if(selectedProfile.getStream().getAdvancedMode()) {
-                    showAdvancedModeTabs();
-                } else {
-                    showSimpleModeTabs();
-                }
+                initEditStream();
                 break;
             default:
                 break;
         }
 
+        if (getSelectedProfile().getStream().getAdvancedMode()) {
+            showAdvancedModeTabs();
+        } else {
+            showSimpleModeTabs();
+        }
+
         return true;
     }
 
-    private void initEditStream(String pcapFileBinary) {
+    private boolean prepareToAdvancedIfNecessary() {
+        return prepareToAdvancedIfNecessary(this.currentProfileIndex);
+    }
+    /**
+     * The method prepares GUI to work with advanced mode if it is necessary
+     * if stream by profileIndex is in Simple mode, just returns true
+     * if stream by profileIndex is in Advanced mode and Scapy is connected, also returns true
+     * if Scapy is not connected, user decides either switch to Simple mode,
+     * or to try to connect or to cancel editing.
+     * In case of Simple mode selected by user, stream by profileIndex is switched to Simple mode
+     * @return
+     */
+    private boolean prepareToAdvancedIfNecessary(int profileIndex) {
+        Stream stream = this.profileList.get(profileIndex).getStream();
+
+        if (!stream.getAdvancedMode()) { // Simple mode, just return, we don't need Scapy
+            return true;
+        }
+
+        if (ConnectionManager.getInstance().isScapyConnected()) { // Advanced, and Scapy is connected, ok
+            return true;
+        }
+
+        // Need advanced mode, but Scapy isn't connected
+
+        String warningText = "There is no connection to Scapy server\n" +
+                "Please, refer to documentation about\n" +
+                "Scapy server and advanced mode.";
+
+        ButtonType tryConnect = new ButtonType("Connect", ButtonBar.ButtonData.YES);
+        ButtonType continueSimple = new ButtonType("Simple Mode");
+
+        while (true) {
+            Optional<ButtonType> userSelection = TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.WARNING)
+                    .setHeader("Scapy server connection required")
+                    .setContent(warningText)
+                    .setButtons(tryConnect, continueSimple, ButtonType.CANCEL)
+                    .getAlert()
+                    .showAndWait();
+
+            if (!userSelection.isPresent() || userSelection.get().equals(ButtonType.CANCEL)) {
+                return false;
+            } else if (userSelection.get().equals(continueSimple)) {
+                stream.setAdvancedMode(false);
+                return true;
+            }
+
+            eventBus.post(new ScapyClientNeedConnectEvent()); // trying to connect
+
+            if (ConnectionManager.getInstance().isScapyConnected()) {
+                stream.setAdvancedMode(true);
+                return true;
+            }
+
+            TrexAlertBuilder.build()
+                    .setType(Alert.AlertType.ERROR)
+                    .setContent("Connection to Scapy server failed.")
+                    .getAlert()
+                    .showAndWait();
+        }
+    }
+
+    private void initEditStream() throws IOException {
         streamTabPane.setDisable(false);
         saveButton.setDisable(false);
         streamEditorModeBtn.setDisable(false);
-        Stream currentStream = selectedProfile.getStream();
-        streamEditorModeBtn.setText(currentStream.getAdvancedMode() ? "Simple mode" : "Advanced mode");
+        Stream currentStream = getSelectedProfile().getStream();
+        updateEditorModeButton();
         if (!Util.isNullOrEmpty(currentStream.getPacket().getMeta())) {
             BuilderDataBinding dataBinding = getDataBinding();
             if (dataBinding != null) {
@@ -210,11 +254,11 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             streamTabPane.getTabs().remove(packetEditorTab);
             streamTabPane.getTabs().remove(fieldEngineTab);
         }
-        
-        if (pcapFileBinary != null) {
+
+        if (currentStream.getPacket().getBinary() != null) {
             try {
                 isBuildPacket = false;
-                File pcapFile = trafficProfile.decodePcapBinary(pcapFileBinary);
+                File pcapFile = trafficProfile.decodePcapBinary(currentStream.getPacket().getBinary());
                 parser.parseFile(pcapFile.getAbsolutePath(), packetInfo);
                 packetHex.setData(packetInfo);
             } catch (IOException ex) {
@@ -224,12 +268,16 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         String base64UserModel = currentStream.getPacket().getModel();
         if (!Strings.isNullOrEmpty(base64UserModel)) {
             packetBuilderController.loadUserModel(base64UserModel);
+        } else if (currentStream.getAdvancedMode()) {
+            byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
+            byte[] packet = Base64.getDecoder().decode(base64Packet);
+            packetBuilderController.loadPcapBinary(packet);
         }
     }
-    
+
     private BuilderDataBinding getDataBinding() {
-        String meta = selectedProfile.getStream().getPacket().getMeta();
-        boolean emptyMeta = meta == null; 
+        String meta = getSelectedProfile().getStream().getPacket().getMeta();
+        boolean emptyMeta = meta == null;
         isImportedStreamProperty.setValue(emptyMeta);
         if (emptyMeta) {
             return null;
@@ -263,11 +311,13 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     private void initStreamBuilder(BuilderDataBinding builderDataBinder) {
         isImportedStreamProperty.setValue(false);
         isBuildPacket = true;
-        String packetEditorModel = selectedProfile.getStream().getPacket().getModel();
+        String packetEditorModel = getSelectedProfile().getStream().getPacket().getModel();
+        this.builderDataBinder = builderDataBinder;
         if (!Strings.isNullOrEmpty(packetEditorModel)) {
             packetBuilderController.loadUserModel(packetEditorModel);
+        } else {
+            packetBuilderController.loadSimpleUserModel(this.builderDataBinder.serializeAsPacketModel());
         }
-        this.builderDataBinder = builderDataBinder;
         // initialize builder tabs
         protocolSelectionController.bindSelections(builderDataBinder.getProtocolSelection());
         protocolDataController.bindSelection(builderDataBinder);
@@ -308,29 +358,18 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         streamTabPane.getTabs().addAll(streamPropertiesTab, packetEditorTab, fieldEngineTab);
     }
 
-    @FXML
-    public void handleCloseDialog(final MouseEvent event) {
-        Node node = (Node) event.getSource();
-        Stage stage = (Stage) node.getScene().getWindow();
-        stage.hide();
-    }
-
-    @FXML
-    public void saveProfileBtnClicked(ActionEvent event) {
-        if (saveStream()) {
-            // close the dialog
-            Node node = (Node) event.getSource();
-            Stage stage = (Stage) node.getScene().getWindow();
-            stage.hide();
-        }
-    }
-
-    private boolean saveStream() {
+    private boolean saveProfile() {
         try {
             String fieldEngineError = packetBuilderController.getFieldEngineError();
             if (!Strings.isNullOrEmpty(fieldEngineError))  {
                 streamTabPane.getSelectionModel().select(fieldEngineTab);
-                LOG.error("Unable to save stream due to errors in Field Engine:" + fieldEngineError);
+                String fieldEngineMessage = "Unable to save stream due to errors in Field Engine: " + fieldEngineError;
+                TrexAlertBuilder.build()
+                        .setType(Alert.AlertType.ERROR)
+                        .setContent(fieldEngineMessage)
+                        .getAlert()
+                        .showAndWait();
+                LOG.error(fieldEngineMessage);
                 return false;
             }
             updateCurrentProfile();
@@ -347,64 +386,80 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     @FXML
-    public void nextStreamBtnClicked(ActionEvent event) {
-        nextStreamBtn.setDisable(true);
-        loadProfile(true);
-    }
-
-    @FXML
     public void switchEditorMode(ActionEvent event) throws Exception {
-        Stream currentStream = streamPropertiesController.getUpdatedSelectedProfile().getStream();
-        boolean advancedMode = currentStream.getAdvancedMode();
+        Stream currentStream = getSelectedProfile().getStream();
+        boolean isAdvanced  = currentStream.getAdvancedMode();
+        currentStream.setAdvancedMode(!isAdvanced);
 
+        if(!prepareToAdvancedIfNecessary()) {
+            currentStream.setAdvancedMode(isAdvanced);
+            return;
+        }
         try {
-            if (!ConnectionManager.getInstance().isScapyConnected()) {
-                eventBus.post(new ScapyClientNeedConnectEvent());
-            }
-            if (advancedMode) {
-                streamEditorModeBtn.setText("Advanced mode");
-                currentStream.setAdvancedMode(false);
-                showSimpleModeTabs();
-            } else {
-                if (ConnectionManager.getInstance().isScapyConnected()) {
-                    if (isImportedStreamProperty.getValue()) {
-                        byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
-                        byte[] packet = Base64.getDecoder().decode(base64Packet);
-                        packetBuilderController.loadPcapBinary(packet);
-                    } else {
-                        packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
-                    }
-                    streamEditorModeBtn.setText("Simple mode");
-                    currentStream.setAdvancedMode(true);
-                    showAdvancedModeTabs();
+            if (currentStream.getAdvancedMode()) {
+                if (isImportedStreamProperty.getValue()) {
+                    byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
+                    byte[] packet = Base64.getDecoder().decode(base64Packet);
+                    packetBuilderController.loadPcapBinary(packet);
                 } else {
-                    alertWarning("Can't open Advanced mode", "There is no connection to Scapy server."
-                            + "\nPlease refer to documentation about"
-                            + "\nScapy server and advanced configuration mode.");
+                    packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
                 }
+                showAdvancedModeTabs();
+            } else {
+                showSimpleModeTabs();
             }
+
+            updateEditorModeButton();
         } catch (Exception e) {
             LOG.error("Unable to open advanced mode due to: " + e.getMessage());
             alertWarning("Can't open Advanced mode", "Some errors occurred. See logs for more details.");
         }
     }
 
+    private void updateEditorModeButton() {
+        streamEditorModeBtn.setText(getSelectedProfile().getStream().getAdvancedMode() ? "Simple mode" : "Advanced mode");
+    }
+
+    @FXML
+    public void nextStreamBtnClicked(ActionEvent event) {
+        nextStreamBtn.setDisable(true);
+        switchProfile(true);
+    }
+
+
     @FXML
     public void prevStreamBtnClick(ActionEvent event) {
         prevStreamBtn.setDisable(true);
-        loadProfile(false);
+        switchProfile(false);
     }
 
-    private void loadProfile(boolean isNext) {
+    @FXML
+    public void saveProfileBtnClicked(ActionEvent event) {
+        if (saveProfile()) {
+            // close the dialog
+            Node node = (Node) event.getSource();
+            Stage stage = (Stage) node.getScene().getWindow();
+            stage.hide();
+        }
+    }
+
+    @FXML
+    public void handleCloseDialog(final MouseEvent event) {
+        Node node = (Node) event.getSource();
+        Stage stage = (Stage) node.getScene().getWindow();
+        stage.hide();
+    }
+
+    private void switchProfile(boolean isNext) {
         try {
             Util.optimizeMemory();
             updateCurrentProfile();
             if (streamPropertiesController.isValidStreamPropertiesFields()) {
-                if (isNext) {
-                    this.currentSelectedProfileIndex += 1;
-                } else {
-                    this.currentSelectedProfileIndex -= 1;
+                int nextProfileIndex = this.currentProfileIndex + (isNext? 1 : -1);
+                if (!prepareToAdvancedIfNecessary(nextProfileIndex)) {
+                    return;
                 }
+                this.currentProfileIndex = nextProfileIndex;
                 loadStream();
             }
         } catch (Exception ex) {
@@ -426,22 +481,21 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     private void updateNextPrevButtonState() {
-        nextStreamBtn.setDisable((currentSelectedProfileIndex >= profileList.size() - 1));
-        prevStreamBtn.setDisable((currentSelectedProfileIndex == 0));
+        nextStreamBtn.setDisable((currentProfileIndex >= profileList.size() - 1));
+        prevStreamBtn.setDisable((currentProfileIndex == 0));
     }
 
-    private void loadStream() {
+    private void loadStream() throws IOException {
         resetTabs();
         streamTabPane.getSelectionModel().select(streamPropertiesTab);
-        selectedProfile = profileList.get(currentSelectedProfileIndex);
-        Stream currentStream = selectedProfile.getStream();
-        String windowTitle = "Edit Stream (" + selectedProfile.getName() + ")";
+        Stream currentStream = getSelectedProfile().getStream();
+        String windowTitle = "Edit Stream (" + getSelectedProfile().getName() + ")";
         // update window title
         Stage stage = (Stage) streamTabPane.getScene().getWindow();
         stage.setTitle(windowTitle);
 
-        streamPropertiesController.init(profileList, currentSelectedProfileIndex);
-        initEditStream(currentStream.getPacket().getBinary());
+        streamPropertiesController.init(profileList, currentProfileIndex);
+        initEditStream();
         if (currentStream.getAdvancedMode()) {
             showAdvancedModeTabs();
         } else {
@@ -450,27 +504,27 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     }
 
     private void updateCurrentProfile() throws Exception {
-        selectedProfile = streamPropertiesController.getUpdatedSelectedProfile();
+        profileList.set(currentProfileIndex, streamPropertiesController.getUpdatedSelectedProfile());
         String hexPacket = null;
         if (packetHex != null && !isBuildPacket) {
             hexPacket = packetHex.getPacketHexFromList();
         } else if (isBuildPacket) {
             hexPacket = PacketBuilderHelper.getPacketHex(protocolDataController.getProtocolData().getPacket().getRawData());
-            selectedProfile.getStream().setAdditionalProperties(protocolDataController.getVm(advancedSettingsController.getCacheSize()));
-            selectedProfile.getStream().setFlags(protocolDataController.getFlagsValue());
+            getSelectedProfile().getStream().setAdditionalProperties(protocolDataController.getVm(advancedSettingsController.getCacheSize()));
+            getSelectedProfile().getStream().setFlags(protocolDataController.getFlagsValue());
 
             // save stream selected in stream property
             final String metaJSON = new ObjectMapper().writeValueAsString(builderDataBinder);
             final String encodedMeta = Base64.getEncoder().encodeToString(metaJSON.getBytes());
-            selectedProfile.getStream().getPacket().setMeta(encodedMeta);
+            getSelectedProfile().getStream().getPacket().setMeta(encodedMeta);
         }
         String encodedBinaryPacket = trafficProfile.encodeBinaryFromHexString(hexPacket);
-        Packet packet = selectedProfile.getStream().getPacket();
-        
-        if (selectedProfile.getStream().getAdvancedMode()) {
+        Packet packet = getSelectedProfile().getStream().getPacket();
+
+        if (getSelectedProfile().getStream().getAdvancedMode()) {
             packet.setBinary(packetBuilderController.getModel().getPkt().binary);
             packet.setModel(packetBuilderController.getModel().serialize());
-            selectedProfile.getStream().setAdditionalProperties(packetBuilderController.getPktVmInstructions());
+            getSelectedProfile().getStream().setAdditionalProperties(packetBuilderController.getPktVmInstructions());
         } else {
             packet.setBinary(encodedBinaryPacket);
             packet.setModel("");
@@ -485,6 +539,10 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
     @Override
     public void onEscapKeyPressed() {
         // ignoring global escape
+    }
+
+    private Profile getSelectedProfile() {
+        return this.profileList.get(this.currentProfileIndex);
     }
 
     private boolean alertWarning(String header, String content) {
