@@ -193,7 +193,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 "Scapy server and advanced mode.";
 
         ButtonType tryConnect = new ButtonType("Connect", ButtonBar.ButtonData.YES);
-        ButtonType continueSimple = new ButtonType("Simple Mode");
+        ButtonType continueSimple = new ButtonType("Simple Mode", ButtonBar.ButtonData.NO);
 
         while (true) {
             Optional<ButtonType> userSelection = TrexAlertBuilder.build()
@@ -315,7 +315,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
         this.builderDataBinder = builderDataBinder;
         if (!Strings.isNullOrEmpty(packetEditorModel)) {
             packetBuilderController.loadUserModel(packetEditorModel);
-        } else {
+        } else if (getSelectedProfile().getStream().getAdvancedMode()){
             packetBuilderController.loadSimpleUserModel(this.builderDataBinder.serializeAsPacketModel());
         }
         // initialize builder tabs
