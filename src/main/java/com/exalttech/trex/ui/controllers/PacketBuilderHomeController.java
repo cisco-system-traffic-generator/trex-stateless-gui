@@ -272,6 +272,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
             byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
             byte[] packet = Base64.getDecoder().decode(base64Packet);
             packetBuilderController.loadPcapBinary(packet);
+            packetBuilderController.loadVmRaw(currentStream.getVmRaw());
         }
     }
 
@@ -401,6 +402,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                     byte[] base64Packet = currentStream.getPacket().getBinary().getBytes();
                     byte[] packet = Base64.getDecoder().decode(base64Packet);
                     packetBuilderController.loadPcapBinary(packet);
+                    packetBuilderController.loadVmRaw(currentStream.getVmRaw());
                 } else {
                     packetBuilderController.loadSimpleUserModel(builderDataBinder.serializeAsPacketModel());
                 }
