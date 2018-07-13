@@ -42,6 +42,8 @@ public class PortHardwareCounters extends BorderPane {
     private final StatsTableGenerator statsTableGenerator;
     
     private PortsManager portManager;
+
+    private String savedXStatsNames = null;
     
     public PortHardwareCounters() {
         Initialization.initializeFXML(this, "/fxml/ports/PortHardwareCounters.fxml");
@@ -69,9 +71,11 @@ public class PortHardwareCounters extends BorderPane {
     
     private void update() {
         try {
-            String xStatsNames = ConnectionManager.getInstance().sendPortXStatsNamesRequest(port);
+            if (savedXStatsNames == null) {
+                savedXStatsNames = ConnectionManager.getInstance().sendPortXStatsNamesRequest(port);
+            }
             String xStatsValues = ConnectionManager.getInstance().sendPortXStatsValuesRequest(port);
-            Map<String, Long> loadedXStatsList = Util.getXStatsFromJSONString(xStatsNames, xStatsValues);
+            Map<String, Long> loadedXStatsList = Util.getXStatsFromJSONString(savedXStatsNames, xStatsValues);
             port.setXstats(loadedXStatsList);
             Pane pane = statsTableGenerator.generateXStatPane(true, port, statXTableNotEmpty.isSelected(), statXTableFilter.getText(), resetCountersRequested);
             statXTableContainer.setContent(pane);
@@ -90,5 +94,6 @@ public class PortHardwareCounters extends BorderPane {
 
     public void stopPolling() {
         refreshingService.cancel();
+        savedXStatsNames = null;
     } 
 }
