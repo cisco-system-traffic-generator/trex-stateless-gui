@@ -1,5 +1,6 @@
 package com.cisco.trex.stl.gui.controllers.dashboard;
 
+import com.exalttech.trex.application.TrexApp;
 import javafx.scene.layout.AnchorPane;
 
 import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
@@ -10,6 +11,8 @@ public abstract class FlowStatsBaseController extends AnchorPane {
     private boolean isActive = false;
     private PGIDStatsStorage.StatsChangedListener statsChangedListener = this::render;
 
+    StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
+
     public void setActive(final boolean isActive) {
         if (this.isActive == isActive) {
             return;
@@ -17,10 +20,10 @@ public abstract class FlowStatsBaseController extends AnchorPane {
 
         this.isActive = isActive;
         if (this.isActive) {
-            StatsStorage.getInstance().getPGIDStatsStorage().addStatsChangeListener(statsChangedListener);
+            statsStorage.getPGIDStatsStorage().addStatsChangeListener(statsChangedListener);
             render();
         } else {
-            StatsStorage.getInstance().getPGIDStatsStorage().removeStatsChangeListener(statsChangedListener);
+            statsStorage.getPGIDStatsStorage().removeStatsChangeListener(statsChangedListener);
         }
     }
 

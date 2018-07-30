@@ -56,12 +56,13 @@ public class DialogWindow {
 
         dialogStage.setOnCloseRequest(event -> {
             DialogManager.getInstance().removeHandler(this);
-            ((DialogView) loader.getController()).shutdown();
+            ((DialogView) loader.getController()).closeHandler();
         });
         dialogStage.setOnHidden( event -> {
             DialogManager.getInstance().removeHandler(this);
         });
         dialogStage.setOnShowing(event -> {
+            ((DialogView) loader.getController()).showHandler();
             DialogManager.getInstance().addHandler(this, () -> dialogStage.close());
         });
     }

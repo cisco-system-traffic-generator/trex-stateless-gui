@@ -1,5 +1,6 @@
 package com.cisco.trex.stl.gui.controllers.dashboard.latency;
 
+import com.exalttech.trex.application.TrexApp;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Toggle;
@@ -47,6 +48,8 @@ public class LatencyController extends FlowStatsBaseController {
     private ToggleGroup toggleGroupMode;
     @FXML
     private GridPane table;
+
+    StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
 
     public LatencyController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/latency/Latency.fxml");
@@ -102,7 +105,7 @@ public class LatencyController extends FlowStatsBaseController {
         table.add(new StatisticLabelCell("Jitter", FIRST_COLUMN_WIDTH, hCol%2 == 0, CellType.DEFAULT_CELL, false), 0, hCol++);
         table.add(new StatisticLabelCell("Errors", FIRST_COLUMN_WIDTH, hCol%2 == 0, CellType.DEFAULT_CELL, false), 0, hCol);
 
-        final PGIDStatsStorage pgIDStatsStorage = StatsStorage.getInstance().getPGIDStatsStorage();
+        final PGIDStatsStorage pgIDStatsStorage = statsStorage.getPGIDStatsStorage();
         final Map<Integer, ArrayHistory<FlowStatPoint>> flowStatPointHistoryMap =
                 pgIDStatsStorage.getFlowStatPointHistoryMap();
         final Map<Integer, FlowStatPoint> flowStatPointShadowMap =
@@ -178,7 +181,7 @@ public class LatencyController extends FlowStatsBaseController {
     private void renderHistogram() {
         table.getChildren().clear();
 
-        final PGIDStatsStorage pgIDStatsStorage = StatsStorage.getInstance().getPGIDStatsStorage();
+        final PGIDStatsStorage pgIDStatsStorage = statsStorage.getPGIDStatsStorage();
         final Map<Integer, ArrayHistory<LatencyStatPoint>> latencyStatPointHistoryMap =
                 pgIDStatsStorage.getLatencyStatPointHistoryMap();
         final String[] histogramKeys = pgIDStatsStorage.getHistogramKeys(HISTOGRAM_SIZE);

@@ -5,6 +5,7 @@ import com.cisco.trex.stl.gui.models.MemoryUtilizationModel;
 import com.cisco.trex.stl.gui.models.UtilizationCPUModel;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
 import com.cisco.trex.stl.gui.storages.UtilizationStorage;
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.util.Initialization;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -78,6 +79,8 @@ public class UtilizationController extends AnchorPane {
     
     private UtilizationStorage.UtilizationChangedListener utilizationChangedListener = this::render;
 
+    StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
+
     public UtilizationController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/utilization/Utilization.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
@@ -102,7 +105,7 @@ public class UtilizationController extends AnchorPane {
         }
 
         this.isActive = isActive;
-        final UtilizationStorage utilizationStorage = StatsStorage.getInstance().getUtilizationStorage();
+        final UtilizationStorage utilizationStorage = statsStorage.getUtilizationStorage();
         if (this.isActive) {
             utilizationStorage.addUtilizationChangedListener(utilizationChangedListener);
             render();
@@ -140,7 +143,7 @@ public class UtilizationController extends AnchorPane {
     }
 
     private void renderCPU() {
-        UtilizationStorage utilizationStorage = StatsStorage.getInstance().getUtilizationStorage();
+        UtilizationStorage utilizationStorage = statsStorage.getUtilizationStorage();
         synchronized (utilizationStorage.getDataLock()) {
             cpuUtilChart.render(utilizationStorage.getCpuUtilizationHistoryMap());
         }
@@ -179,7 +182,7 @@ public class UtilizationController extends AnchorPane {
     }
 
     private void renderMbuf() {
-        UtilizationStorage utilizationStorage = StatsStorage.getInstance().getUtilizationStorage();
+        UtilizationStorage utilizationStorage = statsStorage.getUtilizationStorage();
         synchronized (utilizationStorage.getDataLock()) {
             List<MemoryUtilizationModel> memUtilsModels = utilizationStorage.getMemUtilsModels();
             memoryUtilTable.getItems().clear();

@@ -1,5 +1,6 @@
 package com.cisco.trex.stl.gui.controllers.dashboard.global;
 
+import com.exalttech.trex.application.TrexApp;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.WindowEvent;
@@ -45,6 +46,8 @@ public class GlobalStatsController extends GlobalStatsBaseController {
     @FXML
     private GlobalStatsPanelController queueFull;
 
+    private StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
+
     public GlobalStatsController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/global/GlobalStats.fxml");
         Initialization.initializeCloseEvent(root, this::onWindowCloseRequest);
@@ -80,14 +83,13 @@ public class GlobalStatsController extends GlobalStatsBaseController {
         dropRate.setValue(Util.getFormatted(currentStatsList.get("m_rx_drop_bps"), true, "b/s"));
         queueFull.setValue(Util.getFormatted(queue, true, "pkts"));
 
-        final PGIDsStorage pgIdStatsStorage = StatsStorage.getInstance().getPGIDsStorage();
+        final PGIDsStorage pgIdStatsStorage = statsStorage.getPGIDsStorage();
         synchronized (pgIdStatsStorage.getDataLock()) {
             totalStream.setValue(String.valueOf(pgIdStatsStorage.getPgIDs().size()));
         }
     }
 
     private void onWindowCloseRequest(WindowEvent window) {
-        setActive(false);
     }
 
     private static String getQueue(Map<String, String> currentStatsList) {

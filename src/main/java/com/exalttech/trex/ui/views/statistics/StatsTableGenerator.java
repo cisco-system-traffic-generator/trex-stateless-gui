@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -45,13 +44,13 @@ public class StatsTableGenerator {
     Map<String, String> currentStatsList;
     Map<String, String> cachedStatsList;
     Map<String, String> prevStatsList;
-    Map<String, Long> totalValues = new HashMap<>();
-    Map<String, Long> prevTotalValues = new HashMap<>();
+    Map<String, Long> totalValues;
+    Map<String, Long> prevTotalValues;
 
-    GridPane statTable = new GridPane();
-    GridPane statXTable = new GridPane();
+    GridPane statTable;
+    GridPane statXTable;
 
-    Map<String, StatisticCell> gridCellsMap = new HashMap<>();
+    Map<String, StatisticCell> gridCellsMap;
     StringBuilder keyBuffer = new StringBuilder(30);
 
     private boolean odd;
@@ -67,6 +66,10 @@ public class StatsTableGenerator {
      * Constructor
      */
     public StatsTableGenerator() {
+        init();
+    }
+
+    private void init() {
         statTable = new GridPane();
         statTable.setCache(false);
         statTable.getStyleClass().add("statsTable");
@@ -76,6 +79,10 @@ public class StatsTableGenerator {
         statXTable.setCache(false);
         statXTable.getStyleClass().add("statsTable");
         statXTable.setGridLinesVisible(false);
+
+        totalValues = new HashMap<>();
+        prevTotalValues = new HashMap<>();
+        gridCellsMap = new HashMap<>();
     }
 
     /**
@@ -598,9 +605,11 @@ public class StatsTableGenerator {
     public void reset() {
 
         statTable.getChildren().clear();
+        statXTable.getChildren().clear();
         Util.optimizeMemory();
 
         statTable = null;
+        statXTable = null;
 
         gridCellsMap.clear();
         gridCellsMap = null;
@@ -626,6 +635,8 @@ public class StatsTableGenerator {
 
         prevTotalValues.clear();
         prevStatsList = null;
+
+        init();
     }
 
     /**

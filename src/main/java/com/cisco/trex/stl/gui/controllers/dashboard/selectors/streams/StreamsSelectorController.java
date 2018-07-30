@@ -1,6 +1,7 @@
 package com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams;
 
 import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
+import com.exalttech.trex.application.TrexApp;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -36,6 +37,8 @@ public class StreamsSelectorController extends GridPane {
     private Map<Integer, String> selectedPGIDs = new HashMap<>();
     private Set<Integer> pgIDs = new HashSet<>();
 
+    StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
+
     public StreamsSelectorController() {
         Initialization.initializeFXML(
                 this,
@@ -49,7 +52,6 @@ public class StreamsSelectorController extends GridPane {
             return;
         }
 
-        final StatsStorage statsStorage = StatsStorage.getInstance();
         final PGIDsStorage pgIdsStorage = statsStorage.getPGIDsStorage();
         final PGIDStatsStorage pgIdStatsStorage = statsStorage.getPGIDStatsStorage();
 
@@ -69,7 +71,6 @@ public class StreamsSelectorController extends GridPane {
     }
 
     private void render() {
-        final StatsStorage statsStorage = StatsStorage.getInstance();
         final PGIDsStorage pgIDStorage = statsStorage.getPGIDsStorage();
         final PGIDStatsStorage pgIdStatsStorage = statsStorage.getPGIDStatsStorage();
         final Set<Integer> pgIDs = new HashSet<>(pgIDStorage.getPgIDs());
@@ -132,11 +133,11 @@ public class StreamsSelectorController extends GridPane {
 
     private void handleStreamDeleteClicked(final Event event) {
         final SelectedStreamController source = (SelectedStreamController) event.getSource();
-        StatsStorage.getInstance().getPGIDsStorage().deselectPGID(source.getPGId());
+        statsStorage.getPGIDsStorage().deselectPGID(source.getPGId());
     }
 
     private void handleStreamAddClicked(final Event event) {
         final StreamController source = (StreamController) event.getSource();
-        StatsStorage.getInstance().getPGIDsStorage().selectPGID(source.getPGId());
+        statsStorage.getPGIDsStorage().selectPGID(source.getPGId());
     }
 }

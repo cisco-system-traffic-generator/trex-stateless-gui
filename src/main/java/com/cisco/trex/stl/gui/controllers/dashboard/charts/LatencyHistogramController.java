@@ -1,5 +1,6 @@
 package com.cisco.trex.stl.gui.controllers.dashboard.charts;
 
+import com.exalttech.trex.application.TrexApp;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -30,11 +31,11 @@ public class LatencyHistogramController extends FlowChartController {
     @FXML
     private CategoryAxis xAxis;
 
+    StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
+
     public void render() {
         histogram.getData().clear();
         xAxis.setAutoRanging(true);
-
-        final StatsStorage statsStorage = StatsStorage.getInstance();
 
         final Map<Integer, String> selectedPGIDs = statsStorage.getPGIDsStorage().getSelectedPGIds();
 
