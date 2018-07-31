@@ -219,6 +219,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private DialogWindow aboutWindow;
     private DialogWindow captureWindow;
     private DialogWindow preferencesWindow;
+    private DialogWindow dashboardWindow;
 
     private SystemInfoReq systemInfoReq = null;
     private PacketTableView tableView;
@@ -252,6 +253,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private EventBus eventBus;
     private boolean resetAppInProgress;
     private BooleanProperty trafficProfileLoadedProperty = new SimpleBooleanProperty(false);
+    private StatsStorage statsStorage;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -263,6 +265,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         initializeInlineComponent();
         logsContainer.setDisable(false);
         eventBus = TrexApp.injector.getInstance(EventBus.class);
+        statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
         portView.visibleProperty().bind(portViewVisibilityProperty);
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
 
@@ -350,7 +353,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
                 loadSystemInfo();
                 StatsLoader.getInstance().start();
-                StatsStorage.getInstance().startPolling();
+                statsStorage.startPolling();
                 portManager.updatePortForce();
 
                 serverStatusLabel.setText("Connected");
@@ -592,7 +595,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             portManager.clearPorts();
             Platform.runLater(() -> {
                 DialogManager.getInstance().closeAll();
-                StatsStorage.getInstance().stopPolling();
+                statsStorage.stopPolling();
                 shutdownRunningServices();
                 LogsController.getInstance().getView().clear();
 
@@ -1065,8 +1068,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
      */
     private void openStateDialog() {
         try {
-            if (DialogManager.getInstance().getNumberOfOpenedDialog() < 4) {
-                DialogWindow dashboardWindow = new DialogWindow(
+            if (dashboardWindow == null) {
+                dashboardWindow = new DialogWindow(
                         "dashboard/Dashboard.fxml",
                         "Dashboard",
                         50,
@@ -1076,8 +1079,8 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         true,
                         TrexApp.getPrimaryStage()
                 );
-                dashboardWindow.show(false);
             }
+            dashboardWindow.show(false);
         } catch (IOException ex) {
             LOG.error("Error opening dashboard view", ex);
         }

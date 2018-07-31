@@ -5,20 +5,11 @@ import java.util.Set;
 
 
 public class StatsStorage {
-    private static StatsStorage instance;
-
-    public static StatsStorage getInstance() {
-        if (instance == null) {
-            instance = new StatsStorage();
-        }
-        return instance;
-    }
-
     private final PGIDsStorage pgIDsStorage = new PGIDsStorage();
     private final PGIDStatsStorage pgIDStatsStorage = new PGIDStatsStorage();
     private final UtilizationStorage utilizationStorage = new UtilizationStorage();
 
-    private StatsStorage() {
+    StatsStorage() {
         pgIDsStorage.addPGIDsChangedListener(this::handleSelectedPGIDsChanged);
     }
 

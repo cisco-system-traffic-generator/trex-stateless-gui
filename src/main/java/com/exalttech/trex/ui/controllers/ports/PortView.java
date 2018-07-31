@@ -29,6 +29,11 @@ public class PortView extends TabPane {
                 hardwareCounters.stopPolling();
             }
         });
+        visibleProperty().addListener((observable, prevVisible, visible) -> {
+            if (!visible) {
+                hardwareCounters.stopPolling();
+            }
+        });
     }
 
     public void loadModel(PortModel model) {

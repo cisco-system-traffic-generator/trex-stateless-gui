@@ -5,6 +5,7 @@ import com.cisco.trex.stl.gui.controllers.dashboard.selectors.streams.StreamsSel
 import com.cisco.trex.stl.gui.models.FlowStatPoint;
 import com.cisco.trex.stl.gui.storages.PGIDStatsStorage;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.ui.views.statistics.cells.CellType;
 import com.exalttech.trex.ui.views.statistics.cells.HeaderCell;
 import com.exalttech.trex.ui.views.statistics.cells.StatisticLabelCell;
@@ -27,6 +28,8 @@ public class StreamsController extends FlowStatsBaseController {
     private StreamsSelectorController streamSelector;
     @FXML
     private GridPane table;
+
+    StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
 
     public StreamsController() {
         Initialization.initializeFXML(this, "/fxml/dashboard/streams/Streams.fxml");
@@ -64,7 +67,7 @@ public class StreamsController extends FlowStatsBaseController {
 
         int rowIndex = 1;
 
-        final PGIDStatsStorage pgIDStatsStorage = StatsStorage.getInstance().getPGIDStatsStorage();
+        final PGIDStatsStorage pgIDStatsStorage = statsStorage.getPGIDStatsStorage();
         final Map<Integer, ArrayHistory<FlowStatPoint>> flowStatPointHistoryMap =
                 pgIDStatsStorage.getFlowStatPointHistoryMap();
         final Map<Integer, FlowStatPoint> flowStatPointShadowMap =

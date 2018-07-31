@@ -6,6 +6,7 @@ import com.cisco.trex.stl.gui.controllers.dashboard.ports.PortsController;
 import com.cisco.trex.stl.gui.controllers.dashboard.streams.StreamsController;
 import com.cisco.trex.stl.gui.controllers.dashboard.utilization.UtilizationController;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.ui.PortsManager;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.Port;
@@ -32,6 +33,8 @@ public class DashboardController extends DialogView implements Initializable {
 
     private static final String SERVICE_MODE_ENABLED_LABEL = "Service mode is enabled";
 
+    StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
+
     @FXML
     private TabPane tabPane;
     @FXML
@@ -52,12 +55,17 @@ public class DashboardController extends DialogView implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        portsManager.addPortServiceModeChangedListener(serviceModeChangeListener);
     }
 
     @Override
-    public void shutdown() {
+    public void closeHandler() {
         portsManager.removePortServiceModeChangedListener(serviceModeChangeListener);
+    }
+
+    @Override
+    public void showHandler() {
+        portsManager.addPortServiceModeChangedListener(serviceModeChangeListener);
+        handleTabChanged(null);
     }
 
     @Override
@@ -67,56 +75,47 @@ public class DashboardController extends DialogView implements Initializable {
 
     @FXML
     public void handleTabChanged(final Event event) {
+        boolean ports_enabled = false;
+        boolean streams_enabled = false;
+        boolean latency_enabled = false;
+        boolean charts_enabled = false;
+
         switch (tabPane.getSelectionModel().getSelectedItem().getText()) {
-            case UTILIZATION_TAB_LABEL:
-                utilization.setActive(true);
-                ports.setActive(false);
-                streams.setActive(false);
-                latency.setActive(false);
-                charts.setActive(false);
-                break;
             case PORTS_TAB_LABEL:
-                if (utilization != null) {
-                    utilization.setActive(true);
-                }
-                if (ports != null) {
-                    ports.setActive(true);
-                }
-                if (streams != null) {
-                    streams.setActive(false);
-                }
-                if (latency != null) {
-                    latency.setActive(false);
-                }
-                if (charts != null) {
-                    charts.setActive(false);
-                }
+                ports_enabled = true;
                 break;
             case STREAMS_TAB_LABEL:
-                ports.setActive(false);
-                streams.setActive(true);
-                latency.setActive(false);
-                charts.setActive(false);
+                streams_enabled = true;
                 break;
             case LATENCY_TAB_LABEL:
-                ports.setActive(false);
-                streams.setActive(false);
-                latency.setActive(true);
-                charts.setActive(false);
+                latency_enabled = true;
                 break;
             case CHARTS_TAB_LABEL:
-                ports.setActive(false);
-                streams.setActive(false);
-                latency.setActive(false);
-                charts.setActive(true);
+                charts_enabled = true;
                 break;
+        }
+
+        if (utilization != null) {
+            utilization.setActive(true);
+        }
+        if (ports != null) {
+            ports.setActive(ports_enabled);
+        }
+        if (streams != null) {
+            streams.setActive(streams_enabled);
+        }
+        if (latency != null) {
+            latency.setActive(latency_enabled);
+        }
+        if (charts != null) {
+            charts.setActive(charts_enabled);
         }
     }
 
     @FXML
     public void handleClearCacheButtonClicked(final ActionEvent event) {
         StatsLoader.getInstance().reset();
-        StatsStorage.getInstance().getPGIDStatsStorage().reset();
+        statsStorage.getPGIDStatsStorage().reset();
     }
 
     private void serviceModeChanged() {

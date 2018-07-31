@@ -1,5 +1,6 @@
 package com.cisco.trex.stl.gui.controllers.dashboard.charts;
 
+import com.exalttech.trex.application.TrexApp;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.chart.XYChart;
 
@@ -16,6 +17,8 @@ import com.exalttech.trex.util.Formatter;
 
 
 public abstract class StreamLineChartController extends LineFlowChartController {
+    StatsStorage statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
+
     public StreamLineChartController(final IntegerProperty interval) {
         super(interval);
     }
@@ -23,8 +26,6 @@ public abstract class StreamLineChartController extends LineFlowChartController 
     @Override
     protected void render() {
         getChart().getData().clear();
-
-        final StatsStorage statsStorage = StatsStorage.getInstance();
 
         final Map<Integer, String> selectedPGIDs = statsStorage.getPGIDsStorage().getSelectedPGIds();
 
