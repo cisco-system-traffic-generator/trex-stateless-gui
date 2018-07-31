@@ -1,0 +1,63 @@
+---
+- name: "burst"
+  next: "burst2"
+  stream:
+    action_count: 0
+    enabled: true
+    flags: 0
+    flow_stats:
+      enabled: false
+      stream_id: 0
+    isg: 0.0
+    mode:
+      rate:
+        type: "pps"
+        value: 1.0
+      type: "single_burst"
+      total_pkts: 1
+      pkts_per_burst: 0
+      ibg: 0.0
+      count: 1
+    
+    packet:
+      binary: "AAAAAAAAAAAAAAAACABFAAAuBNIAAH8G9vYQAAABMAAAAQQBBAEAAff6AAAAAFLABACz4wAAAKoAAAAA"
+      meta: "eyJwcm90b2NvbF9zZWxlY3Rpb24iOnsiaXNfdGFnZ2VkX3ZsYW5fc2VsZWN0ZWQiOmZhbHNlLCJpc19pcHY0X3NlbGVjdGVkIjp0cnVlLCJpc190Y3Bfc2VsZWN0ZWQiOnRydWUsImlzX3VkcF9zZWxlY3RlZCI6ZmFsc2UsImlzX3BhdHRlcm5fc2VsZWN0ZWQiOnRydWUsImZyYW1lX2xlbmd0aF90eXBlIjoiRml4ZWQiLCJmcmFtZV9sZW5ndGgiOiI2NCIsIm1heF9sZW5ndGgiOiIxNTE4IiwibWluX2xlbmd0aCI6IjY0In0sImV0aGVybmV0Ijp7InR5cGUiOiIwODAwIiwiaXNfb3ZlcnJpZGUiOmZhbHNlfSwibWFjIjp7InNvdXJjZSI6eyJjb3VudCI6IjE2IiwibW9kZSI6IlRSZXggQ29uZmlnIiwic3RlcCI6IjEiLCJhZGRyZXNzIjoiMDA6MDA6MDA6MDA6MDA6MDAifSwiZGVzdGluYXRpb24iOnsiY291bnQiOiIxNiIsIm1vZGUiOiJUUmV4IENvbmZpZyIsInN0ZXAiOiIxIiwiYWRkcmVzcyI6IjAwOjAwOjAwOjAwOjAwOjAwIn19LCJpcHY0Ijp7InNvdXJjZSI6eyJjb3VudCI6IjE2IiwibW9kZSI6IkZpeGVkIiwic3RlcCI6IjEiLCJhZGRyZXNzIjoiMTYuMC4wLjEifSwiZGVzdGluYXRpb24iOnsiY291bnQiOiIxNiIsIm1vZGUiOiJGaXhlZCIsInN0ZXAiOiIxIiwiYWRkcmVzcyI6IjQ4LjAuMC4xIn19LCJ0Y3AiOnsiaXNfb3ZlcnJpZGVfZHN0X3BvcnQiOmZhbHNlLCJzcmNfcG9ydCI6IjEwMjUiLCJkc3RfcG9ydCI6IjEwMjUiLCJpc19vdmVycmlkZV9zcmNfcG9ydCI6ZmFsc2UsInNlcXVlbmNlX251bWJlciI6IjEyOTAxOCIsImFja19udW1iZXIiOiIwIiwiaXNfb3ZlcnJpZGVfY2hlY2tzdW0iOmZhbHNlLCJjaGVja3N1bSI6IkIzRTMiLCJ1cmdlbnRfcG9pbnRlciI6IjAiLCJpc191cmciOmZhbHNlLCJpc19hY2siOmZhbHNlLCJpc19wc2giOmZhbHNlLCJpc19yc3QiOmZhbHNlLCJpc19zeW5jIjpmYWxzZSwiaXNfZmluIjpmYWxzZSwid2luZG93IjoiMTAyNCJ9LCJ1ZHAiOnsiaXNfb3ZlcnJpZGVfZHN0X3BvcnQiOmZhbHNlLCJpc19vdmVycmlkZV9sZW5ndGgiOmZhbHNlLCJzcmNfcG9ydCI6IjEwMjUiLCJkc3RfcG9ydCI6IjEwMjUiLCJpc19vdmVycmlkZV9zcmNfcG9ydCI6ZmFsc2UsImlzX292ZXJyaWRlX2NoZWNrc3VtIjpmYWxzZSwiY2hlY2tzdW0iOiJGRkJBIiwibGVuZ3RoIjoiMjYifSwicGF5bG9hZCI6eyJ0eXBlIjoiRml4ZWQgV29yZCIsInBhdHRlcm4iOiIwMCJ9LCJ2bGFuIjp7ImlzX292ZXJyaWRlX3RwX2lkIjpmYWxzZSwidHBfaWQiOiJGRkZGIiwiY2ZpIjoiMCIsInZfaWQiOiIwIiwicHJpb3JpdHkiOiIwIn0sImFkdmFuc2VkX3Byb3BlcnRpZXMiOnsiY2FjaGVfdmFsdWUiOiI1MDAwIiwiY2FjaGVfc2l6ZV90eXBlIjoiQXV0byJ9LCJtb2RlbF92ZXJzaW9uIjoiMS4wIn0="
+      model: ""
+    self_start: true
+    advanced_mode: false
+    vm:
+      split_by_var: ""
+      instructions: []
+      cache_size: 5000
+  stream_id: 0
+- name: "burst2"
+  
+  stream:
+    action_count: 0
+    enabled: true
+    flags: 0
+    flow_stats:
+      enabled: false
+      stream_id: 0
+    isg: 0.0
+    mode:
+      rate:
+        type: "pps"
+        value: 1.0
+      type: "single_burst"
+      total_pkts: 1
+      pkts_per_burst: 0
+      ibg: 0.0
+      count: 1
+    
+    packet:
+      binary: "AAAAAAAAAAAAAAAACABFAAAuBNIAAH8G9vYQAAABMAAAAQQBBAEAAff6AAAAAFLABACz4wAAAKoAAAAA"
+      meta: "eyJwcm90b2NvbF9zZWxlY3Rpb24iOnsiaXNfdGFnZ2VkX3ZsYW5fc2VsZWN0ZWQiOmZhbHNlLCJpc19pcHY0X3NlbGVjdGVkIjp0cnVlLCJpc190Y3Bfc2VsZWN0ZWQiOnRydWUsImlzX3VkcF9zZWxlY3RlZCI6ZmFsc2UsImlzX3BhdHRlcm5fc2VsZWN0ZWQiOnRydWUsImZyYW1lX2xlbmd0aF90eXBlIjoiRml4ZWQiLCJmcmFtZV9sZW5ndGgiOiI2NCIsIm1heF9sZW5ndGgiOiIxNTE4IiwibWluX2xlbmd0aCI6IjY0In0sImV0aGVybmV0Ijp7InR5cGUiOiIwODAwIiwiaXNfb3ZlcnJpZGUiOmZhbHNlfSwibWFjIjp7InNvdXJjZSI6eyJjb3VudCI6IjE2IiwibW9kZSI6IlRSZXggQ29uZmlnIiwic3RlcCI6IjEiLCJhZGRyZXNzIjoiMDA6MDA6MDA6MDA6MDA6MDAifSwiZGVzdGluYXRpb24iOnsiY291bnQiOiIxNiIsIm1vZGUiOiJUUmV4IENvbmZpZyIsInN0ZXAiOiIxIiwiYWRkcmVzcyI6IjAwOjAwOjAwOjAwOjAwOjAwIn19LCJpcHY0Ijp7InNvdXJjZSI6eyJjb3VudCI6IjE2IiwibW9kZSI6IkZpeGVkIiwic3RlcCI6IjEiLCJhZGRyZXNzIjoiMTYuMC4wLjEifSwiZGVzdGluYXRpb24iOnsiY291bnQiOiIxNiIsIm1vZGUiOiJGaXhlZCIsInN0ZXAiOiIxIiwiYWRkcmVzcyI6IjQ4LjAuMC4xIn19LCJ0Y3AiOnsiaXNfb3ZlcnJpZGVfZHN0X3BvcnQiOmZhbHNlLCJzcmNfcG9ydCI6IjEwMjUiLCJkc3RfcG9ydCI6IjEwMjUiLCJpc19vdmVycmlkZV9zcmNfcG9ydCI6ZmFsc2UsInNlcXVlbmNlX251bWJlciI6IjEyOTAxOCIsImFja19udW1iZXIiOiIwIiwiaXNfb3ZlcnJpZGVfY2hlY2tzdW0iOmZhbHNlLCJjaGVja3N1bSI6IkIzRTMiLCJ1cmdlbnRfcG9pbnRlciI6IjAiLCJpc191cmciOmZhbHNlLCJpc19hY2siOmZhbHNlLCJpc19wc2giOmZhbHNlLCJpc19yc3QiOmZhbHNlLCJpc19zeW5jIjpmYWxzZSwiaXNfZmluIjpmYWxzZSwid2luZG93IjoiMTAyNCJ9LCJ1ZHAiOnsiaXNfb3ZlcnJpZGVfZHN0X3BvcnQiOmZhbHNlLCJpc19vdmVycmlkZV9sZW5ndGgiOmZhbHNlLCJzcmNfcG9ydCI6IjEwMjUiLCJkc3RfcG9ydCI6IjEwMjUiLCJpc19vdmVycmlkZV9zcmNfcG9ydCI6ZmFsc2UsImlzX292ZXJyaWRlX2NoZWNrc3VtIjpmYWxzZSwiY2hlY2tzdW0iOiJGRkJBIiwibGVuZ3RoIjoiMjYifSwicGF5bG9hZCI6eyJ0eXBlIjoiRml4ZWQgV29yZCIsInBhdHRlcm4iOiIwMCJ9LCJ2bGFuIjp7ImlzX292ZXJyaWRlX3RwX2lkIjpmYWxzZSwidHBfaWQiOiJGRkZGIiwiY2ZpIjoiMCIsInZfaWQiOiIwIiwicHJpb3JpdHkiOiIwIn0sImFkdmFuc2VkX3Byb3BlcnRpZXMiOnsiY2FjaGVfdmFsdWUiOiI1MDAwIiwiY2FjaGVfc2l6ZV90eXBlIjoiQXV0byJ9LCJtb2RlbF92ZXJzaW9uIjoiMS4wIn0="
+      model: ""
+    self_start: true
+    advanced_mode: false
+    vm:
+      split_by_var: ""
+      instructions: []
+      cache_size: 5000
+  stream_id: 1

@@ -1,0 +1,46 @@
+- action_count: 0
+  enabled: true
+  flags: 0
+  isg: 10.0
+  mode:
+    rate:
+      type: pps
+      value: 10
+    total_pkts: 10000
+    type: single_burst
+  packet:
+    binary: !!python/unicode 'AAAAAQAAAAAAAgAACABFAAAuAAEAAEAROr0QAAABMAAAAQQBAAwAGn9veHh4eHh4eHh4eHh4eHh4eHh4'
+    meta: ''
+  self_start: true
+  start_paused: false
+- action_count: 0
+  enabled: true
+  flags: 0
+  isg: 0.0
+  mode:
+    rate:
+      type: pps
+      value: 10
+    total_pkts: 10000
+    type: single_burst
+  packet:
+    binary: !!python/unicode 'AAAAAQAAAAAAAgAACABFAAAuAAEAAEAROrwQAAACMAAAAQQBAAwAGn9ueHh4eHh4eHh4eHh4eHh4eHh4'
+    meta: ''
+  self_start: false
+  start_paused: false
+- action_count: 0
+  enabled: true
+  flags: 0
+  isg: 0.0
+  mode:
+    rate:
+      type: pps
+      value: 10
+    total_pkts: 10000
+    type: single_burst
+  packet:
+    binary: !!python/unicode 'AAAAAQAAAAAAAgAACABFAAAuAAEAAEAROrsQAAADMAAAAQQBAAwAGn9teHh4eHh4eHh4eHh4eHh4eHh4'
+    meta: ''
+  self_start: false
+  start_paused: false
+
