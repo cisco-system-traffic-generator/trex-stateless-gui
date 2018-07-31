@@ -60,12 +60,10 @@ public class DashboardController extends DialogView implements Initializable {
     @Override
     public void closeHandler() {
         portsManager.removePortServiceModeChangedListener(serviceModeChangeListener);
-        statsStorage.stopPolling();
     }
 
     @Override
     public void showHandler() {
-        statsStorage.startPolling();
         portsManager.addPortServiceModeChangedListener(serviceModeChangeListener);
         handleTabChanged(null);
     }

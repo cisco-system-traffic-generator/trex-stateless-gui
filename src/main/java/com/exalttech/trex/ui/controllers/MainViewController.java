@@ -253,6 +253,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private EventBus eventBus;
     private boolean resetAppInProgress;
     private BooleanProperty trafficProfileLoadedProperty = new SimpleBooleanProperty(false);
+    private StatsStorage statsStorage;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -264,6 +265,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
         initializeInlineComponent();
         logsContainer.setDisable(false);
         eventBus = TrexApp.injector.getInstance(EventBus.class);
+        statsStorage = TrexApp.injector.getInstance(StatsStorage.class);
         portView.visibleProperty().bind(portViewVisibilityProperty);
         statTableContainer.visibleProperty().bindBidirectional(systemInfoVisibilityProperty);
 
@@ -351,6 +353,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
                 loadSystemInfo();
                 StatsLoader.getInstance().start();
+                statsStorage.startPolling();
                 portManager.updatePortForce();
 
                 serverStatusLabel.setText("Connected");
@@ -592,6 +595,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             portManager.clearPorts();
             Platform.runLater(() -> {
                 DialogManager.getInstance().closeAll();
+                statsStorage.stopPolling();
                 shutdownRunningServices();
                 LogsController.getInstance().getView().clear();
 
