@@ -104,7 +104,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     private boolean doUpdate = false;
     ContextMenu rightClickMenu;
     private File loadedProfile;
-    private DialogWindow srteamWindow;
+    private DialogWindow streamWindow;
 
     /**
      * @param maxHight
@@ -651,12 +651,14 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 return;
             }
             setStreamEditingWindowOpen(true);
-            if (srteamWindow == null) {
+            String windowTitle = "Edit Stream (" + data.getName() + ")";
+            if (streamWindow == null) {
                 Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
-                String windowTitle = "Edit Stream (" + data.getName() + ")";
-                srteamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
+                streamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
             }
-            PacketBuilderHomeController controller = (PacketBuilderHomeController) srteamWindow.getController();
+            streamWindow.setTitle(windowTitle);
+
+            PacketBuilderHomeController controller = (PacketBuilderHomeController) streamWindow.getController();
 
             boolean streaminited = controller.initStreamBuilder(
                     tabledata.getProfiles(),
@@ -666,7 +668,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             );
 
             if (streaminited) {
-                srteamWindow.show(true);
+                streamWindow.show(true);
             }
             else {
                 LOG.error("Error while initing editor dialog");

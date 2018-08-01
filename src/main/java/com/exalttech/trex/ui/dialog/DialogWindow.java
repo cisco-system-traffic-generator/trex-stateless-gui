@@ -132,4 +132,8 @@ public class DialogWindow {
     public boolean isVisible() {
         return dialogStage.isShowing();
     }
+
+    public void setTitle(String windowTitle) {
+        dialogStage.setTitle(windowTitle);
+    }
 }
