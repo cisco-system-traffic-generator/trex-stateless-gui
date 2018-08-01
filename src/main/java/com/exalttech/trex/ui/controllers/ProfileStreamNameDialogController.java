@@ -182,4 +182,7 @@ public class ProfileStreamNameDialogController extends DialogView implements Ini
         doCreating(stage);
     }
 
+    public void setDefaultName(String defaultName) {
+        nameTF.setText(defaultName);
+    }
 }

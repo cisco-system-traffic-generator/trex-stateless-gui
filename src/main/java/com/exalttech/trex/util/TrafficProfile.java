@@ -40,10 +40,7 @@ import org.slf4j.helpers.MessageFormatter;
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -185,9 +182,12 @@ public class TrafficProfile {
             Profile profile = trafficProfileArray[i];
 
             if (profile.getName() == null) {
-                StringBuilder profileName = new StringBuilder(DEFAULT_STREAM_NAME);
-                profileName.append("_").append(i);
-                profile.setName(profileName.toString());
+                String nameFromStream = (String) profile.getStream().getAdditionalProperties().getOrDefault("name", null);
+                if (nameFromStream != null) {
+                    profile.setName(nameFromStream);
+                } else {
+                    profile.setName(DEFAULT_STREAM_NAME + "_" + i);
+                }
             }
 
             Map<String, Object> streamAdditionalProperties = profile.getStream().getAdditionalProperties();
@@ -202,6 +202,21 @@ public class TrafficProfile {
             if (profile.getStream().getPacket().getBinary() == null &&
                     profile.getStream().getPacket().getPcap() != null) {
                 setBinaryFromPcap(yamlFile, profile);
+            }
+        }
+
+        //Adjust next stream ids
+        for (int i=0; i<trafficProfileArray.length; i++) {
+            Profile profile = trafficProfileArray[i];
+
+            if (profile.getNext().equals("-1")) {
+                String nextFromStream = (String) profile.getStream().getAdditionalProperties().getOrDefault("next", null);
+                if (nextFromStream != null) {
+                    Arrays.stream(trafficProfileArray)
+                            .filter(p -> p.getName().equals(nextFromStream))
+                            .findFirst()
+                            .ifPresent( p -> profile.setNext(p.getName()));
+                }
             }
         }
     }
