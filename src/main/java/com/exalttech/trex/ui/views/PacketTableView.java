@@ -53,6 +53,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
+import javafx.util.converter.DefaultStringConverter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -473,13 +474,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
             }
 
-            Profile[] newProfileDataList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
-            tabledata.setStreamsList(trafficProfile.convertProfilesToTableData(newProfileDataList));
-            saveChangesToYamlFile(newProfileDataList);
-
-            if (tableUpdateHandler != null) {
-                tableUpdateHandler.onStreamTableChanged();
-            }
+            refreshTableFromTableData();
         } catch (CloneNotSupportedException | IOException ex) {
             LOG.error("Error duplicating streams", ex);
         }
@@ -523,7 +518,11 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         // index column
         streamPacketTableView.getColumns().add(createStaticTableColumn("Index", "indexProperty", 50, false));
 
-        streamPacketTableView.getColumns().add(createTableColumn("Name", "nameProperty", .17));
+        TableColumn<TableProfileStream, String> nameColumn = createTableColumn("Name", "nameProperty", .17);
+        nameColumn.setCellFactory(column -> new CallbackEditCell<>(this::renameProfile, new DefaultStringConverter()));
+        nameColumn.setEditable(true);
+        streamPacketTableView.getColumns().add(nameColumn);
+
         streamPacketTableView.getColumns().add(createTableColumn("Packet Type", "packetTypeProperty", .24));
         TableColumn lengthColumn = createTableColumn("Length", "lengthProperty", .105);
         lengthColumn.setId("alignedColumn");
@@ -798,6 +797,60 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             }
         });
         rightClickMenu.getItems().add(item);
+    }
+
+    /**
+     * Renames profile with specified index to newName
+     * @param profileIndex index of profile to be renamed
+     * @param newName new name of profile
+     * @return true if success, false otherwise
+     */
+    private boolean renameProfile(Integer profileIndex, String newName) {
+        if (Util.isNullOrEmpty(newName)) {
+            return false;
+        }
+
+        if (tabledata.getProfiles().stream().anyMatch(p -> p.getName().equals(newName))) {
+            return false;
+        }
+
+        if (tabledata.getProfiles().size() <= profileIndex) {
+            return false;
+        }
+
+        try {
+            Profile profile = tabledata.getProfiles().get(profileIndex);
+            String oldName = profile.getName();
+
+            for (Profile p : tabledata.getProfiles()) {
+                if (p.getNext().equals(oldName)) {
+                    p.setNext(newName);
+                }
+            }
+
+            profile.setName(newName);
+
+            refreshTableFromTableData();
+
+            return true;
+
+        } catch (IndexOutOfBoundsException | NullPointerException | IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Updates streams, and table according to contents of tabledata.getProfiles() list
+     * @throws IOException
+     */
+    private void refreshTableFromTableData() throws IOException {
+        Profile[] newProfileDataList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
+        tabledata.setStreamsList(trafficProfile.convertProfilesToTableData(newProfileDataList));
+        saveChangesToYamlFile(newProfileDataList);
+
+        if (tableUpdateHandler != null) {
+            tableUpdateHandler.onStreamTableChanged();
+        }
     }
 
     /**

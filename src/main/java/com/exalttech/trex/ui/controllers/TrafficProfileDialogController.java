@@ -376,6 +376,5 @@ public class TrafficProfileDialogController extends DialogView implements Initia
      */
     @Override
     public void onEnterKeyPressed(Stage stage) {
-        stage.hide();
     }
 }
