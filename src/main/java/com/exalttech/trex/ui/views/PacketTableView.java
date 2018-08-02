@@ -204,6 +204,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         });
 
         streamPacketTableView.addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+            if (isEditingCell()) {
+                return;
+            }
+
             if (copyCombination.match(event)) {
                 copiedProfiles = getSelectedProfiles();
             } else if (pasteCombination.match(event) && !copiedProfiles.isEmpty()) {
@@ -233,6 +237,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         setBottomAnchor(streamPacketTableView, 5d);
         setLeftAnchor(streamPacketTableView, 0d);
         setRightAnchor(streamPacketTableView, 0d);
+    }
+
+    public boolean isEditingCell() {
+        return streamPacketTableView.getEditingCell() != null;
     }
 
     /**
@@ -424,6 +432,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 .map(Profile::getName)
                 .collect(Collectors.toSet());
 
+        if (!profileNames.contains(profileName)) {
+            return profileName;
+        }
+
         Pattern profileWithIndexPattern = Pattern.compile(NUMERATED_PROFILE_REGEX_PATTERN);
         Matcher matcher = profileWithIndexPattern.matcher(profileName);
 
@@ -463,15 +475,14 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
 
             for (Profile profile : newProfiles) {
                 String defaultDuplicateName = getNameOfDuplicate(profile.getName(), profiles);
-                Optional<String> userEnteredName = askUserToEnterStreamName("Duplicate stream", defaultDuplicateName);
-                if (userEnteredName.isPresent()) {
-                    Profile clonedProfile = (Profile) profile.clone();
-
-                    clonedProfile.setName(userEnteredName.get());
-                    clonedProfile.setStreamId(getNewId());
-                    profiles.add(clonedProfile);
+                if (defaultDuplicateName.equals(profile.getName())) {
+                    cloneProfile(profiles, profile, defaultDuplicateName);
+                } else {
+                    Optional<String> userEnteredName = askUserToEnterStreamName("Duplicate stream (" + profile.getName() + ")", defaultDuplicateName);
+                    if (userEnteredName.isPresent()) {
+                        cloneProfile(profiles, profile, userEnteredName.get());
+                    }
                 }
-
             }
 
             refreshTableFromTableData();
@@ -479,6 +490,13 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             LOG.error("Error duplicating streams", ex);
         }
 }
+
+    private void cloneProfile(List<Profile> profiles, Profile profile, String newName) throws CloneNotSupportedException {
+        Profile clonedProfile = (Profile) profile.clone();
+        clonedProfile.setName(newName);
+        clonedProfile.setStreamId(getNewId());
+        profiles.add(clonedProfile);
+    }
 
     private void handlePasteStreams(List<Profile> copiedProfiles) {
         duplicateProfiles(copiedProfiles);
