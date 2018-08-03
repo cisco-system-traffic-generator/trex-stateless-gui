@@ -472,19 +472,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     private void duplicateProfiles(List<Profile> newProfiles) {
         try{
             List<Profile> profiles = tabledata.getProfiles();
-
             for (Profile profile : newProfiles) {
                 String defaultDuplicateName = getNameOfDuplicate(profile.getName(), profiles);
-                if (defaultDuplicateName.equals(profile.getName())) {
-                    cloneProfile(profiles, profile, defaultDuplicateName);
-                } else {
-                    Optional<String> userEnteredName = askUserToEnterStreamName("Duplicate stream (" + profile.getName() + ")", defaultDuplicateName);
-                    if (userEnteredName.isPresent()) {
-                        cloneProfile(profiles, profile, userEnteredName.get());
-                    }
-                }
+                cloneProfile(profiles, profile, defaultDuplicateName);
             }
-
             refreshTableFromTableData();
         } catch (CloneNotSupportedException | IOException ex) {
             LOG.error("Error duplicating streams", ex);
