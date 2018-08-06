@@ -18,6 +18,7 @@ package com.exalttech.trex.core;
 
 import com.cisco.trex.stateless.TRexClient;
 import com.cisco.trex.stateless.exception.TRexConnectionException;
+import com.cisco.trex.stateless.util.IDataCompressor;
 import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
@@ -28,7 +29,6 @@ import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.models.Port;
 import com.exalttech.trex.ui.views.logs.LogType;
 import com.exalttech.trex.ui.views.logs.LogsController;
-import com.exalttech.trex.util.CompressionUtils;
 import com.exalttech.trex.util.Constants;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,26 +46,22 @@ import org.zeromq.ZPoller;
 import zmq.ZError;
 
 import javax.naming.SizeLimitExceededException;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.zip.DataFormatException;
 
 
 public class ConnectionManager {
 
     public static final int MAX_REQUEST_SIZE = 999999; //TrexRpcServerReqRes does not handle requests greater this size
-    public static final int HEADER_SIZE = 8;
+    private static final int HEADER_SIZE = 8; //4 magic bytes and 4 bytes integer (length of request) (see
     private TRexClient trexClient;
     private ScapyServerClient scapyServerClient;
     private static final Logger LOG = Logger.getLogger(ConnectionManager.class.getName());
@@ -81,6 +77,7 @@ public class ConnectionManager {
 
     private final static int INTERNAL_TIMEOUT = 1000;
     private final static int DEFAULT_TIMEOUT = 3000;
+    private IDataCompressor dataCompressor = TrexApp.injector.getInstance(IDataCompressor.class);
 
     public static ConnectionManager getInstance() {
         if (instance == null) {
@@ -329,6 +326,8 @@ public class ConnectionManager {
      * @throws SizeLimitExceededException if there is now possibility to split lists more but there is
      * requests which are not fit (e.g. one request is greater than MAX_REQUEST_SIZE ({@value MAX_REQUEST_SIZE})
      */
+    //TODO move logic to transport layer e.g. not send streams group but send commands (TRexTransport has this method
+    //TODO make transport layer (or TRexClient) to be responsible for splitting and packing huge requests
     private List<List<String>> packMultipleRequestsIntoGroups(List<String> requests) throws SizeLimitExceededException {
         List<List<String>> sendingGroups = new ArrayList<>();
         sendingGroups.add(requests);
@@ -484,7 +483,7 @@ public class ConnectionManager {
 
                     String res;
                     try {
-                        res = getDecompressedString(subscriber.recv());
+                        res = this.dataCompressor.decompressBytesToString(subscriber.recv());
                         if (res != null) {
                             handleAsyncResponse(res);
                         } else {
@@ -521,7 +520,7 @@ public class ConnectionManager {
                     int failsCount = 0;
                     while (!isCancelled() && !Thread.currentThread().isInterrupted()) {
                         try {
-                            final String res = getDecompressedString(subscriber.recv());
+                            final String res = dataCompressor.decompressBytesToString(subscriber.recv());
                             if (res != null) {
                                 handleAsyncResponse(res);
                                 failsCount = 0;
@@ -587,36 +586,6 @@ public class ConnectionManager {
 
     }
 
-    private String getDecompressedString(byte[] data) {
-        if (data == null) return null;
-
-        // if the length is larger than 8 bytes
-        if (data.length > 8) {
-
-            // Take the first 4 bytes
-            byte[] magicBytes = Arrays.copyOfRange(data, 0, 4);
-
-            String magicString = DatatypeConverter.printHexBinary(magicBytes);
-
-            /* check MAGIC in the first 4 bytes in case we have it, it is compressed */
-            String MAGIC_STRING = "ABE85CEA";
-            if (magicString.equals(MAGIC_STRING)) {
-
-                // Skip another  4 bytes containing the uncompressed size of the  message
-                byte[] compressedData = Arrays.copyOfRange(data, 8, data.length);
-
-                try {
-                    return new String(CompressionUtils.decompress(compressedData));
-                } catch (IOException | DataFormatException ex) {
-                    LOG.error("Failed to decompress data ", ex);
-                }
-
-            }
-
-        }
-        return new String(data);
-    }
-
     private void handleAsyncResponse(String res) {
         if (res.contains(Constants.TREX_GLOBAL_TAG)) {
             AsyncResponseManager.getInstance().setTrexGlobalResponse(res);
@@ -668,72 +637,59 @@ public class ConnectionManager {
     }
 
     private byte[] getServerRPCResponse(String request) throws SizeLimitExceededException {
-        try {
-            // prepare compression header
-            ByteBuffer headerByteBuffer = ByteBuffer.allocate(HEADER_SIZE);
-            headerByteBuffer.put((byte) 0xAB);
-            headerByteBuffer.put((byte) 0xE8);
-            headerByteBuffer.put((byte) 0x5C);
-            headerByteBuffer.put((byte) 0xEA);
-            headerByteBuffer.putInt(request.length());
-            byte[] headerBytes = headerByteBuffer.array();
-            // compress request
-            byte[] compressedRequest = CompressionUtils.compress(request.getBytes());
-            byte[] finalRequest = concatByteArrays(headerBytes, compressedRequest);
 
-            if (finalRequest.length >= MAX_REQUEST_SIZE) {
-                throw new SizeLimitExceededException(MessageFormat.format("Size of request is too large (limit is {0} bytes)", MAX_REQUEST_SIZE));
-            }
 
-            byte[] serverResponse;
-            boolean success;
+        byte[] finalRequest = this.dataCompressor.compressStringToBytes(request);
 
-            synchronized (sendRequestMonitor) {
-                if (connectionTimeout.get()) {
-                    return null;
-                }
-                try {
-                    success = requester.send(finalRequest);
-                } catch (ZMQException e) {
-                    if (e.getErrorCode() == ZError.EFSM) {
-                        success = resend(finalRequest);
-                    } else {
-                        throw e;
-                    }
-                }
-                if (success) {
-                    serverResponse = requester.recv(0);
-                    if (serverResponse == null) {
-                        if (requester.base().errno() == ZError.EAGAIN) {
-                            int retries = timeout / INTERNAL_TIMEOUT;
-                            while (serverResponse == null && retries > 0) {
-                                if (connectionTimeout.get()) {
-                                    return null;
-                                }
-
-                                retries--;
-                                serverResponse = requester.recv(0);
-                            }
-                            if (retries == 0 && resend(finalRequest)) {
-                                serverResponse = requester.recv(0);
-                            }
-                        } else {
-                            LOG.error("Error sending request");
-                        }
-                    }
-                } else {
-                    LOG.error("Error sending request");
-                    return null;
-                }
-            }
-
-            return serverResponse == null
-                ? null
-                : getDecompressedString(serverResponse).getBytes();
-        } catch (IOException ex) {
-            LOG.error("Error sending request", ex);
-            return null;
+        if (finalRequest.length >= MAX_REQUEST_SIZE) {
+            throw new SizeLimitExceededException(MessageFormat.format("Size of request is too large (limit is {0} bytes)", MAX_REQUEST_SIZE));
         }
+
+        byte[] serverResponse;
+        boolean success;
+
+        synchronized (sendRequestMonitor) {
+            if (connectionTimeout.get()) {
+                return null;
+            }
+            try {
+                success = requester.send(finalRequest);
+            } catch (ZMQException e) {
+                if (e.getErrorCode() == ZError.EFSM) {
+                    success = resend(finalRequest);
+                } else {
+                    throw e;
+                }
+            }
+            if (success) {
+                serverResponse = requester.recv(0);
+                if (serverResponse == null) {
+                    if (requester.base().errno() == ZError.EAGAIN) {
+                        int retries = timeout / INTERNAL_TIMEOUT;
+                        while (serverResponse == null && retries > 0) {
+                            if (connectionTimeout.get()) {
+                                return null;
+                            }
+
+                            retries--;
+                            serverResponse = requester.recv(0);
+                        }
+                        if (retries == 0 && resend(finalRequest)) {
+                            serverResponse = requester.recv(0);
+                        }
+                    } else {
+                        LOG.error("Error sending request");
+                    }
+                }
+            } else {
+                LOG.error("Error sending request");
+                return null;
+            }
+        }
+
+        return serverResponse == null
+            ? null
+            : dataCompressor.decompressBytesToString(serverResponse).getBytes();
     }
 
     private boolean resend(byte[] msg) {
