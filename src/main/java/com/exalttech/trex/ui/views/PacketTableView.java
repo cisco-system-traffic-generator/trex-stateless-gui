@@ -53,6 +53,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
+import javafx.util.converter.DefaultStringConverter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -65,11 +66,9 @@ import org.pcap4j.packet.namednumber.DataLinkType;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collector;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -80,6 +79,7 @@ import java.util.stream.Collectors;
 public class PacketTableView extends AnchorPane implements EventHandler<ActionEvent>, CheckBoxTableChangeHandler {
 
     private static final Logger LOG = Logger.getLogger(PacketTableView.class.getName());
+    public static final String NUMERATED_PROFILE_REGEX_PATTERN = "(?<baseName>.+?)(?<index>[0-9]+)?$";
 
     StreamTableButton buildPacketBtn;
     StreamTableButton editPacketBtn;
@@ -105,8 +105,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     private boolean doUpdate = false;
     ContextMenu rightClickMenu;
     private File loadedProfile;
-    private DialogWindow srteamWindow;
-    private DialogWindow profileNameWindow;
+    private DialogWindow streamWindow;
 
     /**
      * @param maxHight
@@ -205,6 +204,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         });
 
         streamPacketTableView.addEventFilter(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+            if (isEditingCell()) {
+                return;
+            }
+
             if (copyCombination.match(event)) {
                 copiedProfiles = getSelectedProfiles();
             } else if (pasteCombination.match(event) && !copiedProfiles.isEmpty()) {
@@ -234,6 +237,10 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         setBottomAnchor(streamPacketTableView, 5d);
         setLeftAnchor(streamPacketTableView, 0d);
         setRightAnchor(streamPacketTableView, 0d);
+    }
+
+    public boolean isEditingCell() {
+        return streamPacketTableView.getEditingCell() != null;
     }
 
     /**
@@ -408,17 +415,44 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         return selectedProfiles;
     }
 
-    private String getNewName(String profileName, List<Profile> profiles) {
+    /**
+     * Gets default name for the specified with {@literal profileName}
+     * Tries to match regexp and to increment number if it matches, otherwise adds suffix
+     *
+     * regexp {@value NUMERATED_PROFILE_REGEX_PATTERN} matches these number suffix: <br>
+     * myProfile<b>1</b> <br>
+     * myProfile_<b>1234234</b> <br>
+     * myProfile_<b>1234</b> <br>
+     *
+     * @param profileName name of original profile
+     * @param profiles list of existing profiles (to avoid names collision)
+     */
+    private String getNameOfDuplicate(String profileName, List<Profile> profiles) {
         Set<String> profileNames = profiles.stream()
                 .map(Profile::getName)
                 .collect(Collectors.toSet());
 
-        int availableSuffix = 1;
-        while (profileNames.contains(profileName + "_" + availableSuffix)) {
-            ++availableSuffix;
+        if (!profileNames.contains(profileName)) {
+            return profileName;
         }
 
-        return profileName + "_" + availableSuffix;
+        Pattern profileWithIndexPattern = Pattern.compile(NUMERATED_PROFILE_REGEX_PATTERN);
+        Matcher matcher = profileWithIndexPattern.matcher(profileName);
+
+        int availableSuffix = 1;
+        String baseProfileName = profileName;
+
+        if (matcher.find()) {
+            if (matcher.groupCount() == 2 && !Util.isNullOrEmpty(matcher.group("index"))) {
+                availableSuffix = Integer.parseInt(matcher.group("index"));
+            }
+            baseProfileName = matcher.group("baseName");
+        }
+
+        while (profileNames.contains(baseProfileName + availableSuffix)) {
+            ++availableSuffix;
+        }
+        return baseProfileName + availableSuffix;
     }
 
     private Integer getNewId() {
@@ -438,25 +472,22 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     private void duplicateProfiles(List<Profile> newProfiles) {
         try{
             List<Profile> profiles = tabledata.getProfiles();
-
             for (Profile profile : newProfiles) {
-                Profile clonedProfile = (Profile) profile.clone();
-                clonedProfile.setName(getNewName(profile.getName(), profiles));
-                clonedProfile.setStreamId(getNewId());
-                profiles.add(clonedProfile);
+                String defaultDuplicateName = getNameOfDuplicate(profile.getName(), profiles);
+                cloneProfile(profiles, profile, defaultDuplicateName);
             }
-
-            Profile[] newProfileDataList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
-            tabledata.setStreamsList(trafficProfile.convertProfilesToTableData(newProfileDataList));
-            saveChangesToYamlFile(newProfileDataList);
-
-            if (tableUpdateHandler != null) {
-                tableUpdateHandler.onStreamTableChanged();
-            }
+            refreshTableFromTableData();
         } catch (CloneNotSupportedException | IOException ex) {
             LOG.error("Error duplicating streams", ex);
         }
 }
+
+    private void cloneProfile(List<Profile> profiles, Profile profile, String newName) throws CloneNotSupportedException {
+        Profile clonedProfile = (Profile) profile.clone();
+        clonedProfile.setName(newName);
+        clonedProfile.setStreamId(getNewId());
+        profiles.add(clonedProfile);
+    }
 
     private void handlePasteStreams(List<Profile> copiedProfiles) {
         duplicateProfiles(copiedProfiles);
@@ -496,7 +527,11 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         // index column
         streamPacketTableView.getColumns().add(createStaticTableColumn("Index", "indexProperty", 50, false));
 
-        streamPacketTableView.getColumns().add(createTableColumn("Name", "nameProperty", .17));
+        TableColumn<TableProfileStream, String> nameColumn = createTableColumn("Name", "nameProperty", .17);
+        nameColumn.setCellFactory(column -> new CallbackEditCell<>(this::renameProfile, new DefaultStringConverter()));
+        nameColumn.setEditable(true);
+        streamPacketTableView.getColumns().add(nameColumn);
+
         streamPacketTableView.getColumns().add(createTableColumn("Packet Type", "packetTypeProperty", .24));
         TableColumn lengthColumn = createTableColumn("Length", "lengthProperty", .105);
         lengthColumn.setId("alignedColumn");
@@ -624,12 +659,14 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
                 return;
             }
             setStreamEditingWindowOpen(true);
-            if (srteamWindow == null) {
+            String windowTitle = "Edit Stream (" + data.getName() + ")";
+            if (streamWindow == null) {
                 Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
-                String windowTitle = "Edit Stream (" + data.getName() + ")";
-                srteamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
+                streamWindow = new DialogWindow("PacketBuilderHome.fxml", windowTitle, 40, 30, false, currentStage);
             }
-            PacketBuilderHomeController controller = (PacketBuilderHomeController) srteamWindow.getController();
+            streamWindow.setTitle(windowTitle);
+
+            PacketBuilderHomeController controller = (PacketBuilderHomeController) streamWindow.getController();
 
             boolean streaminited = controller.initStreamBuilder(
                     tabledata.getProfiles(),
@@ -639,7 +676,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             );
 
             if (streaminited) {
-                srteamWindow.show(true);
+                streamWindow.show(true);
             }
             else {
                 LOG.error("Error while initing editor dialog");
@@ -664,22 +701,41 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     private void viewStreamNameWindow(StreamBuilderType type) {
         try {
-            if(profileNameWindow == null) {
-                Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
-                profileNameWindow = new DialogWindow("ProfileStreamNameDialog.fxml", "Add Stream", 150, 100, false, currentStage);
-            }
-            ProfileStreamNameDialogController controller = (ProfileStreamNameDialogController) profileNameWindow.getController();
-            controller.setProfileList(tabledata.getProfiles());
-            controller.setProfileWindow(false);
-            profileNameWindow.show(true);
-            if (controller.isDataAvailable()) {
-                String streamName = controller.getName();
-                handleAddPacket(streamName, type);
-            }
-
+            Optional<String> newStreamName = askUserToEnterStreamName("Add stream", "");
+            newStreamName.ifPresent(name -> {
+                handleAddPacket(name, type);
+            });
         } catch (IOException ex) {
             LOG.error("Error adding new stream", ex);
         }
+    }
+
+    /**
+     * Ask user to enter stream name
+     *
+     * @param dialogTitle
+     * @param defaultName
+     */
+    private Optional<String> askUserToEnterStreamName(String dialogTitle, String defaultName) throws IOException {
+        Stage currentStage = (Stage) streamPacketTableView.getScene().getWindow();
+        DialogWindow profileNameWindow = new DialogWindow("ProfileStreamNameDialog.fxml",
+                dialogTitle,
+                150,
+                100,
+                false,
+                currentStage
+        );
+        ProfileStreamNameDialogController controller = (ProfileStreamNameDialogController) profileNameWindow.getController();
+        controller.setProfileList(tabledata.getProfiles());
+        controller.setDefaultName(defaultName);
+        controller.setProfileWindow(false);
+        profileNameWindow.show(true);
+
+        if (controller.isDataAvailable()) {
+            return Optional.ofNullable(controller.getName());
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -750,6 +806,60 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
             }
         });
         rightClickMenu.getItems().add(item);
+    }
+
+    /**
+     * Renames profile with specified index to newName
+     * @param profileIndex index of profile to be renamed
+     * @param newName new name of profile
+     * @return true if success, false otherwise
+     */
+    private boolean renameProfile(Integer profileIndex, String newName) {
+        if (Util.isNullOrEmpty(newName)) {
+            return false;
+        }
+
+        if (tabledata.getProfiles().stream().anyMatch(p -> p.getName().equals(newName))) {
+            return false;
+        }
+
+        if (tabledata.getProfiles().size() <= profileIndex) {
+            return false;
+        }
+
+        try {
+            Profile profile = tabledata.getProfiles().get(profileIndex);
+            String oldName = profile.getName();
+
+            for (Profile p : tabledata.getProfiles()) {
+                if (p.getNext().equals(oldName)) {
+                    p.setNext(newName);
+                }
+            }
+
+            profile.setName(newName);
+
+            refreshTableFromTableData();
+
+            return true;
+
+        } catch (IndexOutOfBoundsException | NullPointerException | IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Updates streams, and table according to contents of tabledata.getProfiles() list
+     * @throws IOException
+     */
+    private void refreshTableFromTableData() throws IOException {
+        Profile[] newProfileDataList = tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]);
+        tabledata.setStreamsList(trafficProfile.convertProfilesToTableData(newProfileDataList));
+        saveChangesToYamlFile(newProfileDataList);
+
+        if (tableUpdateHandler != null) {
+            tableUpdateHandler.onStreamTableChanged();
+        }
     }
 
     /**

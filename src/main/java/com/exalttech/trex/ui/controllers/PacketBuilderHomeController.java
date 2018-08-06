@@ -173,7 +173,7 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
      * if Scapy is not connected, user decides either switch to Simple mode,
      * or to try to connect or to cancel editing.
      * In case of Simple mode selected by user, stream by profileIndex is switched to Simple mode
-     * @return
+     * @return true if user selects Simple or Advanced mode, false if user cancels
      */
     private boolean prepareToAdvancedIfNecessary(int profileIndex) {
         Stream stream = this.profileList.get(profileIndex).getStream();
