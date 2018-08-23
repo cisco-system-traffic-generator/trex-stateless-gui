@@ -27,7 +27,8 @@ import javax.annotation.Generated;
 @JsonPropertyOrder({
         "dst_mac",
         "handler",
-        "port_id"
+        "port_id",
+        "block"
 })
 public class L2Params extends Params {
 
@@ -37,11 +38,14 @@ public class L2Params extends Params {
     private String handler;
     @JsonProperty("port_id")
     private Integer portId;
+    @JsonProperty("block")
+    private Boolean block;
 
-    public L2Params(Integer portId, String handler, String dst_mac) {
+    public L2Params(Integer portId, String handler, String dst_mac, Boolean block) {
         this.handler = handler;
         this.portId = portId;
         this.dst_mac = dst_mac;
+        this.block = block;
     }
 
     @JsonProperty("dst_mac")
@@ -74,4 +78,13 @@ public class L2Params extends Params {
         this.portId = portId;
     }
 
+    @JsonProperty("block")
+    public Boolean getBlock() {
+        return block;
+    }
+
+    @JsonProperty("block")
+    public void setBlock(Boolean block) {
+        this.block = block;
+    }
 }
