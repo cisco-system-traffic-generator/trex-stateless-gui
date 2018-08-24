@@ -411,7 +411,7 @@ public class RPCMethods {
         LogsController.getInstance().appendText(LogType.INFO, logstr);
 
         String handler = (String) connectionHandler.get(portID);
-        L2Params l2params = new L2Params(portID, handler, dst_mac);
+        L2Params l2params = new L2Params(portID, handler, dst_mac, false);
 
         String response = serverConnectionManager.sendRPCRequest(Constants.SET_L2_METHOD, l2params);
 
@@ -425,7 +425,7 @@ public class RPCMethods {
         LogsController.getInstance().appendText(LogType.INFO, logstr);
 
         String handler = (String) connectionHandler.get(portID);
-        L3Params l3params = new L3Params(portID, handler, dst_ipv4, src_ipv4);
+        L3Params l3params = new L3Params(portID, handler, dst_ipv4, src_ipv4, false);
 
         String response = serverConnectionManager.sendRPCRequest(Constants.SET_L3_METHOD, l3params);
 

@@ -24,6 +24,7 @@ import com.exalttech.trex.remote.exceptions.IncorrectRPCMethodException;
 import com.exalttech.trex.remote.exceptions.InvalidRPCResponseException;
 import com.exalttech.trex.remote.models.common.RPCError;
 import com.exalttech.trex.remote.models.common.RPCRequest;
+import com.exalttech.trex.remote.models.params.GetPortStatusParams;
 import com.exalttech.trex.remote.models.params.Params;
 import com.exalttech.trex.remote.models.profiles.Profile;
 import com.exalttech.trex.ui.models.Port;
@@ -383,8 +384,7 @@ public class ConnectionManager {
         for (Port port : portList) {
             rpcRequest.setId(Util.getRandomID(Constants.RPC_REQUEST_ID_LENGTH));
             rpcRequest.setMethod(Constants.PORT_STATUS_METHOD);
-            rpcRequest.setParams(port.getPortParam());
-
+            rpcRequest.setParams(new GetPortStatusParams(port.getIndex(), false));
             jsonRequestString = mapper.writeValueAsString(rpcRequest);
             jsonRequestString = Util.tuneJSONParams(jsonRequestString, port.getPortParam(), apiH);
             addStreamCommandList.add(jsonRequestString);

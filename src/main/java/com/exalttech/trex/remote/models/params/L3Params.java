@@ -28,7 +28,8 @@ import javax.annotation.Generated;
         "dst_addr",
         "src_addr",
         "handler",
-        "port_id"
+        "port_id",
+        "block"
 })
 public class L3Params extends Params {
 
@@ -40,12 +41,16 @@ public class L3Params extends Params {
     private String handler;
     @JsonProperty("port_id")
     private Integer portId;
+    @JsonProperty("block")
+    private Boolean block;
 
-    public L3Params(Integer portId, String handler, String dst_addr, String src_addr) {
+    public L3Params(Integer portId, String handler, String dst_addr, String src_addr, Boolean block) {
         this.handler = handler;
         this.portId = portId;
         this.dst_addr = dst_addr;
         this.src_addr = src_addr;
+        this.block = block;
+
     }
 
     @JsonProperty("dst_addr")
@@ -86,6 +91,16 @@ public class L3Params extends Params {
     @JsonProperty("port_id")
     public void setPortId(Integer portId) {
         this.portId = portId;
+    }
+
+    @JsonProperty("block")
+    public Boolean getBlock() {
+        return block;
+    }
+
+    @JsonProperty("block")
+    public void setBlock(Boolean block) {
+        this.block = block;
     }
 
 }
