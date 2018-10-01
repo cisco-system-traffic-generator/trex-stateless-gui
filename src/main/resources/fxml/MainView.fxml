@@ -60,6 +60,9 @@
                               text="Open Monitor"
                               onAction="#handleCaptureItemClicked"/>
                 </Menu>
+                <Menu mnemonicParsing="false" text="TRex Daemon">
+                    <MenuItem fx:id="trexDaemonConnect" text="Open TRex Daemon" onAction="#handleTRexDaemonItemClick"/>
+                </Menu>
                 <Menu mnemonicParsing="false"
                       text="Help">
                     <MenuItem mnemonicParsing="false"
