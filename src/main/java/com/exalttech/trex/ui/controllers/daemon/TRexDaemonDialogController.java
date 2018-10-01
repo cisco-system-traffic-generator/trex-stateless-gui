@@ -16,6 +16,7 @@
 
 package com.exalttech.trex.ui.controllers.daemon;
 
+import com.exalttech.trex.application.TrexApp;
 import com.exalttech.trex.ui.dialog.DialogView;
 import com.exalttech.trex.ui.models.datastore.Connection;
 import com.exalttech.trex.ui.models.datastore.ConnectionsWrapper;
@@ -122,7 +123,10 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
     public TextArea yamlPreviewTextfield;
 
     private JsonRpcClient client;
+
     private List<MetaField> metadata;
+    private Map<String, InterfaceInfo> interfacesInfo;
+
     private UserConfigModel userConfigModel;
     private String configFilename;
 
@@ -205,6 +209,10 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
         if (isConnected()) {
             client = null;
             metadata = null;
+
+            interfacesInfo = null;
+            TrexApp.injector.getInstance(InterfaceInfoProvider.class).setInterfacesInfo(null);
+
             configContainer.getChildren().clear();
             log(LogType.INFO, MessageFormat.format("Disconnected from http://{0}:{1}", getHostname(), getPort()));
             refreshControlsAvailability();
@@ -255,6 +263,19 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
             log(LogType.ERROR, "Unable to get TRex config Metadata, custom config usage will not be available: " + ex.getMessage());
             return;
         }
+
+        try {
+            interfacesInfo = client.createRequest()
+                    .id(getId())
+                    .method("get_devices_info")
+                    .returnAs(new TypeReference<Map<String, InterfaceInfo>>() {})
+                    .execute();
+            TrexApp.injector.getInstance(InterfaceInfoProvider.class).setInterfacesInfo(interfacesInfo);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            log(LogType.ERROR, "Unable to get TRex devices info, interface selection dialog will not be available: " + ex.getMessage());
+        }
+
         initUserConfigModel();
         initConfigTree();
         updateYAML();
@@ -306,6 +327,7 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
                     .param("trex_cmd_options", cmdParams)
                     .param("user", System.getProperty("user.name"))
                     .param("stateless", true)
+                    .param("block_to_success", false)
                     .returnAs(Integer.class)
                     .execute();
             log(LogType.INFO, "TRex started successfully");

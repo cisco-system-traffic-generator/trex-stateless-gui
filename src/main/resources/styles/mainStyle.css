@@ -1487,7 +1487,7 @@ ToggleSwitch {
     -fx-underline: true;
 }
 
-.text-field.invalid-input {
+.text-field.invalid-input, .invalid-input .text-field {
     -fx-border-color: #ea2323;
 }
 

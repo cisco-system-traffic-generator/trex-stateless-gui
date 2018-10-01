@@ -1,5 +1,8 @@
 package com.exalttech.trex.ui.controllers.daemon;
 
+import com.exalttech.trex.application.TrexApp;
+import com.exalttech.trex.ui.dialog.DialogWindow;
+import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.util.Util;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -10,6 +13,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+
+import java.io.IOException;
+import java.util.Objects;
 
 class ConfigTreeItem extends TreeItem {
 
@@ -52,8 +58,7 @@ class ConfigTreeItem extends TreeItem {
 
     private void initTreeItemValue() {
         HBox itemContainer = new HBox();
-        itemContainer.setSpacing(10);
-        itemContainer.setAlignment(Pos.BOTTOM_LEFT);
+        itemContainer.setSpacing(5d);
         itemContainer.getChildren().add(createLabel());
 
         Region spacing = new Region();
@@ -129,6 +134,9 @@ class ConfigTreeItem extends TreeItem {
             case NUMBER:
             case FLOAT:
             case STRING:
+                if (configNode.getParent() != null && Objects.equals(configNode.getParent().getId(), "interfaces")) { // hardcoded interfaces control
+                    return createInterfacesSelectionControl();
+                }
             case IP:
             case MAC:
                 return createTextFieldControl();
@@ -142,6 +150,49 @@ class ConfigTreeItem extends TreeItem {
         }
     }
 
+    private Node createInterfacesSelectionControl() {
+        HBox hbox = new HBox();
+        hbox.setSpacing(5d);
+        TextField textFieldControl = createTextFieldControl();
+        Button selectInterface = new Button("Select");
+        selectInterface.getStyleClass().add("normalButton");
+        selectInterface.setOnAction(event -> {
+            try {
+                DialogWindow selectInterfaceDialog = new DialogWindow(
+                        "InterfaceSelectDialog.fxml",
+                        "Select interface",
+                        300,
+                        100,
+                        false,
+                        TrexApp.getPrimaryStage()
+                );
+                selectInterfaceDialog.show(true);
+                String selected = ((InterfaceSelectDialogController) selectInterfaceDialog.getController()).getSelectedString();
+                textFieldControl.setText(selected);
+            } catch (IOException e) {
+                TrexAlertBuilder.build()
+                        .setType(Alert.AlertType.ERROR)
+                        .setContent("Unable to open interface dialog. You should enter interface manually")
+                        .getAlert()
+                        .showAndWait();
+            }
+        });
+
+        if (!TrexApp.injector.getInstance(InterfaceInfoProvider.class).hasInfo()) {
+            selectInterface.setDisable(true);
+
+            Tooltip tooltip = new Tooltip("Interface info is not available. You should enter interface manually");
+            tooltip.setWrapText(true);
+            tooltip.setMaxWidth(300);
+            textFieldControl.setTooltip(tooltip);
+        }
+
+        hbox.getChildren().add(selectInterface);
+        hbox.getChildren().add(textFieldControl);
+
+        return hbox;
+    }
+
     private Node createListControl() {
         Button button = new Button("➕");
         button.getStyleClass().add("normalButton");
@@ -152,8 +203,6 @@ class ConfigTreeItem extends TreeItem {
             this.getChildren().add(treeItem);
         });
 
-        updateItemStyle();
-
         return button;
     }
 
@@ -162,6 +211,14 @@ class ConfigTreeItem extends TreeItem {
         CheckBox checkboxValue = new CheckBox("Value");
 
         checkboxValue.disableProperty().bind(checkboxUse.selectedProperty().not());
+
+        if (configNode.getValue() != null) {
+            checkboxUse.setSelected(true);
+            checkboxValue.setSelected((Boolean)configNode.getValue());
+        } else {
+            checkboxUse.setSelected(configNode.isMandatory());
+            checkboxValue.setSelected(configNode.getDefaultValue().equals("true"));
+        }
 
         ChangeListener<Boolean> changeListener = (observable, oldValue, newValue) -> {
             if (!checkboxUse.isSelected()) {
@@ -181,19 +238,10 @@ class ConfigTreeItem extends TreeItem {
         hbox.getChildren().add(checkboxUse);
         hbox.getChildren().add(checkboxValue);
 
-        if (configNode.getValue() != null) {
-            checkboxUse.setSelected(true);
-        }
-
-        checkboxUse.setSelected(configNode.isMandatory());
-        checkboxValue.setSelected(configNode.getDefaultValue().equals("true"));
-
-        updateItemStyle();
-
         return hbox;
     }
 
-    private Node createTextFieldControl() {
+    private TextField createTextFieldControl() {
         TextField textfield = new TextField();
         textfield.setPromptText(configNode.getDefaultValue());
 
@@ -211,8 +259,6 @@ class ConfigTreeItem extends TreeItem {
         if (configNode.getValue() != null) {
             textfield.setText(configNode.getValue().toString());
         }
-
-        updateItemStyle();
 
         return textfield;
     }

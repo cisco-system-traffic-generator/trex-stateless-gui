@@ -167,7 +167,7 @@ public class ConfigNode {
             return childrenValues;
 
         } else if (getType() == MetaField.Type.OBJECT) {
-            Map<String, Object> childrenMap = new HashMap<>();
+            Map<String, Object> childrenMap = new LinkedHashMap<>();
             getChildren().stream()
                     .filter(field -> field.getValue() != null)
                     .forEach(field -> childrenMap.put(field.meta.id, field.getValue()));
@@ -178,6 +178,15 @@ public class ConfigNode {
             return childrenMap;
 
         } else {
+            try {
+                if (getType() == MetaField.Type.NUMBER) {
+                    return Integer.parseInt((String) value);
+                } else if (getType() == MetaField.Type.FLOAT) {
+                    return Float.parseFloat((String) value);
+                }
+            } catch (Exception ignored) {
+
+            }
             return value;
         }
     }

@@ -65,7 +65,7 @@
                   <children>
                      <VBox prefHeight="400.0" prefWidth="711.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <children>
-                           <Button fx:id="loadDefaultConfigButton" mnemonicParsing="false" styleClass="normalButton" text="Load default config" onAction="#handleLoadDefaultConfigClicked">
+                           <Button fx:id="loadDefaultConfigButton" mnemonicParsing="false" onAction="#handleLoadDefaultConfigClicked" styleClass="normalButton" text="Load default config">
                               <VBox.margin>
                                  <Insets bottom="10.0" />
                               </VBox.margin>
@@ -81,7 +81,7 @@
                                              <Insets left="5.0" right="5.0" top="5.0" />
                                           </padding>
                                        </Label>
-                                       <TextArea fx:id="yamlPreviewTextfield" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                       <TextArea fx:id="yamlPreviewTextfield" editable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                           <VBox.margin>
                                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                           </VBox.margin>
@@ -108,12 +108,12 @@
          </TabPane>
          <HBox alignment="TOP_RIGHT" VBox.vgrow="NEVER">
             <children>
-               <Button fx:id="stopTRexButton" mnemonicParsing="false" styleClass="normalButton" text="Stop" onAction="#handleStopClicked">
+               <Button fx:id="stopTRexButton" mnemonicParsing="false" onAction="#handleStopClicked" styleClass="normalButton" text="Stop">
                   <HBox.margin>
                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                   </HBox.margin>
                </Button>
-               <Button fx:id="startTRexButton" mnemonicParsing="false" styleClass="normalButton" text="Start" onAction="#handleStartClicked">
+               <Button fx:id="startTRexButton" mnemonicParsing="false" onAction="#handleStartClicked" styleClass="normalButton" text="Start">
                   <HBox.margin>
                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                   </HBox.margin>

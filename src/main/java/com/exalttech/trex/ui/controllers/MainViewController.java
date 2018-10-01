@@ -1811,7 +1811,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
                         50,
                         10,
                         1200,
-                        640,
+                        750,
                         true,
                         TrexApp.getPrimaryStage()
                 );
