@@ -133,6 +133,7 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
     private List<Control> controlsDisabledOnDisconnected;
     private List<Control> controlsDisabledOnConnected;
     private List<Control> controlsDisabledOnMetadataNotExists;
+    private List<Control> controlsDisabledOnConfigInvalid;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -140,6 +141,7 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
         controlsDisabledOnConnected = Arrays.asList(hostnamesComboBox, rpcPortTextField, connectButton);
         controlsDisabledOnDisconnected = Arrays.asList(disconnectButton, startTRexButton, stopTRexButton);
         controlsDisabledOnMetadataNotExists = Arrays.asList(configEditTitledPane, loadDefaultConfigButton);
+        controlsDisabledOnConfigInvalid = Arrays.asList(startTRexButton);
         configEditTitledPane.expandedProperty().bind(configEditTitledPane.disableProperty().not());
         this.configFilename = System.getProperty("user.name");
         refreshControlsAvailability();
@@ -198,6 +200,12 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
 
         for (Control control: controlsDisabledOnMetadataNotExists) {
             control.setDisable(this.metadata == null);
+        }
+
+        for (Control control: controlsDisabledOnConfigInvalid) {
+            if (userConfigModel != null && !userConfigModel.isValid()) {
+                control.setDisable(true);
+            }
         }
     }
 
@@ -327,8 +335,8 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
                     .param("trex_cmd_options", cmdParams)
                     .param("user", System.getProperty("user.name"))
                     .param("stateless", true)
-                    .param("block_to_success", false)
                     .returnAs(Integer.class)
+                    .param("timeout", 15)
                     .execute();
             log(LogType.INFO, "TRex started successfully");
         } catch (RuntimeException ex) {
@@ -369,6 +377,7 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
     private void updateYAML() {
         try {
             yamlPreviewTextfield.setText(userConfigModel.getYAMLString());
+            refreshControlsAvailability();
         } catch (JsonProcessingException e) {
             log(LogType.ERROR, MessageFormat.format("Unable to get YAML conents: {0}", e));
         }

@@ -48,6 +48,10 @@ public class UserConfigModel {
         return "### errors in config:\n# "+ errors.stream().collect(Collectors.joining("\n# "));
     }
 
+    public boolean isValid() {
+        return getErrors().isEmpty();
+    }
+
     private List<String> getErrors() {
         List<String> errors = new ArrayList<>();
         for (ConfigNode node : valuedata) {
