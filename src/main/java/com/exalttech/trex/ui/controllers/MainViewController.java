@@ -220,6 +220,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
     private DialogWindow captureWindow;
     private DialogWindow preferencesWindow;
     private DialogWindow dashboardWindow;
+    private DialogWindow trexDaemonWindow;
 
     private SystemInfoReq systemInfoReq = null;
     private PacketTableView tableView;
@@ -1793,6 +1794,32 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
             devicesTreeArrowContainer.setImage(leftArrow);
         }
         treeviewOpened = !treeviewOpened;
+    }
+
+    /**
+     * Handle menu item connect to TRex Daemon
+     *
+     * @param actionEvent
+     */
+    @FXML
+    public void handleTRexDaemonItemClick(ActionEvent actionEvent) {
+        try {
+            if (trexDaemonWindow == null) {
+                trexDaemonWindow = new DialogWindow(
+                        "TRexDaemonDialog.fxml",
+                        "TRex Daemon",
+                        50,
+                        10,
+                        1200,
+                        750,
+                        true,
+                        TrexApp.getPrimaryStage()
+                );
+            }
+            trexDaemonWindow.show(false);
+        } catch (IOException ex) {
+            LOG.error("Error opening TRex Daemon view", ex);
+        }
     }
 
     /**

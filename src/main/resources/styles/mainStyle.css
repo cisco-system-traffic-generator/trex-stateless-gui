@@ -1475,3 +1475,23 @@ ToggleSwitch {
 .stats-table-marked-cell {
     -fx-opacity: 0.5;
 }
+
+
+/* TRex Daemon */
+.non-mandatory-treeitem {
+ -fx-text-fill: #808080;
+}
+
+.invalid-input {
+    -fx-text-fill: #ea2323 !important;
+    -fx-underline: true;
+}
+
+.text-field.invalid-input, .invalid-input .text-field {
+    -fx-border-color: #ea2323;
+}
+
+.normalButton.invalid-input {
+    -fx-text-fill: #FFFFFF !important;
+    -fx-underline: false;
+}

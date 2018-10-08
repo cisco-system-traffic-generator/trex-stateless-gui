@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<?import com.exalttech.trex.ui.views.logs.LogsView?>
+
+<AnchorPane prefHeight="550.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.exalttech.trex.ui.controllers.daemon.TRexDaemonDialogController">
+    <children>
+        <VBox spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <HBox alignment="CENTER_LEFT" prefWidth="200.0" VBox.vgrow="NEVER">
+            <children>
+               <Label text="TRex Daemon host">
+                  <padding>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </padding>
+               </Label>
+               <ComboBox fx:id="hostnamesComboBox" editable="true" prefHeight="26.0" prefWidth="177.0">
+                  <HBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </HBox.margin>
+               </ComboBox>
+               <Label text="Port">
+                  <padding>
+                     <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
+                  </padding>
+               </Label>
+               <TextField fx:id="rpcPortTextField" text="8090">
+                  <HBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </HBox.margin>
+               </TextField>
+               <Button fx:id="connectButton" defaultButton="true" onAction="#handleConnectClicked" styleClass="normalButton" text="Connect">
+                  <HBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </HBox.margin>
+               </Button>
+               <Button fx:id="disconnectButton" cancelButton="true" disable="true" onAction="#handleDisconnectClicked" styleClass="normalButton" text="Disconnect">
+                  <HBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </HBox.margin>
+               </Button>
+            </children>
+            <VBox.margin>
+               <Insets />
+            </VBox.margin>
+            <opaqueInsets>
+               <Insets />
+            </opaqueInsets>
+         </HBox>
+         <TitledPane fx:id="configEditTitledPane" animated="true" text="TRex config edit">
+           <content>
+             <AnchorPane minHeight="0.0" minWidth="0.0">
+                  <children>
+                     <VBox prefHeight="400.0" prefWidth="711.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <children>
+                           <Button fx:id="loadDefaultConfigButton" mnemonicParsing="false" onAction="#handleLoadDefaultConfigClicked" styleClass="normalButton" text="Load default config">
+                              <VBox.margin>
+                                 <Insets bottom="10.0" />
+                              </VBox.margin>
+                           </Button>
+                           <SplitPane dividerPositions="0.5" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                              <items>
+                                  <AnchorPane fx:id="configContainer">
+                                  </AnchorPane>
+                                 <VBox prefHeight="200.0" prefWidth="100.0">
+                                    <children>
+                                       <Label text="YAML preview:">
+                                          <padding>
+                                             <Insets left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                       </Label>
+                                       <TextArea fx:id="yamlPreviewTextfield" editable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                          <VBox.margin>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </VBox.margin>
+                                       </TextArea>
+                                    </children>
+                                 </VBox>
+                              </items>
+                           </SplitPane>
+                        </children>
+                     </VBox>
+                  </children></AnchorPane>
+           </content>
+         </TitledPane>
+         <TabPane prefHeight="180.0" prefWidth="200.0" styleClass="logTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="SOMETIMES">
+           <tabs>
+             <Tab text="Log view">
+                 <content>
+                     <AnchorPane fx:id="logContainer">
+                         <LogsView fx:id="logsView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+                     </AnchorPane>
+                 </content>
+               </Tab>
+           </tabs>
+         </TabPane>
+         <HBox alignment="TOP_RIGHT" VBox.vgrow="NEVER">
+            <children>
+               <Button fx:id="stopTRexButton" mnemonicParsing="false" onAction="#handleStopClicked" styleClass="normalButton" text="Stop">
+                  <HBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </HBox.margin>
+               </Button>
+               <Button fx:id="startTRexButton" mnemonicParsing="false" onAction="#handleStartClicked" styleClass="normalButton" text="Start">
+                  <HBox.margin>
+                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                  </HBox.margin>
+               </Button>
+            </children>
+         </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

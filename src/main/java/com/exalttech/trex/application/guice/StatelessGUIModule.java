@@ -5,6 +5,7 @@ import com.cisco.trex.stateless.util.TRexDataCompressor;
 import com.cisco.trex.stl.gui.storages.StatsStorage;
 import com.cisco.trex.stl.gui.util.RunningConfiguration;
 import com.exalttech.trex.core.RPCMethods;
+import com.exalttech.trex.ui.controllers.daemon.InterfaceInfoProvider;
 import com.exalttech.trex.ui.views.streams.builder.ProtocolDataView;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
@@ -20,5 +21,6 @@ public class StatelessGUIModule extends AbstractModule {
         bind(ProtocolDataView.class).toProvider(ProtocolDataViewProvider.class);
         bind(StatsStorage.class).in(Singleton.class);
         bind(IDataCompressor.class).to(TRexDataCompressor.class);
+        bind(InterfaceInfoProvider.class).in(Singleton.class);
     }
 }
