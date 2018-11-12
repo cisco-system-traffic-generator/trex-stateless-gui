@@ -388,7 +388,9 @@ public class ImportedPacketTableView extends AnchorPane {
         }
 
         // add ipv4 checksum instructions
-        instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
+        if (instructionsList.size() > 0) {
+            instructionsList.addAll(vmInstructionBuilder.addChecksumInstruction());
+        }
 
         Map<String, Object> additionalProperties = new HashMap<>();
 
