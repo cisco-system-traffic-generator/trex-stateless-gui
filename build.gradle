@@ -102,7 +102,7 @@ apply plugin: 'javafx-gradle-plugin'
 
 buildscript {
     dependencies {
-        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.7.0'
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.+'
     }
     repositories {
         mavenLocal()
@@ -112,6 +112,7 @@ buildscript {
 }
 import org.apache.tools.ant.taskdefs.condition.Os;
 jfx {
+    verbose = true
     mainClass = mainClassName
     jfxMainAppJarName = "trex-stateless-gui.jar"
     appName = "trex-stateless-gui"
