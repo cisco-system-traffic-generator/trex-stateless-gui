@@ -68,6 +68,7 @@ Now you can monitor activity on TRex ports without connecting to the TRex consol
 Also you can redirect the traffic into pre-installed Wireshark application. Find more on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki)
 
 ## Advanced mode with Packet Crafting tool
+
 Packet Crafting Tool provides a capability to create any packet from scratch or load packet from PCAP file and modify it.
 ![Packet Crafting Tool](https://raw.githubusercontent.com/kisel/trex-packet-editor-gui/master/docs/trex-packet-editor-main-dlg.png)
 
@@ -76,6 +77,12 @@ Field Engine provides an easy way to add TRex VM instructions to a stream.
 <img src="https://cloud.githubusercontent.com/assets/2825175/20897636/b69ef016-bb55-11e6-8d7e-0e68c3c22311.png" width="400">
 
 Find more information about Packet Crafting tool on [Wiki page](https://github.com/cisco-system-traffic-generator/trex-stateless-gui/wiki#packet-editor)
+
+## TRex Daemon control
+
+![Started TRex](https://user-images.githubusercontent.com/35273613/50143880-4e3c1100-02e0-11e9-9c83-c2980f045395.png)
+
+TRex Daemon control could be used to start TRex with config defined with your needs. It provides ability to start and stop TRex, while editing it's config using convenient GUI.
 
 ##  Builds 
 
