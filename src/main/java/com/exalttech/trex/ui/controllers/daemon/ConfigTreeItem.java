@@ -194,7 +194,7 @@ class ConfigTreeItem extends TreeItem {
     }
 
     private Node createListControl() {
-        Button button = new Button("➕");
+        Button button = new Button("\u2795");
         button.getStyleClass().add("normalButton");
         button.setOnAction(event -> {
             ConfigNode newChild = this.configNode.addListItem();
