@@ -39,6 +39,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -322,7 +323,7 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
                         .returnAs(String.class)
                         .execute();
 
-                cmdParams.put("cfg", Paths.get(files_path, configFilename));
+                cmdParams.put("cfg", FilenameUtils.separatorsToUnix(Paths.get(files_path, configFilename).toString()));
             } catch (RuntimeException ex) {
                 log(LogType.ERROR, MessageFormat.format("Unable to get user configs path: {0}", ex));
             }
