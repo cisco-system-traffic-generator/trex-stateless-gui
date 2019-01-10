@@ -6,8 +6,8 @@ import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.util.Util;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -144,6 +144,8 @@ class ConfigTreeItem extends TreeItem {
                 return createCheckBoxControl();
             case LIST:
                 return createListControl();
+            case ENUM:
+                return createEnumControl();
             case OBJECT:
             default:
                 return null;
@@ -194,13 +196,14 @@ class ConfigTreeItem extends TreeItem {
     }
 
     private Node createListControl() {
-        Button button = new Button("➕");
+        Button button = new Button("\u2795");
         button.getStyleClass().add("normalButton");
         button.setOnAction(event -> {
             ConfigNode newChild = this.configNode.addListItem();
             yamlUpdateCallback.run();
             TreeItem treeItem = new ConfigTreeItem(newChild, yamlUpdateCallback, treeConfigUpdateCallback);
             this.getChildren().add(treeItem);
+            this.setExpanded(true);
         });
 
         return button;
@@ -243,7 +246,11 @@ class ConfigTreeItem extends TreeItem {
 
     private TextField createTextFieldControl() {
         TextField textfield = new TextField();
-        textfield.setPromptText(configNode.getDefaultValue());
+        if (Util.isNullOrEmpty(configNode.getDefaultValue())) {
+            textfield.setPromptText(configNode.getType().name());
+        } else {
+            textfield.setPromptText(configNode.getDefaultValue());
+        }
 
         textfield.textProperty().addListener((observable, oldValue, newValue) -> {
             if (Util.isNullOrEmpty(newValue)) {
@@ -261,5 +268,27 @@ class ConfigTreeItem extends TreeItem {
         }
 
         return textfield;
+    }
+
+
+    private ComboBox createEnumControl() {
+        ComboBox<Object> comboBox = new ComboBox<>();
+        comboBox.setItems(FXCollections.observableList(configNode.getValues()));
+        if (configNode.getValue() != null && configNode.getValues().contains(configNode.getValue())) {
+            comboBox.getSelectionModel().select(configNode.getValue());
+        } else {
+            comboBox.getSelectionModel().select("Not selected");
+        }
+        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (configNode.getValues().contains(newValue)) {
+                configNode.setValue(newValue);
+            } else {
+                configNode.setValue("Not selected");
+            }
+            updateItemStyle();
+            yamlUpdateCallback.run();
+        });
+
+        return comboBox;
     }
 }

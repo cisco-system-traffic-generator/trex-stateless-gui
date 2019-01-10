@@ -4,11 +4,15 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 
-class ConfigTreeView extends TreeView {
+public class ConfigTreeView extends TreeView {
     private UserConfigModel userConfigModel;
     private Runnable yamlUpdateCallback;
-
+    private String title;
     public ConfigTreeView(UserConfigModel metadata, Runnable yamlUpdateCallback) {
+        this(metadata, yamlUpdateCallback, "TRex config");
+    }
+
+    public ConfigTreeView(UserConfigModel metadata, Runnable yamlUpdateCallback, String title) {
 
         AnchorPane.setBottomAnchor(this, 0.0);
         AnchorPane.setTopAnchor(this, 0.0);
@@ -17,12 +21,12 @@ class ConfigTreeView extends TreeView {
 
         this.userConfigModel = metadata;
         this.yamlUpdateCallback = yamlUpdateCallback;
-
+        this.title = title;
         rebuildFromValueData();
     }
 
     public void rebuildFromValueData() {
-        this.setRoot(new TreeItem("TRex config"));
+        this.setRoot(new TreeItem(this.title));
 
         for (ConfigNode configNode : this.userConfigModel.getValueFields()) {
             TreeItem newItem = new ConfigTreeItem(configNode, yamlUpdateCallback, this::rebuildFromValueData);
