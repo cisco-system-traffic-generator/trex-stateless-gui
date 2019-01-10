@@ -6,8 +6,8 @@ import com.exalttech.trex.ui.util.TrexAlertBuilder;
 import com.exalttech.trex.util.Util;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -18,17 +18,14 @@ import java.io.IOException;
 import java.util.Objects;
 
 class ConfigTreeItem extends TreeItem {
-
-    private Runnable treeConfigUpdateCallback;
-    private Runnable yamlUpdateCallback;
+    private Runnable configUpdateCallback;
     private ConfigNode configNode;
     private Label label;
     private Node control;
 
-    public ConfigTreeItem(ConfigNode configNode, Runnable yamlUpdateCallback, Runnable treeConfigUpdateCallback) {
+    public ConfigTreeItem(ConfigNode configNode, Runnable configUpdateCallback) {
         this.configNode = configNode;
-        this.yamlUpdateCallback = yamlUpdateCallback;
-        this.treeConfigUpdateCallback = treeConfigUpdateCallback;
+        this.configUpdateCallback = configUpdateCallback;
         initTreeItem();
     }
 
@@ -51,7 +48,7 @@ class ConfigTreeItem extends TreeItem {
 
     private void initChildren() {
         for (ConfigNode configNode : this.configNode.getChildren()) {
-            TreeItem treeItem = new ConfigTreeItem(configNode, yamlUpdateCallback, treeConfigUpdateCallback);
+            TreeItem treeItem = new ConfigTreeItem(configNode, configUpdateCallback);
             this.getChildren().add(treeItem);
         }
     }
@@ -86,7 +83,7 @@ class ConfigTreeItem extends TreeItem {
                 configNode.getParent().getChildren().remove(configNode);
             }
             getParent().getChildren().remove(this);
-            yamlUpdateCallback.run();
+            configUpdateCallback.run();
         });
         return removeButton;
     }
@@ -144,6 +141,8 @@ class ConfigTreeItem extends TreeItem {
                 return createCheckBoxControl();
             case LIST:
                 return createListControl();
+            case ENUM:
+                return createEnumControl();
             case OBJECT:
             default:
                 return null;
@@ -198,9 +197,10 @@ class ConfigTreeItem extends TreeItem {
         button.getStyleClass().add("normalButton");
         button.setOnAction(event -> {
             ConfigNode newChild = this.configNode.addListItem();
-            yamlUpdateCallback.run();
-            TreeItem treeItem = new ConfigTreeItem(newChild, yamlUpdateCallback, treeConfigUpdateCallback);
+            configUpdateCallback.run();
+            TreeItem treeItem = new ConfigTreeItem(newChild, configUpdateCallback);
             this.getChildren().add(treeItem);
+            this.setExpanded(true);
         });
 
         return button;
@@ -227,7 +227,7 @@ class ConfigTreeItem extends TreeItem {
                 configNode.setValue(checkboxValue.isSelected());
             }
             updateItemStyle();
-            yamlUpdateCallback.run();
+            configUpdateCallback.run();
         };
 
         checkboxUse.selectedProperty().addListener(changeListener);
@@ -243,7 +243,11 @@ class ConfigTreeItem extends TreeItem {
 
     private TextField createTextFieldControl() {
         TextField textfield = new TextField();
-        textfield.setPromptText(configNode.getDefaultValue());
+        if (Util.isNullOrEmpty(configNode.getDefaultValue())) {
+            textfield.setPromptText(configNode.getType().name());
+        } else {
+            textfield.setPromptText(configNode.getDefaultValue());
+        }
 
         textfield.textProperty().addListener((observable, oldValue, newValue) -> {
             if (Util.isNullOrEmpty(newValue)) {
@@ -253,7 +257,7 @@ class ConfigTreeItem extends TreeItem {
 
             }
             updateItemStyle();
-            yamlUpdateCallback.run();
+            configUpdateCallback.run();
         });
 
         if (configNode.getValue() != null) {
@@ -261,5 +265,27 @@ class ConfigTreeItem extends TreeItem {
         }
 
         return textfield;
+    }
+
+
+    private ComboBox createEnumControl() {
+        ComboBox<Object> comboBox = new ComboBox<>();
+        comboBox.setItems(FXCollections.observableList(configNode.getValues()));
+        if (configNode.getValue() != null && configNode.getValues().contains(configNode.getValue())) {
+            comboBox.getSelectionModel().select(configNode.getValue());
+        } else {
+            comboBox.getSelectionModel().select("Not selected");
+        }
+        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (configNode.getValues().contains(newValue)) {
+                configNode.setValue(newValue);
+            } else {
+                configNode.setValue("Not selected");
+            }
+            updateItemStyle();
+            configUpdateCallback.run();
+        });
+
+        return comboBox;
     }
 }

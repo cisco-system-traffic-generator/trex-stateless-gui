@@ -27,16 +27,6 @@ public class UserConfigModel {
         }
     }
 
-    public List<Object> asList() {
-        Map<String, Object> config = new LinkedHashMap<>();
-        for (ConfigNode configNode : valuedata) {
-            if (configNode.getValue() != null) {
-                config.put(configNode.getId(), configNode.getValue());
-            }
-        }
-        return Collections.singletonList(config);
-    }
-
     public String getYAMLString() throws JsonProcessingException {
         List<String> errors = getErrors();
 
@@ -52,7 +42,7 @@ public class UserConfigModel {
         return getErrors().isEmpty();
     }
 
-    private List<String> getErrors() {
+    public List<String> getErrors() {
         List<String> errors = new ArrayList<>();
         for (ConfigNode node : valuedata) {
             errors.addAll(node.getValidationErrors());
@@ -61,9 +51,26 @@ public class UserConfigModel {
     }
 
     public void fromList(List<Object> list) {
+        fromMap((Map<String, Object>)list.get(0));
+    }
+
+    public List<Object> asList() {
+        return Collections.singletonList(asMap());
+    }
+
+    public Map<String, Object> asMap() {
+        Map<String, Object> config = new LinkedHashMap<>();
+        for (ConfigNode configNode : valuedata) {
+            if (configNode.getValue() != null) {
+                config.put(configNode.getId(), configNode.getValue());
+            }
+        }
+        return config;
+    }
+
+    public void fromMap(Map<String, Object> map) {
         initFromMetadata();
-        Map<String, Object> defaultConfig = (Map<String, Object>)list.get(0);
-        for (Map.Entry<String, Object> entry: defaultConfig.entrySet()) {
+        for (Map.Entry<String, Object> entry: map.entrySet()) {
             valuedata.stream()
                     .filter(x -> x.getId().equals(entry.getKey()))
                     .findFirst()

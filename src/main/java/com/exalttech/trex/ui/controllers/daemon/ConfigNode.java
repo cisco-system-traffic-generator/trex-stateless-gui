@@ -63,13 +63,33 @@ public class ConfigNode {
     }
 
     private void initValidator() {
-        validationMap.put(MetaField.Type.STRING, val -> { String casted = (String) value; });
-        validationMap.put(MetaField.Type.NUMBER, val -> Integer.parseInt((String) value));
-        validationMap.put(MetaField.Type.FLOAT, val -> Float.parseFloat((String) value));
-        validationMap.put(MetaField.Type.BOOLEAN, val -> { boolean casted = (boolean) value; });
-        validationMap.put(MetaField.Type.IP, val -> InetAddresses.forString((String) value));
+        validationMap.put(MetaField.Type.STRING, val -> { String casted = (String) val; });
+        validationMap.put(MetaField.Type.NUMBER, val -> {
+            if (val instanceof String) {
+                Integer.parseInt((String) val);
+            } else if (!(val instanceof Integer)) {
+                throw new Exception();
+            }
+        });
+
+        validationMap.put(MetaField.Type.FLOAT, val -> {
+            if (val instanceof String) {
+                Float.parseFloat((String) val);
+            } else if (!(val instanceof Float)) {
+                throw new Exception();
+            }
+        });
+
+        validationMap.put(MetaField.Type.BOOLEAN, val -> { boolean casted = (boolean) val; });
+        validationMap.put(MetaField.Type.IP, val -> InetAddresses.forString((String) val));
         validationMap.put(MetaField.Type.MAC, val -> {
-            if (!Pattern.matches("^([0-9a-fA-F]{2}:){5}([0-9a-fA-F]{2})$", (String) value)) {
+            if (!Pattern.matches("^([0-9a-fA-F]{2}:){5}([0-9a-fA-F]{2})$", (String) val)) {
+                throw new Exception();
+            }
+        });
+
+        validationMap.put(MetaField.Type.ENUM, val -> {
+            if (!getValues().contains(val)) {
                 throw new Exception();
             }
         });
@@ -128,6 +148,10 @@ public class ConfigNode {
 
     public String getId() {
         return meta.id;
+    }
+
+    public List<Object> getValues() {
+        return meta.values;
     }
 
     public void setValue(Object newValue) {
