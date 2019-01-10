@@ -18,17 +18,14 @@ import java.io.IOException;
 import java.util.Objects;
 
 class ConfigTreeItem extends TreeItem {
-
-    private Runnable treeConfigUpdateCallback;
-    private Runnable yamlUpdateCallback;
+    private Runnable configUpdateCallback;
     private ConfigNode configNode;
     private Label label;
     private Node control;
 
-    public ConfigTreeItem(ConfigNode configNode, Runnable yamlUpdateCallback, Runnable treeConfigUpdateCallback) {
+    public ConfigTreeItem(ConfigNode configNode, Runnable configUpdateCallback) {
         this.configNode = configNode;
-        this.yamlUpdateCallback = yamlUpdateCallback;
-        this.treeConfigUpdateCallback = treeConfigUpdateCallback;
+        this.configUpdateCallback = configUpdateCallback;
         initTreeItem();
     }
 
@@ -51,7 +48,7 @@ class ConfigTreeItem extends TreeItem {
 
     private void initChildren() {
         for (ConfigNode configNode : this.configNode.getChildren()) {
-            TreeItem treeItem = new ConfigTreeItem(configNode, yamlUpdateCallback, treeConfigUpdateCallback);
+            TreeItem treeItem = new ConfigTreeItem(configNode, configUpdateCallback);
             this.getChildren().add(treeItem);
         }
     }
@@ -86,7 +83,7 @@ class ConfigTreeItem extends TreeItem {
                 configNode.getParent().getChildren().remove(configNode);
             }
             getParent().getChildren().remove(this);
-            yamlUpdateCallback.run();
+            configUpdateCallback.run();
         });
         return removeButton;
     }
@@ -200,8 +197,8 @@ class ConfigTreeItem extends TreeItem {
         button.getStyleClass().add("normalButton");
         button.setOnAction(event -> {
             ConfigNode newChild = this.configNode.addListItem();
-            yamlUpdateCallback.run();
-            TreeItem treeItem = new ConfigTreeItem(newChild, yamlUpdateCallback, treeConfigUpdateCallback);
+            configUpdateCallback.run();
+            TreeItem treeItem = new ConfigTreeItem(newChild, configUpdateCallback);
             this.getChildren().add(treeItem);
             this.setExpanded(true);
         });
@@ -230,7 +227,7 @@ class ConfigTreeItem extends TreeItem {
                 configNode.setValue(checkboxValue.isSelected());
             }
             updateItemStyle();
-            yamlUpdateCallback.run();
+            configUpdateCallback.run();
         };
 
         checkboxUse.selectedProperty().addListener(changeListener);
@@ -260,7 +257,7 @@ class ConfigTreeItem extends TreeItem {
 
             }
             updateItemStyle();
-            yamlUpdateCallback.run();
+            configUpdateCallback.run();
         });
 
         if (configNode.getValue() != null) {
@@ -286,7 +283,7 @@ class ConfigTreeItem extends TreeItem {
                 configNode.setValue("Not selected");
             }
             updateItemStyle();
-            yamlUpdateCallback.run();
+            configUpdateCallback.run();
         });
 
         return comboBox;
