@@ -17,6 +17,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.WindowEvent;
 
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,6 +65,10 @@ public class StreamsController extends FlowStatsBaseController {
         table.add(new StatisticLabelCell("Rx pkts", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 8);
         table.add(new StatisticLabelCell("Tx bytes", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 9);
         table.add(new StatisticLabelCell("Rx bytes", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 10);
+        table.add(new StatisticLabelCell("opackets", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 11);
+        table.add(new StatisticLabelCell("ipackets", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 12);
+        table.add(new StatisticLabelCell("obytes", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 13);
+        table.add(new StatisticLabelCell("ibytes", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 14);
 
         int rowIndex = 1;
 
@@ -110,6 +115,10 @@ public class StreamsController extends FlowStatsBaseController {
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rp), true, "pkts"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 8);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(tb), true, "B"), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 9);
                 table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(rb), true, "B"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 10);
+                table.add(new StatisticLabelCell(String.valueOf(tp), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 11);
+                table.add(new StatisticLabelCell(String.valueOf(rp), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 12);
+                table.add(new StatisticLabelCell(String.valueOf(tb), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 13);
+                table.add(new StatisticLabelCell(String.valueOf(rb), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 14);
 
                 rowIndex++;
             }
