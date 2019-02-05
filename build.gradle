@@ -12,9 +12,6 @@ if (!hasProperty('mainClass')) {
     ext.mainClass = mainClassName
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 repositories {  
      maven { url "http://oss.sonatype.org/content/groups/public/" }
      if (!project.hasProperty('local')) {
@@ -45,7 +42,7 @@ test {
 task uiTest(type: Test) {
     description 'Runs UI testing(E2E)'
     outputs.upToDateWhen { false }
-    testClassesDir = sourceSets.uiTest.output.classesDir
+    testClassesDirs = sourceSets.uiTest.output.classesDirs
     classpath = sourceSets.uiTest.runtimeClasspath
 
     testLogging {
@@ -65,6 +62,8 @@ dependencies {
 
     compile project(':trex-packet-editor')
     compile project(':trex-java-sdk')
+    compile files('libs/controlsfx-9.0.0.jar')
+
     compile group: 'org.pcap4j', name: 'pcap4j-core', version:'1.7.0'
     compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version:'1.7.0'
     compile group: 'com.aquafx-project', name: 'aquafx', version:'0.1'
@@ -77,6 +76,11 @@ dependencies {
     compile group: 'commons-io', name: 'commons-io', version:'2.4'
     compile group: 'commons-lang', name: 'commons-lang', version:'2.4'
     compile group: 'com.google.code.gson', name: 'gson', version:'2.7'
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.0'
+    compile group: 'javax.activation', name: 'activation', version: '1.1.1'
+
     compile(group: 'log4j', name: 'log4j', version:'1.2.15') {
         exclude(module: 'mail')
         exclude(module: 'jms')

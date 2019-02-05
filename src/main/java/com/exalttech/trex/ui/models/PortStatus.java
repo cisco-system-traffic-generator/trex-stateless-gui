@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javafx.beans.property.*;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 /**
  * Port status response data model

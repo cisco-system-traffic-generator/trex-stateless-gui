@@ -15,7 +15,7 @@
  */
 package com.exalttech.trex.remote.models.profiles;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;

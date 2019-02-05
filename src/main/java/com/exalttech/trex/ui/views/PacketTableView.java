@@ -37,7 +37,6 @@ import com.exalttech.trex.util.Util;
 import com.exalttech.trex.util.files.FileManager;
 import com.exalttech.trex.util.files.FileType;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -45,6 +44,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.skin.TableHeaderRow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
@@ -219,16 +219,11 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         streamPacketTableView.setEditable(true);
         initializeTableColumn();
         // disable table reordering
+	// TODO: port to jdk 9
         streamPacketTableView.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> source, Number oldWidth, Number newWidth) {
-                TableHeaderRow header = (TableHeaderRow) streamPacketTableView.lookup("TableHeaderRow");
-                header.reorderingProperty().addListener(new ChangeListener<Boolean>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                        header.setReordering(false);
-                    }
-                });
+                streamPacketTableView.getColumns().forEach(col -> col.setReorderable(false));
             }
         });
 

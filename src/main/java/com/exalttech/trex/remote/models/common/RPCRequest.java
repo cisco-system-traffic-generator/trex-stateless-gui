@@ -19,7 +19,7 @@ import com.exalttech.trex.remote.models.params.Params;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 /**
  * RPC request model

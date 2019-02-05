@@ -18,7 +18,7 @@ package com.exalttech.trex.remote.models.profiles;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.annotation.*;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import java.util.HashMap;
 import java.util.Map;
 
