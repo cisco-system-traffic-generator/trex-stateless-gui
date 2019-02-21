@@ -13,6 +13,7 @@ public class FlowStatPoint {
     private double tbsL1;
     private double tbsL2;
     private long tp;
+    private double packetLossPerSecond;
     private double tps;
     private double time;
 
@@ -27,6 +28,7 @@ public class FlowStatPoint {
         tps = flowStat.getTps().values().stream().mapToDouble(Double::doubleValue).sum();
         tbsL1 = tbsL2 + 20 * tps * 8;
         rbsL1 = rbsL2 + 20 * rps * 8;
+        packetLossPerSecond = tps - rps;
         this.time = time;
     }
 
@@ -71,5 +73,9 @@ public class FlowStatPoint {
 
     public double getTime() {
         return time;
+    }
+
+    public double getPacketLossPerSecond() {
+        return packetLossPerSecond;
     }
 }

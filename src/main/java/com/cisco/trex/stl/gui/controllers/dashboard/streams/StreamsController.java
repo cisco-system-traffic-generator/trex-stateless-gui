@@ -49,7 +49,7 @@ public class StreamsController extends FlowStatsBaseController {
 
     @Override
     protected void render() {
-        int firstColumnWidth = 120;
+        int firstColumnWidth = 190;
         int secondHeaderWidth = 150;
 
         table.getChildren().clear();
@@ -69,6 +69,8 @@ public class StreamsController extends FlowStatsBaseController {
         table.add(new StatisticLabelCell("ipackets", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 12);
         table.add(new StatisticLabelCell("obytes", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 13);
         table.add(new StatisticLabelCell("ibytes", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 14);
+        table.add(new StatisticLabelCell("packet loss (total)", firstColumnWidth, false, CellType.DEFAULT_CELL, false), 0, 15);
+        table.add(new StatisticLabelCell("packet loss (per second)", firstColumnWidth, true, CellType.DEFAULT_CELL, false), 0, 16);
 
         int rowIndex = 1;
 
@@ -119,6 +121,8 @@ public class StreamsController extends FlowStatsBaseController {
                 table.add(new StatisticLabelCell(String.valueOf(rp), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 12);
                 table.add(new StatisticLabelCell(String.valueOf(tb), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 13);
                 table.add(new StatisticLabelCell(String.valueOf(rb), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 14);
+                table.add(new StatisticLabelCell(String.valueOf(tp - rp), secondHeaderWidth, false, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 15);
+                table.add(new StatisticLabelCell(Util.getFormatted(String.valueOf(round(flowStatPoint.getPacketLossPerSecond())), true, "pkt/s"), secondHeaderWidth, true, CellType.DEFAULT_CELL, true, isStopped), rowIndex, 16);
 
                 rowIndex++;
             }
