@@ -164,6 +164,7 @@ public class PacketUpdater {
                 } else {
                     builder.get(IpV4Packet.Builder.class).dstAddr(modifiedAddress);
                 }
+                builder.get(IpV4Packet.Builder.class).correctChecksumAtBuild(true);
                 packet = builder.build();
             }
 
@@ -186,6 +187,7 @@ public class PacketUpdater {
                 } else {
                     builder.get(IpV4Packet.Builder.class).srcAddr(modifiedAddress);
                 }
+                builder.get(IpV4Packet.Builder.class).correctChecksumAtBuild(true);
                 packet = builder.build();
             }
         } catch (Exception ex) {
