@@ -15,6 +15,7 @@ public class ChartsFactory {
         public static final String JITTER_LATENCY = "Jitter Latency";
         public static final String TEMPORARY_MAX_LATENCY = "Temporary Max Latency";
         public static final String LATENCY_HISTOGRAM = "Latency Histogram";
+        public static final String PACKET_LOSS = "Packet loss";
     }
 
     public static FlowChartController create(String chartType, IntegerProperty interval) {
@@ -25,6 +26,8 @@ public class ChartsFactory {
                 return new RxPpsController(interval);
             case ChartTypes.TX_BPS_L1:
                 return new TxBpsL1Controller(interval);
+            case ChartTypes.PACKET_LOSS:
+                return new PacketLossController(interval);
             case ChartTypes.TX_BPS_L2:
                 return new TxBpsL2Controller(interval);
             case ChartTypes.RX_BPS_L2:

@@ -50,6 +50,7 @@ public class ChartContainerController extends AnchorPane {
                 createContextMenuItem(ChartsFactory.ChartTypes.TX_BPS_L1),
                 createContextMenuItem(ChartsFactory.ChartTypes.TX_BPS_L2),
                 createContextMenuItem(ChartsFactory.ChartTypes.RX_BPS_L2),
+                createContextMenuItem(ChartsFactory.ChartTypes.PACKET_LOSS),
                 new SeparatorMenuItem(),
                 createContextMenuItem(ChartsFactory.ChartTypes.MAX_LATENCY, runningConfiguration.latencyEnabledProperty()),
                 createContextMenuItem(ChartsFactory.ChartTypes.AVG_LATENCY, runningConfiguration.latencyEnabledProperty()),
