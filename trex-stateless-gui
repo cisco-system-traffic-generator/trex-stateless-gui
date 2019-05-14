@@ -4,7 +4,7 @@ BASE="$(dirname "$0")"
 cd "$BASE"
 
 show_install_java() {
-    echo 'Please download and install latest Oracle Java Runtime environment(JRE)'
+    echo 'Please download and install latest Oracle Java 8 Runtime environment (JRE8)'
     echo ' and add it to PATH environment variable'
     echo 'Java download location: https://java.com/ru/download/'
     echo 'Manually choose package(or different OS): https://java.com/ru/download/manual.jsp'
