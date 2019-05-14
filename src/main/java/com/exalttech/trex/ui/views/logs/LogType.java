@@ -34,6 +34,10 @@ public enum LogType {
     /**
      *
      */
+    WARNING("Warning  ", "logWarning"),
+    /**
+     *
+     */
     ERROR("Error ", "logError"),
     /**
      *

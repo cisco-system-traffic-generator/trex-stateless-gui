@@ -878,6 +878,9 @@ connectContent .titled-pane:focused .title .arrow-button .arrow {
 .logInfo{
     -fx-text-fill:#29bf4c;
 }
+.logWarning{
+    -fx-text-fill:#ff9514;
+}
 .logError{
     -fx-text-fill:#ea2323;
 }

@@ -30,6 +30,7 @@ import com.github.arteam.simplejsonrpc.client.Transport;
 import com.google.common.base.Charsets;
 import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -56,6 +57,7 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * TRex Daemon FXM controller
@@ -85,6 +87,11 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
                 return EntityUtils.toString(httpResponse.getEntity(), Charsets.UTF_8);
             }
         }
+    }
+
+    @FunctionalInterface
+    interface ExceptionHandler {
+        void handle(Throwable ex);
     }
 
     @FXML
@@ -117,6 +124,8 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
     @FXML
     private Button startTRexButton;
 
+    @FXML TextField startTRexTimeoutTextField;
+
     @FXML
     private Button loadDefaultConfigButton;
 
@@ -130,21 +139,31 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
 
     private UserConfigModel userConfigModel;
     private String configFilename;
+    private Task<Void> currentPendingTask;
 
     private List<Control> controlsDisabledOnDisconnected;
     private List<Control> controlsDisabledOnConnected;
     private List<Control> controlsDisabledOnMetadataNotExists;
     private List<Control> controlsDisabledOnConfigInvalid;
-
+    private List<Control> controlsDisabledOnPendingTask;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initHostnamesComboBox();
         controlsDisabledOnConnected = Arrays.asList(hostnamesComboBox, rpcPortTextField, connectButton);
-        controlsDisabledOnDisconnected = Arrays.asList(disconnectButton, startTRexButton, stopTRexButton);
+        controlsDisabledOnDisconnected = Arrays.asList(disconnectButton, startTRexButton, startTRexTimeoutTextField, stopTRexButton);
         controlsDisabledOnMetadataNotExists = Arrays.asList(configEditTitledPane, loadDefaultConfigButton);
-        controlsDisabledOnConfigInvalid = Arrays.asList(startTRexButton);
+        controlsDisabledOnConfigInvalid = Collections.singletonList(startTRexButton);
+        controlsDisabledOnPendingTask = Arrays.asList(hostnamesComboBox, rpcPortTextField, connectButton, startTRexButton, startTRexTimeoutTextField, stopTRexButton, loadDefaultConfigButton);
+
         configEditTitledPane.expandedProperty().bind(configEditTitledPane.disableProperty().not());
-        this.configFilename = System.getProperty("user.name");
+        configFilename = System.getProperty("user.name");
+
+        startTRexTimeoutTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                startTRexTimeoutTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
         refreshControlsAvailability();
     }
 
@@ -208,6 +227,12 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
                 control.setDisable(true);
             }
         }
+
+        if (currentPendingTask != null) {
+            for (Control control : controlsDisabledOnPendingTask) {
+                control.setDisable(true);
+            }
+        }
     }
 
     private boolean isConnected() {
@@ -216,6 +241,12 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
 
     private void disconnect() {
         if (isConnected()) {
+
+            if (currentPendingTask != null){
+                currentPendingTask.cancel();
+                currentPendingTask = null;
+            }
+
             client = null;
             metadata = null;
 
@@ -256,6 +287,10 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
         return rpcPortTextField.getText();
     }
 
+    private Integer getStartTimeout() {
+        return Integer.valueOf(startTRexTimeoutTextField.getText());
+    }
+
     private String getHostname() {
         return hostnamesComboBox.getSelectionModel().getSelectedItem();
     }
@@ -291,58 +326,93 @@ public class TRexDaemonDialogController extends DialogView implements Initializa
     }
 
     private void startTRex() {
-        Boolean configUploaded = false;
-        try {
-            configUploaded = client.createRequest()
-                    .id(getId())
-                    .method("push_file")
-                    .param("filename", configFilename)
-                    .param("bin_data", Base64.getEncoder().encodeToString(
-                            userConfigModel.getYAMLString().getBytes(Charsets.US_ASCII)))
-                    .returnAs(Boolean.class)
-                    .execute();
+        scheduleTask(() -> {
+                    try {
+                        Boolean configUploaded = client.createRequest()
+                                .id(getId())
+                                .method("push_file")
+                                .param("filename", configFilename)
+                                .param("bin_data", Base64.getEncoder().encodeToString(
+                                        userConfigModel.getYAMLString().getBytes(Charsets.US_ASCII)))
+                                .returnAs(Boolean.class)
+                                .execute();
 
-            if (!configUploaded) {
-                log(LogType.ERROR, "Config upload to TRex host failed (TRex Daemon IO error)");
+                        if (!configUploaded) {
+                            throw new RuntimeException("Config upload to TRex host failed (TRex Daemon IO error)");
+                        }
+
+                        log(LogType.INFO, "Config was uploaded successfully");
+                    } catch (RuntimeException ex) {
+                        throw new RuntimeException(MessageFormat.format("Config upload to TRex host failed: {0}", ex));
+                    } catch (JsonProcessingException ex) {
+                        throw new RuntimeException(MessageFormat.format("Config serialization failed: {0}", ex));
+                    }
+
+                    Map<String, Object> cmdParams = new HashMap<>();
+                    try {
+                        String files_path = client.createRequest()
+                                .id(getId())
+                                .method("get_files_path")
+                                .returnAs(String.class)
+                                .execute();
+
+                        cmdParams.put("cfg", FilenameUtils.separatorsToUnix(Paths.get(files_path, configFilename).toString()));
+                    } catch (RuntimeException ex) {
+                        throw new RuntimeException(MessageFormat.format("Unable to get user configs path: {0}", ex));
+                    }
+
+                    try {
+                        log(LogType.INFO, MessageFormat.format("Starting TRex... (timeout is {0} sec)", getStartTimeout()));
+                        client.createRequest()
+                                .id(getId())
+                                .method("start_trex")
+                                .param("trex_cmd_options", cmdParams)
+                                .param("user", System.getProperty("user.name"))
+                                .param("stateless", true)
+                                .returnAs(Integer.class)
+                                .param("timeout", getStartTimeout())
+                                .execute();
+
+                    } catch (RuntimeException ex) {
+                        throw new RuntimeException(MessageFormat.format("Unable to start TRex: {0} ", ex));
+                    }
+                    return null;
+                },
+                ex -> log(LogType.ERROR, ex.getMessage()),
+                () -> log(LogType.INFO, "TRex was started successfully"),
+                () -> log(LogType.WARNING, "TRex start was cancelled")
+        );
+    }
+
+    private void scheduleTask(Callable<Void> mainAction, ExceptionHandler onException, Runnable onSucceed, Runnable onCanceled) {
+        if (currentPendingTask != null) {
+            currentPendingTask.cancel();
+        }
+
+        currentPendingTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                return mainAction.call();
             }
+        };
+        currentPendingTask.setOnFailed(event -> {
+            onException.handle(currentPendingTask.getException());
+            currentPendingTask = null;
+            refreshControlsAvailability();
+        });
+        currentPendingTask.setOnSucceeded(event -> {
+            onSucceed.run();
+            currentPendingTask = null;
+            refreshControlsAvailability();
+        });
+        currentPendingTask.setOnCancelled(event -> {
+            onCanceled.run();
+            currentPendingTask = null;
+            refreshControlsAvailability();
+        });
 
-            log(LogType.INFO, "Config uploaded successfully");
-        } catch (RuntimeException ex) {
-            log(LogType.ERROR, MessageFormat.format("Config upload to TRex host failed: {0}", ex));
-        } catch (JsonProcessingException ex) {
-            log(LogType.ERROR, MessageFormat.format("Config serialization failed: {0}", ex));
-        }
-
-        Map<String, Object> cmdParams = new HashMap<>();
-
-        if (configUploaded) {
-            try {
-                String files_path = client.createRequest()
-                        .id(getId())
-                        .method("get_files_path")
-                        .returnAs(String.class)
-                        .execute();
-
-                cmdParams.put("cfg", FilenameUtils.separatorsToUnix(Paths.get(files_path, configFilename).toString()));
-            } catch (RuntimeException ex) {
-                log(LogType.ERROR, MessageFormat.format("Unable to get user configs path: {0}", ex));
-            }
-        }
-
-        try {
-            Integer trexSessionHandler = client.createRequest()
-                    .id(getId())
-                    .method("start_trex")
-                    .param("trex_cmd_options", cmdParams)
-                    .param("user", System.getProperty("user.name"))
-                    .param("stateless", true)
-                    .returnAs(Integer.class)
-                    .param("timeout", 15)
-                    .execute();
-            log(LogType.INFO, "TRex started successfully");
-        } catch (RuntimeException ex) {
-            log(LogType.ERROR, MessageFormat.format("Unable to start TRex: {0} ", ex));
-        }
+        new Thread(currentPendingTask).start();
+        refreshControlsAvailability();
     }
 
     private void stopTRex() {

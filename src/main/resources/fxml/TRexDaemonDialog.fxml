@@ -12,6 +12,7 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <?import com.exalttech.trex.ui.views.logs.LogsView?>
@@ -36,7 +37,7 @@
                      <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
                   </padding>
                </Label>
-               <TextField fx:id="rpcPortTextField" text="8090">
+               <TextField fx:id="rpcPortTextField" maxWidth="60.0" text="8090">
                   <HBox.margin>
                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                   </HBox.margin>
@@ -52,12 +53,6 @@
                   </HBox.margin>
                </Button>
             </children>
-            <VBox.margin>
-               <Insets />
-            </VBox.margin>
-            <opaqueInsets>
-               <Insets />
-            </opaqueInsets>
          </HBox>
          <TitledPane fx:id="configEditTitledPane" animated="true" text="TRex config edit">
            <content>
@@ -106,13 +101,23 @@
                </Tab>
            </tabs>
          </TabPane>
-         <HBox alignment="TOP_RIGHT" VBox.vgrow="NEVER">
+         <HBox alignment="CENTER_RIGHT" VBox.vgrow="NEVER">
             <children>
                <Button fx:id="stopTRexButton" mnemonicParsing="false" onAction="#handleStopClicked" styleClass="normalButton" text="Stop">
                   <HBox.margin>
                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                   </HBox.margin>
                </Button>
+                <Label text="Start timeout">
+                    <padding>
+                        <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="startTRexTimeoutTextField" maxWidth="60.0" text="40">
+                    <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </HBox.margin>
+                </TextField>
                <Button fx:id="startTRexButton" mnemonicParsing="false" onAction="#handleStartClicked" styleClass="normalButton" text="Start">
                   <HBox.margin>
                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
