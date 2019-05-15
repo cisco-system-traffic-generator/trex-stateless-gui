@@ -73,9 +73,30 @@ public class PacketUpdater {
             }
             packet = updateSrcAddress(packet);
             packet = updateDstAddress(packet);
+            packet = fixL3L4Checksums(packet);
         }
 
         return packet;
+    }
+
+    private Packet fixL3L4Checksums(Packet packet) {
+        Packet.Builder builder = packet.getBuilder();
+        builder.get(IpV4Packet.Builder.class).correctChecksumAtBuild(true);
+
+        TcpPacket.Builder tcpBuilder = builder.get(TcpPacket.Builder.class);
+        if (tcpBuilder != null) {
+            tcpBuilder.srcAddr(packet.get(IpV4Packet.class).getHeader().getSrcAddr());
+            tcpBuilder.dstAddr(packet.get(IpV4Packet.class).getHeader().getDstAddr());
+            tcpBuilder.correctChecksumAtBuild(true);
+        }
+
+        UdpPacket.Builder udpBuilder = builder.get(UdpPacket.Builder.class);
+        if (udpBuilder != null) {
+            udpBuilder.srcAddr(packet.get(IpV4Packet.class).getHeader().getSrcAddr());
+            udpBuilder.dstAddr(packet.get(IpV4Packet.class).getHeader().getDstAddr());
+            udpBuilder.correctChecksumAtBuild(true);
+        }
+        return builder.build();
     }
 
     /**
@@ -164,7 +185,6 @@ public class PacketUpdater {
                 } else {
                     builder.get(IpV4Packet.Builder.class).dstAddr(modifiedAddress);
                 }
-                builder.get(IpV4Packet.Builder.class).correctChecksumAtBuild(true);
                 packet = builder.build();
             }
 
@@ -187,7 +207,6 @@ public class PacketUpdater {
                 } else {
                     builder.get(IpV4Packet.Builder.class).srcAddr(modifiedAddress);
                 }
-                builder.get(IpV4Packet.Builder.class).correctChecksumAtBuild(true);
                 packet = builder.build();
             }
         } catch (Exception ex) {

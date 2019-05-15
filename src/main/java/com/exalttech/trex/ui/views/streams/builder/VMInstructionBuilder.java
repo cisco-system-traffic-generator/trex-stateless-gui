@@ -26,7 +26,20 @@ import java.util.List;
  * @author Georgekh
  */
 public class VMInstructionBuilder {
+    public enum ChecksumFixHwCs {
+        L4_TYPE_UDP(11),
+        L4_TYPE_TCP(13),
+        L4_TYPE_IP(17);
 
+        private int code;
+        ChecksumFixHwCs(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return this.code;
+        }
+    }
     boolean isAddFixIPV4Checksum = false;
     String splitByVar = "";
     int vmCacheSize = 0;
@@ -142,8 +155,12 @@ public class VMInstructionBuilder {
     public List<Object> addChecksumInstruction() {
         ArrayList<Object> vmInstructionList = new ArrayList<>();
         LinkedHashMap<String, Object> checksumInstruction = new LinkedHashMap<>();
-        checksumInstruction.put("pkt_offset", isTaggedVlan ? 18 : 14);
-        checksumInstruction.put("type", "fix_checksum_ipv4");
+        int l3Offset = isTaggedVlan ? 18 : 14;
+        int l4Offset = l3Offset + 20;
+        checksumInstruction.put("type", "fix_checksum_hw");
+        checksumInstruction.put("l2_len", l3Offset);
+        checksumInstruction.put("l3_len", l4Offset);
+        checksumInstruction.put("l4_type", ChecksumFixHwCs.L4_TYPE_IP.getCode());
         vmInstructionList.add(checksumInstruction);
 
         return vmInstructionList;
