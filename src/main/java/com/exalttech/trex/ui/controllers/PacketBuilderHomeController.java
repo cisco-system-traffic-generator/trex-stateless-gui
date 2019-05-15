@@ -192,38 +192,14 @@ public class PacketBuilderHomeController extends DialogView implements Initializ
                 "Please, refer to documentation about\n" +
                 "Scapy server and advanced mode.";
 
-        ButtonType tryConnect = new ButtonType("Connect", ButtonBar.ButtonData.YES);
-        ButtonType continueSimple = new ButtonType("Simple Mode", ButtonBar.ButtonData.NO);
-
-        while (true) {
-            Optional<ButtonType> userSelection = TrexAlertBuilder.build()
-                    .setType(Alert.AlertType.WARNING)
-                    .setHeader("Scapy server connection required")
-                    .setContent(warningText)
-                    .setButtons(tryConnect, continueSimple, ButtonType.CANCEL)
-                    .getAlert()
-                    .showAndWait();
-
-            if (!userSelection.isPresent() || userSelection.get().equals(ButtonType.CANCEL)) {
-                return false;
-            } else if (userSelection.get().equals(continueSimple)) {
-                stream.setAdvancedMode(false);
-                return true;
-            }
-
-            eventBus.post(new ScapyClientNeedConnectEvent()); // trying to connect
-
-            if (ConnectionManager.getInstance().isScapyConnected()) {
-                stream.setAdvancedMode(true);
-                return true;
-            }
-
-            TrexAlertBuilder.build()
-                    .setType(Alert.AlertType.ERROR)
-                    .setContent("Connection to Scapy server failed.")
-                    .getAlert()
-                    .showAndWait();
-        }
+        TrexAlertBuilder.build()
+                .setType(Alert.AlertType.WARNING)
+                .setHeader("Scapy server connection required")
+                .setContent(warningText)
+                .setButtons(ButtonType.OK)
+                .getAlert()
+                .showAndWait();
+        return false;
     }
 
     private void initEditStream() throws IOException {
