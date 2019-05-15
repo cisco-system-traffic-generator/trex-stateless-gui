@@ -100,9 +100,6 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     final KeyCombination pasteCombination = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN);
     private List<Profile> copiedProfiles = new ArrayList<>();
     private String profileName;
-    int numOfStreamLoaded = 0;
-    int numOfEnabledStream = 0;
-    private boolean doUpdate = false;
     ContextMenu rightClickMenu;
     private File loadedProfile;
     private DialogWindow streamWindow;
@@ -303,7 +300,6 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      * @param type
      */
     public void handleAddPacket(String streamName, StreamBuilderType type) {
-        doUpdate = false;
         TableProfileStream newRow = new TableProfileStream();
         newRow.setName(streamName);
         tabledata.getStreamsList().add(newRow);
@@ -511,7 +507,8 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
         String yamlData = trafficProfile.convertTrafficProfileToYaml(profiles);
         FileUtils.writeStringToFile(new File(tabledata.getYamlFileName()), yamlData);
         streamPacketTableView.setItems(FXCollections.observableArrayList(tabledata.getStreamsList()));
-        if (tableUpdateHandler != null && doUpdate) {
+        if (tableUpdateHandler != null) {
+            tableUpdateHandler.onStreamTableChanged();
             tableUpdateHandler.onStreamUpdated();
         }
     }
@@ -604,19 +601,7 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     public void setPacketData(TableProfile tableData) {
         this.tabledata = tableData;
-        numOfStreamLoaded = 0;
-        doUpdate = false;
-        updateNumberOfEnabledStream();
         streamPacketTableView.setItems(FXCollections.observableArrayList(tableData.getStreamsList()));
-    }
-
-    private void updateNumberOfEnabledStream() {
-        numOfEnabledStream = 0;
-        for (Profile profile : tabledata.getProfiles()) {
-            if (profile.getStream().isEnabled()) {
-                numOfEnabledStream++;
-            }
-        }
     }
 
     /**
@@ -747,7 +732,6 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
      */
     public Profile[] loadStreamTable(File fileToLoad) throws Exception {
         this.loadedProfile = fileToLoad;
-        doUpdate = false;
         Profile[] profileList;
         this.profileName = fileToLoad.getName();
         try {
@@ -780,9 +764,6 @@ public class PacketTableView extends AnchorPane implements EventHandler<ActionEv
     public void stateChanged(int index, boolean newValue) {
         try {
             if (!streamEditingWindowOpen) {
-                if (++numOfStreamLoaded > numOfEnabledStream) {
-                    doUpdate = true;
-                }
                 tabledata.getProfiles().get(index).getStream().setEnabled(newValue);
                 saveChangesToYamlFile(tabledata.getProfiles().toArray(new Profile[tabledata.getProfiles().size()]));
                 loadStreamTable(loadedProfile);
