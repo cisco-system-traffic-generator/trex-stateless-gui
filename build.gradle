@@ -45,7 +45,7 @@ test {
 task uiTest(type: Test) {
     description 'Runs UI testing(E2E)'
     outputs.upToDateWhen { false }
-    testClassesDir = sourceSets.uiTest.output.classesDir
+    testClassesDirs = sourceSets.uiTest.output.classesDirs
     classpath = sourceSets.uiTest.runtimeClasspath
 
     testLogging {
@@ -73,7 +73,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.6.0'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version:'2.5.4'
     compile group: 'org.json', name: 'json', version:'20150729'
-    compile group: 'org.zeromq', name: 'jeromq', version:'0.4.0'
+    compile group: 'org.zeromq', name: 'jeromq', version:'0.5.1'
     compile group: 'commons-io', name: 'commons-io', version:'2.4'
     compile group: 'commons-lang', name: 'commons-lang', version:'2.4'
     compile group: 'com.google.code.gson', name: 'gson', version:'2.7'

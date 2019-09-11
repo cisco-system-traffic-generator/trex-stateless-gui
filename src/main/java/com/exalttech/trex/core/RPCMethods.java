@@ -377,7 +377,7 @@ public class RPCMethods {
     public Boolean pingRPCServer() {
         LOG.trace("Pinging RPC Server");
         try {
-            serverConnectionManager.sendRPCRequest(Constants.PING_METHOD, null);
+            serverConnectionManager.sendRPCRequest(Constants.PING_METHOD, new PingParams());
             LOG.trace("Ping OK");
             return true;
         } catch (JsonProcessingException | UnsupportedEncodingException | InvalidRPCResponseException | IncorrectRPCMethodException | NullPointerException | SizeLimitExceededException ex) {

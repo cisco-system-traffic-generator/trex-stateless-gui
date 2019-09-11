@@ -54,15 +54,15 @@ public class RPCCommands {
             stringParameters = jsonParameters.substring(1, jsonParameters.length() - 1);
         }
         final String jsonRPCResult = ConnectionManager.getInstance().sendRequest(command, stringParameters);
-        final RPCResponse[] rpcResult = new ObjectMapper().readValue(jsonRPCResult, RPCResponse[].class);
-        final String specError = extractSpecError(rpcResult[0]);
+        final RPCResponse rpcResult = new ObjectMapper().readValue(jsonRPCResult, RPCResponse.class);
+        final String specError = extractSpecError(rpcResult);
         final String invalidHandlerErrorPart = "API handler provided mismatch";
 
         if (specError.contains(invalidHandlerErrorPart)) {
             ConnectionManager.getInstance().notifyServerWasRestarted();
         }
 
-        return rpcResult[0].getResult();
+        return rpcResult.getResult();
     }
 
     private static String extractSpecError(final RPCResponse resp) {

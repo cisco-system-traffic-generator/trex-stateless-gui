@@ -22,6 +22,7 @@ import com.exalttech.trex.ui.models.PortModel;
 import com.exalttech.trex.ui.models.PortStatus;
 import com.exalttech.trex.util.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -159,7 +160,14 @@ public class PortsManager {
             if (response == null) {
                 return;
             }
-            List<PortStatus> portStatusList = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, PortStatus.class));
+            List<PortStatus> portStatusList = new ArrayList<>();
+
+            try {
+                portStatusList = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, PortStatus.class));
+            } catch (MismatchedInputException ex) {
+                portStatusList.add(mapper.readValue(response, mapper.getTypeFactory().constructType(PortStatus.class)));
+            }
+
             for (Port port : list) {
                 PortStatus.PortStatusResult portStatus = portStatusList.get(list.indexOf(port)).getResult();
                 port.setOwner(portStatus.getOwner());

@@ -394,7 +394,7 @@ public class MainViewController implements Initializable, EventHandler<KeyEvent>
 
         String versionResponse = ConnectionManager.getInstance().sendRequest("get_version", "");
         Gson gson = new Gson();
-        JsonObject version = gson.fromJson(versionResponse, JsonArray.class).get(0).getAsJsonObject();
+        JsonObject version = gson.fromJson(versionResponse, JsonObject.class);
         systemInfoReq.getResult().setApiVersion(version.getAsJsonObject("result").getAsJsonPrimitive("version").getAsString());
         LogsController.getInstance().appendText(LogType.INFO, "Loading port information complete");
     }

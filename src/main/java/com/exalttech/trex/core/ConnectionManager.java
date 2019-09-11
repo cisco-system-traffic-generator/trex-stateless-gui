@@ -247,6 +247,8 @@ public class ConnectionManager {
                     param = "{" + apiHParam + " , " + parameters + "}";
                 }
 
+            } else {
+                param = "{}";
             }
             String request = "{   \"id\" : \"aggogxls\",   \"jsonrpc\" : \"2.0\",   \"method\" : \"" + cmd + "\",   \"params\" :" + param + " }";
             LOG.trace("Sending request \n" + Util.toPrettyFormat(request));
