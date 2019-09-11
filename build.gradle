@@ -16,7 +16,6 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {  
-     maven { url "http://oss.sonatype.org/content/groups/public/" }
      if (!project.hasProperty('local')) {
          maven { url "https://jitpack.io" }
      }
