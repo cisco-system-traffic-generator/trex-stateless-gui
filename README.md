@@ -16,7 +16,8 @@ The application main features can be split into tree parts (TRex Management, Tra
 
 This is an online part, you need to be connected to TRex in order to perform the following actions:
 
-- Connect and manage TRex instances
+- Connect and manage TRex instances up to TRex v2.87.
+  (v2.88 and newer are not supported yet due to major API changes)
 - Ability to preview all ports along with their status and statistics.
 - Ability to assign traffic to a specific port and start the traffic.
 - Ability to update the bandwidth / update the multiplier options on the fly.
